@@ -6,6 +6,7 @@ describe("Movers spelling game", () => {
     cy.contains("button", "Animals").click();
     cy.contains(".heading-note", "Animals");
     cy.get(".letter-bank .letter-tile").should("have.length", 3);
+    cy.get('[aria-label="0 rainbow coins collected"]').should("exist");
 
     ["b", "a", "t"].forEach((letter, index) => {
       cy.get(`.letter-tile[data-letter="${letter}"]`).not(".tile-used").click();
@@ -13,10 +14,34 @@ describe("Movers spelling game", () => {
     });
 
     cy.contains("button", "Check word").click();
-    cy.contains("Brilliant! You got it!");
-    cy.contains("button", "Next word").click();
+    cy.get(".reward-card").should("contain.text", "Amazing!");
+    cy.contains("button", "Next word").should("not.exist");
+    cy.get('[aria-label="1 rainbow coins collected"]').should("exist");
+    cy.get(".reward-card").click();
     cy.contains("02 / 13");
     cy.get(".letter-bank .letter-tile").should("have.length", 7);
+
+    ["d", "o", "l", "p", "h", "i", "n"].forEach((letter) => {
+      cy.get(`.letter-tile[data-letter="${letter}"]`).not(".tile-used").click();
+    });
+    cy.contains("button", "Check word").click();
+    cy.get(".reward-card").should("contain.text", "Well done!");
+    cy.get('[aria-label="2 rainbow coins collected"]').should("exist");
+    cy.get(".reward-card").click();
+    cy.contains("03 / 13");
+  });
+
+  it("does not reward an incorrect answer", () => {
+    cy.visit("/");
+    cy.contains("button", "Animals").click();
+
+    ["b", "t", "a"].forEach((letter) => {
+      cy.get(`.letter-tile[data-letter="${letter}"]`).not(".tile-used").click();
+    });
+
+    cy.contains("button", "Check word").click();
+    cy.contains("Not quite");
+    cy.get('[aria-label="0 rainbow coins collected"]').should("exist");
   });
 
   it("places tapped letters in the first available box", () => {
@@ -84,7 +109,7 @@ describe("Movers spelling game", () => {
   it("opens another category and can return to the game selection", () => {
     cy.visit("/");
     cy.contains("button", "Body and Face").click();
-    cy.contains("01 / 10");
+    cy.contains("01 / 12");
     cy.get(".letter-bank .letter-tile").should("have.length", 5);
     cy.contains("button", "All games").click();
     cy.contains("h1", "Pick your");

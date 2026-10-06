@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { categories } from "./game-data";
 
+const rewardMessages = ["Amazing!", "Well done!", "You did it!", "Fantastic!", "Brilliant!"];
 const femaleVoiceName = /\b(female|woman|sonia|hazel|kate|serena|fiona|susan|jenny|aria|libby|amy|emma|olivia|salli|joanna|kendra|samantha|victoria|zira|tessa|moira|karen|siri)\b/i;
 
 function findFemaleVoice(voices) {
@@ -27,6 +28,8 @@ export default function Home() {
   const [placed, setPlaced] = useState([]);
   const [checked, setChecked] = useState(false);
   const [voiceMessage, setVoiceMessage] = useState("");
+  const [rainbowCoins, setRainbowCoins] = useState(0);
+  const [rewardMessage, setRewardMessage] = useState("");
 
   const puzzle = selectedCategory?.words[round];
   const answer = puzzle?.answers[round % puzzle.answers.length] ?? "";
@@ -35,7 +38,6 @@ export default function Home() {
   const complete = Boolean(puzzle) && placed.length === answerLetters.length &&
     placed.every((tile, index) => tile !== null && tiles[tile] === answerLetters[index]);
   const allPlaced = placed.every((tile) => tile !== null);
-  const canContinue = checked && complete;
 
   useEffect(() => () => {
     window.speechSynthesis?.cancel();
@@ -47,6 +49,7 @@ export default function Home() {
     setPlaced(Array(category.words[0].answers[0].replaceAll(" ", "").length).fill(null));
     setChecked(false);
     setVoiceMessage("");
+    setRewardMessage("");
   }
 
   function showCategories() {
@@ -55,6 +58,7 @@ export default function Home() {
     setPlaced([]);
     setChecked(false);
     setVoiceMessage("");
+    setRewardMessage("");
   }
 
   function speakWord() {
@@ -94,17 +98,23 @@ export default function Home() {
       return next;
     });
     setChecked(false);
+    setRewardMessage("");
   }
 
   function handleSlotClick(slotIndex) {
     if (placed[slotIndex] !== null && placed[slotIndex] !== undefined) {
       setPlaced((current) => current.map((tile, index) => (index === slotIndex ? null : tile)));
       setChecked(false);
+      setRewardMessage("");
     }
   }
 
   function checkAnswer() {
     setChecked(true);
+    if (complete && !checked) {
+      setRewardMessage(rewardMessages[rainbowCoins % rewardMessages.length]);
+      setRainbowCoins((current) => current + 1);
+    }
   }
 
   function nextWord() {
@@ -116,6 +126,7 @@ export default function Home() {
     setPlaced(Array(nextAnswer.replaceAll(" ", "").length).fill(null));
     setChecked(false);
     setVoiceMessage("");
+    setRewardMessage("");
   }
 
   return (
@@ -174,13 +185,20 @@ export default function Home() {
             <h1 id="game-title">Picture <span>perfect!</span></h1>
             <p className="heading-note">{selectedCategory.name}: look, think, spell!</p>
           </div>
-          <div className="progress-card" aria-label={`Word ${round + 1} of ${selectedCategory.words.length}`}>
-            <div className="progress-copy">
-              <span>YOUR PROGRESS</span>
-              <strong><span>{String(round + 1).padStart(2, "0")}</span> / {String(selectedCategory.words.length).padStart(2, "0")}</strong>
+          <div className="heading-progress">
+            <div className="rainbow-coin-counter" aria-label={`${rainbowCoins} rainbow coins collected`}>
+              <span className="rainbow-coin-icon coin-pop" key={rainbowCoins} aria-hidden="true">🌈🪙</span>
+              <span className="coin-count">{rainbowCoins}</span>
+              <span className="coin-label">RAINBOW COINS</span>
             </div>
-            <div className="progress-track" aria-hidden="true">
-              <span style={{ width: `${((round + 1) / selectedCategory.words.length) * 100}%` }} />
+            <div className="progress-card" aria-label={`Word ${round + 1} of ${selectedCategory.words.length}`}>
+              <div className="progress-copy">
+                <span>YOUR PROGRESS</span>
+                <strong><span>{String(round + 1).padStart(2, "0")}</span> / {String(selectedCategory.words.length).padStart(2, "0")}</strong>
+              </div>
+              <div className="progress-track" aria-hidden="true">
+                <span style={{ width: `${((round + 1) / selectedCategory.words.length) * 100}%` }} />
+              </div>
             </div>
           </div>
         </div>
@@ -265,6 +283,7 @@ export default function Home() {
                       if (isPlaced) {
                         setPlaced((current) => current.map((tile) => (tile === index ? null : tile)));
                         setChecked(false);
+                        setRewardMessage("");
                       } else {
                         placeTile(index);
                       }
@@ -280,21 +299,15 @@ export default function Home() {
               <p className={`feedback${checked ? (complete ? " feedback-success" : " feedback-try") : ""}`} aria-live="polite">
                 {checked
                   ? complete
-                    ? "Brilliant! You got it!"
+                    ? " "
                     : allPlaced
                       ? "Not quite — give it another try!"
                       : "Fill every box before you check."
                   : " "}
               </p>
-              {canContinue ? (
-                <button className="action-button next-button" type="button" onClick={nextWord}>
-                  Next word <span aria-hidden="true">→</span>
-                </button>
-              ) : (
-                <button className="action-button check-button" type="button" onClick={checkAnswer}>
-                  Check word <span aria-hidden="true">✓</span>
-                </button>
-              )}
+              <button className="action-button check-button" type="button" onClick={checkAnswer}>
+                Check word <span aria-hidden="true">✓</span>
+              </button>
             </div>
           </section>
         </div>
@@ -305,6 +318,27 @@ export default function Home() {
         </footer>
       </section>
         )}
+      {selectedCategory && rewardMessage && complete && (
+        <div className="reward-overlay">
+          <div className="reward-dialog" role="dialog" aria-modal="true" aria-labelledby="reward-title">
+            <button
+              className="reward-card"
+              type="button"
+              autoFocus
+              aria-label={`${rewardMessage} You earned a rainbow coin. Tap to go to the next word.`}
+              onClick={nextWord}
+            >
+              <span className="reward-sparkle reward-sparkle-one" aria-hidden="true">✦</span>
+              <span className="reward-sparkle reward-sparkle-two" aria-hidden="true">✧</span>
+              <span className="reward-coin" aria-hidden="true">🌈🪙</span>
+              <span className="reward-kicker">RAINBOW REWARD</span>
+              <span className="reward-title" id="reward-title">{rewardMessage}</span>
+              <span className="reward-coin-earned">You collected a rainbow coin!</span>
+              <span className="reward-continue">Tap to play the next word <span aria-hidden="true">→</span></span>
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
