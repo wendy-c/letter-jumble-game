@@ -163,7 +163,7 @@ export default function Home() {
         <section className="game-wrap category-menu mx-auto w-full max-w-6xl" aria-labelledby="game-title">
           <div className="menu-heading">
             <p className="eyebrow">A LITTLE WORD ADVENTURE</p>
-            <h1 id="game-title">Pick your <span>adventure!</span></h1>
+            <h1 id="game-title">Letter <span>Jumble</span></h1>
             <p className="heading-note">Choose a topic and let the word games begin.</p>
           </div>
           <div className="category-grid">
@@ -199,9 +199,18 @@ export default function Home() {
               <span aria-hidden="true">←</span> All games
             </button>
             <p className="eyebrow">A LITTLE WORD ADVENTURE</p>
-            <h1 id="game-title">Picture <span>perfect!</span></h1>
-            <p className="heading-note">{selectedCategory.name}: look, think, spell!</p>
+            <h1 id="game-title">{selectedCategory.name}</h1>
+            <p className="heading-note">look, think, spell!</p>
           </div>
+            <div className="progress-card" aria-label={`Word ${round + 1} of ${selectedCategory.words.length}`}>
+              <div className="progress-copy">
+                <span>YOUR PROGRESS</span>
+                <strong><span>{String(round + 1).padStart(2, "0")}</span> / {String(selectedCategory.words.length).padStart(2, "0")}</strong>
+              </div>
+              <div className="progress-track" aria-hidden="true">
+                <span style={{ width: `${((round + 1) / selectedCategory.words.length) * 100}%` }} />
+              </div>
+            </div>
           <div className="heading-progress">
             <div className="rainbow-coin-tools">
               <div className="rainbow-coin-counter" aria-label={`${rainbowCoins} rainbow coins collected`}>
@@ -219,15 +228,6 @@ export default function Home() {
               >
                 <span aria-hidden="true"><i /><i /><i /></span>
               </button>
-            </div>
-            <div className="progress-card" aria-label={`Word ${round + 1} of ${selectedCategory.words.length}`}>
-              <div className="progress-copy">
-                <span>YOUR PROGRESS</span>
-                <strong><span>{String(round + 1).padStart(2, "0")}</span> / {String(selectedCategory.words.length).padStart(2, "0")}</strong>
-              </div>
-              <div className="progress-track" aria-hidden="true">
-                <span style={{ width: `${((round + 1) / selectedCategory.words.length) * 100}%` }} />
-              </div>
             </div>
           </div>
         </div>

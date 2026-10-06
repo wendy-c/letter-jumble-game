@@ -16,7 +16,7 @@
 
 body {
   margin: 0;
-  background: var(--cream);
+  background: #fff9e9;
   color: var(--ink);
   font-family: "Trebuchet MS", "Arial Rounded MT Bold", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -27,8 +27,30 @@ button {
 }
 
 .app-shell {
-  background-image: radial-gradient(#eae5db 0.7px, transparent 0.7px);
-  background-size: 20px 20px;
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 9% 12%, rgb(255 211 94 / 24%), transparent 32%),
+    radial-gradient(ellipse at 93% 16%, rgb(246 159 198 / 20%), transparent 31%),
+    radial-gradient(ellipse at 82% 89%, rgb(178 143 225 / 19%), transparent 35%),
+    radial-gradient(ellipse at 14% 83%, rgb(249 180 190 / 16%), transparent 34%),
+    linear-gradient(135deg, #fff9e9 0%, #fffdf8 45%, #f7f1ff 100%);
+}
+
+.app-shell::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgb(244 190 66 / 68%) 1.7px, transparent 2.5px),
+    radial-gradient(circle, rgb(190 145 220 / 53%) 1.5px, transparent 2.3px),
+    radial-gradient(circle, rgb(241 143 181 / 50%) 1.5px, transparent 2.3px);
+  background-position: 12px 19px, 48px 63px, 87px 31px;
+  background-size: 127px 119px, 173px 167px, 211px 197px;
+  content: "";
+  opacity: 0.62;
+  pointer-events: none;
 }
 
 .topbar {
