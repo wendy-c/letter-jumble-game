@@ -1,10 +1,10 @@
 describe("Movers spelling game", () => {
   it("lets a learner spell a word, check it, and continue", () => {
     cy.visit("/");
-    cy.contains("h1", "Pick your");
+    cy.contains("h1", "Letter Jumble");
     cy.get(".category-card").should("have.length", 6);
     cy.contains("button", "Animals").click();
-    cy.contains(".heading-note", "Animals");
+    cy.contains("h1", "Animals");
     cy.get(".letter-bank .letter-tile").should("have.length", 3);
     cy.get('[aria-label="0 rainbow coins collected"]').should("exist");
 
@@ -58,8 +58,57 @@ describe("Movers spelling game", () => {
     cy.get('[role="dialog"]').should("not.exist");
     cy.contains("06 / 13");
     cy.get(".letter-slot").should("have.length", 5).each(($slot) => {
-      expect($slot).to.have.attr("aria-label").and.match(/empty$/);
+      expect($slot).to.have.attr("aria-label").and.match(/empty,/);
     });
+  });
+
+  it("marks vowel and consonant teams and other sounds in the spelling guide", () => {
+    cy.visit("/");
+    cy.contains("button", "Places and Travel").click();
+    cy.get('button[aria-label="Browse Places and Travel words"]').click();
+    cy.get(".word-menu-item").contains("Swimming pool").click();
+
+    cy.get(".letter-slot").should("have.length", 12);
+    cy.get(".letter-slot").eq(0).should("have.class", "letter-slot-guide-consonant");
+    cy.get(".letter-slot").eq(1).should("have.class", "letter-slot-guide-consonant");
+    cy.get(".letter-slot").eq(2).should("have.class", "letter-slot-guide-other");
+    cy.get(".letter-slot").eq(3).should("have.class", "letter-slot-guide-other");
+    cy.get(".letter-slot").eq(9).should("have.class", "letter-slot-guide-vowel");
+    cy.get(".letter-slot").eq(10).should("have.class", "letter-slot-guide-vowel");
+    cy.contains(".spelling-guide", "Vowel team");
+    cy.contains(".spelling-guide", "Consonant team");
+    cy.contains(".spelling-guide", "Other");
+  });
+
+  it("marks ph as a consonant team in dolphin", () => {
+    cy.visit("/");
+    cy.contains("button", "Animals").click();
+    cy.get('button[aria-label="Browse Animals words"]').click();
+    cy.get(".word-menu-item").contains("Dolphin").click();
+
+    cy.get(".letter-slot").should("have.length", 7);
+    [0, 1, 2, 5, 6].forEach((index) => {
+      cy.get(".letter-slot").eq(index).should("have.class", "letter-slot-guide-other");
+    });
+    [3, 4].forEach((index) => {
+      cy.get(".letter-slot").eq(index).should("have.class", "letter-slot-guide-consonant");
+    });
+  });
+
+  it("marks sh and th as consonant teams", () => {
+    cy.visit("/");
+    cy.contains("button", "Animals").click();
+    cy.get('button[aria-label="Browse Animals words"]').click();
+    cy.get(".word-menu-item").contains("Shark").click();
+    cy.get(".letter-slot").eq(0).should("have.class", "letter-slot-guide-consonant");
+    cy.get(".letter-slot").eq(1).should("have.class", "letter-slot-guide-consonant");
+
+    cy.contains("button", "All games").click();
+    cy.contains("button", "Body and Face").click();
+    cy.get('button[aria-label="Browse Body and Face words"]').click();
+    cy.get(".word-menu-item").contains("Tooth").click();
+    cy.get(".letter-slot").eq(3).should("have.class", "letter-slot-guide-consonant");
+    cy.get(".letter-slot").eq(4).should("have.class", "letter-slot-guide-consonant");
   });
 
   it("closes the word menu with Escape", () => {
@@ -139,6 +188,6 @@ describe("Movers spelling game", () => {
     cy.contains("01 / 12");
     cy.get(".letter-bank .letter-tile").should("have.length", 5);
     cy.contains("button", "All games").click();
-    cy.contains("h1", "Pick your");
+    cy.contains("h1", "Letter Jumble");
   });
 });

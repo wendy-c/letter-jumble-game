@@ -4,12 +4,81 @@ import { useEffect, useState } from "react";
 import { categories } from "./game-data";
 
 const rewardMessages = ["Amazing!", "Well done!", "You did it!", "Fantastic!", "Brilliant!"];
+const vowelTeams = [
+  "igh", "air", "are", "ear", "ure", "ire", "ay", "ee", "ow", "oo", "ar", "or",
+  "ir", "ou", "oy", "ea", "oi", "aw", "ur", "er", "ai", "oa", "ew",
+].sort((first, second) => second.length - first.length);
+const consonantTeams = [
+  "shr", "spl", "spr", "squ", "str", "thr", "scr", "br", "cr", "dr", "fr", "gr",
+  "pr", "tr", "bl", "cl", "fl", "gl", "pl", "sl", "sc", "sk", "sm", "sn", "sp", "ph",
+  "st", "sw", "tw", "sh", "th",
+].sort((first, second) => second.length - first.length);
 const femaleVoiceName = /\b(female|woman|sonia|hazel|kate|serena|fiona|susan|jenny|aria|libby|amy|emma|olivia|salli|joanna|kendra|samantha|victoria|zira|tessa|moira|karen|siri)\b/i;
+
+function classifyTeams(word, teams, type) {
+  const guides = Array(word.length).fill("other");
+
+  for (let index = 0; index < word.length; index += 1) {
+    if (guides[index] !== "other") continue;
+
+    const team = teams.find((candidate) => word.startsWith(candidate, index));
+    if (team) {
+      for (let offset = 0; offset < team.length; offset += 1) {
+        guides[index + offset] = type;
+      }
+    }
+  }
+
+  return guides;
+}
+
+function getSpellingGuides(answer) {
+  return answer.toLowerCase().split(" ").flatMap((word) => {
+    const vowelGuides = classifyTeams(word, vowelTeams, "vowel");
+    const consonantGuides = classifyTeams(word, consonantTeams, "consonant");
+
+    return word.split("").map((_, index) => (
+      vowelGuides[index] !== "other" ? "vowel" : consonantGuides[index]
+    ));
+  });
+}
 
 function findFemaleVoice(voices) {
   const femaleVoices = voices.filter((voice) => femaleVoiceName.test(voice.name));
   const britishFemaleVoice = femaleVoices.find((voice) => /^en[-_]?(GB|UK)\b/i.test(voice.lang));
   return britishFemaleVoice ?? femaleVoices.find((voice) => /^en\b/i.test(voice.lang)) ?? femaleVoices[0];
+}
+
+const mascots = {
+  ada: { src: "/images/mascot-left.png", width: 480, height: 361 },
+  elly: { src: "/images/mascot-right.png", width: 480, height: 322 },
+};
+
+function WizardHat() {
+  return (
+    <svg className="wizard-hat" viewBox="0 0 100 92" aria-hidden="true">
+      <ellipse cx="50" cy="76" rx="46" ry="12" fill="#a98cf2" stroke="#4b2e22" strokeWidth="4" />
+      <path
+        d="M27 74C33 52 37 30 47 12c4-7 12-9 18-4-6 0-10 4-11 10 5 18 12 38 19 56Z"
+        fill="#8a6ae6"
+        stroke="#4b2e22"
+        strokeWidth="4"
+        strokeLinejoin="round"
+      />
+      <path d="M29 64h43l3 10H26Z" fill="#ffd45e" stroke="#4b2e22" strokeWidth="3" strokeLinejoin="round" />
+      <path d="m51 31 3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z" fill="#ffe27a" />
+    </svg>
+  );
+}
+
+function Mascot({ name, className = "" }) {
+  const { src, width, height } = mascots[name];
+  return (
+    <span className={`mascot mascot-${name} ${className}`} aria-hidden="true">
+      <img src={src} alt="" width={width} height={height} />
+      <WizardHat />
+    </span>
+  );
 }
 
 function scramble(word, round) {
@@ -35,6 +104,7 @@ export default function Home() {
   const puzzle = selectedCategory?.words[round];
   const answer = puzzle?.answers[round % puzzle.answers.length] ?? "";
   const answerLetters = answer.replaceAll(" ", "");
+  const spellingGuides = getSpellingGuides(answer);
   const tiles = puzzle ? scramble(answerLetters, round) : [];
   const complete = Boolean(puzzle) && placed.length === answerLetters.length &&
     placed.every((tile, index) => tile !== null && tiles[tile] === answerLetters[index]);
@@ -154,7 +224,7 @@ export default function Home() {
           <span>Learn with<span className="brand-wave"> Ada and Elly</span></span>
         </a>
         <div className="exam-badge">
-          <span className="badge-sparkle" aria-hidden="true">✳</span>
+          <span className="badge-sparkle" aria-hidden="true">✦</span>
           CAMBRIDGE MOVERS
         </div>
       </header>
@@ -162,9 +232,9 @@ export default function Home() {
       {!selectedCategory ? (
         <section className="game-wrap category-menu mx-auto w-full max-w-6xl" aria-labelledby="game-title">
           <div className="menu-heading">
-            <p className="eyebrow">A LITTLE WORD ADVENTURE</p>
+            <p className="eyebrow">WELCOME TO SPELLING SCHOOL</p>
             <h1 id="game-title">Letter <span>Jumble</span></h1>
-            <p className="heading-note">Choose a topic and let the word games begin.</p>
+            <p className="heading-note">Pick a spell book and start today’s magic lesson.</p>
           </div>
           <div className="category-grid">
             {categories.map((category, index) => (
@@ -180,15 +250,15 @@ export default function Home() {
                 </span>
                 <span className="category-card-name">{category.name}</span>
                 <span className="category-card-bottom">
-                  <span>{category.words.length} words to discover</span>
+                  <span>{category.words.length} spells to learn</span>
                   <span className="category-card-arrow" aria-hidden="true">→</span>
                 </span>
               </button>
             ))}
           </div>
           <footer className="game-footer">
-            <span><span className="footer-star" aria-hidden="true">✦</span> Every word makes you wonder-full!</span>
-            <span className="footer-right">PICK A TOPIC TO PLAY <span aria-hidden="true">♡</span></span>
+            <span><span className="footer-star" aria-hidden="true">✦</span> Every word is a little bit of magic!</span>
+            <span className="footer-right">PICK A SPELL BOOK <span aria-hidden="true">♡</span></span>
           </footer>
         </section>
       ) : (
@@ -198,9 +268,9 @@ export default function Home() {
             <button className="category-back" type="button" onClick={showCategories}>
               <span aria-hidden="true">←</span> All games
             </button>
-            <p className="eyebrow">A LITTLE WORD ADVENTURE</p>
+            <p className="eyebrow">TODAY’S MAGIC LESSON</p>
             <h1 id="game-title">{selectedCategory.name}</h1>
-            <p className="heading-note">look, think, spell!</p>
+            <p className="heading-note">Look, think, cast the spell!</p>
           </div>
             <div className="progress-card" aria-label={`Word ${round + 1} of ${selectedCategory.words.length}`}>
               <div className="progress-copy">
@@ -240,13 +310,13 @@ export default function Home() {
             </div>
             <div className="picture-art" role="img" aria-label={`Picture clue: ${selectedCategory.name.toLowerCase()}`}>
               <span className="art-sparkle sparkle-one" aria-hidden="true">✦</span>
-              <span className="art-sparkle sparkle-two" aria-hidden="true">✳</span>
+              <span className="art-sparkle sparkle-two" aria-hidden="true">⋆</span>
               <span className="art-sparkle sparkle-three" aria-hidden="true">✧</span>
               <span className="picture-emoji" aria-hidden="true">{puzzle.picture}</span>
               <span className="art-ground" aria-hidden="true" />
             </div>
             <div className="picture-caption">
-              <span className="caption-icon" aria-hidden="true">✳</span>
+              <Mascot name="ada" className="mascot-caption" />
               <p>What can you see?</p>
             </div>
           </section>
@@ -278,18 +348,26 @@ export default function Home() {
                 const tileIndex = placed[index];
                 const filled = tileIndex !== null && tileIndex !== undefined;
                 const isCorrect = checked && filled && tiles[tileIndex] === letter;
+                const guide = spellingGuides[index];
                 return (
                   <button
-                    className={`letter-slot${filled ? " slot-filled" : ""}${isCorrect ? " slot-correct" : ""}${checked && filled && !isCorrect ? " slot-wrong" : ""}`}
+                    className={`letter-slot letter-slot-guide-${guide}${filled ? " slot-filled" : ""}${isCorrect ? " slot-correct" : ""}${checked && filled && !isCorrect ? " slot-wrong" : ""}`}
                     type="button"
                     key={`${round}-${index}`}
-                    aria-label={`Letter ${index + 1} of ${answerLetters.length}${filled ? `, ${tiles[tileIndex]}` : ", empty"}`}
+                    aria-label={`Letter ${index + 1} of ${answerLetters.length}${filled ? `, ${tiles[tileIndex]}` : ", empty"}, ${guide === "other" ? "single sound" : `${guide} team`}`}
                     onClick={() => handleSlotClick(index)}
                   >
-                    {filled ? tiles[tileIndex] : <span className="slot-dot" />}
+                    {filled ? tiles[tileIndex] : null}
                   </button>
                 );
               })}
+            </div>
+
+            <div className="spelling-guide" aria-label="Spelling guide">
+              <span className="spelling-guide-title">Spelling guide</span>
+              <span className="spelling-guide-item"><i className="guide-mark guide-mark-vowel" aria-hidden="true" /> Vowel team</span>
+              <span className="spelling-guide-item"><i className="guide-mark guide-mark-consonant" aria-hidden="true" /> Consonant team</span>
+              <span className="spelling-guide-item"><i className="guide-mark guide-mark-other" aria-hidden="true" /> Other</span>
             </div>
 
             <div className="tile-instructions">
@@ -325,6 +403,7 @@ export default function Home() {
             </div>
 
             <div className="answer-footer">
+              {checked && !complete && <Mascot name="elly" className="mascot-feedback" />}
               <p className={`feedback${checked ? (complete ? " feedback-success" : " feedback-try") : ""}`} aria-live="polite">
                 {checked
                   ? complete
@@ -335,14 +414,14 @@ export default function Home() {
                   : " "}
               </p>
               <button className="action-button check-button" type="button" onClick={checkAnswer}>
-                Check word <span aria-hidden="true">✓</span>
+                Check word <span aria-hidden="true">🪄</span>
               </button>
             </div>
           </section>
         </div>
 
         <footer className="game-footer">
-          <span><span className="footer-star" aria-hidden="true">✦</span> Every word makes you wonder-full!</span>
+          <span><span className="footer-star" aria-hidden="true">✦</span> Every word is a little bit of magic!</span>
           <span className="footer-right">ONE LETTER AT A TIME <span aria-hidden="true">♡</span></span>
         </footer>
       </section>
@@ -358,7 +437,7 @@ export default function Home() {
           >
             <div className="word-menu-header">
               <div>
-                <p className="eyebrow">CHOOSE A WORD TO PRACTISE</p>
+                <p className="eyebrow">CHOOSE A SPELL TO PRACTISE</p>
                 <h2 id="word-menu-title">{selectedCategory.name}</h2>
                 <p className="word-menu-count">{selectedCategory.words.length} words in this game</p>
               </div>
@@ -407,8 +486,12 @@ export default function Home() {
             >
               <span className="reward-sparkle reward-sparkle-one" aria-hidden="true">✦</span>
               <span className="reward-sparkle reward-sparkle-two" aria-hidden="true">✧</span>
-              <span className="reward-coin" aria-hidden="true">🌈🪙</span>
-              <span className="reward-kicker">RAINBOW REWARD</span>
+              <span className="reward-cast" aria-hidden="true">
+                <Mascot name="ada" className="mascot-reward mascot-reward-left" />
+                <span className="reward-coin">🌈🪙</span>
+                <Mascot name="elly" className="mascot-reward mascot-reward-right" />
+              </span>
+              <span className="reward-kicker">MAGIC REWARD</span>
               <span className="reward-title" id="reward-title">{rewardMessage}</span>
               <span className="reward-coin-earned">You collected a rainbow coin!</span>
               <span className="reward-continue">Tap to play the next word <span aria-hidden="true">→</span></span>
