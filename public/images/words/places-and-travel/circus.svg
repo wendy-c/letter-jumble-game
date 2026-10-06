@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+<defs><clipPath id="circus-tent"><path d="M14 112q10-34 8-50l42-38 42 38q-2 16 8 50Z"/></clipPath></defs>
+<g stroke="#4b2e22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<path d="M64 24V6" stroke-width="3.5"/>
+<path d="M64 6l16 5-16 5Z" fill="#ffd45e" stroke-width="3"/>
+<path d="M14 112q10-34 8-50l42-38 42 38q-2 16 8 50Z" fill="#fff"/>
+<g clip-path="url(#circus-tent)" fill="#ff8fae" stroke="none"><path d="M64 24L-6 120L6 120Z"/><path d="M64 24L18 120L30 120Z"/><path d="M64 24L42 120L54 120Z"/><path d="M64 24L66 120L78 120Z"/><path d="M64 24L90 120L102 120Z"/><path d="M64 24L114 120L126 120Z"/></g>
+<path d="M14 112q10-34 8-50l42-38 42 38q-2 16 8 50Z" fill="none"/>
+<path d="M22.0 62a5.25 5.25 0 0 0 10.5 0Z" fill="#ffd45e" stroke-width="3"/><path d="M32.5 62a5.25 5.25 0 0 0 10.5 0Z" fill="#c9b2f7" stroke-width="3"/><path d="M43.0 62a5.25 5.25 0 0 0 10.5 0Z" fill="#ffd45e" stroke-width="3"/><path d="M53.5 62a5.25 5.25 0 0 0 10.5 0Z" fill="#c9b2f7" stroke-width="3"/><path d="M64.0 62a5.25 5.25 0 0 0 10.5 0Z" fill="#ffd45e" stroke-width="3"/><path d="M74.5 62a5.25 5.25 0 0 0 10.5 0Z" fill="#c9b2f7" stroke-width="3"/><path d="M85.0 62a5.25 5.25 0 0 0 10.5 0Z" fill="#ffd45e" stroke-width="3"/><path d="M95.5 62a5.25 5.25 0 0 0 10.5 0Z" fill="#c9b2f7" stroke-width="3"/>
+<path d="M50 112V96q14-14 28 0v16Z" fill="#a98cf2"/>
+<path d="M64 84v28" stroke-width="3"/>
+<g stroke="none"><ellipse cx="55" cy="76" rx="3" ry="3.4" fill="#4b2e22"/><ellipse cx="73" cy="76" rx="3" ry="3.4" fill="#4b2e22"/>
+<circle cx="56.0" cy="74.8" r="1.0" fill="#fff"/><circle cx="74.0" cy="74.8" r="1.0" fill="#fff"/>
+<g fill="#ff9bb5" opacity=".7"><ellipse cx="49.5" cy="84" rx="3.5" ry="2.2"/><ellipse cx="78.5" cy="84" rx="3.5" ry="2.2"/></g></g>
+<path d="M61.5 85q2.5 2.8 5 0" fill="none" stroke-width="3"/>
+<path d="M18.0 24.0L19.6 27.8L23.7 28.1L20.6 30.8L21.5 34.9L18.0 32.7L14.5 34.9L15.4 30.8L12.3 28.1L16.4 27.8Z" fill="#ffc94a" stroke-width="2"/><path d="M110.0 15.0L111.3 18.2L114.8 18.5L112.1 20.7L112.9 24.0L110.0 22.2L107.1 24.0L107.9 20.7L105.2 18.5L108.7 18.2Z" fill="#ffc94a" stroke-width="2"/>
+<path d="M0 118H128" stroke="#6cc28a" stroke-width="6"/>
+</g>
+</svg>
