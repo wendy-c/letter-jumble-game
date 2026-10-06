@@ -150,8 +150,8 @@ export default function Home() {
     <main className="app-shell min-h-screen px-4 py-5 sm:px-8 sm:py-8">
       <header className="topbar mx-auto flex w-full max-w-6xl items-center justify-between">
         <a className="brand" href="/" aria-label="Word Wave home">
-          <span className="brand-mark" aria-hidden="true">w</span>
-          <span>word<span className="brand-wave">wave</span></span>
+        <img className="brand-logo" src="/images/logo.png" alt="" width="80" height="80" />
+          <span>Learn with<span className="brand-wave"> Ada and Elly</span></span>
         </a>
         <div className="exam-badge">
           <span className="badge-sparkle" aria-hidden="true">✳</span>
