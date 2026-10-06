@@ -246,7 +246,7 @@ export default function Home() {
                 onClick={() => selectCategory(category)}
               >
                 <span className="category-card-top">
-                  <span className="category-card-icon" aria-hidden="true">{category.icon}</span>
+                  <span className="category-card-icon" aria-hidden="true"><img src={category.icon} alt="" width="40" height="40" /></span>
                   <span className="category-card-number">{String(index + 1).padStart(2, "0")}</span>
                 </span>
                 <span className="category-card-name">{category.name}</span>

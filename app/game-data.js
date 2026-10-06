@@ -2,7 +2,7 @@ export const categories = [
   {
     id: "animals",
     name: "Animals",
-    icon: "🐾",
+    icon: "/images/icons/animals.svg",
     color: "peach",
     words: [
       ["Bat", "🦇"],
@@ -23,7 +23,7 @@ export const categories = [
   {
     id: "body-and-face",
     name: "Body and Face",
-    icon: "😊",
+    icon: "/images/icons/body-and-face.svg",
     color: "lilac",
     words: [
       ["Beard", "🧔"],
@@ -43,7 +43,7 @@ export const categories = [
   {
     id: "food-and-drink",
     name: "Food and Drink",
-    icon: "🍓",
+    icon: "/images/icons/food-and-drink.svg",
     color: "pink",
     words: [
       ["Bottle", "🍼"],
@@ -64,7 +64,7 @@ export const categories = [
   {
     id: "home-and-environment",
     name: "Home and Environment",
-    icon: "🏡",
+    icon: "/images/icons/home-and-environment.svg",
     color: "green",
     words: [
       ["Address", "📮"],
@@ -84,7 +84,7 @@ export const categories = [
   {
     id: "places-and-travel",
     name: "Places and Travel",
-    icon: "🗺️",
+    icon: "/images/icons/places-and-travel.svg",
     color: "blue",
     words: [
       ["Building", "🏢"],
@@ -104,7 +104,7 @@ export const categories = [
   {
     id: "sports-and-leisure",
     name: "Sports and Leisure",
-    icon: "⚽",
+    icon: "/images/icons/sports-and-leisure.svg",
     color: "yellow",
     words: [
       ["Band", "🎸"],

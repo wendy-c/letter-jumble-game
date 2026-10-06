@@ -344,8 +344,8 @@ button {
 
 .category-card-icon {
   display: grid;
-  width: 54px;
-  height: 54px;
+  width: 62px;
+  height: 62px;
   place-items: center;
   border-radius: 50%;
   background: rgb(255 255 255 / 75%);
@@ -361,6 +361,16 @@ button {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 1px;
+}
+
+.category-card-icon img {
+  width: 86%;
+  height: 86%;
+  transition: transform 150ms ease;
+}
+
+.category-card:hover .category-card-icon img {
+  transform: rotate(-8deg) scale(1.08);
 }
 
 .category-card-name {
@@ -1631,9 +1641,8 @@ a:focus-visible {
   }
 
   .category-card-icon {
-    width: 46px;
-    height: 46px;
-    font-size: 26px;
+    width: 52px;
+    height: 52px;
   }
 
   .category-card-name {
