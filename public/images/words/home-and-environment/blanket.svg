@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+<g stroke="#4b2e22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<rect x="10" y="46" width="14" height="72" rx="5" fill="#c98a5a"/>
+<path d="M20 104L20 120" stroke="#4b2e22" stroke-width="12"/><path d="M20 104L20 120" stroke="#c98a5a" stroke-width="6"/><path d="M114 104L114 120" stroke="#4b2e22" stroke-width="12"/><path d="M114 104L114 120" stroke="#c98a5a" stroke-width="6"/>
+<rect x="18" y="86" width="102" height="20" rx="6" fill="#fff"/>
+<ellipse cx="38" cy="78" rx="16" ry="9" fill="#fff"/>
+<circle cx="40" cy="64" r="12" fill="#ffe2c4"/>
+<path d="M28 62q0-12 12-12t12 12q-5-5-12-4-7-1-12 4Z" fill="#8b5a3c"/>
+<g fill="none" stroke-width="2.5"><path d="M33 66q2.5 2 5 0"/><path d="M42 66q2.5 2 5 0"/></g>
+<g fill="#ff9bb5" opacity=".7" stroke="none"><ellipse cx="31" cy="71" rx="3.5" ry="2"/><ellipse cx="49" cy="71" rx="3.5" ry="2"/></g>
+<path d="M46 72q20-12 40-2 20-4 34 12v24H46q-6-18 0-34Z" fill="#c9b2f7"/>
+<path d="M58.0 78.0L59.1 80.5L61.8 80.8L59.7 82.6L60.4 85.2L58.0 83.8L55.6 85.2L56.3 82.6L54.2 80.8L56.9 80.5Z" fill="#ffc94a" stroke-width="1.5"/><path d="M76.0 70.0L77.1 72.5L79.8 72.8L77.7 74.6L78.4 77.2L76.0 75.8L73.6 77.2L74.3 74.6L72.2 72.8L74.9 72.5Z" fill="#ffc94a" stroke-width="1.5"/><path d="M94.0 76.0L95.1 78.5L97.8 78.8L95.7 80.6L96.4 83.2L94.0 81.8L91.6 83.2L92.3 80.6L90.2 78.8L92.9 78.5Z" fill="#ffc94a" stroke-width="1.5"/><path d="M108.0 88.0L109.1 90.5L111.8 90.8L109.7 92.6L110.4 95.2L108.0 93.8L105.6 95.2L106.3 92.6L104.2 90.8L106.9 90.5Z" fill="#ffc94a" stroke-width="1.5"/><path d="M70.0 92.0L71.1 94.5L73.8 94.8L71.7 96.6L72.4 99.2L70.0 97.8L67.6 99.2L68.3 96.6L66.2 94.8L68.9 94.5Z" fill="#ffc94a" stroke-width="1.5"/><path d="M90.0 96.0L91.1 98.5L93.8 98.8L91.7 100.6L92.4 103.2L90.0 101.8L87.6 103.2L88.3 100.6L86.2 98.8L88.9 98.5Z" fill="#ffc94a" stroke-width="1.5"/>
+<path d="M46 106q4-4 8 0t8 0 8 0 8 0 8 0 8 0 8 0 8 0 8 0" fill="none" stroke="#fff" stroke-width="3"/>
+<g fill="none" stroke="#a98cf2" stroke-width="3"><path d="M62 22h10l-10 12h10"/><path d="M80 10h7l-7 8h7"/></g>
+</g>
+</svg>
