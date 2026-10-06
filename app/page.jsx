@@ -30,6 +30,7 @@ export default function Home() {
   const [voiceMessage, setVoiceMessage] = useState("");
   const [rainbowCoins, setRainbowCoins] = useState(0);
   const [rewardMessage, setRewardMessage] = useState("");
+  const [wordMenuOpen, setWordMenuOpen] = useState(false);
 
   const puzzle = selectedCategory?.words[round];
   const answer = puzzle?.answers[round % puzzle.answers.length] ?? "";
@@ -42,6 +43,17 @@ export default function Home() {
   useEffect(() => () => {
     window.speechSynthesis?.cancel();
   }, []);
+
+  useEffect(() => {
+    if (!wordMenuOpen) return undefined;
+
+    function handleKeyDown(event) {
+      if (event.key === "Escape") setWordMenuOpen(false);
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [wordMenuOpen]);
 
   function selectCategory(category) {
     setSelectedCategory(category);
@@ -118,15 +130,20 @@ export default function Home() {
   }
 
   function nextWord() {
-    const nextRound = (round + 1) % selectedCategory.words.length;
-    setRound(nextRound);
-    const nextAnswer = selectedCategory.words[nextRound].answers[
-      nextRound % selectedCategory.words[nextRound].answers.length
-    ];
-    setPlaced(Array(nextAnswer.replaceAll(" ", "").length).fill(null));
+    selectWord((round + 1) % selectedCategory.words.length);
+  }
+
+  function selectWord(wordIndex) {
+    const selectedWord = selectedCategory.words[wordIndex];
+    const selectedAnswer = selectedWord.answers[wordIndex % selectedWord.answers.length];
+
+    setRound(wordIndex);
+    setPlaced(Array(selectedAnswer.replaceAll(" ", "").length).fill(null));
     setChecked(false);
     setVoiceMessage("");
     setRewardMessage("");
+    setWordMenuOpen(false);
+    window.speechSynthesis?.cancel();
   }
 
   return (
@@ -186,10 +203,22 @@ export default function Home() {
             <p className="heading-note">{selectedCategory.name}: look, think, spell!</p>
           </div>
           <div className="heading-progress">
-            <div className="rainbow-coin-counter" aria-label={`${rainbowCoins} rainbow coins collected`}>
-              <span className="rainbow-coin-icon coin-pop" key={rainbowCoins} aria-hidden="true">🌈🪙</span>
-              <span className="coin-count">{rainbowCoins}</span>
-              <span className="coin-label">RAINBOW COINS</span>
+            <div className="rainbow-coin-tools">
+              <div className="rainbow-coin-counter" aria-label={`${rainbowCoins} rainbow coins collected`}>
+                <span className="rainbow-coin-icon coin-pop" key={rainbowCoins} aria-hidden="true">🌈🪙</span>
+                <span className="coin-count">{rainbowCoins}</span>
+                <span className="coin-label">RAINBOW COINS</span>
+              </div>
+              <button
+                className="hamburger-button"
+                type="button"
+                aria-label={`Browse ${selectedCategory.name} words`}
+                aria-expanded={wordMenuOpen}
+                aria-haspopup="dialog"
+                onClick={() => setWordMenuOpen(true)}
+              >
+                <span aria-hidden="true"><i /><i /><i /></span>
+              </button>
             </div>
             <div className="progress-card" aria-label={`Word ${round + 1} of ${selectedCategory.words.length}`}>
               <div className="progress-copy">
@@ -318,6 +347,54 @@ export default function Home() {
         </footer>
       </section>
         )}
+      {wordMenuOpen && selectedCategory && (
+        <div className="word-menu-overlay" onClick={() => setWordMenuOpen(false)}>
+          <aside
+            className="word-menu-panel"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="word-menu-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="word-menu-header">
+              <div>
+                <p className="eyebrow">CHOOSE A WORD TO PRACTISE</p>
+                <h2 id="word-menu-title">{selectedCategory.name}</h2>
+                <p className="word-menu-count">{selectedCategory.words.length} words in this game</p>
+              </div>
+              <button
+                className="word-menu-close"
+                type="button"
+                aria-label="Close word menu"
+                onClick={() => setWordMenuOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+            <nav className="word-menu-list" aria-label={`${selectedCategory.name} words`}>
+              {selectedCategory.words.map((word, index) => {
+                const displayWord = word.answers[index % word.answers.length];
+                const title = displayWord.charAt(0).toLocaleUpperCase() + displayWord.slice(1);
+                const isCurrent = index === round;
+
+                return (
+                  <button
+                    className={`word-menu-item${isCurrent ? " word-menu-item-current" : ""}`}
+                    type="button"
+                    key={`${selectedCategory.id}-${index}`}
+                    aria-current={isCurrent ? "true" : undefined}
+                    onClick={() => selectWord(index)}
+                  >
+                    <span className="word-menu-index">{String(index + 1).padStart(2, "0")}</span>
+                    <span className="word-menu-name">{title}</span>
+                    {isCurrent && <span className="word-menu-playing">PLAYING</span>}
+                  </button>
+                );
+              })}
+            </nav>
+          </aside>
+        </div>
+      )}
       {selectedCategory && rewardMessage && complete && (
         <div className="reward-overlay">
           <div className="reward-dialog" role="dialog" aria-modal="true" aria-labelledby="reward-title">

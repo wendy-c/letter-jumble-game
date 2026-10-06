@@ -44,6 +44,33 @@ describe("Movers spelling game", () => {
     cy.get('[aria-label="0 rainbow coins collected"]').should("exist");
   });
 
+  it("opens the word menu and starts a selected word with an empty answer", () => {
+    cy.visit("/");
+    cy.contains("button", "Animals").click();
+    cy.get('.letter-tile[data-letter="b"]').click();
+    cy.get(".letter-slot").eq(0).should("contain.text", "b");
+
+    cy.get('button[aria-label="Browse Animals words"]').click();
+    cy.get('[role="dialog"]').should("be.visible");
+    cy.get(".word-menu-item").should("have.length", 13);
+    cy.get(".word-menu-item").contains("Panda").click();
+
+    cy.get('[role="dialog"]').should("not.exist");
+    cy.contains("06 / 13");
+    cy.get(".letter-slot").should("have.length", 5).each(($slot) => {
+      expect($slot).to.have.attr("aria-label").and.match(/empty$/);
+    });
+  });
+
+  it("closes the word menu with Escape", () => {
+    cy.visit("/");
+    cy.contains("button", "Animals").click();
+    cy.get('button[aria-label="Browse Animals words"]').click();
+    cy.get('[role="dialog"]').should("be.visible");
+    cy.get("body").type("{esc}");
+    cy.get('[role="dialog"]').should("not.exist");
+  });
+
   it("places tapped letters in the first available box", () => {
     cy.visit("/");
     cy.contains("button", "Animals").click();
