@@ -235,7 +235,7 @@ describe("Movers spelling game", () => {
   it("opens another category and can return to the game selection", () => {
     cy.visit("/");
     cy.contains("button", "Body and Face").click();
-    cy.contains("01 / 12");
+    cy.contains("01 / 13");
     cy.get(".letter-bank .letter-tile").should("have.length", 5);
     cy.contains("button", "All games").click();
     cy.contains("h1", "Letter Jumble");

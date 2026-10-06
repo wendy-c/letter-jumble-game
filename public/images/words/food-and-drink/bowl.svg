@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+<g stroke="#4b2e22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<rect x="48" y="98" width="32" height="10" rx="3" fill="#f7a8c8"/><path d="M16 58h96q-2 40-48 46-46-6-48-46Z" fill="#f7a8c8"/><ellipse cx="64" cy="58" rx="48" ry="10" fill="#ffd6e7"/>
+<ellipse cx="64" cy="58" rx="38" ry="5" fill="#f2a0c2" stroke="none"/>
+<g fill="#fff" stroke="none"><circle cx="27" cy="70" r="3.5"/><circle cx="101" cy="70" r="3.5"/><circle cx="40" cy="92" r="3"/><circle cx="88" cy="92" r="3"/><circle cx="64" cy="98" r="3"/></g>
+<g stroke="none"><ellipse cx="54" cy="76" rx="4" ry="4.6" fill="#4b2e22"/><ellipse cx="74" cy="76" rx="4" ry="4.6" fill="#4b2e22"/>
+<circle cx="55.4" cy="74.4" r="1.4" fill="#fff"/><circle cx="75.4" cy="74.4" r="1.4" fill="#fff"/>
+<g fill="#ff9bb5" opacity=".7"><ellipse cx="46" cy="84" rx="6" ry="3.5"/><ellipse cx="82" cy="84" rx="6" ry="3.5"/></g></g>
+<path d="M60.0 85q4.0 4.4 8 0" fill="none" stroke-width="3"/>
+</g>
+</svg>

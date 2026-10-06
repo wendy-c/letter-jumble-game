@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+<defs><clipPath id="picnic-blanket"><path d="M10 116 32 74h64l22 42Z"/></clipPath></defs>
+<g stroke="#4b2e22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<path d="M10 116 32 74h64l22 42Z" fill="#fff"/>
+<g clip-path="url(#picnic-blanket)" stroke="#f7a8c8" stroke-width="7" opacity=".85"><path d="M0 88h128M0 104h128M44 70l-14 50M64 70v50M84 70l14 50"/></g>
+<path d="M10 116 32 74h64l22 42Z" fill="none"/>
+<path d="M44 70q20-46 40 0" fill="none" stroke="#4b2e22" stroke-width="11"/>
+<path d="M44 70q20-46 40 0" fill="none" stroke="#e8b27a" stroke-width="4"/>
+<path d="M34 68h60l-6 34q-1 6-7 6H47q-6 0-7-6Z" fill="#e8b27a"/>
+<g fill="none" stroke="#c98a5a" stroke-width="2.5"><path d="M38 80h52M40 92h48"/></g>
+<path d="M36 68l12-10 12 10 12-10 12 10 10-6v6Z" fill="#ffd0e3" stroke-width="3"/>
+<circle cx="108" cy="98" r="9" fill="#ff6b6b"/><path d="M108 89q2-6 6-6" fill="none" stroke-width="3"/>
+<g stroke="none"><ellipse cx="55" cy="84" rx="3.5" ry="4.0" fill="#4b2e22"/><ellipse cx="73" cy="84" rx="3.5" ry="4.0" fill="#4b2e22"/>
+<circle cx="56.2" cy="82.6" r="1.2" fill="#fff"/><circle cx="74.2" cy="82.6" r="1.2" fill="#fff"/>
+<g fill="#ff9bb5" opacity=".7"><ellipse cx="48" cy="92" rx="5" ry="3"/><ellipse cx="80" cy="92" rx="5" ry="3"/></g></g>
+<path d="M60.0 93q4.0 4.4 8 0" fill="none" stroke-width="3"/>
+</g>
+</svg>
