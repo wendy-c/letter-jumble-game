@@ -100,6 +100,7 @@ export default function Home() {
   const [rainbowCoins, setRainbowCoins] = useState(0);
   const [rewardMessage, setRewardMessage] = useState("");
   const [wordMenuOpen, setWordMenuOpen] = useState(false);
+  const [showSpellingGuide, setShowSpellingGuide] = useState(false);
 
   const puzzle = selectedCategory?.words[round];
   const answer = puzzle?.answers[round % puzzle.answers.length] ?? "";
@@ -348,13 +349,14 @@ export default function Home() {
                 const tileIndex = placed[index];
                 const filled = tileIndex !== null && tileIndex !== undefined;
                 const isCorrect = checked && filled && tiles[tileIndex] === letter;
-                const guide = spellingGuides[index];
+                const guide = showSpellingGuide ? spellingGuides[index] : null;
+                const guideLabel = guide ? `, ${guide === "other" ? "single sound" : `${guide} team`}` : "";
                 return (
                   <button
-                    className={`letter-slot letter-slot-guide-${guide}${filled ? " slot-filled" : ""}${isCorrect ? " slot-correct" : ""}${checked && filled && !isCorrect ? " slot-wrong" : ""}`}
+                    className={`letter-slot${guide ? ` letter-slot-guide-${guide}` : ""}${filled ? " slot-filled" : ""}${isCorrect ? " slot-correct" : ""}${checked && filled && !isCorrect ? " slot-wrong" : ""}`}
                     type="button"
                     key={`${round}-${index}`}
-                    aria-label={`Letter ${index + 1} of ${answerLetters.length}${filled ? `, ${tiles[tileIndex]}` : ", empty"}, ${guide === "other" ? "single sound" : `${guide} team`}`}
+                    aria-label={`Letter ${index + 1} of ${answerLetters.length}${filled ? `, ${tiles[tileIndex]}` : ", empty"}${guideLabel}`}
                     onClick={() => handleSlotClick(index)}
                   >
                     {filled ? tiles[tileIndex] : null}
@@ -363,12 +365,14 @@ export default function Home() {
               })}
             </div>
 
-            <div className="spelling-guide" aria-label="Spelling guide">
-              <span className="spelling-guide-title">Spelling guide</span>
-              <span className="spelling-guide-item"><i className="guide-mark guide-mark-vowel" aria-hidden="true" /> Vowel team</span>
-              <span className="spelling-guide-item"><i className="guide-mark guide-mark-consonant" aria-hidden="true" /> Consonant team</span>
-              <span className="spelling-guide-item"><i className="guide-mark guide-mark-other" aria-hidden="true" /> Other</span>
-            </div>
+            {showSpellingGuide && (
+              <div className="spelling-guide" aria-label="Spelling guide">
+                <span className="spelling-guide-title">Spelling guide</span>
+                <span className="spelling-guide-item"><i className="guide-mark guide-mark-vowel" aria-hidden="true" /> Vowel team</span>
+                <span className="spelling-guide-item"><i className="guide-mark guide-mark-consonant" aria-hidden="true" /> Consonant team</span>
+                <span className="spelling-guide-item"><i className="guide-mark guide-mark-other" aria-hidden="true" /> Other</span>
+              </div>
+            )}
 
             <div className="tile-instructions">
               <span className="step-number">02</span>
@@ -448,6 +452,21 @@ export default function Home() {
                 onClick={() => setWordMenuOpen(false)}
               >
                 ×
+              </button>
+            </div>
+            <div className="word-menu-settings">
+              <button
+                className="spelling-guide-toggle"
+                type="button"
+                role="switch"
+                aria-checked={showSpellingGuide}
+                onClick={() => setShowSpellingGuide((current) => !current)}
+              >
+                <span className="spelling-guide-toggle-copy">
+                  <span className="spelling-guide-toggle-title">Spelling guide</span>
+                  <span className="spelling-guide-toggle-note">Show vowel and consonant teams</span>
+                </span>
+                <span className="toggle-track" aria-hidden="true"><span className="toggle-thumb" /></span>
               </button>
             </div>
             <nav className="word-menu-list" aria-label={`${selectedCategory.name} words`}>

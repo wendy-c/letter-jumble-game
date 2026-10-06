@@ -58,7 +58,7 @@ describe("Movers spelling game", () => {
     cy.get('[role="dialog"]').should("not.exist");
     cy.contains("06 / 13");
     cy.get(".letter-slot").should("have.length", 5).each(($slot) => {
-      expect($slot).to.have.attr("aria-label").and.match(/empty,/);
+      expect($slot).to.have.attr("aria-label").and.match(/, empty$/);
     });
   });
 
@@ -66,6 +66,7 @@ describe("Movers spelling game", () => {
     cy.visit("/");
     cy.contains("button", "Places and Travel").click();
     cy.get('button[aria-label="Browse Places and Travel words"]').click();
+    cy.get('button[role="switch"]').contains("Spelling guide").click();
     cy.get(".word-menu-item").contains("Swimming pool").click();
 
     cy.get(".letter-slot").should("have.length", 12);
@@ -80,10 +81,33 @@ describe("Movers spelling game", () => {
     cy.contains(".spelling-guide", "Other");
   });
 
+  it("hides the spelling guide by default and toggles it on and off", () => {
+    cy.visit("/");
+    cy.contains("button", "Animals").click();
+    cy.get('button[role="switch"]').should("not.exist");
+    cy.get('.letter-slot[class*="letter-slot-guide-"]').should("not.exist");
+    cy.get(".spelling-guide").should("not.exist");
+
+    cy.get('button[aria-label="Browse Animals words"]').click();
+    cy.get('[role="dialog"] button[role="switch"]').should("have.attr", "aria-checked", "false").click();
+    cy.get('button[role="switch"]').should("have.attr", "aria-checked", "true");
+    cy.get('[role="dialog"]').should("be.visible");
+    cy.get("body").type("{esc}");
+    cy.get(".letter-slot").eq(0).should("have.class", "letter-slot-guide-other");
+    cy.contains(".spelling-guide", "Vowel team");
+
+    cy.get('button[aria-label="Browse Animals words"]').click();
+    cy.get('button[role="switch"]').click();
+    cy.get("body").type("{esc}");
+    cy.get('.letter-slot[class*="letter-slot-guide-"]').should("not.exist");
+    cy.get(".spelling-guide").should("not.exist");
+  });
+
   it("marks ph as a consonant team in dolphin", () => {
     cy.visit("/");
     cy.contains("button", "Animals").click();
     cy.get('button[aria-label="Browse Animals words"]').click();
+    cy.get('button[role="switch"]').contains("Spelling guide").click();
     cy.get(".word-menu-item").contains("Dolphin").click();
 
     cy.get(".letter-slot").should("have.length", 7);
@@ -99,6 +123,7 @@ describe("Movers spelling game", () => {
     cy.visit("/");
     cy.contains("button", "Animals").click();
     cy.get('button[aria-label="Browse Animals words"]').click();
+    cy.get('button[role="switch"]').contains("Spelling guide").click();
     cy.get(".word-menu-item").contains("Shark").click();
     cy.get(".letter-slot").eq(0).should("have.class", "letter-slot-guide-consonant");
     cy.get(".letter-slot").eq(1).should("have.class", "letter-slot-guide-consonant");
