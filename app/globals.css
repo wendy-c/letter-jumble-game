@@ -422,11 +422,6 @@ button {
   background: #fff;
 }
 
-.word-space {
-  width: 14px;
-  flex: 0 0 14px;
-}
-
 /* ---------- Game heading ---------- */
 
 .game-heading {
@@ -894,27 +889,48 @@ h1 span {
   clip-path: inset(50%);
 }
 
+/* Each word stays on one line; slots shrink so the longest word fits. */
 .letter-slots {
+  --slot-gap: 8px;
+  --slot-max: 42px;
+  --slot-size: var(--slot-max);
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 8px;
+  gap: 16px 20px;
   margin: 32px 0 8px;
+  container-type: inline-size;
+}
+
+@supports (width: 1cqw) {
+  .letter-slots > .letter-word {
+    --slot-size: clamp(
+      26px,
+      (100cqw - (var(--word-letters) - 1) * var(--slot-gap)) / var(--word-letters),
+      var(--slot-max)
+    );
+  }
+}
+
+.letter-word {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--slot-gap);
 }
 
 .letter-slot {
   position: relative;
   display: grid;
-  width: 42px;
-  height: 48px;
-  flex: 0 1 42px;
+  width: var(--slot-size);
+  height: calc(var(--slot-size) * 1.15);
+  flex: 0 0 auto;
   place-items: center;
   border: 2px dashed var(--line-strong);
-  border-radius: 13px;
+  border-radius: calc(var(--slot-size) * 0.3);
   background: #fbf8ff;
   color: var(--ink);
   cursor: pointer;
-  font-size: 21px;
+  font-size: calc(var(--slot-size) * 0.5);
   font-weight: 700;
   text-transform: uppercase;
   transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
@@ -1730,19 +1746,15 @@ a:focus-visible {
   }
 
   .letter-slots {
-    gap: 7px;
+    --slot-gap: 6px;
+    --slot-max: 39px;
+    row-gap: 14px;
     margin: 25px 0 8px;
   }
 
   .spelling-guide {
     gap: 8px 10px;
     margin-bottom: 20px;
-  }
-
-  .letter-slot {
-    width: 39px;
-    height: 45px;
-    flex-basis: 39px;
   }
 
   .game-footer {

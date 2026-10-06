@@ -105,6 +105,7 @@ export default function Home() {
   const puzzle = selectedCategory?.words[round];
   const answer = puzzle?.answers[round % puzzle.answers.length] ?? "";
   const answerLetters = answer.replaceAll(" ", "");
+  const answerWords = answer.split(" ");
   const spellingGuides = getSpellingGuides(answer);
   const tiles = puzzle ? scramble(answerLetters, round) : [];
   const complete = Boolean(puzzle) && placed.length === answerLetters.length &&
@@ -344,27 +345,35 @@ export default function Home() {
               {voiceMessage}
             </p>
 
-            <div className="letter-slots" aria-label="Your answer">
-              {answer.split("").map((letter, characterIndex) => {
-                if (letter === " ") {
-                  return <span className="word-space" aria-hidden="true" key={`space-${characterIndex}`} />;
-                }
-                const index = answer.slice(0, characterIndex).replaceAll(" ", "").length;
-                const tileIndex = placed[index];
-                const filled = tileIndex !== null && tileIndex !== undefined;
-                const isCorrect = checked && filled && tiles[tileIndex] === letter;
-                const guide = showSpellingGuide ? spellingGuides[index] : null;
-                const guideLabel = guide ? `, ${guide === "other" ? "single sound" : `${guide} team`}` : "";
+            <div
+              className="letter-slots"
+              aria-label="Your answer"
+              style={{ "--word-letters": Math.max(...answerWords.map((word) => word.length)) }}
+            >
+              {answerWords.map((word, wordIndex) => {
+                const wordStart = answerWords.slice(0, wordIndex).join("").length;
                 return (
-                  <button
-                    className={`letter-slot${guide ? ` letter-slot-guide-${guide}` : ""}${filled ? " slot-filled" : ""}${isCorrect ? " slot-correct" : ""}${checked && filled && !isCorrect ? " slot-wrong" : ""}`}
-                    type="button"
-                    key={`${round}-${index}`}
-                    aria-label={`Letter ${index + 1} of ${answerLetters.length}${filled ? `, ${tiles[tileIndex]}` : ", empty"}${guideLabel}`}
-                    onClick={() => handleSlotClick(index)}
-                  >
-                    {filled ? tiles[tileIndex] : null}
-                  </button>
+                  <span className="letter-word" key={`${round}-word-${wordIndex}`}>
+                    {word.split("").map((letter, letterIndex) => {
+                      const index = wordStart + letterIndex;
+                      const tileIndex = placed[index];
+                      const filled = tileIndex !== null && tileIndex !== undefined;
+                      const isCorrect = checked && filled && tiles[tileIndex] === letter;
+                      const guide = showSpellingGuide ? spellingGuides[index] : null;
+                      const guideLabel = guide ? `, ${guide === "other" ? "single sound" : `${guide} team`}` : "";
+                      return (
+                        <button
+                          className={`letter-slot${guide ? ` letter-slot-guide-${guide}` : ""}${filled ? " slot-filled" : ""}${isCorrect ? " slot-correct" : ""}${checked && filled && !isCorrect ? " slot-wrong" : ""}`}
+                          type="button"
+                          key={`${round}-${index}`}
+                          aria-label={`Letter ${index + 1} of ${answerLetters.length}${filled ? `, ${tiles[tileIndex]}` : ", empty"}${guideLabel}`}
+                          onClick={() => handleSlotClick(index)}
+                        >
+                          {filled ? tiles[tileIndex] : null}
+                        </button>
+                      );
+                    })}
+                  </span>
                 );
               })}
             </div>
