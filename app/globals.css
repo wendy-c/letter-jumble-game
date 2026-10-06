@@ -492,9 +492,10 @@ h1 span {
 }
 
 .rainbow-coin-icon {
+  display: block;
+  width: 32px;
+  height: 32px;
   grid-row: span 2;
-  font-size: 22px;
-  line-height: 1;
 }
 
 .coin-count {
@@ -1347,9 +1348,11 @@ h1 span {
 }
 
 .reward-coin {
+  display: block;
+  width: 84px;
+  height: 84px;
   align-self: center;
-  font-size: 46px;
-  line-height: 1.15;
+  filter: drop-shadow(0 6px 10px rgb(185 125 12 / 30%));
   animation: coin-pop 500ms cubic-bezier(0.2, 0.8, 0.3, 1.3) 100ms both;
 }
 

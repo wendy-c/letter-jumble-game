@@ -285,7 +285,7 @@ export default function Home() {
           <div className="heading-progress">
             <div className="rainbow-coin-tools">
               <div className="rainbow-coin-counter" aria-label={`${rainbowCoins} rainbow coins collected`}>
-                <span className="rainbow-coin-icon coin-pop" key={rainbowCoins} aria-hidden="true">🌈🪙</span>
+                <img className="rainbow-coin-icon coin-pop" key={rainbowCoins} src="/images/rainbow-coin.svg" alt="" width="32" height="32" />
                 <span className="coin-count">{rainbowCoins}</span>
                 <span className="coin-label">RAINBOW COINS</span>
               </div>
@@ -511,7 +511,7 @@ export default function Home() {
               <span className="reward-sparkle reward-sparkle-two" aria-hidden="true">✧</span>
               <span className="reward-cast" aria-hidden="true">
                 <Mascot name="ada" className="mascot-reward mascot-reward-left" />
-                <span className="reward-coin">🌈🪙</span>
+                <img className="reward-coin" src="/images/rainbow-coin.svg" alt="" width="84" height="84" />
                 <Mascot name="elly" className="mascot-reward mascot-reward-right" />
               </span>
               <span className="reward-kicker">MAGIC REWARD</span>
