@@ -31,6 +31,31 @@ describe("Movers spelling game", () => {
     cy.contains("03 / 13");
   });
 
+  it("keeps collected rainbow coins after reloading the page", () => {
+    cy.visit("/");
+    cy.contains("button", "Animals").click();
+    ["b", "a", "t"].forEach((letter) => {
+      cy.get(`.letter-tile[data-letter="${letter}"]`).not(".tile-used").click();
+    });
+    cy.contains("button", "Check word").click();
+    cy.get('[aria-label="1 rainbow coins collected"]').should("exist");
+    cy.window().its("localStorage").invoke("getItem", "letter-jumble:rainbow-coins").should("eq", "1");
+
+    cy.reload();
+    cy.contains("button", "Animals").click();
+    cy.get('[aria-label="1 rainbow coins collected"]').should("exist");
+  });
+
+  it("starts from a previously saved rainbow coin count", () => {
+    cy.visit("/", {
+      onBeforeLoad(win) {
+        win.localStorage.setItem("letter-jumble:rainbow-coins", "7");
+      },
+    });
+    cy.contains("button", "Animals").click();
+    cy.get('[aria-label="7 rainbow coins collected"]').should("exist");
+  });
+
   it("does not reward an incorrect answer", () => {
     cy.visit("/");
     cy.contains("button", "Animals").click();

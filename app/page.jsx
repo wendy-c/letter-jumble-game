@@ -13,6 +13,7 @@ const consonantTeams = [
   "pr", "tr", "bl", "cl", "fl", "gl", "pl", "sl", "sc", "sk", "sm", "sn", "sp", "ph",
   "st", "sw", "tw", "sh", "th",
 ].sort((first, second) => second.length - first.length);
+const rainbowCoinsStorageKey = "letter-jumble:rainbow-coins";
 const femaleVoiceName = /\b(female|woman|sonia|hazel|kate|serena|fiona|susan|jenny|aria|libby|amy|emma|olivia|salli|joanna|kendra|samantha|victoria|zira|tessa|moira|karen|siri)\b/i;
 
 function classifyTeams(word, teams, type) {
@@ -81,6 +82,23 @@ function Mascot({ name, className = "" }) {
   );
 }
 
+function readStoredRainbowCoins() {
+  try {
+    const stored = Number.parseInt(window.localStorage.getItem(rainbowCoinsStorageKey) ?? "", 10);
+    return Number.isFinite(stored) && stored > 0 ? stored : 0;
+  } catch {
+    return 0;
+  }
+}
+
+function storeRainbowCoins(count) {
+  try {
+    window.localStorage.setItem(rainbowCoinsStorageKey, String(count));
+  } catch {
+    // Storage can be unavailable (private browsing, blocked site data); coins still work for this visit.
+  }
+}
+
 function scramble(word, round) {
   const letters = word.split("");
   if (letters.length < 2) return letters;
@@ -98,6 +116,7 @@ export default function Home() {
   const [checked, setChecked] = useState(false);
   const [voiceMessage, setVoiceMessage] = useState("");
   const [rainbowCoins, setRainbowCoins] = useState(0);
+  const [rainbowCoinsLoaded, setRainbowCoinsLoaded] = useState(false);
   const [rewardMessage, setRewardMessage] = useState("");
   const [wordMenuOpen, setWordMenuOpen] = useState(false);
   const [showSpellingGuide, setShowSpellingGuide] = useState(false);
@@ -115,6 +134,15 @@ export default function Home() {
   useEffect(() => () => {
     window.speechSynthesis?.cancel();
   }, []);
+
+  useEffect(() => {
+    setRainbowCoins(readStoredRainbowCoins());
+    setRainbowCoinsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (rainbowCoinsLoaded) storeRainbowCoins(rainbowCoins);
+  }, [rainbowCoins, rainbowCoinsLoaded]);
 
   useEffect(() => {
     if (!wordMenuOpen) return undefined;
@@ -321,10 +349,6 @@ export default function Home() {
               )}
               <span className="art-ground" aria-hidden="true" />
             </div>
-            <div className="picture-caption">
-              <Mascot name="ada" className="mascot-caption" />
-              <p>What can you see?</p>
-            </div>
           </section>
 
           <section className="answer-panel" aria-label="Spell the word">
@@ -519,9 +543,7 @@ export default function Home() {
               <span className="reward-sparkle reward-sparkle-one" aria-hidden="true">✦</span>
               <span className="reward-sparkle reward-sparkle-two" aria-hidden="true">✧</span>
               <span className="reward-cast" aria-hidden="true">
-                <Mascot name="ada" className="mascot-reward mascot-reward-left" />
                 <img className="reward-coin" src="/images/rainbow-coin.svg" alt="" width="84" height="84" />
-                <Mascot name="elly" className="mascot-reward mascot-reward-right" />
               </span>
               <span className="reward-kicker">MAGIC REWARD</span>
               <span className="reward-title" id="reward-title">{rewardMessage}</span>
