@@ -709,6 +709,14 @@ h1 span {
   animation: float-in 380ms ease-out both;
 }
 
+.picture-image {
+  z-index: 1;
+  width: clamp(140px, 17vw, 190px);
+  height: auto;
+  filter: drop-shadow(0 13px 8px rgb(90 60 160 / 14%));
+  animation: float-in 380ms ease-out both;
+}
+
 .art-ground {
   position: absolute;
   bottom: 31px;
@@ -1693,6 +1701,10 @@ a:focus-visible {
 
   .picture-emoji {
     font-size: 115px;
+  }
+
+  .picture-image {
+    width: 140px;
   }
 
   .picture-art::before {

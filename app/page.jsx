@@ -313,7 +313,11 @@ export default function Home() {
               <span className="art-sparkle sparkle-one" aria-hidden="true">✦</span>
               <span className="art-sparkle sparkle-two" aria-hidden="true">⋆</span>
               <span className="art-sparkle sparkle-three" aria-hidden="true">✧</span>
-              <span className="picture-emoji" aria-hidden="true">{puzzle.picture}</span>
+              {puzzle.picture.startsWith("/") ? (
+                <img className="picture-image" key={puzzle.picture} src={puzzle.picture} alt="" width="128" height="128" />
+              ) : (
+                <span className="picture-emoji" aria-hidden="true">{puzzle.picture}</span>
+              )}
               <span className="art-ground" aria-hidden="true" />
             </div>
             <div className="picture-caption">
