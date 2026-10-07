@@ -1,12 +1,29 @@
-function visitLetterJumble(options) {
+const playersKey = "letter-jumble:players";
+
+function addPlayer(name) {
+  cy.get('[role="dialog"]').should("contain.text", "playing?").within(() => {
+    cy.get("input").type(name);
+    cy.contains("button", "play!").click();
+  });
+}
+
+// Opens Letter Jumble. With a new player name, fills in the "Who's playing?" pop-up;
+// pass null when a player is already selected (e.g. seeded in localStorage).
+function visitLetterJumble(options, newPlayer = "Ada") {
   cy.visit("/", options);
   cy.contains("button", "Letter Jumble").click();
+  if (newPlayer) addPlayer(newPlayer);
 }
 
 function visitCvcMode(mode) {
   cy.visit("/");
   cy.contains("button", "CVC Sounds").click();
+  addPlayer("Ada");
   cy.contains("button", mode).click();
+}
+
+function storedPlayers() {
+  return cy.window().its("localStorage").invoke("getItem", playersKey).then((value) => JSON.parse(value));
 }
 
 describe("Movers spelling game", () => {
@@ -50,10 +67,11 @@ describe("Movers spelling game", () => {
     });
     cy.contains("button", "Check word").click();
     cy.get('[aria-label="1 rainbow coins collected"]').should("exist");
-    cy.window().its("localStorage").invoke("getItem", "letter-jumble:rainbow-coins").should("eq", "1");
+    storedPlayers().should("deep.equal", { players: [{ name: "Ada", coins: 1 }], current: "Ada" });
 
     cy.reload();
     cy.contains("button", "Letter Jumble").click();
+    cy.get('[role="dialog"]').should("not.exist");
     cy.contains("button", "Animals").click();
     cy.get('[aria-label="1 rainbow coins collected"]').should("exist");
   });
@@ -61,9 +79,9 @@ describe("Movers spelling game", () => {
   it("starts from a previously saved rainbow coin count", () => {
     visitLetterJumble({
       onBeforeLoad(win) {
-        win.localStorage.setItem("letter-jumble:rainbow-coins", "7");
+        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 7 }], current: "Ada" }));
       },
-    });
+    }, null);
     cy.contains("button", "Animals").click();
     cy.get('[aria-label="7 rainbow coins collected"]').should("exist");
   });
@@ -257,16 +275,17 @@ describe("Movers spelling game", () => {
 describe("CVC sounds game", () => {
   it("offers both games and the four CVC modes", () => {
     cy.visit("/");
-    cy.contains("h1", "Pick a game");
+    cy.contains("h1", "Choose an adventure!");
     cy.get(".game-choice-card").should("have.length", 2);
     cy.contains("button", "CVC Sounds").click();
+    addPlayer("Ada");
     cy.contains("h1", "CVC Sounds");
     cy.get(".category-card").should("have.length", 4);
     ["Beginning Sound", "Middle Sound", "Ending Sound", "Mixed Sounds"].forEach((mode) => {
       cy.contains(".category-card", mode).should("contain.text", "46");
     });
     cy.contains("button", "Choose a game").click();
-    cy.contains("h1", "Pick a game");
+    cy.contains("h1", "Choose an adventure!");
   });
 
   it("leaves only the beginning letter to fill in", () => {
@@ -338,5 +357,40 @@ describe("CVC sounds game", () => {
     visitCvcMode("Beginning Sound");
     cy.contains("button", "All sounds").click();
     cy.contains("h1", "CVC Sounds");
+  });
+});
+
+describe("players", () => {
+  it("keeps each player's coins separate, and logs out", () => {
+    visitLetterJumble(undefined, "Mia");
+    cy.get('button[aria-label^="Playing as Mia"]').should("contain.text", "Mia");
+    cy.contains("button", "Animals").click();
+    ["b", "a", "t"].forEach((letter) => {
+      cy.get(`.letter-tile[data-letter="${letter}"]`).not(".tile-used").click();
+    });
+    cy.contains("button", "Check word").click();
+    cy.get(".reward-card").click();
+
+    cy.get('button[aria-label$="Player options"]').click();
+    cy.contains('[role="menuitem"]', "Switch player").click();
+    cy.get('[role="dialog"] .player-option').should("have.length", 1).and("contain.text", "Mia");
+    addPlayer("Theo");
+    cy.get('[aria-label="0 rainbow coins collected"]').should("exist");
+
+    cy.reload();
+    cy.get('button[aria-label^="Playing as Theo"]').click();
+    cy.contains('[role="menuitem"]', "Switch player").click();
+    cy.get('[role="dialog"] .player-option').contains("Mia").click();
+    cy.contains("button", "Letter Jumble").click();
+    cy.contains("button", "Animals").click();
+    cy.get('[aria-label="1 rainbow coins collected"]').should("exist");
+
+    cy.get('button[aria-label$="Player options"]').click();
+    cy.contains('[role="menuitem"]', "Log out").click();
+    cy.contains("h1", "Choose an adventure!");
+    storedPlayers().should("deep.equal", {
+      players: [{ name: "Mia", coins: 1 }, { name: "Theo", coins: 0 }],
+      current: null,
+    });
   });
 });

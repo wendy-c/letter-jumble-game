@@ -9,13 +9,15 @@ import GameFooter from "./components/GameFooter";
 import GameHeading from "./components/GameHeading";
 import GamePicker from "./components/GamePicker";
 import PictureClue from "./components/PictureClue";
+import PlayerDialog from "./components/PlayerDialog";
+import PlayerMenu from "./components/PlayerMenu";
 import RewardDialog from "./components/RewardDialog";
 import SiteHeader from "./components/SiteHeader";
 import TopicMenu from "./components/TopicMenu";
 import WordMenu from "./components/WordMenu";
 import { getSpellingGuides, scramble, slotCount } from "./lib/spelling";
 import { speakWord, stopSpeaking } from "./lib/speech";
-import { useRainbowCoins } from "./lib/use-rainbow-coins";
+import { usePlayers } from "./lib/use-players";
 
 const rewardMessages = ["Amazing!", "Well done!", "You did it!", "Fantastic!", "Brilliant!"];
 
@@ -26,7 +28,11 @@ export default function Home() {
   const [placed, setPlaced] = useState([]);
   const [checked, setChecked] = useState(false);
   const [voiceMessage, setVoiceMessage] = useState("");
-  const [rainbowCoins, setRainbowCoins] = useRainbowCoins();
+  const { players, currentPlayer, createPlayer, selectPlayer, logOut, addCoin } = usePlayers();
+  const rainbowCoins = currentPlayer?.coins ?? 0;
+  const [playerDialogOpen, setPlayerDialogOpen] = useState(false);
+  // The game chosen before anyone was playing; it opens once a player is picked.
+  const [pendingGame, setPendingGame] = useState(null);
   const [rewardMessage, setRewardMessage] = useState("");
   const [wordMenuOpen, setWordMenuOpen] = useState(false);
   const [showSpellingGuide, setShowSpellingGuide] = useState(false);
@@ -49,6 +55,10 @@ export default function Home() {
   }, []);
 
   const closeWordMenu = useCallback(() => setWordMenuOpen(false), []);
+  const closePlayerDialog = useCallback(() => {
+    setPlayerDialogOpen(false);
+    setPendingGame(null);
+  }, []);
 
   function resetAnswer() {
     setChecked(false);
@@ -61,6 +71,37 @@ export default function Home() {
     setPlaced(Array(slotCount(category.words[0], 0)).fill(null));
     setVoiceMessage("");
     resetAnswer();
+  }
+
+  function requestGame(game) {
+    if (currentPlayer) {
+      selectGame(game);
+    } else {
+      setPendingGame(game);
+      setPlayerDialogOpen(true);
+    }
+  }
+
+  function finishChoosingPlayer() {
+    if (pendingGame) selectGame(pendingGame);
+    closePlayerDialog();
+  }
+
+  function choosePlayer(name) {
+    selectPlayer(name);
+    finishChoosingPlayer();
+  }
+
+  function addPlayer(name) {
+    const problem = createPlayer(name);
+    if (!problem) finishChoosingPlayer();
+    return problem;
+  }
+
+  function handleLogOut() {
+    logOut();
+    setWordMenuOpen(false);
+    showGames();
   }
 
   function selectGame(game) {
@@ -115,7 +156,7 @@ export default function Home() {
     setChecked(true);
     if (complete && !checked) {
       setRewardMessage(rewardMessages[rainbowCoins % rewardMessages.length]);
-      setRainbowCoins((current) => current + 1);
+      addCoin();
     }
   }
 
@@ -134,10 +175,14 @@ export default function Home() {
 
   return (
     <main className="app-shell min-h-screen px-4 py-5 sm:px-8 sm:py-8">
-      <SiteHeader badge={selectedGame?.badge ?? "SPELLING SCHOOL"} />
+      <SiteHeader badge={selectedGame?.badge ?? "SPELLING SCHOOL"}>
+        {currentPlayer && (
+          <PlayerMenu player={currentPlayer} onSwitch={() => setPlayerDialogOpen(true)} onLogOut={handleLogOut} />
+        )}
+      </SiteHeader>
 
       {!selectedGame ? (
-        <GamePicker games={games} onSelectGame={selectGame} />
+        <GamePicker games={games} onSelectGame={requestGame} />
       ) : !selectedCategory ? (
         <TopicMenu isCvc={isCvc} topics={gameTopics} onBack={showGames} onSelectTopic={selectCategory} />
       ) : (
@@ -186,6 +231,15 @@ export default function Home() {
           onToggleSpellingGuide={() => setShowSpellingGuide((current) => !current)}
           onSelectWord={selectWord}
           onClose={closeWordMenu}
+        />
+      )}
+      {playerDialogOpen && (
+        <PlayerDialog
+          players={players}
+          currentName={currentPlayer?.name}
+          onSelect={choosePlayer}
+          onCreate={addPlayer}
+          onClose={closePlayerDialog}
         />
       )}
       {selectedCategory && rewardMessage && complete && (
