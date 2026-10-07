@@ -17,8 +17,8 @@ describe("Home", () => {
   it("starts on the game picker", () => {
     render(<Home />);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Pick a game");
-    expect(screen.getByRole("button", { name: /Letter Jumble/ })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /CVC Sounds/ })).toBeInTheDocument();
+    const gameCards = screen.getAllByRole("button").filter((button) => button.classList.contains("game-choice-card"));
+    expect(gameCards.map((card) => card.querySelector(".category-card-name").textContent)).toEqual(["CVC Sounds", "Letter Jumble"]);
     expect(screen.getByText("SPELLING SCHOOL")).toBeInTheDocument();
   });
 
