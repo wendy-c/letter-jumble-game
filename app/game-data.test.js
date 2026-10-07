@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { categories } from "./game-data";
 import { cvcModes } from "./cvc-data";
+import { games } from "./games-data";
 
 const publicDir = path.join(__dirname, "..", "public");
 
@@ -29,6 +30,7 @@ describe("categories", () => {
   it("points every image path at a file that exists", () => {
     const imagePaths = [
       ...categories.map((category) => category.icon),
+      ...games.filter((game) => game.icon).map((game) => game.icon),
       ...categories.flatMap((category) => category.words.map((word) => word.picture)),
       ...cvcModes.flatMap((mode) => mode.words.map((word) => word.picture)),
     ].filter((picture) => picture.startsWith("/"));

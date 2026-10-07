@@ -2,6 +2,11 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Home from "./page";
 
+// The real dragon scene needs WebGL, which jsdom doesn't have.
+jest.mock("./components/DragonScene", () => function MockDragonScene() {
+  return <div data-testid="dragon-scene" />;
+});
+
 const coinsLabel = (count) => `${count} rainbow coins collected`;
 const playersKey = "letter-jumble:players";
 const whoIsPlaying = /Who.s playing/;
@@ -40,7 +45,7 @@ describe("Home", () => {
     render(<Home />);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Choose an adventure!");
     const gameCards = screen.getAllByRole("button").filter((button) => button.classList.contains("game-choice-card"));
-    expect(gameCards.map((card) => card.querySelector(".category-card-name").textContent)).toEqual(["CVC Sounds", "Letter Jumble for Movers"]);
+    expect(gameCards.map((card) => card.querySelector(".category-card-name").textContent)).toEqual(["CVC Sounds", "Letter Jumble for Movers", "Rainbow Dragon"]);
     expect(screen.getByText("SPELLING SCHOOL")).toBeInTheDocument();
   });
 
@@ -237,5 +242,24 @@ describe("players", () => {
 
     await user.click(screen.getByRole("button", { name: /CVC Sounds/ }));
     expect(screen.getByRole("dialog", { name: whoIsPlaying })).toBeInTheDocument();
+  });
+});
+
+describe("rainbow dragon", () => {
+  it("asks who is playing, then spends their coins on Mochi", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 4 }], current: null }));
+    const user = userEvent.setup();
+    render(<Home />);
+
+    await user.click(screen.getByRole("button", { name: /Rainbow Dragon/ }));
+    await user.click(within(screen.getByRole("dialog", { name: whoIsPlaying })).getByRole("button", { name: /Ada/ }));
+
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Mochi the Rainbow Dragon");
+    expect(screen.getByText("RAINBOW DRAGON")).toBeInTheDocument();
+    expect(screen.getByTestId("dragon-scene")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /Bath, 3 rainbow coins/ }));
+    expect(screen.getByLabelText(coinsLabel(1))).toBeInTheDocument();
+    expect(storedPlayers().players).toEqual([{ name: "Ada", coins: 1 }]);
   });
 });

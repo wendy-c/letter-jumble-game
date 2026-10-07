@@ -13,6 +13,7 @@ import PlayerDialog from "./components/PlayerDialog";
 import PlayerMenu from "./components/PlayerMenu";
 import RewardDialog from "./components/RewardDialog";
 import SiteHeader from "./components/SiteHeader";
+import DragonDen from "./components/DragonDen";
 import TopicMenu from "./components/TopicMenu";
 import WordMenu from "./components/WordMenu";
 import { getSpellingGuides, scramble, slotCount } from "./lib/spelling";
@@ -28,7 +29,7 @@ export default function Home() {
   const [placed, setPlaced] = useState([]);
   const [checked, setChecked] = useState(false);
   const [voiceMessage, setVoiceMessage] = useState("");
-  const { players, currentPlayer, createPlayer, selectPlayer, logOut, addCoin } = usePlayers();
+  const { players, currentPlayer, createPlayer, selectPlayer, logOut, addCoin, spendCoins } = usePlayers();
   const rainbowCoins = currentPlayer?.coins ?? 0;
   const [playerDialogOpen, setPlayerDialogOpen] = useState(false);
   // The game chosen before anyone was playing; it opens once a player is picked.
@@ -184,7 +185,11 @@ export default function Home() {
       {!selectedGame ? (
         <GamePicker games={games} onSelectGame={requestGame} />
       ) : !selectedCategory ? (
-        <TopicMenu isCvc={isCvc} topics={gameTopics} onBack={showGames} onSelectTopic={selectCategory} />
+        selectedGame.id === "dragon" ? (
+          <DragonDen coins={rainbowCoins} onSpendCoins={spendCoins} onBack={showGames} />
+        ) : (
+          <TopicMenu isCvc={isCvc} topics={gameTopics} onBack={showGames} onSelectTopic={selectCategory} />
+        )
       ) : (
         <section className="game-wrap mx-auto w-full max-w-6xl" aria-labelledby="game-title">
           <GameHeading

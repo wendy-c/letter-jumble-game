@@ -381,7 +381,7 @@ button {
 }
 
 .game-choice-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .game-choice-card {
@@ -1859,6 +1859,155 @@ h1 span {
   font-weight: 600;
 }
 
+/* ---------- Rainbow dragon ---------- */
+
+.dragon-card {
+  grid-template-columns: 1.35fr 1fr;
+}
+
+.dragon-stage-wrap {
+  position: relative;
+  min-height: 460px;
+  background:
+    radial-gradient(circle, rgb(255 255 255 / 90%) 1.6px, transparent 2.4px) 10px 14px / 70px 66px,
+    radial-gradient(ellipse at 50% 100%, #fff3fa 0%, transparent 60%),
+    linear-gradient(180deg, #e9defd 0%, #fbe8f6 70%, #fff3fa 100%);
+}
+
+.dragon-stage {
+  position: absolute;
+  inset: 0;
+}
+
+.dragon-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+.dragon-canvas:active {
+  cursor: grabbing;
+}
+
+.dragon-fallback {
+  display: grid;
+  height: 100%;
+  margin: 0;
+  padding: 0 32px;
+  place-items: center;
+  color: var(--magic-dark);
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.dragon-bubble {
+  position: absolute;
+  z-index: 1;
+  top: 16px;
+  right: 16px;
+  left: 16px;
+  width: fit-content;
+  max-width: calc(100% - 32px);
+  margin: 0 auto;
+  border: 2px solid var(--line-strong);
+  border-radius: 18px;
+  background: #fff;
+  padding: 9px 15px;
+  box-shadow: 0 3px 0 var(--line);
+  color: var(--magic-dark);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  pointer-events: none;
+}
+
+.dragon-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 26px clamp(20px, 3vw, 36px);
+}
+
+.dragon-panel-title {
+  margin: 4px 0 0;
+  color: var(--ink);
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.dragon-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.dragon-action {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 10px;
+  border: 2px solid var(--line);
+  border-radius: 18px;
+  background: #fff;
+  padding: 10px 12px;
+  box-shadow: 0 4px 0 var(--line-strong);
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+  transition: transform 140ms ease, border-color 140ms ease, opacity 140ms ease;
+}
+
+.dragon-action:hover:not(:disabled) {
+  border-color: var(--magic);
+  transform: translateY(-2px);
+}
+
+.dragon-action:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--line-strong);
+}
+
+.dragon-action:disabled {
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.dragon-action-icon {
+  grid-row: span 2;
+  font-size: 30px;
+  line-height: 1;
+}
+
+.dragon-action-label {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.dragon-action-cost {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--gold-deep);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.dragon-hint {
+  margin: 4px 0 0;
+  border-radius: 14px;
+  background: var(--gold-soft);
+  padding: 10px 12px;
+  color: #8a6416;
+  font-size: 13px;
+  font-weight: 600;
+}
+
 /* ---------- Footer ---------- */
 
 .game-footer {
@@ -1942,6 +2091,31 @@ a:focus-visible {
 
   .game-choice-grid {
     grid-template-columns: 1fr;
+  }
+
+  .dragon-card {
+    grid-template-columns: 1fr;
+  }
+
+  /* On phones the speech bubble sits under Mochi instead of over her head. */
+  .dragon-stage-wrap {
+    display: flex;
+    min-height: 0;
+    flex-direction: column;
+  }
+
+  .dragon-stage {
+    position: relative;
+    height: 330px;
+  }
+
+  .dragon-bubble {
+    position: static;
+    margin: 0 16px 16px;
+  }
+
+  .dragon-panel {
+    padding: 20px 18px 22px;
   }
 
   .game-choice-card {

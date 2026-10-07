@@ -96,5 +96,19 @@ export function usePlayers() {
     }));
   }
 
-  return { loaded, players: state.players, currentPlayer, createPlayer, selectPlayer, logOut, addCoin };
+  // Takes coins from the current player. Returns false (and spends nothing) if they can't afford it.
+  function spendCoins(amount) {
+    const player = state.players.find((candidate) => candidate.name === state.current);
+    if (!player || player.coins < amount) return false;
+
+    setState((current) => ({
+      ...current,
+      players: current.players.map((candidate) => (
+        candidate.name === current.current ? { ...candidate, coins: candidate.coins - amount } : candidate
+      )),
+    }));
+    return true;
+  }
+
+  return { loaded, players: state.players, currentPlayer, createPlayer, selectPlayer, logOut, addCoin, spendCoins };
 }

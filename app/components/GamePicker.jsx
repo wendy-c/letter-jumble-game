@@ -16,7 +16,9 @@ export default function GamePicker({ games, onSelectGame }) {
             className="game-choice-card"
             key={game.id}
             color={game.color}
-            icon={<LetterPattern letters={game.pattern} />}
+            icon={game.icon
+              ? <img src={game.icon} alt="" width="40" height="40" />
+              : <LetterPattern letters={game.pattern} />}
             number={index + 1}
             name={game.name}
             note={game.note}

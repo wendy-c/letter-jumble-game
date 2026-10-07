@@ -15,4 +15,12 @@ export const games = [
     note: "Cambridge Movers · 6 topics",
     badge: "CAMBRIDGE MOVERS",
   },
+  {
+    id: "dragon",
+    name: "Rainbow Dragon",
+    color: "pink",
+    icon: "/images/icons/dragon.svg",
+    note: "Spend coins on treats and cuddles",
+    badge: "RAINBOW DRAGON",
+  },
 ];

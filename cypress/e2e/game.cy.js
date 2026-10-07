@@ -273,10 +273,10 @@ describe("Movers spelling game", () => {
 });
 
 describe("CVC sounds game", () => {
-  it("offers both games and the four CVC modes", () => {
+  it("offers the games and the four CVC modes", () => {
     cy.visit("/");
     cy.contains("h1", "Choose an adventure!");
-    cy.get(".game-choice-card").should("have.length", 2);
+    cy.get(".game-choice-card").should("have.length", 3);
     cy.contains("button", "CVC Sounds").click();
     addPlayer("Ada");
     cy.contains("h1", "CVC Sounds");
@@ -392,5 +392,28 @@ describe("players", () => {
       players: [{ name: "Mia", coins: 1 }, { name: "Theo", coins: 0 }],
       current: null,
     });
+  });
+});
+
+describe("rainbow dragon", () => {
+  it("shows Mochi in 3D and spends coins on treats", () => {
+    cy.visit("/", {
+      onBeforeLoad(win) {
+        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 3 }], current: "Ada" }));
+      },
+    });
+    cy.contains("button", "Rainbow Dragon").click();
+    cy.contains("h1", "Mochi the Rainbow Dragon");
+    cy.get(".dragon-canvas", { timeout: 20000 }).should("be.visible");
+
+    cy.get('button[aria-label="Ice cream, 2 rainbow coins"]').click();
+    cy.get('[aria-label="1 rainbow coins collected"]').should("exist");
+    cy.get(".dragon-bubble").should("contain.text", "brrr");
+    cy.get('button[aria-label="Apple, 1 rainbow coin"]').should("be.disabled");
+
+    cy.get('button[aria-label="Apple, 1 rainbow coin"]', { timeout: 8000 }).should("be.enabled").click();
+    cy.get('[aria-label="0 rainbow coins collected"]').should("exist");
+    cy.contains("out of rainbow coins");
+    storedPlayers().should("deep.equal", { players: [{ name: "Ada", coins: 0 }], current: "Ada" });
   });
 });

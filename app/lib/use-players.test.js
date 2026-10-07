@@ -79,6 +79,34 @@ describe("usePlayers", () => {
     expect(result.current.currentPlayer).toEqual({ name: "Ada", coins: 3 });
   });
 
+  it("spends coins from the current player only when they can afford it", () => {
+    seed({ players: [{ name: "Ada", coins: 3 }, { name: "Elly", coins: 9 }], current: "Ada" });
+    const { result } = renderHook(() => usePlayers());
+
+    let spent;
+    act(() => {
+      spent = result.current.spendCoins(2);
+    });
+    expect(spent).toBe(true);
+    expect(result.current.currentPlayer.coins).toBe(1);
+
+    act(() => {
+      spent = result.current.spendCoins(2);
+    });
+    expect(spent).toBe(false);
+    expect(stored().players).toEqual([{ name: "Ada", coins: 1 }, { name: "Elly", coins: 9 }]);
+  });
+
+  it("can't spend coins when nobody is playing", () => {
+    seed({ players: [{ name: "Ada", coins: 3 }], current: null });
+    const { result } = renderHook(() => usePlayers());
+    let spent;
+    act(() => {
+      spent = result.current.spendCoins(1);
+    });
+    expect(spent).toBe(false);
+  });
+
   it("logs out but keeps the players and their coins", () => {
     seed({ players: [{ name: "Ada", coins: 4 }], current: "Ada" });
     const { result } = renderHook(() => usePlayers());
