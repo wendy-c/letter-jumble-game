@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ageGroups } from "../games-data";
 
 export const playersStorageKey = "letter-jumble:players";
 // Coins saved before players existed; they're given to the first player created.
@@ -7,15 +8,28 @@ export const maxNameLength = 20;
 
 const emptyState = { players: [], current: null };
 
+const isCount = (value) => Number.isInteger(value) && value >= 0;
+const isAge = (age) => ageGroups.some((group) => group.id === age);
+
 function isValidPlayer(player) {
-  return typeof player?.name === "string" && player.name.length > 0 &&
-    Number.isInteger(player.coins) && player.coins >= 0;
+  return typeof player?.name === "string" && player.name.length > 0 && isCount(player.coins);
+}
+
+// Keeps only the fields we understand. Players saved before ages existed have no `age` yet.
+function cleanPlayer(player) {
+  const cleaned = { name: player.name, coins: player.coins };
+  if (isAge(player.age)) cleaned.age = player.age;
+  if (player.progress && typeof player.progress === "object") {
+    const progress = Object.fromEntries(Object.entries(player.progress).filter(([, index]) => isCount(index)));
+    if (Object.keys(progress).length > 0) cleaned.progress = progress;
+  }
+  return cleaned;
 }
 
 function readStoredState() {
   try {
     const stored = JSON.parse(window.localStorage.getItem(playersStorageKey) ?? "null");
-    const players = Array.isArray(stored?.players) ? stored.players.filter(isValidPlayer) : [];
+    const players = Array.isArray(stored?.players) ? stored.players.filter(isValidPlayer).map(cleanPlayer) : [];
     const current = players.some((player) => player.name === stored?.current) ? stored.current : null;
     return { players, current };
   } catch {
@@ -67,16 +81,34 @@ export function usePlayers() {
   const currentPlayer = state.players.find((player) => player.name === state.current) ?? null;
 
   // Returns an error message for the form, or null once the player is created and selected.
-  function createPlayer(rawName) {
+  function createPlayer(rawName, age) {
     const name = normalizeName(rawName);
     if (!name) return "Please type a name.";
     if (name.length > maxNameLength) return `Names can be up to ${maxNameLength} letters long.`;
     const existing = state.players.find((player) => sameName(player.name, name));
     if (existing) return `${existing.name} is already a player. Tap their name above.`;
+    if (!isAge(age)) return "Please choose how old you are.";
 
     const coins = state.players.length === 0 ? takeLegacyCoins() : 0;
-    setState((current) => ({ players: [...current.players, { name, coins }], current: name }));
+    setState((current) => ({ players: [...current.players, { name, coins, age }], current: name }));
     return null;
+  }
+
+  function updatePlayer(name, change) {
+    setState((current) => ({
+      ...current,
+      players: current.players.map((player) => (player.name === name ? change(player) : player)),
+    }));
+  }
+
+  function setPlayerAge(name, age) {
+    if (isAge(age)) updatePlayer(name, (player) => ({ ...player, age }));
+  }
+
+  // Remembers which word the current player is on in a topic (e.g. "cvc/middle-sound").
+  function saveProgress(key, wordIndex) {
+    if (!state.current || !isCount(wordIndex)) return;
+    updatePlayer(state.current, (player) => ({ ...player, progress: { ...player.progress, [key]: wordIndex } }));
   }
 
   function selectPlayer(name) {
@@ -110,5 +142,16 @@ export function usePlayers() {
     return true;
   }
 
-  return { loaded, players: state.players, currentPlayer, createPlayer, selectPlayer, logOut, addCoin, spendCoins };
+  return {
+    loaded,
+    players: state.players,
+    currentPlayer,
+    createPlayer,
+    setPlayerAge,
+    selectPlayer,
+    logOut,
+    addCoin,
+    spendCoins,
+    saveProgress,
+  };
 }

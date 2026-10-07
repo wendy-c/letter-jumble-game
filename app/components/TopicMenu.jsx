@@ -2,7 +2,7 @@ import ChoiceCard from "./ChoiceCard";
 import GameFooter from "./GameFooter";
 import LetterPattern from "./LetterPattern";
 
-export default function TopicMenu({ isCvc, topics, onBack, onSelectTopic }) {
+export default function TopicMenu({ isCvc, topics, progressFor = () => 0, onBack, onSelectTopic }) {
   return (
     <section className="game-wrap category-menu mx-auto w-full max-w-6xl" aria-labelledby="game-title">
       <div className="menu-heading">
@@ -32,7 +32,9 @@ export default function TopicMenu({ isCvc, topics, onBack, onSelectTopic }) {
               : <img src={topic.icon} alt="" width="40" height="40" />}
             number={index + 1}
             name={topic.name}
-            note={`${topic.words.length} spells to learn`}
+            note={progressFor(topic) > 0
+              ? `${progressFor(topic)} of ${topic.words.length} spells learned`
+              : `${topic.words.length} spells to learn`}
             onClick={() => onSelectTopic(topic)}
           />
         ))}

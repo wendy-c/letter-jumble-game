@@ -2,14 +2,14 @@ import fs from "node:fs";
 import path from "node:path";
 import { categories } from "./game-data";
 import { cvcModes } from "./cvc-data";
-import { games } from "./games-data";
+import { games, gamesForAge, isGameForAge } from "./games-data";
 
 const publicDir = path.join(__dirname, "..", "public");
 
 describe("categories", () => {
-  it("has six topics, each with a unique id, colour and icon", () => {
-    expect(categories).toHaveLength(6);
-    expect(new Set(categories.map((category) => category.id)).size).toBe(6);
+  it("has eight topics, each with a unique id, colour and icon", () => {
+    expect(categories).toHaveLength(8);
+    expect(new Set(categories.map((category) => category.id)).size).toBe(8);
     categories.forEach((category) => {
       expect(category.color).toEqual(expect.any(String));
       expect(category.icon).toMatch(/^\/images\/icons\/.+\.svg$/);
@@ -37,5 +37,19 @@ describe("categories", () => {
 
     const missing = imagePaths.filter((imagePath) => !fs.existsSync(path.join(publicDir, imagePath)));
     expect(missing).toEqual([]);
+  });
+});
+
+describe("games by age", () => {
+  const names = (list) => list.map((game) => game.name);
+
+  it("gives CVC Sounds to 3-4 year olds and Letter Jumble to 5-6 year olds", () => {
+    expect(names(gamesForAge("3-4"))).toEqual(["CVC Sounds", "Mochi the Rainbow Dragon"]);
+    expect(names(gamesForAge("5-6"))).toEqual(["Letter Jumble for Movers", "Mochi the Rainbow Dragon"]);
+  });
+
+  it("shows every game when the age isn't known", () => {
+    expect(gamesForAge(undefined)).toHaveLength(games.length);
+    expect(isGameForAge(games[0], null)).toBe(true);
   });
 });

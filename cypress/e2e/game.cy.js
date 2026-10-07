@@ -1,8 +1,9 @@
 const playersKey = "letter-jumble:players";
 
-function addPlayer(name) {
+function addPlayer(name, age = "5-6") {
   cy.get('[role="dialog"]').should("contain.text", "playing?").within(() => {
     cy.get("input").type(name);
+    cy.contains('[role="radio"]', `${age} years old`).click();
     cy.contains("button", "play!").click();
   });
 }
@@ -18,7 +19,7 @@ function visitLetterJumble(options, newPlayer = "Ada") {
 function visitCvcMode(mode) {
   cy.visit("/");
   cy.contains("button", "CVC Sounds").click();
-  addPlayer("Ada");
+  addPlayer("Ada", "3-4");
   cy.contains("button", mode).click();
 }
 
@@ -30,7 +31,7 @@ describe("Movers spelling game", () => {
   it("lets a learner spell a word, check it, and continue", () => {
     visitLetterJumble();
     cy.contains("h1", "Letter Jumble");
-    cy.get(".category-card").should("have.length", 6);
+    cy.get(".category-card").should("have.length", 8);
     cy.contains("button", "Animals").click();
     cy.contains("h1", "Animals");
     cy.get(".letter-bank .letter-tile").should("have.length", 3);
@@ -67,7 +68,7 @@ describe("Movers spelling game", () => {
     });
     cy.contains("button", "Check word").click();
     cy.get('[aria-label="1 rainbow coins collected"]').should("exist");
-    storedPlayers().should("deep.equal", { players: [{ name: "Ada", coins: 1 }], current: "Ada" });
+    storedPlayers().should("deep.equal", { players: [{ name: "Ada", coins: 1, age: "5-6" }], current: "Ada" });
 
     cy.reload();
     cy.contains("button", "Letter Jumble").click();
@@ -79,7 +80,7 @@ describe("Movers spelling game", () => {
   it("starts from a previously saved rainbow coin count", () => {
     visitLetterJumble({
       onBeforeLoad(win) {
-        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 7 }], current: "Ada" }));
+        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 7, age: "5-6" }], current: "Ada" }));
       },
     }, null);
     cy.contains("button", "Animals").click();
@@ -278,7 +279,7 @@ describe("CVC sounds game", () => {
     cy.contains("h1", "Choose an adventure!");
     cy.get(".game-choice-card").should("have.length", 3);
     cy.contains("button", "CVC Sounds").click();
-    addPlayer("Ada");
+    addPlayer("Ada", "3-4");
     cy.contains("h1", "CVC Sounds");
     cy.get(".category-card").should("have.length", 4);
     ["Beginning Sound", "Middle Sound", "Ending Sound", "Mixed Sounds"].forEach((mode) => {
@@ -382,16 +383,33 @@ describe("players", () => {
     cy.contains('[role="menuitem"]', "Switch player").click();
     cy.get('[role="dialog"] .player-option').contains("Mia").click();
     cy.contains("button", "Letter Jumble").click();
-    cy.contains("button", "Animals").click();
+    cy.contains("button", "Animals").should("contain.text", "1 of 13 spells learned").click();
     cy.get('[aria-label="1 rainbow coins collected"]').should("exist");
+    cy.contains("02 / 13");
 
     cy.get('button[aria-label$="Player options"]').click();
     cy.contains('[role="menuitem"]', "Log out").click();
     cy.contains("h1", "Choose an adventure!");
     storedPlayers().should("deep.equal", {
-      players: [{ name: "Mia", coins: 1 }, { name: "Theo", coins: 0 }],
+      players: [
+        { name: "Mia", coins: 1, age: "5-6", progress: { "letter-jumble/animals": 1 } },
+        { name: "Theo", coins: 0, age: "5-6" },
+      ],
       current: null,
     });
+  });
+});
+
+describe("ages", () => {
+  it("shows a 3-4 year old the CVC game and the dragon, but not Letter Jumble", () => {
+    cy.visit("/");
+    cy.contains("button", "CVC Sounds").click();
+    addPlayer("Mia", "3-4");
+    cy.contains("button", "Choose a game").click();
+    cy.get(".game-choice-card").should("have.length", 2);
+    cy.contains(".game-choice-card", "CVC Sounds");
+    cy.contains(".game-choice-card", "Rainbow Dragon");
+    cy.contains(".game-choice-card", "Letter Jumble").should("not.exist");
   });
 });
 
@@ -399,7 +417,7 @@ describe("rainbow dragon", () => {
   it("shows Mochi in 3D and spends coins on treats", () => {
     cy.visit("/", {
       onBeforeLoad(win) {
-        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 3 }], current: "Ada" }));
+        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 3, age: "3-4" }], current: "Ada" }));
       },
     });
     cy.contains("button", "Rainbow Dragon").click();
@@ -414,6 +432,6 @@ describe("rainbow dragon", () => {
     cy.get('button[aria-label="Apple, 1 rainbow coin"]', { timeout: 8000 }).should("be.enabled").click();
     cy.get('[aria-label="0 rainbow coins collected"]').should("exist");
     cy.contains("out of rainbow coins");
-    storedPlayers().should("deep.equal", { players: [{ name: "Ada", coins: 0 }], current: "Ada" });
+    storedPlayers().should("deep.equal", { players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" });
   });
 });

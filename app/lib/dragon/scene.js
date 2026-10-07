@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { dragonActionsById } from "../../dragon-data";
+import { sounds } from "../sounds";
 
 const OUTLINE_COLOR = 0x4b2e22;
 const LILAC = 0xd9c8ff;
@@ -7,6 +8,8 @@ const SNOUT = 0xffe0f0;
 const CREAM = 0xfff3d6;
 const GOLD = 0xffd45e;
 const BLUSH = 0xff9bb5;
+const CLAW = 0xfff3d6;
+const PEARL = 0xfff6e0;
 const RAINBOW = [0xff8fa3, 0xffb86b, 0xffe27a, 0x8fe3a8, 0x8cc8f2, 0xb79cf2];
 const ICY = new THREE.Color(0xa8dcff);
 const HOT = new THREE.Color(0xff9a9a);
@@ -129,10 +132,27 @@ function buildDragon(materials) {
   tuft.position.set(0, 1.72, 0.62);
   bodyGroup.add(tuft);
 
+  const clawMaterial = materials.toon(CLAW);
+  const addClaws = (target, positions, rotation) => positions.forEach(([x, y, z]) => {
+    const claw = part(new THREE.ConeGeometry(0.045, 0.13, 12), clawMaterial, materials, 0.04, 0.012);
+    claw.position.set(x, y, z);
+    claw.rotation.copy(rotation);
+    target.add(claw);
+  });
+
+  // Dragon legs: chunky haunches over big clawed feet.
   const feet = [-1, 1].map((side) => {
-    const foot = part(sphere(0.32), lilac, materials, 0.32, 0.035);
-    foot.scale.set(1, 0.6, 1.25);
-    foot.position.set(side * 0.48, 0.17, 0.3);
+    const haunch = part(sphere(0.42), lilac, materials, 0.42, 0.04);
+    haunch.scale.set(0.85, 0.95, 1.05);
+    haunch.position.set(side * 0.66, 0.5, 0.02);
+    bodyGroup.add(haunch);
+
+    const foot = new THREE.Group();
+    foot.position.set(side * 0.55, 0.16, 0.32);
+    const pad = part(sphere(0.3), lilac, materials, 0.3, 0.035);
+    pad.scale.set(1, 0.55, 1.3);
+    foot.add(pad);
+    addClaws(foot, [[-0.15, -0.02, 0.36], [0, -0.02, 0.4], [0.15, -0.02, 0.36]], new THREE.Euler(Math.PI / 2, 0, 0));
     root.add(foot);
     return foot;
   });
@@ -140,9 +160,13 @@ function buildDragon(materials) {
   const arms = [-1, 1].map((side) => {
     const pivot = new THREE.Group();
     pivot.position.set(side * 0.8, 1.38, 0.3);
-    const arm = part(new THREE.CapsuleGeometry(0.16, 0.3, 8, 16), lilac, materials, 0.16, 0.03);
-    arm.position.y = -0.24;
-    pivot.add(arm);
+    const arm = part(new THREE.CapsuleGeometry(0.15, 0.28, 8, 16), lilac, materials, 0.15, 0.03);
+    arm.position.y = -0.22;
+    const hand = part(sphere(0.17, 0.7), lilac, materials, 0.17, 0.03);
+    hand.position.set(0, -0.48, 0.04);
+    hand.scale.set(1, 0.9, 1);
+    pivot.add(arm, hand);
+    addClaws(pivot, [[-0.08, -0.6, 0.14], [0.02, -0.63, 0.16], [0.1, -0.59, 0.12]], new THREE.Euler(2.4, 0, 0));
     pivot.userData.side = side;
     bodyGroup.add(pivot);
     return pivot;
@@ -259,16 +283,50 @@ function buildDragon(materials) {
     return blush;
   });
 
-  [-1, 1].forEach((side) => {
-    const horn = part(new THREE.ConeGeometry(0.11, 0.4, 16), materials.toon(GOLD), materials, 0.1, 0.025);
-    horn.position.set(side * 0.38, 1.38, -0.05);
-    horn.rotation.z = -side * 0.35;
-    head.add(horn);
+  // A tall pearly unicorn horn wrapped in a pastel spiral.
+  const horn = new THREE.Group();
+  horn.position.set(0, 1.72, 0.2);
+  horn.rotation.x = 0.28;
+  horn.add(part(new THREE.ConeGeometry(0.15, 0.95, 32), materials.toon(PEARL), materials, 0.12, 0.025));
+  [[0xffb3d9, 0], [0xb79cf2, Math.PI]].forEach(([color, offset]) => {
+    const spiral = new THREE.Curve();
+    spiral.getPoint = (t, target = new THREE.Vector3()) => {
+      const angle = offset + t * Math.PI * 7;
+      const radius = 0.155 * (1 - t) + 0.008;
+      return target.set(Math.cos(angle) * radius, -0.47 + t * 0.9, Math.sin(angle) * radius);
+    };
+    horn.add(new THREE.Mesh(new THREE.TubeGeometry(spiral, 120, 0.022, 8), materials.toon(color)));
+  });
+  const hornSparkle = part(new THREE.OctahedronGeometry(0.07), materials.toon(GOLD), materials, 0.06, 0.015);
+  hornSparkle.position.y = 0.52;
+  horn.add(hornSparkle);
+  head.add(horn);
 
-    const ear = part(new THREE.ConeGeometry(0.16, 0.36, 3), lilac, materials, 0.14, 0.025);
-    ear.position.set(side * 0.92, 0.85, -0.12);
-    ear.rotation.set(0, 0, -side * 1.15);
+  // Big fluffy ears with pink insides and white fur tufts.
+  const ears = [-1, 1].map((side) => {
+    const ear = new THREE.Group();
+    ear.position.set(side * 0.82, 1.12, -0.06);
+    ear.rotation.set(0, side * 0.35, -side * 0.55);
+    ear.scale.setScalar(1.25);
+    const outer = part(sphere(0.3, 0.8), lilac, materials, 0.3, 0.035);
+    outer.scale.set(0.62, 1, 0.38);
+    const inner = new THREE.Mesh(sphere(0.22, 0.6), materials.toon(0xffc2dc));
+    inner.scale.set(0.48, 0.82, 0.2);
+    inner.position.set(0, -0.02, 0.08);
+    ear.add(outer, inner);
+    [[0, -0.16, 0.12, 0.085], [-0.06, -0.05, 0.13, 0.07], [0.06, -0.08, 0.13, 0.07], [0, 0.06, 0.12, 0.06]].forEach(([x, y, z, radius]) => {
+      const fluff = part(sphere(radius, 0.4), materials.toon(0xffffff), materials, radius, 0.015);
+      fluff.position.set(x, y, z);
+      ear.add(fluff);
+    });
+    [[0, 0.3, 0, 0.09, 0xffb3d9], [-0.05, 0.25, 0.03, 0.07, 0xb79cf2], [0.05, 0.25, 0.03, 0.07, 0xffe27a]].forEach(([x, y, z, radius, color]) => {
+      const tip = part(sphere(radius, 0.4), materials.toon(color), materials, radius, 0.015);
+      tip.position.set(x, y, z);
+      ear.add(tip);
+    });
+    ear.userData.side = side;
     head.add(ear);
+    return ear;
   });
 
   // Rainbow mane tufts on top of the head.
@@ -290,7 +348,7 @@ function buildDragon(materials) {
   head.add(foam);
 
   return {
-    root, turn, bodyGroup, body, feet, arms, wings, tail, head, mouth, mouthShape, tongue, smile, eyes, blushMaterial,
+    root, turn, bodyGroup, body, feet, arms, wings, tail, head, mouth, mouthShape, tongue, smile, eyes, ears, horn, blushMaterial,
     blushes, foam, lilac, baseColor: new THREE.Color(LILAC), wingMaterial, wingGeometry,
   };
 }
@@ -336,10 +394,128 @@ function buildTreat(id, materials) {
     cone.rotation.x = Math.PI;
     add(part(sphere(0.2, 0.7), materials.toon(0xffb3cf), materials, 0.2, 0.025), 0, 0.17, 0);
     add(part(sphere(0.16, 0.6), materials.toon(0xb8f0d8), materials, 0.16, 0.02), 0, 0.36, 0);
+  } else if (id === "milkshake") {
+    add(part(new THREE.CylinderGeometry(0.2, 0.15, 0.5, 24), materials.toon(0xffb3cf), materials, 0.18, 0.025));
+    add(part(sphere(0.2, 0.6), materials.toon(0xffffff), materials, 0.2, 0.02), 0, 0.28, 0).scale.set(1, 0.6, 1);
+    add(part(sphere(0.08, 0.5), materials.toon(0xff4d6d), materials, 0.08, 0.015), 0, 0.4, 0).scale.set(1, 1.15, 1);
+    add(new THREE.Mesh(sphere(0.04, 0.3), materials.toon(0x6cc28a)), 0, 0.49, 0).scale.set(1.5, 0.5, 1.5);
+    const straw = add(part(new THREE.CylinderGeometry(0.025, 0.025, 0.55, 10), materials.toon(0x8cc8f2), materials, 0.03, 0.01), 0.1, 0.35, 0);
+    straw.rotation.z = -0.35;
   }
 
   group.scale.setScalar(1.2);
   return group;
+}
+
+// An easel whose canvas fills in with a rainbow as Mochi paints.
+function buildEasel(materials) {
+  const easel = new THREE.Group();
+  const wood = materials.toon(0xc98a5a);
+  [[-0.38, 0.12], [0.38, -0.12]].forEach(([x, tilt]) => {
+    const leg = part(new THREE.BoxGeometry(0.07, 1.9, 0.07), wood, materials, 0.05, 0.012);
+    leg.position.set(x, 0.92, 0);
+    leg.rotation.z = tilt;
+    easel.add(leg);
+  });
+  const backLeg = part(new THREE.BoxGeometry(0.07, 1.8, 0.07), wood, materials, 0.05, 0.012);
+  backLeg.position.set(0, 0.85, -0.3);
+  backLeg.rotation.x = -0.35;
+  easel.add(backLeg);
+  const ledge = part(new THREE.BoxGeometry(1.0, 0.07, 0.14), wood, materials, 0.05, 0.012);
+  ledge.position.set(0, 0.85, 0.06);
+  easel.add(ledge);
+  const board = part(new THREE.BoxGeometry(1.15, 0.9, 0.05), materials.toon(0xffffff), materials, 0.2, 0.015);
+  board.position.set(0, 1.33, 0.05);
+  easel.add(board);
+
+  const canvas = document.createElement("canvas");
+  canvas.width = 256;
+  canvas.height = 200;
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  const surface = new THREE.Mesh(new THREE.PlaneGeometry(1.05, 0.8), new THREE.MeshBasicMaterial({ map: texture }));
+  surface.position.set(0, 1.33, 0.08);
+  easel.add(surface);
+
+  const context = canvas.getContext("2d");
+  const rainbowCss = ["#ff8fa3", "#ffb86b", "#ffe27a", "#8fe3a8", "#8cc8f2", "#b79cf2"];
+  function draw(progress) {
+    context.fillStyle = "#fffaf2";
+    context.fillRect(0, 0, 256, 200);
+    context.lineCap = "round";
+    context.lineWidth = 15;
+    rainbowCss.forEach((color, index) => {
+      const share = clamp01(progress * rainbowCss.length - index);
+      if (share <= 0) return;
+      context.strokeStyle = color;
+      context.beginPath();
+      context.arc(128, 178, 108 - index * 15, Math.PI, Math.PI + share * Math.PI);
+      context.stroke();
+    });
+    if (progress >= 1) {
+      context.fillStyle = "#ffffff";
+      context.strokeStyle = "#cbbfe6";
+      context.lineWidth = 3;
+      [[30, 172], [226, 172]].forEach(([x, y]) => {
+        context.beginPath();
+        context.arc(x - 12, y, 14, 0, Math.PI * 2);
+        context.arc(x + 4, y - 8, 17, 0, Math.PI * 2);
+        context.arc(x + 18, y + 2, 13, 0, Math.PI * 2);
+        context.fill();
+      });
+      context.fillStyle = "#ffd45e";
+      context.beginPath();
+      context.arc(210, 40, 18, 0, Math.PI * 2);
+      context.fill();
+    }
+    texture.needsUpdate = true;
+  }
+  draw(0);
+
+  easel.userData.dispose = () => {
+    texture.dispose();
+    surface.material.dispose();
+  };
+  return { easel, draw };
+}
+
+function buildBrush(materials) {
+  const brush = new THREE.Group();
+  const handle = part(new THREE.CylinderGeometry(0.03, 0.035, 0.55, 10), materials.toon(0xc98a5a), materials, 0.03, 0.01);
+  const ferrule = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.035, 0.08, 10), materials.toon(0xd6d0e0));
+  ferrule.position.y = 0.3;
+  const tipMaterial = new THREE.MeshToonMaterial({ color: RAINBOW[0], gradientMap: materials.toon(LILAC).gradientMap });
+  const tip = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.14, 10), tipMaterial);
+  tip.position.y = 0.4;
+  brush.add(handle, ferrule, tip);
+  brush.userData.tip = tip;
+  brush.userData.dispose = () => tipMaterial.dispose();
+  return brush;
+}
+
+// A frilly pink tutu that sits around Mochi's tummy.
+function buildTutu(materials) {
+  const tutu = new THREE.Group();
+  // Two layers of puffy ruffles: a pale inner layer and a fuller outer one.
+  [[26, 1.0, 0.86, 0.2, 0xffe3ef], [30, 1.13, 0.72, 0.24, 0xffb3d9]].forEach(([count, reach, y, radius, color]) => {
+    for (let index = 0; index < count; index += 1) {
+      const angle = ((index + 0.5 * (reach > 1.05 ? 1 : 0)) / count) * Math.PI * 2;
+      const ruffle = part(sphere(radius, 0.5), materials.toon(index % 3 ? color : 0xffd0e3), materials, radius, 0.012);
+      ruffle.position.set(Math.cos(angle) * reach, y, Math.sin(angle) * reach * 0.94);
+      ruffle.scale.set(1, 0.55, 1);
+      tutu.add(ruffle);
+    }
+  });
+  const band = new THREE.Mesh(new THREE.TorusGeometry(0.98, 0.06, 8, 40), materials.toon(0xff8fb8));
+  band.rotation.x = Math.PI / 2;
+  band.scale.set(1, 0.93, 1);
+  band.position.y = 0.95;
+  tutu.add(band);
+  const bow = part(sphere(0.1, 0.5), materials.toon(0xf06aa8), materials, 0.1, 0.015);
+  bow.position.set(0, 0.97, 0.94);
+  bow.scale.set(1.6, 0.9, 0.6);
+  tutu.add(bow);
+  return tutu;
 }
 
 function buildComb(materials) {
@@ -507,8 +683,31 @@ function restPose() {
     headNod: 0, headTurn: 0, headTilt: 0,
     mouthOpen: 0, happyEyes: false, eyeOpen: 1, eyeScale: 1,
     wingFlap: 0, armL: 0, armR: 0, armHug: 0, tailSway: 0, tailLift: 0,
-    blush: 0, chill: 0, heat: 0, fire: 0, foam: 0, fluff: 0,
+    blush: 0, chill: 0, heat: 0, fire: 0, foam: 0, fluff: 0, earWiggle: 0,
   };
+}
+
+const soundCues = {
+  apple: [[0.8, "chomp"], [1.25, "whee"], [2.8, "coo"]],
+  carrot: [[0.8, "chomp"], [1.25, "danceTune"]],
+  cupcake: [[0.8, "chomp"], [1.3, "giggle"], [2.4, "giggle"]],
+  chilli: [[0.8, "chomp"], [1.7, "gasp"], [2.25, "roar"]],
+  icecream: [[0.8, "chomp"], [1.3, "coo"], [1.95, "shiver"]],
+  milkshake: [[0.55, "slurp"], [1.4, "float"], [1.7, "coo"], [4.1, "sparkle"]],
+  comb: [[0.3, "swish"], [0.6, "purr"], [1.3, "swish"], [2.3, "swish"], [3.3, "sparkle"]],
+  bath: [[0.1, "bubbles"], [1.4, "bubbles"], [3.0, "rub"], [5.3, "sparkle"], [5.6, "coo"]],
+  painting: [[0.8, "brush"], [1.5, "brush"], [2.2, "brush"], [2.9, "brush"], [3.6, "brush"], [4.3, "brush"], [5.3, "sparkle"], [5.6, "coo"]],
+  ballet: [[0.3, "musicBox"], [4.9, "sparkle"], [5.3, "coo"]],
+  pet: [[0, "purr"], [0.35, "coo"]],
+};
+
+function playSoundCues(run, sfx) {
+  (soundCues[run.id] ?? []).forEach(([at, name], index) => {
+    if (run.t >= at && !run.done[`sound${index}`]) {
+      run.done[`sound${index}`] = true;
+      sfx[name]?.();
+    }
+  });
 }
 
 // Emits `fn` roughly `rate` times a second while called every frame.
@@ -755,6 +954,108 @@ const actions = {
     }
   },
 
+  milkshake(run, pose, dt, ctx) {
+    const r = eatTreat(run, pose, ctx);
+    if (r < 0) return;
+    // So sweet she floats up, wings fluttering, then drifts back down.
+    const lift = easeInOut(between(r, 0.1, 1.0)) * (1 - easeInOut(between(r, 2.4, 3.3)));
+    pose.hop += lift * (0.6 + 0.08 * Math.sin(r * 4));
+    pose.wingFlap += Math.sin(r * 22) * 0.55 * lift;
+    pose.tailSway += Math.sin(r * 3) * 0.5 * lift;
+    pose.armL = pose.armR = 0.9 * lift;
+    pose.headTilt += 0.15 * lift;
+    pose.happyEyes = true;
+    pose.blush = Math.max(lift, 0.5);
+    pose.squash += r > 3.3 ? -0.1 * pulse(r, 3.3, 3.55) : 0;
+    if (lift > 0.2) {
+      emit(run, "hearts", 4, dt, () => ctx.fx.hearts(ctx.headWorld().add(new THREE.Vector3(0, 0.6, 0.3)), 1));
+      emit(run, "sparkle", 10, dt, () => ctx.fx.sparkles(ctx.bodyWorld().add(new THREE.Vector3(0, -0.8, 0)), 1, 0.6));
+    }
+  },
+
+  painting(run, pose, dt, ctx) {
+    const t = run.t;
+    if (!run.easel) {
+      const { easel, draw } = buildEasel(ctx.materials);
+      easel.position.set(1.65, 0, 0.75);
+      easel.rotation.y = -0.85;
+      ctx.turn.add(easel);
+      run.easel = easel;
+      run.drawEasel = draw;
+      run.brush = buildBrush(ctx.materials);
+      run.brush.position.set(0.02, -0.62, 0.16);
+      run.brush.rotation.x = -1.1;
+      ctx.arms[1].add(run.brush);
+    }
+    run.easel.scale.setScalar(Math.max(0.01, easeInOut(between(t, 0, 0.5))) * (t > 6.3 ? Math.max(0.01, 1 - (t - 6.3) * 2) : 1));
+    run.brush.visible = t > 0.3 && t < 5.4;
+
+    const painting = between(t, 0.7, 5.0);
+    const atEasel = between(t, 0.2, 0.7) * (1 - between(t, 5.0, 5.6));
+    pose.turn += 0.55 * atEasel;
+    pose.headTurn += 0.25 * atEasel;
+    pose.headTilt += 0.12 * atEasel;
+    if (t > 0.7 && t < 5.0) {
+      pose.armR = 1.5 + 0.45 * Math.sin(t * 9);
+      pose.armL = 0.25;
+      pose.mouthOpen = 0.15;
+      pose.tailSway += Math.sin(t * 5) * 0.3;
+      run.drawEasel(painting);
+      const stripe = Math.min(RAINBOW.length - 1, Math.floor(painting * RAINBOW.length));
+      run.brush.userData.tip.material.color.set(RAINBOW[stripe]);
+      emit(run, "splatter", 9, dt, () => {
+        const tip = run.brush.userData.tip.getWorldPosition(new THREE.Vector3());
+        const drop = ctx.fx.mesh("sparkle", tip, rand(0.6, 1), RAINBOW[stripe]);
+        ctx.fx.spawn(drop, { velocity: new THREE.Vector3(rand(-0.5, 0.5), rand(0.2, 1), rand(-0.3, 0.5)), gravity: 3, life: 0.8, spin: 6 });
+      });
+    }
+    if (t >= 5.0) {
+      run.drawEasel(1);
+      pose.happyEyes = true;
+      pose.blush = 0.9;
+      pose.hop += pulse(t, 5.4, 5.9) * 0.3;
+      pose.armL = pose.armR = 1.3 * pulse(t, 5.3, 6.6);
+      once(run, "proud", () => {
+        const easelWorld = run.easel.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, 1.4, 0));
+        ctx.fx.sparkles(easelWorld, 16, 1.6);
+        ctx.fx.hearts(ctx.headWorld().add(new THREE.Vector3(0, 0.9, 0.3)), 2);
+      });
+    }
+  },
+
+  ballet(run, pose, dt, ctx) {
+    const t = run.t;
+    if (!run.tutu) {
+      run.tutu = buildTutu(ctx.materials);
+      ctx.bodyGroup.add(run.tutu);
+    }
+    run.tutu.scale.setScalar(Math.max(0.01, easeInOut(between(t, 0, 0.4))) * (t > 5.8 ? Math.max(0.01, 1 - (t - 5.8) * 2.5) : 1));
+
+    // Rise onto tiptoe with arms up in a circle…
+    const poised = between(t, 0.4, 0.9) * (1 - between(t, 4.6, 5.0));
+    pose.hop += 0.2 * poised;
+    pose.armL = pose.armR = 2.35 * poised;
+    pose.armHug = 0.35 * poised;
+    pose.headNod -= 0.12 * poised;
+    pose.happyEyes = true;
+    pose.blush = 0.7;
+    // …two slow pirouettes…
+    pose.turn += easeInOut(between(t, 1.0, 3.4)) * Math.PI * 4;
+    if (t > 1.0 && t < 3.4) emit(run, "trail", 14, dt, () => ctx.fx.sparkles(ctx.bodyWorld().add(new THREE.Vector3(0, -0.4, 0)), 1, 1.2));
+    // …a graceful sway…
+    const sway = pulse(t, 3.4, 4.6);
+    pose.lean += Math.sin((t - 3.4) * Math.PI * 1.7) * 0.16 * sway;
+    pose.tailLift += 0.6 * sway;
+    pose.wingFlap += 0.35 * sway;
+    // …and a curtsy.
+    const curtsy = pulse(t, 4.8, 5.9);
+    pose.headNod += 0.4 * curtsy;
+    pose.squash -= 0.1 * curtsy;
+    pose.armL = Math.max(pose.armL, 0.6 * curtsy);
+    pose.armR = Math.max(pose.armR, 0.6 * curtsy);
+    if (t > 5.2) once(run, "hearts", () => ctx.fx.hearts(ctx.headWorld().add(new THREE.Vector3(0, 0.9, 0.3)), 3));
+  },
+
   pet(run, pose, dt, ctx) {
     const t = run.t;
     const amount = between(t, 0, 0.2) * (1 - between(t, 1.7, 2.2));
@@ -792,6 +1093,10 @@ function applyPose(dragon, pose, userTurn) {
   dragon.blushMaterial.opacity = 0.45 + pose.blush * 0.5;
   dragon.blushes.forEach((blush) => blush.scale.set(1 + pose.blush * 0.25, 0.65 + pose.blush * 0.15, 1));
 
+  dragon.ears.forEach((ear) => {
+    const side = ear.userData.side;
+    ear.rotation.z = -side * (0.55 + pose.earWiggle);
+  });
   dragon.wings.forEach((wing) => {
     const side = wing.userData.side;
     wing.rotation.set(0, side * (-0.3 + pose.wingFlap), side * 0.1);
@@ -830,7 +1135,7 @@ function shadowTexture() {
 /* ---------- Public API ---------- */
 
 // Builds the scene inside `container`. Throws if WebGL isn't available.
-export function createDragonScene(container, { onPet } = {}) {
+export function createDragonScene(container, { onPet, sfx = sounds } = {}) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.domElement.className = "dragon-canvas";
@@ -838,8 +1143,8 @@ export function createDragonScene(container, { onPet } = {}) {
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
-  camera.position.set(0, 2.1, 9.6);
-  camera.lookAt(0, 1.75, 0);
+  camera.position.set(0, 2.5, 11.8);
+  camera.lookAt(0, 2.25, 0);
 
   scene.add(new THREE.HemisphereLight(0xffffff, 0xd6c5f5, 1.6));
   const sun = new THREE.DirectionalLight(0xffffff, 1.8);
@@ -864,6 +1169,8 @@ export function createDragonScene(container, { onPet } = {}) {
     materials,
     fx,
     turn: dragon.turn,
+    bodyGroup: dragon.bodyGroup,
+    arms: dragon.arms,
     mouthWorld: () => dragon.mouth.getWorldPosition(new THREE.Vector3()),
     headWorld: () => dragon.head.getWorldPosition(new THREE.Vector3()),
     bodyWorld: () => dragon.body.getWorldPosition(new THREE.Vector3()),
@@ -884,10 +1191,11 @@ export function createDragonScene(container, { onPet } = {}) {
 
   function endRun() {
     if (!run) return;
-    [run.treat, run.comb, run.towel].forEach((object) => {
+    [run.treat, run.comb, run.towel, run.easel, run.brush, run.tutu].forEach((object) => {
       if (!object) return;
       object.parent?.remove(object);
       object.traverse((child) => child.geometry?.dispose());
+      object.userData.dispose?.();
     });
     run = null;
   }
@@ -915,8 +1223,11 @@ export function createDragonScene(container, { onPet } = {}) {
     if (run) {
       run.t += dt;
       actions[run.id](run, pose, dt, ctx);
+      playSoundCues(run, sfx);
       if (run.t >= run.duration) endRun();
     }
+    // Happy ears wiggle.
+    if (pose.happyEyes) pose.earWiggle += 0.16 * Math.sin(elapsed * 14);
 
     userTurn += (targetTurn - userTurn) * Math.min(1, dt * 8);
     applyPose(dragon, pose, userTurn);

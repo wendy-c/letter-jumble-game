@@ -32,12 +32,12 @@ describe("usePlayers", () => {
 
     let problem;
     act(() => {
-      problem = result.current.createPlayer("  Ada ");
+      problem = result.current.createPlayer("  Ada ", "5-6");
     });
 
     expect(problem).toBeNull();
-    expect(result.current.currentPlayer).toEqual({ name: "Ada", coins: 0 });
-    expect(stored()).toEqual({ players: [{ name: "Ada", coins: 0 }], current: "Ada" });
+    expect(result.current.currentPlayer).toEqual({ name: "Ada", coins: 0, age: "5-6" });
+    expect(stored()).toEqual({ players: [{ name: "Ada", coins: 0, age: "5-6" }], current: "Ada" });
   });
 
   it.each([
@@ -48,10 +48,54 @@ describe("usePlayers", () => {
     const { result } = renderHook(() => usePlayers());
     let problem;
     act(() => {
-      problem = result.current.createPlayer(name);
+      problem = result.current.createPlayer(name, "3-4");
     });
     expect(problem).toBe(message);
     expect(result.current.players).toEqual([]);
+  });
+
+  it("needs an age group for a new player", () => {
+    const { result } = renderHook(() => usePlayers());
+    let problem;
+    act(() => {
+      problem = result.current.createPlayer("Ada");
+    });
+    expect(problem).toBe("Please choose how old you are.");
+    act(() => {
+      problem = result.current.createPlayer("Ada", "7-8");
+    });
+    expect(problem).toBe("Please choose how old you are.");
+    expect(result.current.players).toEqual([]);
+  });
+
+  it("sets the age of a player saved before ages existed", () => {
+    seed({ players: [{ name: "Ada", coins: 2 }], current: null });
+    const { result } = renderHook(() => usePlayers());
+    act(() => result.current.setPlayerAge("Ada", "3-4"));
+    act(() => result.current.setPlayerAge("Ada", "teen"));
+    expect(stored().players).toEqual([{ name: "Ada", coins: 2, age: "3-4" }]);
+  });
+
+  it("saves where the current player is up to in each topic", () => {
+    seed({ players: [{ name: "Ada", coins: 0, age: "5-6" }, { name: "Elly", coins: 0, age: "3-4" }], current: "Ada" });
+    const { result } = renderHook(() => usePlayers());
+
+    act(() => result.current.saveProgress("letter-jumble/animals", 4));
+    act(() => result.current.saveProgress("letter-jumble/food-and-drink", 2));
+    act(() => result.current.saveProgress("letter-jumble/animals", 5));
+    act(() => result.current.saveProgress("letter-jumble/animals", -1));
+
+    expect(result.current.currentPlayer.progress).toEqual({ "letter-jumble/animals": 5, "letter-jumble/food-and-drink": 2 });
+    expect(stored().players[1]).toEqual({ name: "Elly", coins: 0, age: "3-4" });
+  });
+
+  it("keeps valid ages and progress from storage and drops anything else", () => {
+    seed({
+      players: [{ name: "Ada", coins: 1, age: "99", progress: { "cvc/beginning-sound": 3, broken: "x", negative: -2 }, extra: true }],
+      current: "Ada",
+    });
+    const { result } = renderHook(() => usePlayers());
+    expect(result.current.currentPlayer).toEqual({ name: "Ada", coins: 1, progress: { "cvc/beginning-sound": 3 } });
   });
 
   it("does not allow the same name twice, ignoring case", () => {
@@ -60,7 +104,7 @@ describe("usePlayers", () => {
 
     let problem;
     act(() => {
-      problem = result.current.createPlayer("ada");
+      problem = result.current.createPlayer("ada", "3-4");
     });
 
     expect(problem).toBe("Ada is already a player. Tap their name above.");
@@ -122,13 +166,13 @@ describe("usePlayers", () => {
     const { result } = renderHook(() => usePlayers());
 
     act(() => {
-      result.current.createPlayer("Ada");
+      result.current.createPlayer("Ada", "3-4");
     });
     act(() => {
-      result.current.createPlayer("Elly");
+      result.current.createPlayer("Elly", "5-6");
     });
 
-    expect(stored().players).toEqual([{ name: "Ada", coins: 9 }, { name: "Elly", coins: 0 }]);
+    expect(stored().players).toEqual([{ name: "Ada", coins: 9, age: "3-4" }, { name: "Elly", coins: 0, age: "5-6" }]);
     expect(window.localStorage.getItem("letter-jumble:rainbow-coins")).toBeNull();
   });
 
@@ -153,9 +197,9 @@ describe("usePlayers", () => {
 
     const { result } = renderHook(() => usePlayers());
     act(() => {
-      result.current.createPlayer("Ada");
+      result.current.createPlayer("Ada", "3-4");
     });
     act(() => result.current.addCoin());
-    expect(result.current.currentPlayer).toEqual({ name: "Ada", coins: 1 });
+    expect(result.current.currentPlayer).toEqual({ name: "Ada", coins: 1, age: "3-4" });
   });
 });

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+<g stroke="#4b2e22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<path d="M0 74h128v54H0Z" fill="#8cc8f2"/>
+<g fill="none" stroke="#ffffff" stroke-width="3"><path d="M10 86q6-4 12 0t12 0"/><path d="M76 82q6-4 12 0t12 0"/></g>
+<path d="M0 100q40-14 80-4t48-2v34H0Z" fill="#ffe2a8"/>
+<path d="M62.0 34.0L69.0 34.0" stroke="#4b2e22" stroke-width="10"/><path d="M62.0 34.0L69.0 34.0" stroke="#ffb84a" stroke-width="4"/><path d="M54.4 52.4L59.3 57.3" stroke="#4b2e22" stroke-width="10"/><path d="M54.4 52.4L59.3 57.3" stroke="#ffb84a" stroke-width="4"/><path d="M36.0 60.0L36.0 67.0" stroke="#4b2e22" stroke-width="10"/><path d="M36.0 60.0L36.0 67.0" stroke="#ffb84a" stroke-width="4"/><path d="M17.6 52.4L12.7 57.3" stroke="#4b2e22" stroke-width="10"/><path d="M17.6 52.4L12.7 57.3" stroke="#ffb84a" stroke-width="4"/><path d="M10.0 34.0L3.0 34.0" stroke="#4b2e22" stroke-width="10"/><path d="M10.0 34.0L3.0 34.0" stroke="#ffb84a" stroke-width="4"/><path d="M17.6 15.6L12.7 10.7" stroke="#4b2e22" stroke-width="10"/><path d="M17.6 15.6L12.7 10.7" stroke="#ffb84a" stroke-width="4"/><path d="M36.0 8.0L36.0 1.0" stroke="#4b2e22" stroke-width="10"/><path d="M36.0 8.0L36.0 1.0" stroke="#ffb84a" stroke-width="4"/><path d="M54.4 15.6L59.3 10.7" stroke="#4b2e22" stroke-width="10"/><path d="M54.4 15.6L59.3 10.7" stroke="#ffb84a" stroke-width="4"/><circle cx="36" cy="34" r="20" fill="#ffd45e"/>
+<path d="M22 32h28" stroke-width="3"/><rect x="22" y="28" width="12" height="9" rx="4" fill="#4b2e22"/><rect x="38" y="28" width="12" height="9" rx="4" fill="#4b2e22"/>
+<path d="M31 43q5 4 10 0" fill="none" stroke-width="3"/>
+<circle cx="92" cy="98" r="18" fill="#ffffff"/>
+<path d="M92 80a18 18 0 0 1 0 36q-10-18 0-36Z" fill="#ff8fa3" stroke-width="3"/>
+<path d="M92 80a18 18 0 0 0 0 36q-6-18 0-36Z" fill="#8cc8f2" stroke="none"/>
+<circle cx="92" cy="98" r="18" fill="none"/>
+<path d="M104 30L100 74" stroke="#4b2e22" stroke-width="10"/><path d="M104 30L100 74" stroke="#c98a5a" stroke-width="4"/>
+<path d="M104 30q-16-6-26 4 12-2 26-4Zm0 0q6-14 18-12-10 4-18 12Zm0 0q14 2 16 14-6-10-16-14Z" fill="#8fd6a8" stroke-width="3"/>
+</g>
+</svg>

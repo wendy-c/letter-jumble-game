@@ -1,7 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { dragonActions, dragonName, petAction } from "../dragon-data";
+import { sounds } from "../lib/sounds";
 import DragonScene from "./DragonScene";
 import GameFooter from "./GameFooter";
+
+const sections = [
+  { kind: "treat", label: "Treats", icon: "🍎" },
+  { kind: "groom", label: "Grooming", icon: "🛁" },
+  { kind: "activity", label: "Activities", icon: "🎨" },
+];
 
 const idleMessage = `Tap ${dragonName} for a snuggle, or treat her with your rainbow coins!`;
 
@@ -29,6 +36,8 @@ export default function DragonDen({ coins, onSpendCoins, onBack }) {
   const [command, setCommand] = useState(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState(idleMessage);
+  const [section, setSection] = useState(sections[0].kind);
+  const tabRefs = useRef({});
   const timerRef = useRef(null);
   const busyRef = useRef(false);
 
@@ -36,7 +45,10 @@ export default function DragonDen({ coins, onSpendCoins, onBack }) {
 
   const play = useCallback((action) => {
     if (busyRef.current) return;
-    if (action.cost > 0 && !onSpendCoins(action.cost)) return;
+    if (action.cost > 0) {
+      if (!onSpendCoins(action.cost)) return;
+      sounds.coin();
+    }
 
     busyRef.current = true;
     setBusy(true);
@@ -51,12 +63,21 @@ export default function DragonDen({ coins, onSpendCoins, onBack }) {
   }, [onSpendCoins]);
 
   const pet = useCallback(() => play(petAction), [play]);
-  const treats = dragonActions.filter((action) => action.kind === "treat");
-  const grooming = dragonActions.filter((action) => action.kind === "groom");
   const cheapest = Math.min(...dragonActions.map((action) => action.cost));
 
+  // Left/right arrow keys move between the tabs, as screen reader users expect.
+  function handleTabKeyDown(event) {
+    const step = { ArrowRight: 1, ArrowLeft: -1 }[event.key];
+    if (!step) return;
+    event.preventDefault();
+    const index = sections.findIndex((candidate) => candidate.kind === section);
+    const next = sections[(index + step + sections.length) % sections.length].kind;
+    setSection(next);
+    tabRefs.current[next]?.focus();
+  }
+
   return (
-    <section className="game-wrap mx-auto w-full max-w-6xl" aria-labelledby="game-title">
+    <section className="game-wrap dragon-wrap mx-auto w-full max-w-6xl" aria-labelledby="game-title">
       <div className="game-heading">
         <div>
           <button className="category-back" type="button" onClick={onBack}>
@@ -82,16 +103,34 @@ export default function DragonDen({ coins, onSpendCoins, onBack }) {
         </div>
 
         <div className="dragon-panel">
-          <h2 className="dragon-panel-title">Treats</h2>
-          <div className="dragon-actions">
-            {treats.map((action) => (
-              <ActionButton key={action.id} action={action} coins={coins} busy={busy} onUse={play} />
+          <div className="dragon-tabs" role="tablist" aria-label={`Things to do with ${dragonName}`} onKeyDown={handleTabKeyDown}>
+            {sections.map(({ kind, label, icon }) => (
+              <button
+                className="dragon-tab"
+                type="button"
+                role="tab"
+                key={kind}
+                id={`dragon-tab-${kind}`}
+                ref={(element) => {
+                  tabRefs.current[kind] = element;
+                }}
+                aria-selected={section === kind}
+                aria-controls={`dragon-section-${kind}`}
+                tabIndex={section === kind ? 0 : -1}
+                onClick={() => setSection(kind)}
+              >
+                <span aria-hidden="true">{icon}</span> {label}
+              </button>
             ))}
           </div>
 
-          <h2 className="dragon-panel-title">Grooming</h2>
-          <div className="dragon-actions">
-            {grooming.map((action) => (
+          <div
+            className="dragon-actions"
+            role="tabpanel"
+            id={`dragon-section-${section}`}
+            aria-labelledby={`dragon-tab-${section}`}
+          >
+            {dragonActions.filter((action) => action.kind === section).map((action) => (
               <ActionButton key={action.id} action={action} coins={coins} busy={busy} onUse={play} />
             ))}
           </div>

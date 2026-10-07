@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { categories } from "./game-data";
 import { cvcModes } from "./cvc-data";
-import { games } from "./games-data";
+import { gamesForAge, isGameForAge } from "./games-data";
 import AnswerPanel from "./components/AnswerPanel";
 import GameFooter from "./components/GameFooter";
 import GameHeading from "./components/GameHeading";
@@ -18,6 +18,7 @@ import TopicMenu from "./components/TopicMenu";
 import WordMenu from "./components/WordMenu";
 import { getSpellingGuides, scramble, slotCount } from "./lib/spelling";
 import { speakWord, stopSpeaking } from "./lib/speech";
+import { sounds } from "./lib/sounds";
 import { usePlayers } from "./lib/use-players";
 
 const rewardMessages = ["Amazing!", "Well done!", "You did it!", "Fantastic!", "Brilliant!"];
@@ -29,9 +30,13 @@ export default function Home() {
   const [placed, setPlaced] = useState([]);
   const [checked, setChecked] = useState(false);
   const [voiceMessage, setVoiceMessage] = useState("");
-  const { players, currentPlayer, createPlayer, selectPlayer, logOut, addCoin, spendCoins } = usePlayers();
+  const {
+    players, currentPlayer, createPlayer, setPlayerAge, selectPlayer, logOut, addCoin, spendCoins, saveProgress,
+  } = usePlayers();
   const rainbowCoins = currentPlayer?.coins ?? 0;
   const [playerDialogOpen, setPlayerDialogOpen] = useState(false);
+  // A player saved before ages existed, who needs to say how old they are before playing.
+  const [askAgeFor, setAskAgeFor] = useState(null);
   // The game chosen before anyone was playing; it opens once a player is picked.
   const [pendingGame, setPendingGame] = useState(null);
   const [rewardMessage, setRewardMessage] = useState("");
@@ -59,43 +64,59 @@ export default function Home() {
   const closePlayerDialog = useCallback(() => {
     setPlayerDialogOpen(false);
     setPendingGame(null);
+    setAskAgeFor(null);
   }, []);
+
+  const progressKey = (topic) => `${selectedGame?.id}/${topic.id}`;
 
   function resetAnswer() {
     setChecked(false);
     setRewardMessage("");
   }
 
-  function selectCategory(category) {
+  // Opens a topic at the word the player got up to (or the start once it's been completed).
+  function selectCategory(category, progress = currentPlayer?.progress) {
+    const saved = progress?.[progressKey(category)] ?? 0;
+    const start = saved < category.words.length ? saved : 0;
     setSelectedCategory(category);
-    setRound(0);
-    setPlaced(Array(slotCount(category.words[0], 0)).fill(null));
+    setRound(start);
+    setPlaced(Array(slotCount(category.words[start], start)).fill(null));
     setVoiceMessage("");
     resetAnswer();
   }
 
   function requestGame(game) {
-    if (currentPlayer) {
+    if (currentPlayer?.age) {
       selectGame(game);
-    } else {
-      setPendingGame(game);
-      setPlayerDialogOpen(true);
+      return;
     }
+    setPendingGame(game);
+    setAskAgeFor(currentPlayer ? currentPlayer.name : null);
+    setPlayerDialogOpen(true);
   }
 
-  function finishChoosingPlayer() {
-    if (pendingGame) selectGame(pendingGame);
+  // Opens the game that was waiting, if it suits the player's age, or leaves a game that doesn't.
+  function finishChoosingPlayer(name, age) {
+    if (pendingGame) {
+      if (isGameForAge(pendingGame, age)) selectGame(pendingGame);
+      else showGames();
+    } else if (selectedGame && !isGameForAge(selectedGame, age)) {
+      showGames();
+    } else if (selectedCategory) {
+      // Pick up the new player's own place in this topic.
+      selectCategory(selectedCategory, players.find((player) => player.name === name)?.progress);
+    }
     closePlayerDialog();
   }
 
-  function choosePlayer(name) {
+  function choosePlayer(name, age) {
     selectPlayer(name);
-    finishChoosingPlayer();
+    finishChoosingPlayer(name, age);
   }
 
-  function addPlayer(name) {
-    const problem = createPlayer(name);
-    if (!problem) finishChoosingPlayer();
+  function addPlayer(name, age) {
+    const problem = createPlayer(name, age);
+    if (!problem) finishChoosingPlayer(name, age);
     return problem;
   }
 
@@ -156,6 +177,7 @@ export default function Home() {
   function checkAnswer() {
     setChecked(true);
     if (complete && !checked) {
+      sounds.correct();
       setRewardMessage(rewardMessages[rainbowCoins % rewardMessages.length]);
       addCoin();
     }
@@ -166,6 +188,7 @@ export default function Home() {
   }
 
   function selectWord(wordIndex) {
+    saveProgress(progressKey(selectedCategory), wordIndex);
     setRound(wordIndex);
     setPlaced(Array(slotCount(selectedCategory.words[wordIndex], wordIndex)).fill(null));
     setVoiceMessage("");
@@ -175,7 +198,7 @@ export default function Home() {
   }
 
   return (
-    <main className="app-shell min-h-screen px-4 py-5 sm:px-8 sm:py-8">
+    <main className={`app-shell min-h-screen px-4 py-5 sm:px-8 sm:py-8${selectedGame?.id === "dragon" ? " app-shell-fit" : ""}`}>
       <SiteHeader badge={selectedGame?.badge ?? "SPELLING SCHOOL"}>
         {currentPlayer && (
           <PlayerMenu player={currentPlayer} onSwitch={() => setPlayerDialogOpen(true)} onLogOut={handleLogOut} />
@@ -183,12 +206,18 @@ export default function Home() {
       </SiteHeader>
 
       {!selectedGame ? (
-        <GamePicker games={games} onSelectGame={requestGame} />
+        <GamePicker games={gamesForAge(currentPlayer?.age)} onSelectGame={requestGame} />
       ) : !selectedCategory ? (
         selectedGame.id === "dragon" ? (
           <DragonDen coins={rainbowCoins} onSpendCoins={spendCoins} onBack={showGames} />
         ) : (
-          <TopicMenu isCvc={isCvc} topics={gameTopics} onBack={showGames} onSelectTopic={selectCategory} />
+          <TopicMenu
+            isCvc={isCvc}
+            topics={gameTopics}
+            progressFor={(topic) => currentPlayer?.progress?.[progressKey(topic)] ?? 0}
+            onBack={showGames}
+            onSelectTopic={(topic) => selectCategory(topic)}
+          />
         )
       ) : (
         <section className="game-wrap mx-auto w-full max-w-6xl" aria-labelledby="game-title">
@@ -242,8 +271,10 @@ export default function Home() {
         <PlayerDialog
           players={players}
           currentName={currentPlayer?.name}
+          askAgeFor={askAgeFor}
           onSelect={choosePlayer}
           onCreate={addPlayer}
+          onSetAge={setPlayerAge}
           onClose={closePlayerDialog}
         />
       )}

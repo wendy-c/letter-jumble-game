@@ -126,6 +126,42 @@ export const categories = [
       ["Pirate", "🏴‍☠️"],
     ],
   },
+  {
+    id: "days-of-the-week",
+    name: "Days of the Week",
+    icon: "/images/icons/days-of-the-week.svg",
+    color: "peach",
+    words: [
+      ["Monday", "/images/words/days-of-the-week/monday.svg"],
+      ["Tuesday", "/images/words/days-of-the-week/tuesday.svg"],
+      ["Wednesday", "/images/words/days-of-the-week/wednesday.svg"],
+      ["Thursday", "/images/words/days-of-the-week/thursday.svg"],
+      ["Friday", "/images/words/days-of-the-week/friday.svg"],
+      ["Saturday", "/images/words/days-of-the-week/saturday.svg"],
+      ["Sunday", "/images/words/days-of-the-week/sunday.svg"],
+    ],
+  },
+  {
+    id: "weather-and-seasons",
+    name: "Weather and Seasons",
+    icon: "/images/icons/weather-and-seasons.svg",
+    color: "lilac",
+    words: [
+      ["Spring", "/images/words/weather-and-seasons/spring.svg"],
+      ["Summer", "/images/words/weather-and-seasons/summer.svg"],
+      ["Autumn", "/images/words/weather-and-seasons/autumn.svg"],
+      ["Winter", "/images/words/weather-and-seasons/winter.svg"],
+      ["Cloudy", "/images/words/weather-and-seasons/cloudy.svg"],
+      ["Snowy", "/images/words/weather-and-seasons/snowy.svg"],
+      ["Windy", "/images/words/weather-and-seasons/windy.svg"],
+      ["Rainy", "/images/words/weather-and-seasons/rainy.svg"],
+      ["Sunny", "/images/words/weather-and-seasons/sunny.svg"],
+      ["Stormy", "/images/words/weather-and-seasons/stormy.svg"],
+      ["Foggy", "/images/words/weather-and-seasons/foggy.svg"],
+      ["Temperature", "/images/words/weather-and-seasons/temperature.svg"],
+      ["Rainbow", "/images/words/weather-and-seasons/rainbow.svg"],
+    ],
+  }
 ].map((category) => ({
   ...category,
   words: category.words.map((entry) => {

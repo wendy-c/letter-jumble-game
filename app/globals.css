@@ -1813,12 +1813,48 @@ h1 span {
   font-weight: 700;
 }
 
-.player-form label {
+.player-form label,
+.player-form-label {
   display: block;
-  margin-bottom: 8px;
+  margin: 0 0 8px;
   color: var(--muted);
   font-size: 13px;
   font-weight: 600;
+}
+
+.player-form-label {
+  margin-top: 16px;
+}
+
+.age-choice {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.age-option {
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  padding: 13px 10px;
+  box-shadow: 0 3px 0 var(--line);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+
+.age-option:hover {
+  border-color: var(--magic);
+  transform: translateY(-2px);
+}
+
+.age-option-selected {
+  border-color: var(--magic);
+  background: var(--magic-soft);
+  box-shadow: 0 3px 0 var(--line-strong);
+  color: var(--magic-dark);
 }
 
 .player-form-row {
@@ -1827,8 +1863,7 @@ h1 span {
 }
 
 .player-form input {
-  min-width: 0;
-  flex: 1;
+  width: 100%;
   border: 2px solid var(--line-strong);
   border-radius: 999px;
   background: #fff;
@@ -1847,9 +1882,9 @@ h1 span {
   border-color: var(--pink);
 }
 
-.player-form .action-button {
-  min-width: 0;
-  flex: 0 0 auto;
+.player-form .player-form-submit {
+  width: 100%;
+  margin-top: 16px;
 }
 
 .player-form-error {
@@ -1860,14 +1895,13 @@ h1 span {
 }
 
 /* ---------- Rainbow dragon ---------- */
-
 .dragon-card {
   grid-template-columns: 1.35fr 1fr;
 }
 
 .dragon-stage-wrap {
   position: relative;
-  min-height: 460px;
+  min-height: 0;
   background:
     radial-gradient(circle, rgb(255 255 255 / 90%) 1.6px, transparent 2.4px) 10px 14px / 70px 66px,
     radial-gradient(ellipse at 50% 100%, #fff3fa 0%, transparent 60%),
@@ -1931,11 +1965,42 @@ h1 span {
   padding: 26px clamp(20px, 3vw, 36px);
 }
 
-.dragon-panel-title {
-  margin: 4px 0 0;
+/* Treats / Grooming / Activities tabs, always in view above the items. */
+.dragon-tabs {
+  position: sticky;
+  z-index: 1;
+  top: 0;
+  display: grid;
+  flex: none;
+  box-shadow: 0 0 0 6px var(--card);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  border-radius: 999px;
+  background: var(--magic-soft);
+  padding: 4px;
+}
+
+.dragon-tab {
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  padding: 9px 6px;
+  color: var(--magic-dark);
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background 140ms ease, box-shadow 140ms ease;
+}
+
+.dragon-tab:hover {
+  background: rgb(255 255 255 / 60%);
+}
+
+.dragon-tab[aria-selected="true"] {
+  background: #fff;
+  box-shadow: 0 2px 0 var(--line-strong);
   color: var(--ink);
-  font-size: 19px;
-  font-weight: 700;
 }
 
 .dragon-actions {
@@ -2097,7 +2162,34 @@ a:focus-visible {
     grid-template-columns: 1fr;
   }
 
-  /* On phones the speech bubble sits under Mochi instead of over her head. */
+  /* On phones Mochi's stage sits above a scrolling shelf of items, with the
+     speech bubble under her instead of over her head. */
+  .dragon-wrap {
+    padding-top: 10px;
+  }
+
+  .dragon-wrap .game-heading {
+    margin-bottom: 10px;
+  }
+
+  .dragon-wrap .heading-note,
+  .dragon-wrap .eyebrow,
+  .dragon-wrap .game-footer {
+    display: none;
+  }
+
+  .dragon-wrap h1 {
+    font-size: 26px;
+  }
+
+  .dragon-wrap .game-card.dragon-card {
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+
+  .dragon-panel {
+    max-height: 48dvh;
+  }
+
   .dragon-stage-wrap {
     display: flex;
     min-height: 0;
@@ -2106,16 +2198,49 @@ a:focus-visible {
 
   .dragon-stage {
     position: relative;
-    height: 330px;
+    min-height: 0;
+    flex: 1;
   }
 
   .dragon-bubble {
     position: static;
-    margin: 0 16px 16px;
+    margin: 0 12px 10px;
+    padding: 6px 12px;
+    font-size: 13px;
   }
 
   .dragon-panel {
-    padding: 20px 18px 22px;
+    gap: 8px;
+    padding: 12px 14px 16px;
+  }
+
+  .dragon-tab {
+    padding: 8px 4px;
+    font-size: 13px;
+  }
+
+  /* Coins sit beside the title, leaving more room for Mochi. */
+  .dragon-wrap .game-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .dragon-wrap .heading-progress {
+    margin-top: 0;
+  }
+
+  .dragon-wrap .rainbow-coin-counter {
+    min-width: 0;
+  }
+
+  .dragon-action {
+    padding: 7px 10px;
+  }
+
+  .dragon-action-icon {
+    font-size: 24px;
   }
 
   .game-choice-card {
@@ -2333,5 +2458,12 @@ a:focus-visible {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* Short phones: a smaller shelf of items, so Mochi still has room. */
+@media (max-width: 700px) and (max-height: 700px) {
+  .dragon-panel {
+    max-height: 40dvh;
   }
 }
