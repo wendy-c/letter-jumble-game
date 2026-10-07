@@ -110,9 +110,9 @@ export const categories = [
     color: "yellow",
     words: [
       ["Band", "🎸"],
-      ["Sailing", "💿"],
+      ["Sailing", "⛵"],
       ["Comic book", "📖"],
-      ["Fishing", "📀"],
+      ["Fishing", "🎣"],
       ["Film", "🎬"],
       ["Movie", "🎬"],
       ["Goal", "🥅"],
@@ -122,8 +122,8 @@ export const categories = [
       ["Present", "🎁"],
       ["Roller skates", "🛼"],
       ["Ticket", "🎟️"],
-      ["Videoing", "🎟️"],
-      ["Pirate", "🎟️"],
+      ["Videoing", "📹"],
+      ["Pirate", "🏴‍☠️"],
     ],
   },
 ].map((category) => ({
