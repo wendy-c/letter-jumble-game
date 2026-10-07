@@ -1,6 +1,17 @@
+function visitLetterJumble(options) {
+  cy.visit("/", options);
+  cy.contains("button", "Letter Jumble").click();
+}
+
+function visitCvcMode(mode) {
+  cy.visit("/");
+  cy.contains("button", "CVC Sounds").click();
+  cy.contains("button", mode).click();
+}
+
 describe("Movers spelling game", () => {
   it("lets a learner spell a word, check it, and continue", () => {
-    cy.visit("/");
+    visitLetterJumble();
     cy.contains("h1", "Letter Jumble");
     cy.get(".category-card").should("have.length", 6);
     cy.contains("button", "Animals").click();
@@ -32,7 +43,7 @@ describe("Movers spelling game", () => {
   });
 
   it("keeps collected rainbow coins after reloading the page", () => {
-    cy.visit("/");
+    visitLetterJumble();
     cy.contains("button", "Animals").click();
     ["b", "a", "t"].forEach((letter) => {
       cy.get(`.letter-tile[data-letter="${letter}"]`).not(".tile-used").click();
@@ -42,12 +53,13 @@ describe("Movers spelling game", () => {
     cy.window().its("localStorage").invoke("getItem", "letter-jumble:rainbow-coins").should("eq", "1");
 
     cy.reload();
+    cy.contains("button", "Letter Jumble").click();
     cy.contains("button", "Animals").click();
     cy.get('[aria-label="1 rainbow coins collected"]').should("exist");
   });
 
   it("starts from a previously saved rainbow coin count", () => {
-    cy.visit("/", {
+    visitLetterJumble({
       onBeforeLoad(win) {
         win.localStorage.setItem("letter-jumble:rainbow-coins", "7");
       },
@@ -57,7 +69,7 @@ describe("Movers spelling game", () => {
   });
 
   it("does not reward an incorrect answer", () => {
-    cy.visit("/");
+    visitLetterJumble();
     cy.contains("button", "Animals").click();
 
     ["b", "t", "a"].forEach((letter) => {
@@ -70,7 +82,7 @@ describe("Movers spelling game", () => {
   });
 
   it("opens the word menu and starts a selected word with an empty answer", () => {
-    cy.visit("/");
+    visitLetterJumble();
     cy.contains("button", "Animals").click();
     cy.get('.letter-tile[data-letter="b"]').click();
     cy.get(".letter-slot").eq(0).should("contain.text", "b");
@@ -88,7 +100,7 @@ describe("Movers spelling game", () => {
   });
 
   it("marks vowel and consonant teams and other sounds in the spelling guide", () => {
-    cy.visit("/");
+    visitLetterJumble();
     cy.contains("button", "Places and Travel").click();
     cy.get('button[aria-label="Browse Places and Travel words"]').click();
     cy.get('button[role="switch"]').contains("Spelling guide").click();
@@ -107,7 +119,7 @@ describe("Movers spelling game", () => {
   });
 
   it("hides the spelling guide by default and toggles it on and off", () => {
-    cy.visit("/");
+    visitLetterJumble();
     cy.contains("button", "Animals").click();
     cy.get('button[role="switch"]').should("not.exist");
     cy.get('.letter-slot[class*="letter-slot-guide-"]').should("not.exist");
@@ -129,7 +141,7 @@ describe("Movers spelling game", () => {
   });
 
   it("marks ph as a consonant team in dolphin", () => {
-    cy.visit("/");
+    visitLetterJumble();
     cy.contains("button", "Animals").click();
     cy.get('button[aria-label="Browse Animals words"]').click();
     cy.get('button[role="switch"]').contains("Spelling guide").click();
@@ -145,7 +157,7 @@ describe("Movers spelling game", () => {
   });
 
   it("marks sh and th as consonant teams", () => {
-    cy.visit("/");
+    visitLetterJumble();
     cy.contains("button", "Animals").click();
     cy.get('button[aria-label="Browse Animals words"]').click();
     cy.get('button[role="switch"]').contains("Spelling guide").click();
@@ -162,7 +174,7 @@ describe("Movers spelling game", () => {
   });
 
   it("closes the word menu with Escape", () => {
-    cy.visit("/");
+    visitLetterJumble();
     cy.contains("button", "Animals").click();
     cy.get('button[aria-label="Browse Animals words"]').click();
     cy.get('[role="dialog"]').should("be.visible");
@@ -171,7 +183,7 @@ describe("Movers spelling game", () => {
   });
 
   it("places tapped letters in the first available box", () => {
-    cy.visit("/");
+    visitLetterJumble();
     cy.contains("button", "Animals").click();
 
     cy.get('.letter-tile[data-letter="t"]').click();
@@ -186,7 +198,7 @@ describe("Movers spelling game", () => {
   });
 
   it("speaks the current word with an available British female voice", () => {
-    cy.visit("/");
+    visitLetterJumble();
     cy.contains("button", "Animals").click();
     cy.window().then((window) => {
       cy.stub(window.speechSynthesis, "cancel");
@@ -211,7 +223,7 @@ describe("Movers spelling game", () => {
   });
 
   it("explains when no female voice is available", () => {
-    cy.visit("/");
+    visitLetterJumble();
     cy.contains("button", "Animals").click();
     cy.window().then((window) => {
       cy.stub(window.speechSynthesis, "getVoices").returns([
@@ -226,18 +238,105 @@ describe("Movers spelling game", () => {
   });
 
   it("gives feedback when the answer is not yet complete", () => {
-    cy.visit("/");
+    visitLetterJumble();
     cy.contains("button", "Animals").click();
     cy.contains("button", "Check word").click();
     cy.contains("Fill every box before you check.");
   });
 
   it("opens another category and can return to the game selection", () => {
-    cy.visit("/");
+    visitLetterJumble();
     cy.contains("button", "Body and Face").click();
     cy.contains("01 / 13");
     cy.get(".letter-bank .letter-tile").should("have.length", 5);
     cy.contains("button", "All games").click();
     cy.contains("h1", "Letter Jumble");
+  });
+});
+
+describe("CVC sounds game", () => {
+  it("offers both games and the four CVC modes", () => {
+    cy.visit("/");
+    cy.contains("h1", "Pick a game");
+    cy.get(".game-choice-card").should("have.length", 2);
+    cy.contains("button", "CVC Sounds").click();
+    cy.contains("h1", "CVC Sounds");
+    cy.get(".category-card").should("have.length", 4);
+    ["Beginning Sound", "Middle Sound", "Ending Sound", "Mixed Sounds"].forEach((mode) => {
+      cy.contains(".category-card", mode).should("contain.text", "46");
+    });
+    cy.contains("button", "Choose a game").click();
+    cy.contains("h1", "Pick a game");
+  });
+
+  it("leaves only the beginning letter to fill in", () => {
+    visitCvcMode("Beginning Sound");
+    cy.contains("01 / 46");
+    cy.get(".letter-slot").should("have.length", 1);
+    cy.get(".letter-given").should("have.length", 2).then(($letters) => {
+      expect([...$letters].map((letter) => letter.textContent)).to.deep.equal(["a", "t"]);
+    });
+    cy.get(".letter-slots").children().children().first().should("have.class", "letter-slot");
+    cy.get(".letter-bank .letter-tile").should("have.length", 4);
+    cy.get('[role="switch"]').should("not.exist");
+
+    cy.get('.letter-tile[data-letter="c"]').click();
+    cy.contains("button", "Check word").click();
+    cy.get(".reward-card").should("contain.text", "Amazing!");
+    cy.get(".reward-card").click();
+    cy.contains("02 / 46");
+  });
+
+  it("offers every short vowel for the middle sound", () => {
+    visitCvcMode("Middle Sound");
+    cy.get(".letter-given").then(($letters) => {
+      expect([...$letters].map((letter) => letter.textContent)).to.deep.equal(["c", "t"]);
+    });
+    cy.get(".letter-bank .letter-tile").then(($tiles) => {
+      expect([...$tiles].map((tile) => tile.dataset.letter)).to.deep.equal(["a", "e", "i", "o", "u"]);
+    });
+
+    cy.get('.letter-tile[data-letter="o"]').click();
+    cy.get('.letter-tile[data-letter="a"]').click();
+    cy.get(".letter-slot").should("contain.text", "a");
+    cy.get('.letter-tile[data-letter="o"]').should("not.have.class", "tile-used");
+    cy.contains("button", "Check word").click();
+    cy.get(".reward-card").should("exist");
+  });
+
+  it("says not quite when the wrong ending sound is picked", () => {
+    visitCvcMode("Ending Sound");
+    cy.get(".letter-given").then(($letters) => {
+      expect([...$letters].map((letter) => letter.textContent)).to.deep.equal(["c", "a"]);
+    });
+    cy.get('.letter-tile[data-letter="x"]').click();
+    cy.contains("button", "Check word").click();
+    cy.contains("Not quite");
+    cy.get(".reward-card").should("not.exist");
+
+    cy.get(".letter-slot").click();
+    cy.get(".letter-slot").should("not.contain.text", "x");
+    cy.contains("button", "Check word").click();
+    cy.contains("Fill every box before you check.");
+  });
+
+  it("mixes beginning, middle and ending sounds", () => {
+    visitCvcMode("Mixed Sounds");
+    const expectSlotAt = (position) => {
+      cy.get(".letter-slots .letter-word").children().eq(position).should("have.class", "letter-slot");
+    };
+    expectSlotAt(0);
+    cy.get('button[aria-label="Browse Mixed Sounds words"]').click();
+    cy.get(".word-menu-item").contains("Hat").click();
+    expectSlotAt(1);
+    cy.get('button[aria-label="Browse Mixed Sounds words"]').click();
+    cy.get(".word-menu-item").contains("Bat").click();
+    expectSlotAt(2);
+  });
+
+  it("returns from a CVC mode to the list of sounds", () => {
+    visitCvcMode("Beginning Sound");
+    cy.contains("button", "All sounds").click();
+    cy.contains("h1", "CVC Sounds");
   });
 });

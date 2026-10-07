@@ -363,6 +363,39 @@ button {
   letter-spacing: 1px;
 }
 
+.letter-pattern {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--ink);
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.letter-pattern-blank {
+  width: 12px;
+  height: 17px;
+  border: 2px dashed var(--pink);
+  border-radius: 4px;
+}
+
+.game-choice-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.game-choice-card {
+  min-height: 210px;
+}
+
+.game-choice-card .category-card-name {
+  font-size: 26px;
+}
+
+.mode-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .category-card-icon img {
   width: 86%;
   height: 86%;
@@ -930,10 +963,24 @@ h1 span {
   background: #fbf8ff;
   color: var(--ink);
   cursor: pointer;
-  font-size: calc(var(--slot-size) * 0.5);
+  font-size: calc(var(--slot-size) * 0.56);
   font-weight: 700;
-  text-transform: uppercase;
   transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+/* Letters already given in CVC Sounds: solid and not tappable, so the gap stands out. */
+.letter-given {
+  display: grid;
+  width: var(--slot-size);
+  height: calc(var(--slot-size) * 1.15);
+  flex: 0 0 auto;
+  place-items: center;
+  border: 2px solid var(--line-strong);
+  border-radius: calc(var(--slot-size) * 0.3);
+  background: #fff;
+  color: var(--ink);
+  font-size: calc(var(--slot-size) * 0.56);
+  font-weight: 700;
 }
 
 .letter-slot::after {
@@ -1162,9 +1209,8 @@ h1 span {
   box-shadow: 0 4px 0 var(--line-strong);
   color: var(--ink);
   cursor: pointer;
-  font-size: 19px;
+  font-size: 22px;
   font-weight: 700;
-  text-transform: uppercase;
   transition: opacity 140ms ease, transform 140ms ease, background 140ms ease;
 }
 
@@ -1660,6 +1706,18 @@ a:focus-visible {
   .category-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 11px;
+  }
+
+  .game-choice-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .game-choice-card {
+    min-height: 160px;
+  }
+
+  .game-choice-card .category-card-name {
+    font-size: 22px;
   }
 
   .category-card {
