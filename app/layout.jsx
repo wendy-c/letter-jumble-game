@@ -1,9 +1,9 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Word Wave — Movers spelling practice",
+  title: "Learn with Ada and Elly — Games for Kindergarteners",
   description:
-    "A picture-based spelling game to help young learners practise Cambridge Movers vocabulary.",
+    "A collection of educational games for young learners.",
 };
 
 export default function RootLayout({ children }) {
