@@ -75,3 +75,39 @@ describe("food", () => {
     expect(images.filter((image) => !fs.existsSync(path.join(publicDir, image)))).toEqual([]);
   });
 });
+
+describe("every topic", () => {
+  it("has the topics in order: colours, food, fruit, animals, clothes", () => {
+    expect(chineseTopics.map((topic) => topic.name)).toEqual(["顏色", "食物", "水果", "動物", "衣物"]);
+  });
+
+  it.each([
+    ["水果", ["蘋", "芒", "莓", "梨", "瓜", "葡", "橙", "蕉", "菠", "檸"]],
+    ["動物", ["虎", "狗", "雞", "貓", "馬", "豬", "熊", "牛", "羊", "獅", "鼠", "鵝", "兔", "象"]],
+    ["衣物", ["帽", "裙", "褲", "衫", "襪", "鞋", "衣"]],
+  ])("%s has its characters in order", (name, characters) => {
+    const topic = chineseTopics.find((candidate) => candidate.name === name);
+    expect(topic.words.map((word) => word.character)).toEqual(characters);
+  });
+
+  it("only uses phrases that contain their character", () => {
+    chineseTopics.flatMap((topic) => topic.words).forEach((word) => {
+      (word.phrases ?? []).forEach((phrase) => expect(phrase).toContain(word.character));
+    });
+  });
+
+  it("offers four different pictures each time, never pairing look-alikes (衫 and 衣)", () => {
+    chineseTopics.flatMap((topic) => topic.words).forEach((word) => {
+      const characters = word.options.map((option) => option.character);
+      expect(new Set(word.options.map((option) => option.picture)).size).toBe(4);
+      expect(characters).toContain(word.character);
+      expect(characters.includes("衫") && characters.includes("衣")).toBe(false);
+    });
+  });
+
+  it("has every picture and icon file", () => {
+    const images = chineseTopics.flatMap((topic) => [topic.icon, ...topic.words.flatMap((word) => [word.picture, ...word.options.map((option) => option.picture)])]);
+    expect(images.filter((image) => !fs.existsSync(path.join(publicDir, image)))).toEqual([]);
+  });
+});
+

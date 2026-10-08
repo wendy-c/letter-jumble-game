@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+<defs><clipPath id="pine-body"><ellipse cx="64" cy="82" rx="30" ry="34"/></clipPath></defs>
+<g stroke="#4b2e22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<path d="M64 52 40 22 54 40Z" fill="#6cc28a" stroke-width="3"/><path d="M64 52 88 22 74 40Z" fill="#6cc28a" stroke-width="3"/><path d="M64 52 56 8 66 40Z" fill="#6cc28a" stroke-width="3"/><path d="M64 52 72 8 62 40Z" fill="#6cc28a" stroke-width="3"/>
+<ellipse cx="64" cy="82" rx="30" ry="34" fill="#ffc94a"/>
+<g clip-path="url(#pine-body)" fill="none" stroke="#e0a52a" stroke-width="2.5"><path d="M4 40l44 84M48 40l-44 84"/><path d="M20 40l44 84M64 40l-44 84"/><path d="M36 40l44 84M80 40l-44 84"/><path d="M52 40l44 84M96 40l-44 84"/><path d="M68 40l44 84M112 40l-44 84"/><path d="M84 40l44 84M128 40l-44 84"/><path d="M100 40l44 84M144 40l-44 84"/></g>
+<ellipse cx="64" cy="82" rx="30" ry="34" fill="none"/>
+<g stroke="none"><ellipse cx="55" cy="82" rx="4" ry="4.6" fill="#4b2e22"/><ellipse cx="73" cy="82" rx="4" ry="4.6" fill="#4b2e22"/>
+<circle cx="56.4" cy="80.4" r="1.4" fill="#fff"/><circle cx="74.4" cy="80.4" r="1.4" fill="#fff"/>
+<g fill="#ff9bb5" opacity=".7"><ellipse cx="47" cy="90" rx="6" ry="3.5"/><ellipse cx="81" cy="90" rx="6" ry="3.5"/></g></g>
+<path d="M60.0 91q4.0 4.4 8 0" fill="none" stroke-width="3"/>
+</g>
+</svg>

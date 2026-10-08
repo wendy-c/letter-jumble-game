@@ -57,7 +57,7 @@ describe("Home", () => {
     render(<Home />);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Choose an adventure!");
     const gameCards = screen.getAllByRole("button").filter((button) => button.classList.contains("game-choice-card"));
-    expect(gameCards.map((card) => card.querySelector(".category-card-name").textContent)).toEqual(["CVC Sounds", "中文認字", "Letter Jumble for Movers", "Mochi the Rainbow Dragon"]);
+    expect(gameCards.map((card) => card.querySelector(".category-card-name").textContent)).toEqual(["CVC Sounds", "中文認字 · 入門篇", "Letter Jumble for Movers", "Mochi the Rainbow Dragon"]);
     expect(screen.getByText("SPELLING SCHOOL")).toBeInTheDocument();
   });
 
@@ -299,7 +299,7 @@ describe("ages", () => {
     }));
     const user = userEvent.setup();
     render(<Home />);
-    expect(shownGames()).toEqual(["CVC Sounds", "中文認字", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "中文認字 · 入門篇", "Mochi the Rainbow Dragon"]);
 
     await user.click(screen.getByRole("button", { name: /Player options/ }));
     await user.click(screen.getByRole("menuitem", { name: "Switch player" }));
@@ -309,7 +309,7 @@ describe("ages", () => {
 
   it("shows every game to visitors before anyone is playing", () => {
     render(<Home />);
-    expect(shownGames()).toEqual(["CVC Sounds", "中文認字", "Letter Jumble for Movers", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "中文認字 · 入門篇", "Letter Jumble for Movers", "Mochi the Rainbow Dragon"]);
   });
 
   it("stays on the picker when the chosen game isn't for the new player's age", async () => {
@@ -320,7 +320,7 @@ describe("ages", () => {
     await addPlayer(user, "Mia", "3-4");
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Choose an adventure!");
-    expect(shownGames()).toEqual(["CVC Sounds", "中文認字", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "中文認字 · 入門篇", "Mochi the Rainbow Dragon"]);
   });
 
   it("asks a player saved before ages existed how old they are", async () => {
@@ -437,7 +437,7 @@ describe("chinese characters", () => {
   it("isn't offered to 5-6 year olds", () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
     render(<Home />);
-    expect(shownGames()).not.toContain("中文認字");
+    expect(shownGames()).not.toContain("中文認字 · 入門篇");
   });
 
   it("offers a food topic whose rounds show phrases under the character", async () => {
@@ -447,7 +447,7 @@ describe("chinese characters", () => {
 
     await user.click(screen.getByRole("button", { name: /中文認字/ }));
     expect(screen.getAllByRole("button").filter((button) => button.classList.contains("category-card")).map((card) => card.querySelector(".category-card-name").textContent))
-      .toEqual(["顏色", "食物"]);
+      .toEqual(["顏色", "食物", "水果", "動物", "衣物"]);
     await user.click(screen.getByRole("button", { name: /食物/ }));
 
     expect(screen.getByText("餅", { selector: ".chinese-character" })).toBeInTheDocument();

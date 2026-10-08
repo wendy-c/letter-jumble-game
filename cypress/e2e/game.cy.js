@@ -408,7 +408,7 @@ describe("ages", () => {
     cy.contains("button", "Choose a game").click();
     cy.get(".game-choice-card").should("have.length", 3);
     cy.contains(".game-choice-card", "CVC Sounds");
-    cy.contains(".game-choice-card", "中文認字");
+    cy.contains(".game-choice-card", "中文認字 · 入門篇");
     cy.contains(".game-choice-card", "Rainbow Dragon");
     cy.contains(".game-choice-card", "Letter Jumble").should("not.exist");
   });
@@ -444,7 +444,7 @@ describe("chinese characters", () => {
         win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
       },
     });
-    cy.contains("button", "中文認字").click();
+    cy.contains("button", "中文認字 · 入門篇").click();
     cy.contains("button", "顏色").click();
     cy.contains(".chinese-character", "紅");
     cy.get(".chinese-option").should("have.length", 4).find("img").each(($img) => {
@@ -467,11 +467,11 @@ describe("chinese characters", () => {
         win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
       },
     });
-    cy.contains("button", "中文認字").click();
+    cy.contains("button", "中文認字 · 入門篇").click();
     cy.contains("button", "食物").click();
     cy.contains(".chinese-character", "餅");
     cy.get(".chinese-phrase").should("have.length", 2).first().should("contain.text", "餅乾").find("mark").should("have.text", "餅");
-    cy.get('button[aria-label="提示"]').should("be.visible");
+    cy.get('button[aria-label="聽提示"]').should("be.visible");
     cy.get(".chinese-option img").each(($img) => expect($img[0].naturalWidth).to.be.greaterThan(0));
     cy.get('.chinese-option[data-character="餅"]').click();
     cy.get(".reward-card").should("exist");
