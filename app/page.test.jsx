@@ -4,7 +4,7 @@ import GameApp from "./components/GameApp";
 import { currentPathname, setPathname } from "../test/mock-navigation";
 import { sounds } from "./lib/sounds";
 
-jest.mock("./lib/sounds", () => ({ sounds: { correct: jest.fn(), coin: jest.fn() } }));
+jest.mock("./lib/sounds", () => ({ sounds: { correct: jest.fn(), coin: jest.fn(), sparkle: jest.fn() } }));
 jest.mock("./lib/speech", () => ({ speakWord: jest.fn(), speakCantonese: jest.fn(), stopSpeaking: jest.fn() }));
 
 // The real dragon scene needs WebGL, which jsdom doesn't have.
@@ -358,7 +358,7 @@ describe("progress", () => {
     expect(screen.getByLabelText("Word 2 of 13")).toBeInTheDocument();
   });
 
-  it("goes back to the first word once a topic is completed", async () => {
+  it("celebrates finishing a topic, then goes back to the topic list and starts it again next time", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({
       players: [{ name: "Ada", coins: 0, age: "5-6", progress: { "letter-jumble/animals": 12 } }],
       current: "Ada",
@@ -374,8 +374,36 @@ describe("progress", () => {
     await user.click(screen.getByRole("button", { name: /Check word/ }));
     await user.click(within(screen.getByRole("dialog", { name: /!$/ })).getByRole("button"));
 
-    expect(screen.getByLabelText("Word 1 of 13")).toBeInTheDocument();
+    const praise = screen.getByRole("dialog", { name: "You did it!" });
+    expect(praise).toHaveTextContent("You finished all 13 Animals words.");
+    expect(sounds.sparkle).toHaveBeenCalled();
     expect(storedPlayers().players[0].progress).toEqual({ "letter-jumble/animals": 0 });
+
+    await user.click(within(praise).getByRole("button", { name: /Back to all topics/ }));
+    expect(currentPathname()).toBe("/letter-jumble");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Animals/ })).toHaveTextContent("13 spells to learn");
+
+    await user.click(screen.getByRole("button", { name: /Animals/ }));
+    expect(screen.getByLabelText("Word 1 of 13")).toBeInTheDocument();
+  });
+
+  it("praises finishing a Chinese topic in Chinese", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({
+      players: [{ name: "Ada", coins: 0, age: "3-4", progress: { "chinese/clothes": 6 } }],
+      current: "Ada",
+    }));
+    setPathname("/chinese/clothes");
+    const user = userEvent.setup();
+    render(<GameApp />);
+
+    await user.click(await screen.findByRole("button", { name: "top" }));
+    await user.click(within(screen.getByRole("dialog", { name: /！$/ })).getByRole("button"));
+
+    const praise = screen.getByRole("dialog", { name: "你好叻呀！" });
+    expect(praise).toHaveTextContent("你學完「衣物」全部 7 個字");
+    await user.click(within(praise).getByRole("button", { name: /返回所有主題/ }));
+    expect(currentPathname()).toBe("/chinese");
   });
 
   it("keeps separate progress for each CVC mode", async () => {

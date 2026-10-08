@@ -9,6 +9,7 @@ import { games, gamesForAge, isGameForAge } from "../games-data";
 import AnswerPanel from "./AnswerPanel";
 import ChineseGame from "./ChineseGame";
 import CoinLink from "./CoinLink";
+import CompletionDialog, { chineseCompletionText } from "./CompletionDialog";
 import DragonDen from "./DragonDen";
 import GameFooter from "./GameFooter";
 import GameHeading from "./GameHeading";
@@ -77,6 +78,8 @@ export default function GameApp() {
   const [showSpellingGuide, setShowSpellingGuide] = useState(false);
   // The Chinese game answers by tapping a picture rather than filling in letters.
   const [chineseSolved, setChineseSolved] = useState(false);
+  // Set once the last word of a topic is done, to show the "you finished" pop-up.
+  const [completedTopic, setCompletedTopic] = useState(null);
 
   const isCvc = selectedGame?.id === "cvc";
   const isChinese = selectedGame?.id === "chinese";
@@ -128,6 +131,7 @@ export default function GameApp() {
     setChecked(false);
     setRewardMessage("");
     setWordMenuOpen(false);
+    setCompletedTopic(null);
     // Only when the topic or player changes, not on every progress save.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryKey, currentPlayer?.name]);
@@ -246,7 +250,24 @@ export default function GameApp() {
   }
 
   function nextWord() {
-    selectWord((round + 1) % selectedCategory.words.length);
+    if (round === selectedCategory.words.length - 1) {
+      finishTopic();
+      return;
+    }
+    selectWord(round + 1);
+  }
+
+  // The last word is done: start the topic again next time, and celebrate.
+  function finishTopic() {
+    saveProgress(categoryKey, 0);
+    setRewardMessage("");
+    setCompletedTopic({ name: selectedCategory.name, count: selectedCategory.words.length });
+    sounds.sparkle?.();
+  }
+
+  function leaveCompletedTopic() {
+    setCompletedTopic(null);
+    showCategories();
   }
 
   function selectWord(wordIndex) {
@@ -366,7 +387,15 @@ export default function GameApp() {
           onClose={closePlayerDialog}
         />
       )}
-      {playing && rewardMessage && solved && (
+      {completedTopic && (
+        <CompletionDialog
+          topicName={completedTopic.name}
+          count={completedTopic.count}
+          text={isChinese ? chineseCompletionText : undefined}
+          onDone={leaveCompletedTopic}
+        />
+      )}
+      {playing && rewardMessage && solved && !completedTopic && (
         <RewardDialog message={rewardMessage} onContinue={nextWord} labels={isChinese ? chineseRewardLabels : undefined} />
       )}
     </main>
