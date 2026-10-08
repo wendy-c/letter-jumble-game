@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { categories } from "./game-data";
 import { cvcModes } from "./cvc-data";
+import { chineseTopics } from "./chinese-data";
 import { gamesForAge, isGameForAge } from "./games-data";
 import AnswerPanel from "./components/AnswerPanel";
 import GameFooter from "./components/GameFooter";
@@ -11,7 +12,8 @@ import GamePicker from "./components/GamePicker";
 import PictureClue from "./components/PictureClue";
 import PlayerDialog from "./components/PlayerDialog";
 import PlayerMenu from "./components/PlayerMenu";
-import RewardDialog from "./components/RewardDialog";
+import ChineseGame from "./components/ChineseGame";
+import RewardDialog, { chineseRewardLabels } from "./components/RewardDialog";
 import SiteHeader from "./components/SiteHeader";
 import DragonDen from "./components/DragonDen";
 import TopicMenu from "./components/TopicMenu";
@@ -22,6 +24,7 @@ import { sounds } from "./lib/sounds";
 import { usePlayers } from "./lib/use-players";
 
 const rewardMessages = ["Amazing!", "Well done!", "You did it!", "Fantastic!", "Brilliant!"];
+const chineseRewardMessages = ["好叻呀！", "做得好！", "答啱咗！", "好棒呀！", "你真係叻！"];
 
 export default function Home() {
   const [selectedGame, setSelectedGame] = useState(null);
@@ -47,14 +50,18 @@ export default function Home() {
   const answer = puzzle?.answers[round % puzzle.answers.length] ?? "";
   const answerLetters = answer.replaceAll(" ", "");
   const isCvc = selectedGame?.id === "cvc";
-  const gameTopics = isCvc ? cvcModes : categories;
+  const isChinese = selectedGame?.id === "chinese";
+  const gameTopics = isCvc ? cvcModes : isChinese ? chineseTopics : categories;
   // Positions the learner fills in: every letter in Letter Jumble, one letter in CVC Sounds.
   const blanks = puzzle?.missing !== undefined ? [puzzle.missing] : answerLetters.split("").map((_, index) => index);
   const tiles = puzzle ? puzzle.choices ?? scramble(answerLetters, round) : [];
   const complete = Boolean(puzzle) && placed.length === blanks.length &&
     placed.every((tile, slotIndex) => tile !== null && tiles[tile] === answerLetters[blanks[slotIndex]]);
   const allPlaced = placed.every((tile) => tile !== null);
-  const guides = showSpellingGuide && !isCvc ? getSpellingGuides(answer) : null;
+  const guides = showSpellingGuide && !isCvc && !isChinese ? getSpellingGuides(answer) : null;
+  // The Chinese game answers by tapping a picture rather than filling in letters.
+  const [chineseSolved, setChineseSolved] = useState(false);
+  const solved = isChinese ? chineseSolved : complete;
 
   useEffect(() => () => {
     stopSpeaking();
@@ -70,6 +77,7 @@ export default function Home() {
   const progressKey = (topic) => `${selectedGame?.id}/${topic.id}`;
 
   function resetAnswer() {
+    setChineseSolved(false);
     setChecked(false);
     setRewardMessage("");
   }
@@ -183,6 +191,14 @@ export default function Home() {
     }
   }
 
+  function handleChineseCorrect() {
+    if (chineseSolved) return;
+    setChineseSolved(true);
+    sounds.correct();
+    setRewardMessage(chineseRewardMessages[rainbowCoins % chineseRewardMessages.length]);
+    addCoin();
+  }
+
   function nextWord() {
     selectWord((round + 1) % selectedCategory.words.length);
   }
@@ -213,12 +229,35 @@ export default function Home() {
         ) : (
           <TopicMenu
             isCvc={isCvc}
+            isChinese={isChinese}
             topics={gameTopics}
             progressFor={(topic) => currentPlayer?.progress?.[progressKey(topic)] ?? 0}
             onBack={showGames}
             onSelectTopic={(topic) => selectCategory(topic)}
           />
         )
+      ) : isChinese ? (
+        <section className="game-wrap mx-auto w-full max-w-6xl" aria-labelledby="game-title">
+          <GameHeading
+            topic={selectedCategory}
+            round={round}
+            rainbowCoins={rainbowCoins}
+            wordMenuOpen={wordMenuOpen}
+            onBack={showCategories}
+            onOpenWordMenu={() => setWordMenuOpen(true)}
+            backLabel="所有主題"
+            eyebrow="今日嘅魔法堂"
+            note="睇吓個字，揀啱嘅圖畫！"
+          />
+          <ChineseGame
+            key={`${selectedCategory.id}-${round}`}
+            topic={selectedCategory}
+            round={round}
+            word={puzzle}
+            onCorrect={handleChineseCorrect}
+          />
+          <GameFooter>一個一個字慢慢學</GameFooter>
+        </section>
       ) : (
         <section className="game-wrap mx-auto w-full max-w-6xl" aria-labelledby="game-title">
           <GameHeading
@@ -260,7 +299,7 @@ export default function Home() {
         <WordMenu
           topic={selectedCategory}
           round={round}
-          showGuideToggle={!isCvc}
+          showGuideToggle={!isCvc && !isChinese}
           showSpellingGuide={showSpellingGuide}
           onToggleSpellingGuide={() => setShowSpellingGuide((current) => !current)}
           onSelectWord={selectWord}
@@ -278,8 +317,8 @@ export default function Home() {
           onClose={closePlayerDialog}
         />
       )}
-      {selectedCategory && rewardMessage && complete && (
-        <RewardDialog message={rewardMessage} onContinue={nextWord} />
+      {selectedCategory && rewardMessage && solved && (
+        <RewardDialog message={rewardMessage} onContinue={nextWord} labels={isChinese ? chineseRewardLabels : undefined} />
       )}
     </main>
   );

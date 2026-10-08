@@ -4,6 +4,7 @@ import Home from "./page";
 import { sounds } from "./lib/sounds";
 
 jest.mock("./lib/sounds", () => ({ sounds: { correct: jest.fn(), coin: jest.fn() } }));
+jest.mock("./lib/speech", () => ({ speakWord: jest.fn(), speakCantonese: jest.fn(), stopSpeaking: jest.fn() }));
 
 // The real dragon scene needs WebGL, which jsdom doesn't have.
 jest.mock("./components/DragonScene", () => function MockDragonScene() {
@@ -56,7 +57,7 @@ describe("Home", () => {
     render(<Home />);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Choose an adventure!");
     const gameCards = screen.getAllByRole("button").filter((button) => button.classList.contains("game-choice-card"));
-    expect(gameCards.map((card) => card.querySelector(".category-card-name").textContent)).toEqual(["CVC Sounds", "Letter Jumble for Movers", "Mochi the Rainbow Dragon"]);
+    expect(gameCards.map((card) => card.querySelector(".category-card-name").textContent)).toEqual(["CVC Sounds", "中文認字", "Letter Jumble for Movers", "Mochi the Rainbow Dragon"]);
     expect(screen.getByText("SPELLING SCHOOL")).toBeInTheDocument();
   });
 
@@ -298,7 +299,7 @@ describe("ages", () => {
     }));
     const user = userEvent.setup();
     render(<Home />);
-    expect(shownGames()).toEqual(["CVC Sounds", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "中文認字", "Mochi the Rainbow Dragon"]);
 
     await user.click(screen.getByRole("button", { name: /Player options/ }));
     await user.click(screen.getByRole("menuitem", { name: "Switch player" }));
@@ -308,7 +309,7 @@ describe("ages", () => {
 
   it("shows every game to visitors before anyone is playing", () => {
     render(<Home />);
-    expect(shownGames()).toEqual(["CVC Sounds", "Letter Jumble for Movers", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "中文認字", "Letter Jumble for Movers", "Mochi the Rainbow Dragon"]);
   });
 
   it("stays on the picker when the chosen game isn't for the new player's age", async () => {
@@ -319,7 +320,7 @@ describe("ages", () => {
     await addPlayer(user, "Mia", "3-4");
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Choose an adventure!");
-    expect(shownGames()).toEqual(["CVC Sounds", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "中文認字", "Mochi the Rainbow Dragon"]);
   });
 
   it("asks a player saved before ages existed how old they are", async () => {
@@ -402,3 +403,41 @@ describe("progress", () => {
     expect(sounds.correct).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("chinese characters", () => {
+  it("lets a 3-4 year old match a character to its picture and earn a coin", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    const user = userEvent.setup();
+    render(<Home />);
+
+    await user.click(screen.getByRole("button", { name: /中文認字/ }));
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("中文認字");
+    expect(screen.getByRole("button", { name: /顏色/ })).toHaveTextContent("13 個字");
+    await user.click(screen.getByRole("button", { name: /顏色/ }));
+
+    expect(screen.getByText("紅")).toHaveClass("chinese-character");
+    await user.click(screen.getByRole("button", { name: "orange" }));
+    expect(screen.getByText("唔係呢個，再試吓！")).toBeInTheDocument();
+    expect(sounds.correct).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole("button", { name: "red" }));
+    const reward = screen.getByRole("dialog", { name: "好叻呀！" });
+    expect(within(reward).getByText("你得到一個彩虹金幣！")).toBeInTheDocument();
+    expect(sounds.correct).toHaveBeenCalledTimes(1);
+    expect(screen.getByLabelText(coinsLabel(1))).toBeInTheDocument();
+
+    await user.click(within(reward).getByRole("button"));
+    expect(screen.getByText("橙")).toHaveClass("chinese-character");
+    expect(storedPlayers().players[0].progress).toEqual({ "chinese/colours": 1 });
+
+    await user.click(screen.getByRole("button", { name: /所有主題/ }));
+    expect(screen.getByRole("button", { name: /顏色/ })).toHaveTextContent("已學 1 / 13 個字");
+  });
+
+  it("isn't offered to 5-6 year olds", () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
+    render(<Home />);
+    expect(shownGames()).not.toContain("中文認字");
+  });
+});
+

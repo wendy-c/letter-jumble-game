@@ -1,4 +1,4 @@
-import { speakWord, stopSpeaking } from "./speech";
+import { speakCantonese, speakWord, stopSpeaking } from "./speech";
 
 class FakeUtterance {
   constructor(text) {
@@ -101,3 +101,50 @@ describe("stopSpeaking", () => {
     expect(synth.cancel).toHaveBeenCalled();
   });
 });
+
+describe("speakCantonese", () => {
+  it("explains when the browser has no speech support", () => {
+    const onStatus = jest.fn();
+    speakCantonese("紅", onStatus);
+    expect(onStatus).toHaveBeenCalledWith("呢部機唔支援讀字。");
+  });
+
+  it("explains when there's no Cantonese voice, rather than reading it in another language", () => {
+    const synth = installSpeech([{ name: "Mei-Jia", lang: "zh-TW" }, { name: "Samantha", lang: "en-US" }]);
+    const onStatus = jest.fn();
+
+    speakCantonese("紅", onStatus);
+
+    expect(onStatus).toHaveBeenCalledWith("呢部機未有廣東話聲音。");
+    expect(synth.speak).not.toHaveBeenCalled();
+  });
+
+  it("reads the character with a Hong Kong Cantonese voice, slowly", () => {
+    const sinji = { name: "Sinji", lang: "zh-HK" };
+    const synth = installSpeech([{ name: "Mei-Jia", lang: "zh-TW" }, { name: "Aaron", lang: "zh-HK" }, sinji]);
+
+    speakCantonese("彩色", jest.fn());
+
+    const utterance = synth.speak.mock.calls[0][0];
+    expect(utterance.text).toBe("彩色");
+    expect(utterance.voice).toBe(sinji);
+    expect(utterance.lang).toBe("zh-HK");
+    expect(utterance.rate).toBe(0.8);
+  });
+
+  it("waits for voices that load after the page starts", () => {
+    const synth = installSpeech([]);
+    let onVoicesChanged;
+    synth.addEventListener = jest.fn((type, listener) => {
+      onVoicesChanged = listener;
+    });
+
+    speakCantonese("紅", jest.fn());
+    expect(synth.speak).not.toHaveBeenCalled();
+
+    synth.getVoices.mockReturnValue([{ name: "Google 粵語（香港）", lang: "zh-HK" }]);
+    onVoicesChanged();
+    expect(synth.speak).toHaveBeenCalledTimes(1);
+  });
+});
+

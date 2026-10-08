@@ -44,7 +44,7 @@ describe("DragonDen", () => {
 
     const sections = {
       Treats: ["Apple, 1 rainbow coin", "Carrot sticks, 1 rainbow coin", "Rainbow cupcake, 2 rainbow coins",
-        "Chilli pepper cookie, 3 rainbow coins", "Ice cream, 2 rainbow coins", "Strawberry milkshake, 2 rainbow coins"],
+        "Chilli pepper, 3 rainbow coins", "Ice cream, 2 rainbow coins", "Milkshake, 2 rainbow coins"],
       Grooming: ["Comb, 1 rainbow coin", "Bath, 3 rainbow coins"],
       Activities: ["Painting, 2 rainbow coins", "Ballet dancing, 2 rainbow coins"],
     };
@@ -73,7 +73,7 @@ describe("DragonDen", () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     const { onSpendCoins } = renderDen(10);
 
-    await user.click(screen.getByRole("button", { name: /Chilli pepper cookie/ }));
+    await user.click(screen.getByRole("button", { name: /Chilli pepper/ }));
 
     expect(onSpendCoins).toHaveBeenCalledWith(3);
     expect(sounds.coin).toHaveBeenCalledTimes(1);
@@ -99,7 +99,7 @@ describe("DragonDen", () => {
   it("disables items the player can't afford and explains how to earn more", () => {
     const { rerenderWith } = renderDen(2);
     expect(screen.getByRole("button", { name: /Ice cream/ })).toBeEnabled();
-    expect(screen.getByRole("button", { name: /Chilli pepper cookie/ })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /Chilli pepper/ })).toBeDisabled();
     expect(screen.queryByText(/out of rainbow coins/)).not.toBeInTheDocument();
 
     rerenderWith(0);

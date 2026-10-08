@@ -15,6 +15,15 @@ export const games = [
     ages: ["3-4"],
   },
   {
+    id: "chinese",
+    name: "中文認字",
+    color: "green",
+    pattern: ["中", "文"],
+    note: "Chinese characters · Cantonese",
+    badge: "中文認字",
+    ages: ["3-4"],
+  },
+  {
     id: "letter-jumble",
     name: "Letter Jumble for Movers",
     color: "lilac",

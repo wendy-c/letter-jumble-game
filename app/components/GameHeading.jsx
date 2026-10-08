@@ -2,18 +2,23 @@ function padNumber(number) {
   return String(number).padStart(2, "0");
 }
 
-export default function GameHeading({ isCvc, topic, round, rainbowCoins, wordMenuOpen, onBack, onOpenWordMenu }) {
+export default function GameHeading({
+  isCvc, topic, round, rainbowCoins, wordMenuOpen, onBack, onOpenWordMenu,
+  backLabel = isCvc ? "All sounds" : "All games",
+  eyebrow = "TODAY’S MAGIC LESSON",
+  note = isCvc ? "Look, listen, find the missing sound!" : "Look, think, cast the spell!",
+}) {
   const total = topic.words.length;
 
   return (
     <div className="game-heading">
       <div>
         <button className="category-back" type="button" onClick={onBack}>
-          <span aria-hidden="true">←</span> {isCvc ? "All sounds" : "All games"}
+          <span aria-hidden="true">←</span> {backLabel}
         </button>
-        <p className="eyebrow">TODAY’S MAGIC LESSON</p>
+        <p className="eyebrow">{eyebrow}</p>
         <h1 id="game-title">{topic.name}</h1>
-        <p className="heading-note">{isCvc ? "Look, listen, find the missing sound!" : "Look, think, cast the spell!"}</p>
+        <p className="heading-note">{note}</p>
       </div>
       <div className="progress-card" aria-label={`Word ${round + 1} of ${total}`}>
         <div className="progress-copy">

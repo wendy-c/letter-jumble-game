@@ -277,7 +277,7 @@ describe("CVC sounds game", () => {
   it("offers the games and the four CVC modes", () => {
     cy.visit("/");
     cy.contains("h1", "Choose an adventure!");
-    cy.get(".game-choice-card").should("have.length", 3);
+    cy.get(".game-choice-card").should("have.length", 4);
     cy.contains("button", "CVC Sounds").click();
     addPlayer("Ada", "3-4");
     cy.contains("h1", "CVC Sounds");
@@ -406,8 +406,9 @@ describe("ages", () => {
     cy.contains("button", "CVC Sounds").click();
     addPlayer("Mia", "3-4");
     cy.contains("button", "Choose a game").click();
-    cy.get(".game-choice-card").should("have.length", 2);
+    cy.get(".game-choice-card").should("have.length", 3);
     cy.contains(".game-choice-card", "CVC Sounds");
+    cy.contains(".game-choice-card", "中文認字");
     cy.contains(".game-choice-card", "Rainbow Dragon");
     cy.contains(".game-choice-card", "Letter Jumble").should("not.exist");
   });
@@ -435,3 +436,29 @@ describe("rainbow dragon", () => {
     storedPlayers().should("deep.equal", { players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" });
   });
 });
+
+describe("chinese characters", () => {
+  it("matches a character to its colour picture and earns a coin", () => {
+    cy.visit("/", {
+      onBeforeLoad(win) {
+        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+      },
+    });
+    cy.contains("button", "中文認字").click();
+    cy.contains("button", "顏色").click();
+    cy.contains(".chinese-character", "紅");
+    cy.get(".chinese-option").should("have.length", 4).find("img").each(($img) => {
+      expect($img[0].naturalWidth).to.be.greaterThan(0);
+    });
+
+    cy.get('.chinese-option[data-character="橙"]').click().should("be.disabled");
+    cy.contains("唔係呢個，再試吓！");
+    cy.get('.chinese-option[data-character="紅"]').click();
+    cy.get(".reward-card").should("contain.text", "好叻呀！");
+    cy.get('[aria-label="1 rainbow coins collected"]').should("exist");
+    cy.get(".reward-card").click();
+    cy.contains(".chinese-character", "橙");
+    cy.contains("02 / 13");
+  });
+});
+
