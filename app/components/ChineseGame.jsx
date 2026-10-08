@@ -44,7 +44,10 @@ export default function ChineseGame({ topic, round, word, onCorrect }) {
         <div className="chinese-character-stage">
           <span className="art-sparkle sparkle-one" aria-hidden="true">✦</span>
           <span className="art-sparkle sparkle-three" aria-hidden="true">✧</span>
-          <p className={`chinese-character${word.character.length > 1 ? " chinese-character-pair" : ""}`} lang="zh-Hant-HK">
+          <p
+            className={`chinese-character${word.character.length === 2 ? " chinese-character-pair" : ""}${word.character.length > 2 ? ` chinese-character-long chinese-character-${word.character.length}` : ""}`}
+            lang="zh-Hant-HK"
+          >
             {word.character}
           </p>
         </div>

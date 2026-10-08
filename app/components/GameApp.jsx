@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { categories } from "../game-data";
 import { cvcModes } from "../cvc-data";
-import { chineseTopics } from "../chinese-data";
+import { chineseAdvancedTopics, chineseTopics } from "../chinese-data";
 import { games, gamesForAge, isGameForAge } from "../games-data";
 import AnswerPanel from "./AnswerPanel";
 import ChineseGame from "./ChineseGame";
@@ -32,6 +32,7 @@ const chineseRewardMessages = ["好叻呀！", "做得好！", "答啱咗！", "
 const topicsByGame = {
   cvc: cvcModes,
   chinese: chineseTopics,
+  "chinese-advanced": chineseAdvancedTopics,
   "letter-jumble": categories,
 };
 
@@ -90,7 +91,7 @@ export default function GameApp() {
   const [completedTopic, setCompletedTopic] = useState(null);
 
   const isCvc = selectedGame?.id === "cvc";
-  const isChinese = selectedGame?.id === "chinese";
+  const isChinese = Boolean(selectedGame?.id.startsWith("chinese"));
   const puzzle = round === null ? undefined : selectedCategory?.words[round];
   const answer = puzzle?.answers[round % puzzle.answers.length] ?? "";
   const answerLetters = answer.replaceAll(" ", "");

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+<g stroke="#4b2e22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<path d="M30 126q0-46 34-48t34 48Z" fill="#bfe3f7"/><path d="M57 70h14v9q-7 5-14 0Z" fill="#ffe2c4" stroke-width="3"/><circle cx="64" cy="48" r="23" fill="#ffe2c4"/><path d="M41 47q0-24 23-24t23 24q-6-10-13-9-10-5-20 0-7-1-13 9Z" fill="#8b5a3c"/><g stroke="none"><ellipse cx="56" cy="51" rx="2.8" ry="3.2" fill="#4b2e22"/><ellipse cx="72" cy="51" rx="2.8" ry="3.2" fill="#4b2e22"/>
+<circle cx="57.0" cy="49.9" r="1.0" fill="#fff"/><circle cx="73.0" cy="49.9" r="1.0" fill="#fff"/>
+<g fill="#ff9bb5" opacity=".7"><ellipse cx="50.5" cy="58" rx="3.5" ry="2.2"/><ellipse cx="77.5" cy="58" rx="3.5" ry="2.2"/></g></g>
+<path d="M61.5 60q2.5 2.8 5 0" fill="none" stroke-width="3"/><path d="M42 30q22-10 44 0" fill="none" stroke-width="3"/><circle cx="64" cy="28" r="7" fill="#e6f4fc" stroke-width="2.5"/><circle cx="64" cy="28" r="2.5" fill="#ffffff" stroke="none"/><path d="M88 74q0-12 10-12 4 0 8 3 4-3 8-3 10 0 10 12 0 12-4 22l-3 18q-2 4-5 0l-4-12q-2-4-4 0l-4 12q-3 4-5 0l-3-18q-4-10-4-22Z" fill="#ffffff"/><path d="M118.0 55.0L119.3 58.2L122.8 58.5L120.1 60.7L120.9 64.0L118.0 62.2L115.1 64.0L115.9 60.7L113.2 58.5L116.7 58.2Z" fill="#ffc94a" stroke-width="1.5"/>
+</g>
+</svg>

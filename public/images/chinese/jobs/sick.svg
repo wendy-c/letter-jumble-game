@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+<g stroke="#4b2e22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<rect x="8" y="82" width="112" height="22" rx="6" fill="#ffffff"/><path d="M14 104v16M114 104v16" stroke-width="6"/><ellipse cx="34" cy="78" rx="22" ry="10" fill="#ffffff"/><circle cx="40" cy="62" r="18" fill="#ffd0c4"/><path d="M22 60q0-18 18-18t18 18q-6-8-12-7-8-3-14 1Z" fill="#8b5a3c"/><g fill="none" stroke-width="2.5"><path d="M32 62q2.5 2 5 0M43 62q2.5 2 5 0"/><path d="M36 72q4-4 8 0"/></g><g fill="#ff6b6b" opacity=".75" stroke="none"><ellipse cx="29" cy="68" rx="4" ry="2.5"/><ellipse cx="51" cy="68" rx="4" ry="2.5"/></g><rect x="28" y="44" width="22" height="9" rx="4" fill="#8cc8f2" stroke-width="2.5"/><path d="M54 70l16-8" stroke-width="5"/><path d="M54 70l16-8" stroke="#ffffff" stroke-width="2"/><circle cx="72" cy="61" r="3" fill="#ff6b6b" stroke-width="2"/><path d="M54 78q30-14 64 0v8H54Z" fill="#a98cf2"/><g fill="none" stroke="#8cc8f2" stroke-width="3"><path d="M74 30q-6 6 0 12"/><path d="M84 26q-6 8 0 16"/></g>
+</g>
+</svg>

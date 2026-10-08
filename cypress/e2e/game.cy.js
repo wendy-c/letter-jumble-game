@@ -288,7 +288,7 @@ describe("CVC sounds game", () => {
   it("offers the games and the four CVC modes", () => {
     cy.visit("/");
     cy.contains("h1", "Choose an adventure!");
-    cy.get(".game-choice-card").should("have.length", 4);
+    cy.get(".game-choice-card").should("have.length", 5);
     cy.contains("button", "CVC Sounds").click();
     addPlayer("Ada", "3-4");
     cy.contains("h1", "CVC Sounds");
@@ -528,6 +528,24 @@ describe("CVC shuffling", () => {
       expect(deck).to.have.length(20);
       expect(new Set(deck).size).to.eq(20);
     });
+  });
+});
+
+describe("chinese words for 5-6 year olds", () => {
+  it("matches a job word to its picture", () => {
+    cy.visit("/", {
+      onBeforeLoad(win) {
+        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
+      },
+    });
+    cy.contains("button", "進階篇").click();
+    cy.contains("button", "職業").click();
+    cy.location("pathname").should("eq", "/chinese-advanced/jobs");
+    cy.contains(".chinese-character", "警察");
+    cy.get(".chinese-option img").each(($img) => expect($img[0].naturalWidth).to.be.greaterThan(0));
+    cy.get('.chinese-option[data-character="警察"]').click();
+    cy.get(".reward-card").should("exist");
+    cy.get('[aria-label="1 rainbow coins collected"]').should("exist");
   });
 });
 

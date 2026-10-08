@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { chineseTopics } from "./chinese-data";
+import { chineseAdvancedTopics, chineseTopics } from "./chinese-data";
 
 const colours = chineseTopics.find((topic) => topic.id === "colours");
 const publicDir = path.join(__dirname, "..", "public");
@@ -107,6 +107,42 @@ describe("every topic", () => {
 
   it("has every picture and icon file", () => {
     const images = chineseTopics.flatMap((topic) => [topic.icon, ...topic.words.flatMap((word) => [word.picture, ...word.options.map((option) => option.picture)])]);
+    expect(images.filter((image) => !fs.existsSync(path.join(publicDir, image)))).toEqual([]);
+  });
+});
+
+describe("jobs (5-6 year olds)", () => {
+  const jobs = chineseAdvancedTopics.find((topic) => topic.id === "jobs");
+  const byCharacter = Object.fromEntries(jobs.words.map((word) => [word.character, word]));
+
+  it("has the 27 job words, in order", () => {
+    expect(jobs.name).toBe("職業");
+    expect(jobs.words.map((word) => word.character)).toEqual([
+      "警察", "消防員", "醫生", "護士", "理髮師", "侍應生", "廚師", "郵差", "交通警察", "救護員",
+      "飛行服務員", "獸醫", "牙醫", "送遞員", "保安員", "飛機師", "餐廳", "維持治安", "救火", "生病",
+      "送信", "老師", "郵政局", "警署", "醫院", "教導學生", "醫治病人",
+    ]);
+  });
+
+  it("offers four different pictures, never two look-alikes together", () => {
+    jobs.words.forEach((word) => {
+      const characters = word.options.map((option) => option.character);
+      expect(new Set(word.options.map((option) => option.picture)).size).toBe(4);
+      expect(characters).toContain(word.character);
+      const groups = (other) => byCharacter[other].groups ?? [];
+      characters.forEach((first) => characters.forEach((second) => {
+        if (first !== second) expect(groups(first).some((group) => groups(second).includes(group))).toBe(false);
+      }));
+    });
+  });
+
+  it("keeps 醫治病人 away from both doctors and being sick", () => {
+    const pairs = jobs.words.filter((word) => word.options.some((option) => option.character === "醫治病人"));
+    pairs.forEach((word) => expect(["醫生", "生病"]).not.toContain(word.character));
+  });
+
+  it("has every picture and the icon", () => {
+    const images = [jobs.icon, ...jobs.words.flatMap((word) => [word.picture, ...word.options.map((option) => option.picture)])];
     expect(images.filter((image) => !fs.existsSync(path.join(publicDir, image)))).toEqual([]);
   });
 });

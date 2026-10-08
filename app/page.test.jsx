@@ -65,7 +65,7 @@ describe("Home", () => {
     render(<GameApp />);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Choose an adventure!");
     const gameCards = screen.getAllByRole("button").filter((button) => button.classList.contains("game-choice-card"));
-    expect(gameCards.map((card) => card.querySelector(".category-card-name").textContent)).toEqual(["CVC Sounds", "中文認字 · 入門篇", "Letter Jumble for Movers", "Mochi the Rainbow Dragon"]);
+    expect(gameCards.map((card) => card.querySelector(".category-card-name").textContent)).toEqual(["CVC Sounds", "中文認字 · 入門篇", "Letter Jumble for Movers", "中文認字 · 進階篇", "Mochi the Rainbow Dragon"]);
     expect(screen.getByText("SPELLING SCHOOL")).toBeInTheDocument();
   });
 
@@ -312,12 +312,12 @@ describe("ages", () => {
     await user.click(screen.getByRole("button", { name: /Player options/ }));
     await user.click(screen.getByRole("menuitem", { name: "Switch player" }));
     await user.click(within(screen.getByRole("list", { name: "Players" })).getByRole("button", { name: /Elly/ }));
-    expect(shownGames()).toEqual(["Letter Jumble for Movers", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["Letter Jumble for Movers", "中文認字 · 進階篇", "Mochi the Rainbow Dragon"]);
   });
 
   it("shows every game to visitors before anyone is playing", () => {
     render(<GameApp />);
-    expect(shownGames()).toEqual(["CVC Sounds", "中文認字 · 入門篇", "Letter Jumble for Movers", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "中文認字 · 入門篇", "Letter Jumble for Movers", "中文認字 · 進階篇", "Mochi the Rainbow Dragon"]);
   });
 
   it("stays on the picker when the chosen game isn't for the new player's age", async () => {
@@ -634,6 +634,41 @@ describe("CVC shuffling", () => {
     await user.click(within(praise).getByRole("button", { name: /Back to all topics/ }));
     expect(currentPathname()).toBe("/cvc");
     expect(storedPlayers().players[0].decks).toBeUndefined();
+  });
+});
+
+describe("chinese words for 5-6 year olds", () => {
+  it("plays the jobs topic with whole words", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
+    const user = userEvent.setup();
+    render(<GameApp />);
+
+    await user.click(screen.getByRole("button", { name: /進階篇/ }));
+    expect(currentPathname()).toBe("/chinese-advanced");
+    expect(screen.getByRole("button", { name: /職業/ })).toHaveTextContent("27 個字");
+    await user.click(screen.getByRole("button", { name: /職業/ }));
+    expect(currentPathname()).toBe("/chinese-advanced/jobs");
+
+    expect(screen.getByText("警察", { selector: ".chinese-character" })).toHaveClass("chinese-character-pair");
+    await user.click(screen.getByRole("button", { name: "police officer" }));
+    expect(screen.getByRole("dialog", { name: /！$/ })).toBeInTheDocument();
+    expect(storedPlayers().players[0].coins).toBe(1);
+  });
+
+  it("fits long words like 飛行服務員 on a wider card", () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({
+      players: [{ name: "Elly", coins: 0, age: "5-6", progress: { "chinese-advanced/jobs": 10 } }],
+      current: "Elly",
+    }));
+    setPathname("/chinese-advanced/jobs");
+    render(<GameApp />);
+    expect(screen.getByText("飛行服務員", { selector: ".chinese-character" })).toHaveClass("chinese-character-long", "chinese-character-5");
+  });
+
+  it("isn't offered to 3-4 year olds", () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    render(<GameApp />);
+    expect(shownGames()).not.toContain("中文認字 · 進階篇");
   });
 });
 

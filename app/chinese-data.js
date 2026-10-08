@@ -108,14 +108,60 @@ const topics = [
   },
 ];
 
+// The 5-6 year old game recognises whole words. Some pictures are close cousins (a police
+// officer and keeping the peace, a postman and sending a letter), so `groups` keeps them apart.
+const advancedTopics = [
+  {
+    id: "jobs",
+    name: "職業",
+    english: "Jobs",
+    icon: "/images/icons/chinese-jobs.svg",
+    color: "blue",
+    words: [
+      { character: "警察", jyutping: "ging2 caat3", english: "police officer", picture: "police", groups: ["police"] },
+      { character: "消防員", jyutping: "siu1 fong4 jyun4", english: "firefighter", picture: "firefighter", groups: ["fire"] },
+      { character: "醫生", jyutping: "ji1 sang1", english: "doctor", picture: "doctor", groups: ["doctor"] },
+      { character: "護士", jyutping: "wu6 si6", english: "nurse", picture: "nurse" },
+      { character: "理髮師", jyutping: "lei5 faat3 si1", english: "barber", picture: "barber" },
+      { character: "侍應生", jyutping: "si6 jing3 saang1", english: "waiter", picture: "waiter" },
+      { character: "廚師", jyutping: "cyu4 si1", english: "chef", picture: "chef" },
+      { character: "郵差", jyutping: "jau4 caai1", english: "postman", picture: "postman", groups: ["mail"] },
+      { character: "交通警察", jyutping: "gaau1 tung1 ging2 caat3", english: "traffic police officer", picture: "traffic-police", groups: ["police"] },
+      { character: "救護員", jyutping: "gau3 wu6 jyun4", english: "paramedic", picture: "paramedic" },
+      { character: "飛行服務員", jyutping: "fei1 hang4 fuk6 mou6 jyun4", english: "flight attendant", picture: "flight-attendant", groups: ["flight"] },
+      { character: "獸醫", jyutping: "sau3 ji1", english: "vet", picture: "vet" },
+      { character: "牙醫", jyutping: "ngaa4 ji1", english: "dentist", picture: "dentist" },
+      { character: "送遞員", jyutping: "sung3 dai6 jyun4", english: "courier", picture: "courier", groups: ["mail"] },
+      { character: "保安員", jyutping: "bou2 on1 jyun4", english: "security guard", picture: "security-guard", groups: ["police"] },
+      { character: "飛機師", jyutping: "fei1 gei1 si1", english: "pilot", picture: "pilot", groups: ["flight"] },
+      { character: "餐廳", jyutping: "caan1 teng1", english: "restaurant", picture: "restaurant" },
+      { character: "維持治安", jyutping: "wai4 ci4 zi6 on1", english: "keeping the peace", picture: "patrolling", groups: ["police"] },
+      { character: "救火", jyutping: "gau3 fo2", english: "fighting fires", picture: "fighting-fire", groups: ["fire"] },
+      { character: "生病", jyutping: "saang1 beng6", english: "being sick", picture: "sick", groups: ["sick"] },
+      { character: "送信", jyutping: "sung3 seon3", english: "sending a letter", picture: "sending-letter", groups: ["mail"] },
+      { character: "老師", jyutping: "lou5 si1", english: "teacher", picture: "teacher", groups: ["teaching"] },
+      { character: "郵政局", jyutping: "jau4 zing3 guk6", english: "post office", picture: "post-office" },
+      { character: "警署", jyutping: "ging2 cyu5", english: "police station", picture: "police-station" },
+      { character: "醫院", jyutping: "ji1 jyun2", english: "hospital", picture: "hospital" },
+      { character: "教導學生", jyutping: "gaau3 dou6 hok6 saang1", english: "teaching students", picture: "teaching", groups: ["teaching"] },
+      { character: "醫治病人", jyutping: "ji1 zi6 beng6 jan4", english: "treating a patient", picture: "treating-patient", groups: ["doctor", "sick"] },
+    ],
+  },
+];
+
 const optionCount = 4;
+
+// A word's look-alike groups, from `group` (one) or `groups` (several).
+function groupsOf(word) {
+  return word.groups ?? (word.group ? [word.group] : []);
+}
 
 // The right picture plus three others, picked and ordered the same way every time.
 // The other words are put in a fixed shuffled order (seeded by the word's position), and the
-// first three with different pictures are used.
+// first three that don't look alike (or share a picture) are used.
 function pictureOptions(words, wordIndex) {
   const word = words[wordIndex];
-  const sameMeaning = (other) => other === word || (word.group && other.group === word.group);
+  const sameMeaning = (other) => other === word || groupsOf(word).some((group) => groupsOf(other).includes(group));
   const shuffled = words
     .map((other, otherIndex) => ({ other, order: (wordIndex * 7 + otherIndex * 13 + otherIndex * otherIndex * 5) % 101 }))
     .filter(({ other }) => !sameMeaning(other))
@@ -125,25 +171,32 @@ function pictureOptions(words, wordIndex) {
   const distractors = [];
   for (const candidate of shuffled) {
     if (distractors.length === optionCount - 1) break;
-    if (!distractors.some((chosen) => chosen.picture === candidate.picture)) distractors.push(candidate);
+    const lookAlike = (chosen) => chosen.picture === candidate.picture ||
+      groupsOf(chosen).some((group) => groupsOf(candidate).includes(group));
+    if (!distractors.some(lookAlike)) distractors.push(candidate);
   }
   const options = [...distractors];
   options.splice((wordIndex * 3) % optionCount, 0, word);
   return options.map((option) => ({ character: option.character, picture: option.picture, english: option.english }));
 }
 
-export const chineseTopics = topics.map((topic) => ({
-  ...topic,
-  words: topic.words.map((word, wordIndex, words) => ({
-    ...word,
-    // `answers` lets the shared word menu and progress code treat characters like spelling words.
-    answers: [word.character],
-    picture: `/images/chinese/${topic.id}/${word.picture}.svg`,
-    category: topic.name,
-    color: topic.color,
-    options: pictureOptions(words, wordIndex).map((option) => ({
-      ...option,
-      picture: `/images/chinese/${topic.id}/${option.picture}.svg`,
+function buildTopics(list) {
+  return list.map((topic) => ({
+    ...topic,
+    words: topic.words.map((word, wordIndex, words) => ({
+      ...word,
+      // `answers` lets the shared word menu and progress code treat characters like spelling words.
+      answers: [word.character],
+      picture: `/images/chinese/${topic.id}/${word.picture}.svg`,
+      category: topic.name,
+      color: topic.color,
+      options: pictureOptions(words, wordIndex).map((option) => ({
+        ...option,
+        picture: `/images/chinese/${topic.id}/${option.picture}.svg`,
+      })),
     })),
-  })),
-}));
+  }));
+}
+
+export const chineseTopics = buildTopics(topics);
+export const chineseAdvancedTopics = buildTopics(advancedTopics);

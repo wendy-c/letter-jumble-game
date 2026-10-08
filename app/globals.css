@@ -2202,6 +2202,28 @@ h1 span {
   letter-spacing: 4px;
 }
 
+/* Longer words (5-6 game) stretch the tile and shrink the characters to fit. */
+.chinese-character-long {
+  width: auto;
+  min-width: 210px;
+  max-width: 100%;
+  padding: 0 26px;
+  letter-spacing: 2px;
+  white-space: nowrap;
+}
+
+.chinese-character-3 {
+  font-size: 92px;
+}
+
+.chinese-character-4 {
+  font-size: 74px;
+}
+
+.chinese-character-5 {
+  font-size: 60px;
+}
+
 .chinese-listen {
   display: inline-flex;
   align-items: center;
@@ -2438,6 +2460,23 @@ a:focus-visible {
   .chinese-character-pair {
     width: 220px;
     font-size: 88px;
+  }
+
+  .chinese-character-long {
+    width: auto;
+    padding: 0 18px;
+  }
+
+  .chinese-character-3 {
+    font-size: 68px;
+  }
+
+  .chinese-character-4 {
+    font-size: 56px;
+  }
+
+  .chinese-character-5 {
+    font-size: 46px;
   }
 
   .chinese-options {
