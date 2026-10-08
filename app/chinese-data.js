@@ -1,6 +1,7 @@
 // Chinese character recognition topics, in Traditional Chinese with Cantonese (jyutping) readings.
-// Words sharing a `group` mean the same thing (啡 and 棕 are both brown), so they're never
-// offered as choices for each other.
+// Words sharing a `group` mean the same thing (啡 and 棕 are both brown) or have look-alike
+// pictures (麵 and 粉 are both noodles), so they're never offered as choices for each other.
+// `phrases` are everyday words where children will see the character.
 const topics = [
   {
     id: "colours",
@@ -22,6 +23,28 @@ const topics = [
       { character: "黑", jyutping: "hak1", english: "black", picture: "black" },
       { character: "灰", jyutping: "fui1", english: "grey", picture: "grey" },
       { character: "彩色", jyutping: "coi2 sik1", english: "colourful", picture: "rainbow" },
+    ],
+  },
+  {
+    id: "food",
+    name: "食物",
+    english: "Food",
+    icon: "/images/icons/chinese-food.svg",
+    color: "yellow",
+    words: [
+      { character: "餅", jyutping: "beng2", english: "biscuit", picture: "biscuit", phrases: ["餅乾", "月餅"] },
+      { character: "飯", jyutping: "faan6", english: "rice", picture: "rice", phrases: ["白飯", "飯碗"] },
+      { character: "糖", jyutping: "tong4", english: "sweet", picture: "sweet", phrases: ["糖果", "蜜糖"] },
+      { character: "肉", jyutping: "juk6", english: "meat", picture: "meat", phrases: ["牛肉", "肌肉"] },
+      { character: "菜", jyutping: "coi3", english: "vegetable", picture: "vegetable", phrases: ["蔬菜", "菠菜"] },
+      { character: "蛋", jyutping: "daan2", english: "egg", picture: "egg", phrases: ["雞蛋", "復活蛋"] },
+      { character: "糕", jyutping: "gou1", english: "cake", picture: "cake", phrases: ["蛋糕", "年糕"] },
+      { character: "麵", jyutping: "min6", english: "noodles", picture: "noodles", phrases: ["拉麵", "麵粉"], group: "noodles" },
+      { character: "包", jyutping: "baau1", english: "bun", picture: "bun", phrases: ["麵包", "菜肉包"] },
+      { character: "粉", jyutping: "fan2", english: "rice noodles", picture: "rice-noodles", phrases: ["米粉", "粉麵"], group: "noodles" },
+      { character: "魚", jyutping: "jyu4", english: "fish", picture: "fish", phrases: ["魚蛋", "蒸魚"] },
+      { character: "奶", jyutping: "naai5", english: "milk", picture: "milk", phrases: ["牛奶", "豆奶"] },
+      { character: "豆", jyutping: "dau6", english: "peas", picture: "peas", phrases: ["豆腐", "青豆"] },
     ],
   },
 ];

@@ -460,5 +460,21 @@ describe("chinese characters", () => {
     cy.contains(".chinese-character", "橙");
     cy.contains("02 / 13");
   });
+
+  it("shows everyday phrases for the food topic", () => {
+    cy.visit("/", {
+      onBeforeLoad(win) {
+        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+      },
+    });
+    cy.contains("button", "中文認字").click();
+    cy.contains("button", "食物").click();
+    cy.contains(".chinese-character", "餅");
+    cy.get(".chinese-phrase").should("have.length", 2).first().should("contain.text", "餅乾").find("mark").should("have.text", "餅");
+    cy.get('button[aria-label="提示"]').should("be.visible");
+    cy.get(".chinese-option img").each(($img) => expect($img[0].naturalWidth).to.be.greaterThan(0));
+    cy.get('.chinese-option[data-character="餅"]').click();
+    cy.get(".reward-card").should("exist");
+  });
 });
 

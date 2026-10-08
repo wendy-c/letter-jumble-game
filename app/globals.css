@@ -2153,6 +2153,42 @@ h1 span {
   stroke-width: 1.9;
 }
 
+/* Everyday phrases with the character, in small text under the big one. */
+.chinese-phrases {
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 4px 0 6px;
+  padding: 0;
+  list-style: none;
+}
+
+.chinese-phrase {
+  border: 2px solid rgb(255 255 255 / 90%);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 85%);
+  padding: 5px 14px;
+  box-shadow: 0 2px 0 var(--line);
+  color: var(--ink);
+  cursor: pointer;
+  font-family: var(--chinese-font);
+  font-size: 20px;
+  letter-spacing: 1px;
+  transition: transform 140ms ease;
+}
+
+.chinese-phrase:hover {
+  transform: translateY(-2px);
+}
+
+.chinese-phrase-highlight {
+  background: transparent;
+  color: var(--pink-dark);
+  font-weight: 700;
+}
+
 .chinese-answer-panel h2,
 .chinese-answer-panel .answer-intro p,
 .chinese-feedback .feedback {

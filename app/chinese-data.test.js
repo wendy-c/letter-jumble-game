@@ -42,3 +42,36 @@ describe("chineseTopics", () => {
     colours.words.forEach((word) => expect(word.answers).toEqual([word.character]));
   });
 });
+
+describe("food", () => {
+  const food = chineseTopics.find((topic) => topic.id === "food");
+
+  it("has the 13 food characters, in order", () => {
+    expect(food.name).toBe("食物");
+    expect(food.words.map((word) => word.character)).toEqual([
+      "餅", "飯", "糖", "肉", "菜", "蛋", "糕", "麵", "包", "粉", "魚", "奶", "豆",
+    ]);
+  });
+
+  it("gives every character two everyday phrases that contain it", () => {
+    food.words.forEach((word) => {
+      expect(word.phrases).toHaveLength(2);
+      word.phrases.forEach((phrase) => expect(phrase).toContain(word.character));
+    });
+    expect(food.words[0].phrases).toEqual(["餅乾", "月餅"]);
+  });
+
+  it("offers four different pictures, but never both noodle dishes (麵 and 粉) together", () => {
+    food.words.forEach((word) => {
+      const characters = word.options.map((option) => option.character);
+      expect(new Set(word.options.map((option) => option.picture)).size).toBe(4);
+      expect(characters).toContain(word.character);
+      expect(characters.includes("麵") && characters.includes("粉")).toBe(false);
+    });
+  });
+
+  it("has a picture file for every food and the topic icon", () => {
+    const images = [food.icon, ...food.words.flatMap((word) => [word.picture, ...word.options.map((option) => option.picture)])];
+    expect(images.filter((image) => !fs.existsSync(path.join(publicDir, image)))).toEqual([]);
+  });
+});

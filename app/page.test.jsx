@@ -439,5 +439,22 @@ describe("chinese characters", () => {
     render(<Home />);
     expect(shownGames()).not.toContain("中文認字");
   });
+
+  it("offers a food topic whose rounds show phrases under the character", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    const user = userEvent.setup();
+    render(<Home />);
+
+    await user.click(screen.getByRole("button", { name: /中文認字/ }));
+    expect(screen.getAllByRole("button").filter((button) => button.classList.contains("category-card")).map((card) => card.querySelector(".category-card-name").textContent))
+      .toEqual(["顏色", "食物"]);
+    await user.click(screen.getByRole("button", { name: /食物/ }));
+
+    expect(screen.getByText("餅", { selector: ".chinese-character" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "聽「餅乾」" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "biscuit" }));
+    expect(screen.getByRole("dialog", { name: /！$/ })).toBeInTheDocument();
+    expect(sounds.correct).toHaveBeenCalledTimes(1);
+  });
 });
 

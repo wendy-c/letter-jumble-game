@@ -2,6 +2,15 @@ import { useEffect, useState } from "react";
 import { speakCantonese, stopSpeaking } from "../lib/speech";
 import Mascot from "./Mascot";
 
+// Shows a phrase with the character being learned picked out, e.g. 餅乾 with 餅 highlighted.
+function Phrase({ phrase, character }) {
+  return [...phrase].map((part, index) => (
+    part === character
+      ? <mark className="chinese-phrase-highlight" key={index}>{part}</mark>
+      : <span key={index}>{part}</span>
+  ));
+}
+
 // One round of Chinese character recognition: read the character, hear it in Cantonese,
 // and pick the matching picture. The parent remounts this (key) for every new word.
 export default function ChineseGame({ topic, round, word, onCorrect }) {
@@ -9,11 +18,9 @@ export default function ChineseGame({ topic, round, word, onCorrect }) {
   const [solved, setSolved] = useState(false);
   const [voiceMessage, setVoiceMessage] = useState("");
 
-  // Say the character as soon as it appears.
-  useEffect(() => {
-    speakCantonese(word.character, setVoiceMessage);
-    return () => stopSpeaking();
-  }, [word.character]);
+  // Hearing the character is a hint, only on request. Stop any hint still being spoken
+  // when moving on to another character.
+  useEffect(() => () => stopSpeaking(), []);
 
   function pick(option) {
     if (solved) return;
@@ -41,29 +48,45 @@ export default function ChineseGame({ topic, round, word, onCorrect }) {
             {word.character}
           </p>
         </div>
-        <button
-          className="chinese-listen"
-          type="button"
-          onClick={() => speakCantonese(word.character, setVoiceMessage)}
-          aria-label="再聽一次"
-        >
-          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
-            <path d="M11 5 6 9H3v6h3l5 4V5Z" />
-            <path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" />
-          </svg>
-          再聽一次
-        </button>
-        <p className={`voice-status${voiceMessage ? " voice-status-visible" : ""}`} aria-live="polite">{voiceMessage}</p>
+        {word.phrases?.length > 0 && (
+          <ul className="chinese-phrases" aria-label="常見詞語" lang="zh-Hant-HK">
+            {word.phrases.map((phrase) => (
+              <li key={phrase}>
+                <button
+                  className="chinese-phrase"
+                  type="button"
+                  aria-label={`聽「${phrase}」`}
+                  onClick={() => speakCantonese(phrase, setVoiceMessage)}
+                >
+                  <Phrase phrase={phrase} character={word.character} />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       <section className="answer-panel chinese-answer-panel" aria-label="揀圖畫">
         <div className="answer-intro">
           <span className="step-number">01</span>
           <div>
-            <h2 lang="zh-Hant-HK">邊幅圖啱呢個字？</h2>
-            <p lang="zh-Hant-HK">睇吓個字，揀啱嘅圖畫</p>
+            <h2 lang="zh-Hant-HK">哪幅圖是正確的？</h2>
+            <p lang="zh-Hant-HK">認生字，選圖畫</p>
           </div>
+          <button
+            className="voice-button"
+            type="button"
+            onClick={() => speakCantonese(word.character, setVoiceMessage)}
+            aria-label="聽提示"
+            title="唔識讀？聽吓提示"
+          >
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
+              <path d="M11 5 6 9H3v6h3l5 4V5Z" />
+              <path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" />
+            </svg>
+          </button>
         </div>
+        <p className={`voice-status${voiceMessage ? " voice-status-visible" : ""}`} aria-live="polite">{voiceMessage}</p>
 
         <div className="chinese-options" role="group" aria-label="圖畫選擇">
           {word.options.map((option) => {

@@ -69,3 +69,30 @@ describe("ChineseGame", () => {
     expect(screen.getByText("彩色")).toHaveClass("chinese-character-pair");
   });
 });
+
+describe("phrases", () => {
+  const food = chineseTopics.find((topic) => topic.id === "food");
+  const biscuit = food.words[0];
+
+  it("shows everyday phrases under the character, with the character highlighted", () => {
+    render(<ChineseGame topic={food} round={0} word={biscuit} onCorrect={jest.fn()} />);
+    const list = screen.getByRole("list", { name: "常見詞語" });
+    const phrases = screen.getAllByRole("button", { name: /^聽「/ });
+    expect(phrases.map((phrase) => phrase.textContent)).toEqual(["餅乾", "月餅"]);
+    expect(list).toHaveAttribute("lang", "zh-Hant-HK");
+    phrases.forEach((phrase) => {
+      expect(phrase.querySelector("mark")).toHaveTextContent("餅");
+    });
+  });
+
+  it("reads a phrase in Cantonese when it's tapped", async () => {
+    render(<ChineseGame topic={food} round={0} word={biscuit} onCorrect={jest.fn()} />);
+    await userEvent.click(screen.getByRole("button", { name: "聽「月餅」" }));
+    expect(speakCantonese).toHaveBeenCalledWith("月餅", expect.any(Function));
+  });
+
+  it("shows no phrases for topics without them", () => {
+    renderRound();
+    expect(screen.queryByRole("list", { name: "常見詞語" })).not.toBeInTheDocument();
+  });
+});
