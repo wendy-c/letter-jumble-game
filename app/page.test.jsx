@@ -526,3 +526,24 @@ describe("routes", () => {
   });
 });
 
+describe("coins on the home page", () => {
+  it("shows the player's coins and links them to Mochi", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 12, age: "3-4" }], current: "Ada" }));
+    const user = userEvent.setup();
+    render(<GameApp />);
+
+    const link = await screen.findByRole("link", { name: "12 rainbow coins. Visit Mochi the Rainbow Dragon" });
+    expect(link).toHaveAttribute("href", "/dragon");
+    await user.click(link);
+
+    expect(currentPathname()).toBe("/dragon");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Mochi the Rainbow Dragon");
+    expect(screen.queryByRole("link", { name: /rainbow coins/ })).not.toBeInTheDocument();
+  });
+
+  it("isn't shown when nobody is playing", () => {
+    render(<GameApp />);
+    expect(screen.queryByRole("link", { name: /rainbow coins/ })).not.toBeInTheDocument();
+  });
+});
+

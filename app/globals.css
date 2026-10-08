@@ -1641,6 +1641,33 @@ h1 span {
   gap: 10px;
 }
 
+.coin-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 2px solid #f6e2a6;
+  border-radius: 30px;
+  background: linear-gradient(135deg, #fffdf2, var(--gold-soft));
+  padding: 4px 8px 4px 5px;
+  box-shadow: 0 3px 0 #f6e2a6;
+  color: var(--gold-deep);
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 140ms ease;
+}
+
+.coin-link:hover {
+  transform: translateY(-2px);
+}
+
+.coin-link-mochi {
+  margin-left: 2px;
+  border-left: 2px solid #f6e2a6;
+  padding-left: 6px;
+  box-sizing: content-box;
+}
+
 .player-menu {
   position: relative;
 }
@@ -2318,6 +2345,14 @@ a:focus-visible {
 
   /* Room is tight on phones: the player chip takes the badge's place. */
   .topbar-tools:has(.player-menu) .exam-badge {
+    display: none;
+  }
+
+  .coin-link {
+    font-size: 14px;
+  }
+
+  .coin-link-mochi {
     display: none;
   }
 

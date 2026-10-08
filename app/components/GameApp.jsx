@@ -8,6 +8,7 @@ import { chineseTopics } from "../chinese-data";
 import { games, gamesForAge, isGameForAge } from "../games-data";
 import AnswerPanel from "./AnswerPanel";
 import ChineseGame from "./ChineseGame";
+import CoinLink from "./CoinLink";
 import DragonDen from "./DragonDen";
 import GameFooter from "./GameFooter";
 import GameHeading from "./GameHeading";
@@ -263,6 +264,7 @@ export default function GameApp() {
   return (
     <main className={`app-shell min-h-screen px-4 py-5 sm:px-8 sm:py-8${selectedGame?.id === "dragon" ? " app-shell-fit" : ""}`}>
       <SiteHeader badge={selectedGame?.badge ?? "SPELLING SCHOOL"}>
+        {currentPlayer && !gameId && <CoinLink coins={rainbowCoins} />}
         {currentPlayer && (
           <PlayerMenu player={currentPlayer} onSwitch={() => setPlayerDialogOpen(true)} onLogOut={handleLogOut} />
         )}
