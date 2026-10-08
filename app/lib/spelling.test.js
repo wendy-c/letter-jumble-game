@@ -1,4 +1,4 @@
-import { getSpellingGuides, scramble, slotCount } from "./spelling";
+import { getSpellingGuides, scramble, shuffledDeck, slotCount } from "./spelling";
 
 describe("getSpellingGuides", () => {
   it("marks consonant teams, vowel teams and single sounds across words", () => {
@@ -52,3 +52,22 @@ describe("slotCount", () => {
     expect(slotCount({ answers: ["cat"], missing: 0 }, 0)).toBe(1);
   });
 });
+
+describe("shuffledDeck", () => {
+  it("picks the requested number of different positions", () => {
+    const deck = shuffledDeck(46, 20);
+    expect(deck).toHaveLength(20);
+    expect(new Set(deck).size).toBe(20);
+    deck.forEach((index) => expect(index).toBeGreaterThanOrEqual(0));
+    deck.forEach((index) => expect(index).toBeLessThan(46));
+  });
+
+  it("never asks for more than there are", () => {
+    expect(shuffledDeck(5, 20)).toHaveLength(5);
+  });
+
+  it("keeps the original order when random() is just below 1", () => {
+    expect(shuffledDeck(6, 4, () => 0.9999)).toEqual([0, 1, 2, 3]);
+  });
+});
+

@@ -42,7 +42,7 @@ export default function TopicMenu({ isCvc, isChinese = false, topics, progressFo
               : <img src={topic.icon} alt="" width="40" height="40" />}
             number={index + 1}
             name={topic.name}
-            note={cardNote(isChinese, progressFor(topic), topic.words.length)}
+            note={cardNote(isChinese, progressFor(topic), topic.wordsPerGame ?? topic.words.length)}
             onClick={() => onSelectTopic(topic)}
           />
         ))}

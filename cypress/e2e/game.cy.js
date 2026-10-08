@@ -16,10 +16,20 @@ function visitLetterJumble(options, newPlayer = "Ada") {
   if (newPlayer) addPlayer(newPlayer);
 }
 
+// CVC games deal 20 random words; random() just below 1 keeps the original order
+// (cat, hat, bat, ...) so tests know which word comes first. It's stubbed after the page
+// has loaded, because Next.js itself needs a real Math.random while starting up.
+function keepWordOrder() {
+  cy.window().then((win) => {
+    win.Math.random = () => 0.9999999;
+  });
+}
+
 function visitCvcMode(mode) {
   cy.visit("/");
   cy.contains("button", "CVC Sounds").click();
   addPlayer("Ada", "3-4");
+  keepWordOrder();
   cy.contains("button", mode).click();
 }
 
@@ -284,7 +294,7 @@ describe("CVC sounds game", () => {
     cy.contains("h1", "CVC Sounds");
     cy.get(".category-card").should("have.length", 4);
     ["Beginning Sound", "Middle Sound", "Ending Sound", "Mixed Sounds"].forEach((mode) => {
-      cy.contains(".category-card", mode).should("contain.text", "46");
+      cy.contains(".category-card", mode).should("contain.text", "20");
     });
     cy.contains("button", "Choose a game").click();
     cy.contains("h1", "Choose an adventure!");
@@ -292,7 +302,7 @@ describe("CVC sounds game", () => {
 
   it("leaves only the beginning letter to fill in", () => {
     visitCvcMode("Beginning Sound");
-    cy.contains("01 / 46");
+    cy.contains("01 / 20");
     cy.get(".letter-slot").should("have.length", 1);
     cy.get(".letter-given").should("have.length", 2).then(($letters) => {
       expect([...$letters].map((letter) => letter.textContent)).to.deep.equal(["a", "t"]);
@@ -305,7 +315,7 @@ describe("CVC sounds game", () => {
     cy.contains("button", "Check word").click();
     cy.get(".reward-card").should("contain.text", "Amazing!");
     cy.get(".reward-card").click();
-    cy.contains("02 / 46");
+    cy.contains("02 / 20");
   });
 
   it("offers every short vowel for the middle sound", () => {
@@ -502,6 +512,22 @@ describe("routes", () => {
     cy.visit("/letter-jumble", seed("3-4"));
     cy.location("pathname").should("eq", "/");
     cy.contains("h1", "Choose an adventure!");
+  });
+});
+
+describe("CVC shuffling", () => {
+  it("deals 20 words in a random order", () => {
+    cy.visit("/cvc/ending-sound", {
+      onBeforeLoad(win) {
+        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+      },
+    });
+    cy.contains("01 / 20");
+    storedPlayers().then((stored) => {
+      const deck = stored.players[0].decks["cvc/ending-sound"];
+      expect(deck).to.have.length(20);
+      expect(new Set(deck).size).to.eq(20);
+    });
   });
 });
 

@@ -75,8 +75,12 @@ const modes = [
   { id: "mixed-sounds", name: "Mixed Sounds", color: "green", position: null, pattern: [null, "?", null] },
 ];
 
+// Each CVC game deals this many words, picked at random from the full list.
+export const cvcWordsPerGame = 20;
+
 export const cvcModes = modes.map((mode) => ({
   ...mode,
+  wordsPerGame: cvcWordsPerGame,
   words: cvcWords.map(([title, picture], wordIndex) => {
     const word = title.toLowerCase();
     const missing = mode.position ?? wordIndex % 3;

@@ -23,6 +23,10 @@ function cleanPlayer(player) {
     const progress = Object.fromEntries(Object.entries(player.progress).filter(([, index]) => isCount(index)));
     if (Object.keys(progress).length > 0) cleaned.progress = progress;
   }
+  if (player.decks && typeof player.decks === "object") {
+    const decks = Object.fromEntries(Object.entries(player.decks).filter(([, deck]) => Array.isArray(deck) && deck.length > 0 && deck.every(isCount)));
+    if (Object.keys(decks).length > 0) cleaned.decks = decks;
+  }
   return cleaned;
 }
 
@@ -142,8 +146,21 @@ export function usePlayers() {
     return true;
   }
 
+  // Remembers the shuffled words dealt for a topic (e.g. 20 of the CVC words), or forgets them.
+  function saveDeck(key, deck) {
+    if (!state.current) return;
+    updatePlayer(state.current, (player) => {
+      const decks = { ...player.decks };
+      if (deck) decks[key] = deck;
+      else delete decks[key];
+      const { decks: _old, ...rest } = player;
+      return Object.keys(decks).length > 0 ? { ...rest, decks } : rest;
+    });
+  }
+
   return {
     loaded,
+    saveDeck,
     players: state.players,
     currentPlayer,
     createPlayer,

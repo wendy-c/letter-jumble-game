@@ -46,6 +46,16 @@ export function scramble(word, round) {
   return mixed;
 }
 
+// `count` different positions from 0..size-1, in random order (a Fisher-Yates shuffle).
+export function shuffledDeck(size, count, random = Math.random) {
+  const indices = Array.from({ length: size }, (_, index) => index);
+  for (let index = size - 1; index > 0; index -= 1) {
+    const swap = Math.floor(random() * (index + 1));
+    [indices[index], indices[swap]] = [indices[swap], indices[index]];
+  }
+  return indices.slice(0, Math.min(count, size));
+}
+
 export function slotCount(word, wordIndex) {
   if (word.missing !== undefined) return 1;
   return word.answers[wordIndex % word.answers.length].replaceAll(" ", "").length;

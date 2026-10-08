@@ -21,7 +21,7 @@ import RewardDialog, { chineseRewardLabels } from "./RewardDialog";
 import SiteHeader from "./SiteHeader";
 import TopicMenu from "./TopicMenu";
 import WordMenu from "./WordMenu";
-import { getSpellingGuides, scramble, slotCount } from "../lib/spelling";
+import { getSpellingGuides, scramble, shuffledDeck, slotCount } from "../lib/spelling";
 import { speakWord, stopSpeaking } from "../lib/speech";
 import { sounds } from "../lib/sounds";
 import { usePlayers } from "../lib/use-players";
@@ -48,7 +48,7 @@ export default function GameApp() {
   const { gameId, topicId } = parsePath(pathname);
 
   const {
-    loaded, players, currentPlayer, createPlayer, setPlayerAge, selectPlayer, logOut, addCoin, spendCoins, saveProgress,
+    loaded, players, currentPlayer, createPlayer, setPlayerAge, selectPlayer, logOut, addCoin, spendCoins, saveProgress, saveDeck,
   } = usePlayers();
   const rainbowCoins = currentPlayer?.coins ?? 0;
 
@@ -57,8 +57,16 @@ export default function GameApp() {
   const allowed = Boolean(routeGame && loaded && currentPlayer?.age && isGameForAge(routeGame, currentPlayer.age));
   const selectedGame = allowed ? routeGame : null;
   const gameTopics = topicsByGame[selectedGame?.id] ?? [];
-  const selectedCategory = (topicId && gameTopics.find((topic) => topic.id === topicId)) || null;
-  const categoryKey = selectedCategory ? `${selectedGame.id}/${selectedCategory.id}` : null;
+  const routeTopic = (topicId && gameTopics.find((topic) => topic.id === topicId)) || null;
+  const categoryKey = routeTopic ? `${selectedGame.id}/${routeTopic.id}` : null;
+  // Topics with `wordsPerGame` (CVC) play a shuffled hand of that many words, saved per player
+  // so leaving and coming back continues the same words.
+  const deck = routeTopic?.wordsPerGame ? currentPlayer?.decks?.[categoryKey] : null;
+  const validDeck = Boolean(deck) && deck.length === Math.min(routeTopic.wordsPerGame, routeTopic.words.length) &&
+    deck.every((index) => index < routeTopic.words.length);
+  const selectedCategory = routeTopic?.wordsPerGame
+    ? (validDeck ? { ...routeTopic, words: deck.map((index) => routeTopic.words[index]) } : null)
+    : routeTopic;
 
   // Where we are in the open topic. `key` says which topic this belongs to, so a stale round
   // from another topic is never shown while switching.
@@ -116,8 +124,16 @@ export default function GameApp() {
       }
       return;
     }
-    if (topicId && !selectedCategory) router.replace(`/${routeGame.id}`);
-  }, [loaded, gameId, topicId, routeGame, allowed, currentPlayer, selectedCategory, router]);
+    if (topicId && !routeTopic) router.replace(`/${routeGame.id}`);
+  }, [loaded, gameId, topicId, routeGame, allowed, currentPlayer, routeTopic, router]);
+
+  // A shuffled topic without a hand of words yet gets one dealt.
+  useEffect(() => {
+    if (!routeTopic?.wordsPerGame || !currentPlayer || validDeck) return;
+    saveDeck(categoryKey, shuffledDeck(routeTopic.words.length, routeTopic.wordsPerGame));
+    saveProgress(categoryKey, 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoryKey, currentPlayer?.name, validDeck]);
 
   // Opening a topic (or switching player inside one) starts at the word that player got up to.
   useEffect(() => {
@@ -132,9 +148,9 @@ export default function GameApp() {
     setRewardMessage("");
     setWordMenuOpen(false);
     setCompletedTopic(null);
-    // Only when the topic or player changes, not on every progress save.
+    // Only when the topic, player or dealt words change, not on every progress save.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categoryKey, currentPlayer?.name]);
+  }, [categoryKey, currentPlayer?.name, validDeck]);
 
   const closeWordMenu = useCallback(() => setWordMenuOpen(false), []);
   const closePlayerDialog = useCallback(() => {
@@ -266,6 +282,9 @@ export default function GameApp() {
   }
 
   function leaveCompletedTopic() {
+    // A shuffled topic deals a fresh hand of words next time. (Not before leaving: dealing
+    // straight away would reset the screen under the pop-up.)
+    if (routeTopic.wordsPerGame) saveDeck(categoryKey, null);
     setCompletedTopic(null);
     showCategories();
   }
@@ -293,7 +312,7 @@ export default function GameApp() {
 
       {!selectedGame ? (
         <GamePicker games={gamesForAge(currentPlayer?.age)} onSelectGame={requestGame} />
-      ) : !selectedCategory ? (
+      ) : !routeTopic ? (
         selectedGame.id === "dragon" ? (
           <DragonDen coins={rainbowCoins} onSpendCoins={spendCoins} onBack={showGames} />
         ) : (

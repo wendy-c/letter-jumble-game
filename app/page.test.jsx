@@ -19,6 +19,13 @@ const whoIsPlaying = /Who.s playing/;
 beforeEach(() => {
   window.localStorage.clear();
   jest.clearAllMocks();
+  // A shuffle with random() just below 1 keeps the original order, so CVC games deal the
+  // first 20 words in order (cat, hat, bat, ...). Tests about shuffling override this.
+  jest.spyOn(Math, "random").mockReturnValue(0.9999999);
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
 });
 
 const ageFor = (gameName) => (/Letter Jumble/.test(gameName) ? "5-6" : "3-4");
@@ -408,16 +415,22 @@ describe("progress", () => {
 
   it("keeps separate progress for each CVC mode", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({
-      players: [{ name: "Ada", coins: 0, age: "3-4", progress: { "cvc/middle-sound": 5 } }],
+      players: [{
+        name: "Ada",
+        coins: 0,
+        age: "3-4",
+        progress: { "cvc/middle-sound": 5 },
+        decks: { "cvc/middle-sound": [...Array(20).keys()] },
+      }],
       current: "Ada",
     }));
     const user = userEvent.setup();
     render(<GameApp />);
     await openGame(user, "CVC Sounds", "Middle Sound");
-    expect(screen.getByLabelText("Word 6 of 46")).toBeInTheDocument();
+    expect(screen.getByLabelText("Word 6 of 20")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /All sounds/ }));
     await user.click(screen.getByRole("button", { name: /Beginning Sound/ }));
-    expect(screen.getByLabelText("Word 1 of 46")).toBeInTheDocument();
+    expect(screen.getByLabelText("Word 1 of 20")).toBeInTheDocument();
   });
 
   it("plays the correct-answer sound only for a correct answer", async () => {
@@ -572,6 +585,55 @@ describe("coins on the home page", () => {
   it("isn't shown when nobody is playing", () => {
     render(<GameApp />);
     expect(screen.queryByRole("link", { name: /rainbow coins/ })).not.toBeInTheDocument();
+  });
+});
+
+describe("CVC shuffling", () => {
+  const seed = (extra = {}) => window.localStorage.setItem(playersKey, JSON.stringify({
+    players: [{ name: "Ada", coins: 0, age: "3-4", ...extra }],
+    current: "Ada",
+  }));
+
+  it("deals 20 different words at random and keeps them when coming back", async () => {
+    seed();
+    let calls = 0;
+    Math.random.mockImplementation(() => ((calls += 1) * 0.37) % 1);
+    const user = userEvent.setup();
+    render(<GameApp />);
+
+    await user.click(screen.getByRole("button", { name: /CVC Sounds/ }));
+    expect(screen.getByRole("button", { name: /Beginning Sound/ })).toHaveTextContent("20 spells to learn");
+    await user.click(screen.getByRole("button", { name: /Beginning Sound/ }));
+
+    const deck = storedPlayers().players[0].decks["cvc/beginning-sound"];
+    expect(deck).toHaveLength(20);
+    expect(new Set(deck).size).toBe(20);
+    expect(deck).not.toEqual([...Array(20).keys()]);
+    expect(screen.getByLabelText("Word 1 of 20")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /All sounds/ }));
+    await user.click(screen.getByRole("button", { name: /Beginning Sound/ }));
+    expect(storedPlayers().players[0].decks["cvc/beginning-sound"]).toEqual(deck);
+  });
+
+  it("deals a fresh hand of words after finishing all 20", async () => {
+    seed({ progress: { "cvc/beginning-sound": 19 }, decks: { "cvc/beginning-sound": [...Array(20).keys()] } });
+    setPathname("/cvc/beginning-sound");
+    const user = userEvent.setup();
+    render(<GameApp />);
+
+    // Word 20 of the original order is "web".
+    expect(await screen.findByLabelText("Word 20 of 20")).toBeInTheDocument();
+    expect(screen.getByLabelText("Letter 2 of 3, e")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Letter w" }));
+    await user.click(screen.getByRole("button", { name: /Check word/ }));
+    await user.click(within(screen.getByRole("dialog", { name: /!$/ })).getByRole("button"));
+
+    const praise = screen.getByRole("dialog", { name: "You did it!" });
+    expect(praise).toHaveTextContent("all 20 Beginning Sound words");
+    await user.click(within(praise).getByRole("button", { name: /Back to all topics/ }));
+    expect(currentPathname()).toBe("/cvc");
+    expect(storedPlayers().players[0].decks).toBeUndefined();
   });
 });
 
