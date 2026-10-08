@@ -1,6 +1,7 @@
-import { render, screen, within } from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import Home from "./page";
+import GameApp from "./components/GameApp";
+import { currentPathname, setPathname } from "../test/mock-navigation";
 import { sounds } from "./lib/sounds";
 
 jest.mock("./lib/sounds", () => ({ sounds: { correct: jest.fn(), coin: jest.fn() } }));
@@ -54,7 +55,7 @@ async function earnCoin(user) {
 
 describe("Home", () => {
   it("starts on the game picker", () => {
-    render(<Home />);
+    render(<GameApp />);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Choose an adventure!");
     const gameCards = screen.getAllByRole("button").filter((button) => button.classList.contains("game-choice-card"));
     expect(gameCards.map((card) => card.querySelector(".category-card-name").textContent)).toEqual(["CVC Sounds", "中文認字 · 入門篇", "Letter Jumble for Movers", "Mochi the Rainbow Dragon"]);
@@ -63,7 +64,7 @@ describe("Home", () => {
 
   it("plays a Letter Jumble word and earns a rainbow coin", async () => {
     const user = userEvent.setup();
-    render(<Home />);
+    render(<GameApp />);
     await openGame(user, "Letter Jumble", "Animals");
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Animals");
@@ -88,7 +89,7 @@ describe("Home", () => {
 
   it("does not reward a wrong or unfinished answer", async () => {
     const user = userEvent.setup();
-    render(<Home />);
+    render(<GameApp />);
     await openGame(user, "Letter Jumble", "Animals");
 
     await user.click(screen.getByRole("button", { name: /Check word/ }));
@@ -105,7 +106,7 @@ describe("Home", () => {
 
   it("plays a CVC word with one missing letter and swaps a wrong pick", async () => {
     const user = userEvent.setup();
-    render(<Home />);
+    render(<GameApp />);
     await openGame(user, "CVC Sounds", "Middle Sound");
 
     expect(screen.getByText("CVC SOUNDS")).toBeInTheDocument();
@@ -123,7 +124,7 @@ describe("Home", () => {
 
   it("moves back through the menus", async () => {
     const user = userEvent.setup();
-    render(<Home />);
+    render(<GameApp />);
     await openGame(user, "CVC Sounds", "Ending Sound");
 
     await user.click(screen.getByRole("button", { name: /All sounds/ }));
@@ -134,7 +135,7 @@ describe("Home", () => {
 
   it("turns on the spelling guide from the word menu", async () => {
     const user = userEvent.setup();
-    render(<Home />);
+    render(<GameApp />);
     await openGame(user, "Letter Jumble", "Animals");
     expect(screen.queryByLabelText("Spelling guide")).not.toBeInTheDocument();
 
@@ -151,7 +152,7 @@ describe("Home", () => {
 describe("players", () => {
   it("asks who is playing before entering a game, and stays on the picker if closed", async () => {
     const user = userEvent.setup();
-    render(<Home />);
+    render(<GameApp />);
 
     await user.click(screen.getByRole("button", { name: /CVC Sounds/ }));
     const dialog = screen.getByRole("dialog", { name: whoIsPlaying });
@@ -165,7 +166,7 @@ describe("players", () => {
 
   it("creates a new player with a name and age, and opens the chosen game", async () => {
     const user = userEvent.setup();
-    render(<Home />);
+    render(<GameApp />);
 
     await user.click(screen.getByRole("button", { name: /CVC Sounds/ }));
     expect(within(screen.getByRole("radiogroup", { name: /How old/ })).getAllByRole("radio").map((radio) => radio.textContent))
@@ -180,7 +181,7 @@ describe("players", () => {
   it("shows a message instead of creating a blank or duplicate player", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0 }], current: null }));
     const user = userEvent.setup();
-    render(<Home />);
+    render(<GameApp />);
 
     await user.click(screen.getByRole("button", { name: /CVC Sounds/ }));
     const dialog = screen.getByRole("dialog", { name: whoIsPlaying });
@@ -204,7 +205,7 @@ describe("players", () => {
       current: null,
     }));
     const user = userEvent.setup();
-    render(<Home />);
+    render(<GameApp />);
 
     await user.click(screen.getByRole("button", { name: /Letter Jumble/ }));
     const list = within(screen.getByRole("dialog", { name: whoIsPlaying })).getByRole("list", { name: "Players" });
@@ -221,7 +222,7 @@ describe("players", () => {
   it("remembers the player, so entering another game doesn't ask again", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 2, age: "5-6" }], current: "Ada" }));
     const user = userEvent.setup();
-    render(<Home />);
+    render(<GameApp />);
 
     await user.click(screen.getByRole("button", { name: /Letter Jumble/ }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
@@ -230,7 +231,7 @@ describe("players", () => {
 
   it("switches player mid-game and stores coins under the new player", async () => {
     const user = userEvent.setup();
-    render(<Home />);
+    render(<GameApp />);
     await openGame(user, "Letter Jumble", "Animals");
     await earnCoin(user);
     expect(screen.getByLabelText(coinsLabel(1))).toBeInTheDocument();
@@ -256,7 +257,7 @@ describe("players", () => {
 
   it("logs out back to the picker and asks again next time", async () => {
     const user = userEvent.setup();
-    render(<Home />);
+    render(<GameApp />);
     await openGame(user, "Letter Jumble", "Animals");
 
     await user.click(screen.getByRole("button", { name: /Player options/ }));
@@ -275,7 +276,7 @@ describe("rainbow dragon", () => {
   it("asks who is playing, then spends their coins on Mochi", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 4, age: "3-4" }], current: null }));
     const user = userEvent.setup();
-    render(<Home />);
+    render(<GameApp />);
 
     await user.click(screen.getByRole("button", { name: /Rainbow Dragon/ }));
     await user.click(within(screen.getByRole("dialog", { name: whoIsPlaying })).getByRole("button", { name: /Ada/ }));
@@ -298,7 +299,7 @@ describe("ages", () => {
       current: "Ada",
     }));
     const user = userEvent.setup();
-    render(<Home />);
+    render(<GameApp />);
     expect(shownGames()).toEqual(["CVC Sounds", "中文認字 · 入門篇", "Mochi the Rainbow Dragon"]);
 
     await user.click(screen.getByRole("button", { name: /Player options/ }));
@@ -308,13 +309,13 @@ describe("ages", () => {
   });
 
   it("shows every game to visitors before anyone is playing", () => {
-    render(<Home />);
+    render(<GameApp />);
     expect(shownGames()).toEqual(["CVC Sounds", "中文認字 · 入門篇", "Letter Jumble for Movers", "Mochi the Rainbow Dragon"]);
   });
 
   it("stays on the picker when the chosen game isn't for the new player's age", async () => {
     const user = userEvent.setup();
-    render(<Home />);
+    render(<GameApp />);
 
     await user.click(screen.getByRole("button", { name: /Letter Jumble/ }));
     await addPlayer(user, "Mia", "3-4");
@@ -326,7 +327,7 @@ describe("ages", () => {
   it("asks a player saved before ages existed how old they are", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 5 }], current: "Ada" }));
     const user = userEvent.setup();
-    render(<Home />);
+    render(<GameApp />);
 
     await user.click(screen.getByRole("button", { name: /CVC Sounds/ }));
     const dialog = screen.getByRole("dialog", { name: "How old is Ada?" });
@@ -340,7 +341,7 @@ describe("ages", () => {
 describe("progress", () => {
   it("carries on from the word the player got up to", async () => {
     const user = userEvent.setup();
-    const { unmount } = render(<Home />);
+    const { unmount } = render(<GameApp />);
     await openGame(user, "Letter Jumble", "Animals");
     await earnCoin(user);
     expect(screen.getByLabelText("Word 2 of 13")).toBeInTheDocument();
@@ -349,9 +350,11 @@ describe("progress", () => {
     expect(screen.getByRole("button", { name: /Animals/ })).toHaveTextContent("1 of 13 spells learned");
     expect(screen.getByRole("button", { name: /Body and Face/ })).toHaveTextContent("13 spells to learn");
 
+    // Like reloading the page: the address stays on the game's topic list.
     unmount();
-    render(<Home />);
-    await openGame(user, "Letter Jumble", "Animals");
+    expect(currentPathname()).toBe("/letter-jumble");
+    render(<GameApp />);
+    await user.click(await screen.findByRole("button", { name: /Animals/ }));
     expect(screen.getByLabelText("Word 2 of 13")).toBeInTheDocument();
   });
 
@@ -361,7 +364,7 @@ describe("progress", () => {
       current: "Ada",
     }));
     const user = userEvent.setup();
-    render(<Home />);
+    render(<GameApp />);
     await openGame(user, "Letter Jumble", "Animals");
     expect(screen.getByLabelText("Word 13 of 13")).toBeInTheDocument();
 
@@ -381,7 +384,7 @@ describe("progress", () => {
       current: "Ada",
     }));
     const user = userEvent.setup();
-    render(<Home />);
+    render(<GameApp />);
     await openGame(user, "CVC Sounds", "Middle Sound");
     expect(screen.getByLabelText("Word 6 of 46")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /All sounds/ }));
@@ -391,7 +394,7 @@ describe("progress", () => {
 
   it("plays the correct-answer sound only for a correct answer", async () => {
     const user = userEvent.setup();
-    render(<Home />);
+    render(<GameApp />);
     await openGame(user, "CVC Sounds", "Beginning Sound");
 
     await user.click(screen.getByRole("button", { name: "Letter j" }));
@@ -408,7 +411,7 @@ describe("chinese characters", () => {
   it("lets a 3-4 year old match a character to its picture and earn a coin", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
     const user = userEvent.setup();
-    render(<Home />);
+    render(<GameApp />);
 
     await user.click(screen.getByRole("button", { name: /中文認字/ }));
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("中文認字");
@@ -436,14 +439,14 @@ describe("chinese characters", () => {
 
   it("isn't offered to 5-6 year olds", () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
-    render(<Home />);
+    render(<GameApp />);
     expect(shownGames()).not.toContain("中文認字 · 入門篇");
   });
 
   it("offers a food topic whose rounds show phrases under the character", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
     const user = userEvent.setup();
-    render(<Home />);
+    render(<GameApp />);
 
     await user.click(screen.getByRole("button", { name: /中文認字/ }));
     expect(screen.getAllByRole("button").filter((button) => button.classList.contains("category-card")).map((card) => card.querySelector(".category-card-name").textContent))
@@ -455,6 +458,71 @@ describe("chinese characters", () => {
     await user.click(screen.getByRole("button", { name: "biscuit" }));
     expect(screen.getByRole("dialog", { name: /！$/ })).toBeInTheDocument();
     expect(sounds.correct).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("routes", () => {
+  const seedPlayer = (age = "3-4") => window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age }], current: "Ada" }));
+
+  it("gives every game and topic its own address", async () => {
+    seedPlayer();
+    const user = userEvent.setup();
+    render(<GameApp />);
+
+    await user.click(screen.getByRole("button", { name: /CVC Sounds/ }));
+    expect(currentPathname()).toBe("/cvc");
+    await user.click(screen.getByRole("button", { name: /Middle Sound/ }));
+    expect(currentPathname()).toBe("/cvc/middle-sound");
+    await user.click(screen.getByRole("button", { name: /All sounds/ }));
+    expect(currentPathname()).toBe("/cvc");
+    await user.click(screen.getByRole("button", { name: /Choose a game/ }));
+    expect(currentPathname()).toBe("/");
+
+    await user.click(screen.getByRole("button", { name: /Rainbow Dragon/ }));
+    expect(currentPathname()).toBe("/dragon");
+  });
+
+  it("opens a topic straight from its address", async () => {
+    seedPlayer();
+    setPathname("/chinese/food");
+    render(<GameApp />);
+    expect(await screen.findByText("餅", { selector: ".chinese-character" })).toBeInTheDocument();
+  });
+
+  it("follows the back and forward buttons", async () => {
+    seedPlayer();
+    render(<GameApp />);
+    act(() => setPathname("/cvc"));
+    expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent("CVC Sounds");
+    act(() => setPathname("/"));
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Choose an adventure!");
+  });
+
+  it("asks who's playing when a game's address is opened with nobody playing, then opens it", async () => {
+    setPathname("/cvc");
+    const user = userEvent.setup();
+    render(<GameApp />);
+
+    const dialog = await screen.findByRole("dialog", { name: whoIsPlaying });
+    expect(currentPathname()).toBe("/");
+    await user.type(within(dialog).getByRole("textbox"), "Mia");
+    await user.click(within(dialog).getByRole("radio", { name: "3-4 years old" }));
+    await user.click(within(dialog).getByRole("button", { name: /Let.s play/ }));
+
+    expect(currentPathname()).toBe("/cvc");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("CVC Sounds");
+  });
+
+  it.each([
+    ["an unknown game", "/space-race", "/", "3-4"],
+    ["an unknown topic", "/cvc/backwards", "/cvc", "3-4"],
+    ["a game for another age", "/letter-jumble/animals", "/", "3-4"],
+    ["a topic under Mochi's den", "/dragon/anything", "/dragon", "3-4"],
+  ])("sends %s back up a level", async (label, from, to, age) => {
+    seedPlayer(age);
+    setPathname(from);
+    render(<GameApp />);
+    await waitFor(() => expect(currentPathname()).toBe(to));
   });
 });
 

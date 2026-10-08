@@ -1,4 +1,5 @@
 import "./globals.css";
+import GameApp from "./components/GameApp";
 
 export const metadata = {
   title: "Learn with Ada and Elly — Games for Kindergarteners",
@@ -9,7 +10,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <GameApp />
+        {children}
+      </body>
     </html>
   );
 }

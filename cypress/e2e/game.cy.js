@@ -70,10 +70,11 @@ describe("Movers spelling game", () => {
     cy.get('[aria-label="1 rainbow coins collected"]').should("exist");
     storedPlayers().should("deep.equal", { players: [{ name: "Ada", coins: 1, age: "5-6" }], current: "Ada" });
 
+    // Reloading stays on the same topic, with the coin still there.
     cy.reload();
-    cy.contains("button", "Letter Jumble").click();
+    cy.location("pathname").should("eq", "/letter-jumble/animals");
     cy.get('[role="dialog"]').should("not.exist");
-    cy.contains("button", "Animals").click();
+    cy.contains("h1", "Animals");
     cy.get('[aria-label="1 rainbow coins collected"]').should("exist");
   });
 
@@ -379,10 +380,11 @@ describe("players", () => {
     cy.get('[aria-label="0 rainbow coins collected"]').should("exist");
 
     cy.reload();
+    cy.location("pathname").should("eq", "/letter-jumble/animals");
     cy.get('button[aria-label^="Playing as Theo"]').click();
     cy.contains('[role="menuitem"]', "Switch player").click();
     cy.get('[role="dialog"] .player-option').contains("Mia").click();
-    cy.contains("button", "Letter Jumble").click();
+    cy.contains("button", "All games").click();
     cy.contains("button", "Animals").should("contain.text", "1 of 13 spells learned").click();
     cy.get('[aria-label="1 rainbow coins collected"]').should("exist");
     cy.contains("02 / 13");
@@ -475,6 +477,31 @@ describe("chinese characters", () => {
     cy.get(".chinese-option img").each(($img) => expect($img[0].naturalWidth).to.be.greaterThan(0));
     cy.get('.chinese-option[data-character="餅"]').click();
     cy.get(".reward-card").should("exist");
+  });
+});
+
+describe("routes", () => {
+  const seed = (age) => ({
+    onBeforeLoad(win) {
+      win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age }], current: "Ada" }));
+    },
+  });
+
+  it("opens a game and topic straight from their address, and the back button works", () => {
+    cy.visit("/cvc/middle-sound", seed("3-4"));
+    cy.contains("h1", "Middle Sound");
+    cy.get(".letter-given").should("have.length", 2);
+    cy.contains("button", "All sounds").click();
+    cy.location("pathname").should("eq", "/cvc");
+    cy.go("back");
+    cy.location("pathname").should("eq", "/cvc/middle-sound");
+    cy.contains("h1", "Middle Sound");
+  });
+
+  it("sends an address for another age group back to the picker", () => {
+    cy.visit("/letter-jumble", seed("3-4"));
+    cy.location("pathname").should("eq", "/");
+    cy.contains("h1", "Choose an adventure!");
   });
 });
 
