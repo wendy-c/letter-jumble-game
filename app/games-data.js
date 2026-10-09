@@ -42,6 +42,15 @@ export const games = [
     ages: ["5-6"],
   },
   {
+    id: "measure-words",
+    name: "量詞配對",
+    color: "yellow",
+    pattern: ["一", "個"],
+    note: "For age 5-6 - Chinese measure words · Cantonese",
+    badge: "量詞配對",
+    ages: ["5-6"],
+  },
+  {
     id: "dragon",
     name: "Mochi the Rainbow Dragon",
     color: "pink",

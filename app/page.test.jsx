@@ -48,6 +48,11 @@ async function openGame(user, gameName, topicName) {
   await user.click(screen.getByRole("button", { name: new RegExp(topicName) }));
 }
 
+// A link in the "Home › Game › Topic" breadcrumb trail.
+function crumb(name) {
+  return within(screen.getByRole("navigation", { name: "Breadcrumb" })).getByRole("link", { name: new RegExp(name) });
+}
+
 function shownGames() {
   return [...document.querySelectorAll(".game-choice-card .category-card-name")].map((name) => name.textContent);
 }
@@ -65,7 +70,7 @@ describe("Home", () => {
     render(<GameApp />);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Choose an adventure!");
     const gameCards = screen.getAllByRole("button").filter((button) => button.classList.contains("game-choice-card"));
-    expect(gameCards.map((card) => card.querySelector(".category-card-name").textContent)).toEqual(["CVC Sounds", "中文認字 · 入門篇", "Letter Jumble for Movers", "中文認字 · 進階篇", "Mochi the Rainbow Dragon"]);
+    expect(gameCards.map((card) => card.querySelector(".category-card-name").textContent)).toEqual(["CVC Sounds", "中文認字 · 入門篇", "Letter Jumble for Movers", "中文認字 · 進階篇", "量詞配對", "Mochi the Rainbow Dragon"]);
     expect(screen.getByText("SPELLING SCHOOL")).toBeInTheDocument();
   });
 
@@ -134,9 +139,9 @@ describe("Home", () => {
     render(<GameApp />);
     await openGame(user, "CVC Sounds", "Ending Sound");
 
-    await user.click(screen.getByRole("button", { name: /All sounds/ }));
+    await user.click(crumb("CVC Sounds"));
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("CVC Sounds");
-    await user.click(screen.getByRole("button", { name: /Choose a game/ }));
+    await user.click(crumb("Home"));
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Choose an adventure!");
   });
 
@@ -312,12 +317,12 @@ describe("ages", () => {
     await user.click(screen.getByRole("button", { name: /Player options/ }));
     await user.click(screen.getByRole("menuitem", { name: "Switch player" }));
     await user.click(within(screen.getByRole("list", { name: "Players" })).getByRole("button", { name: /Elly/ }));
-    expect(shownGames()).toEqual(["Letter Jumble for Movers", "中文認字 · 進階篇", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["Letter Jumble for Movers", "中文認字 · 進階篇", "量詞配對", "Mochi the Rainbow Dragon"]);
   });
 
   it("shows every game to visitors before anyone is playing", () => {
     render(<GameApp />);
-    expect(shownGames()).toEqual(["CVC Sounds", "中文認字 · 入門篇", "Letter Jumble for Movers", "中文認字 · 進階篇", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "中文認字 · 入門篇", "Letter Jumble for Movers", "中文認字 · 進階篇", "量詞配對", "Mochi the Rainbow Dragon"]);
   });
 
   it("stays on the picker when the chosen game isn't for the new player's age", async () => {
@@ -353,7 +358,7 @@ describe("progress", () => {
     await earnCoin(user);
     expect(screen.getByLabelText("Word 2 of 13")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /All games/ }));
+    await user.click(crumb("Letter Jumble for Movers"));
     expect(screen.getByRole("button", { name: /Animals/ })).toHaveTextContent("1 of 13 spells learned");
     expect(screen.getByRole("button", { name: /Body and Face/ })).toHaveTextContent("13 spells to learn");
 
@@ -428,7 +433,7 @@ describe("progress", () => {
     render(<GameApp />);
     await openGame(user, "CVC Sounds", "Middle Sound");
     expect(screen.getByLabelText("Word 6 of 20")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: /All sounds/ }));
+    await user.click(crumb("CVC Sounds"));
     await user.click(screen.getByRole("button", { name: /Beginning Sound/ }));
     expect(screen.getByLabelText("Word 1 of 20")).toBeInTheDocument();
   });
@@ -474,7 +479,7 @@ describe("chinese characters", () => {
     expect(screen.getByText("橙")).toHaveClass("chinese-character");
     expect(storedPlayers().players[0].progress).toEqual({ "chinese/colours": 1 });
 
-    await user.click(screen.getByRole("button", { name: /所有主題/ }));
+    await user.click(crumb("中文認字 · 入門篇"));
     expect(screen.getByRole("button", { name: /顏色/ })).toHaveTextContent("已學 1 / 13 個字");
   });
 
@@ -514,9 +519,9 @@ describe("routes", () => {
     expect(currentPathname()).toBe("/cvc");
     await user.click(screen.getByRole("button", { name: /Middle Sound/ }));
     expect(currentPathname()).toBe("/cvc/middle-sound");
-    await user.click(screen.getByRole("button", { name: /All sounds/ }));
+    await user.click(crumb("CVC Sounds"));
     expect(currentPathname()).toBe("/cvc");
-    await user.click(screen.getByRole("button", { name: /Choose a game/ }));
+    await user.click(crumb("Home"));
     expect(currentPathname()).toBe("/");
 
     await user.click(screen.getByRole("button", { name: /Rainbow Dragon/ }));
@@ -611,7 +616,7 @@ describe("CVC shuffling", () => {
     expect(deck).not.toEqual([...Array(20).keys()]);
     expect(screen.getByLabelText("Word 1 of 20")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /All sounds/ }));
+    await user.click(crumb("CVC Sounds"));
     await user.click(screen.getByRole("button", { name: /Beginning Sound/ }));
     expect(storedPlayers().players[0].decks["cvc/beginning-sound"]).toEqual(deck);
   });
@@ -681,6 +686,64 @@ describe("chinese words for 5-6 year olds", () => {
     expect(await screen.findByText("客廳", { selector: ".chinese-character" })).toHaveClass("chinese-character-pair");
     await user.click(screen.getByRole("button", { name: "living room" }));
     expect(screen.getByRole("dialog", { name: /！$/ })).toBeInTheDocument();
+  });
+});
+
+describe("breadcrumbs", () => {
+  it("shows Home › game › topic, with the current page last", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
+    setPathname("/chinese-advanced/jobs");
+    const user = userEvent.setup();
+    render(<GameApp />);
+
+    const trail = await screen.findByRole("navigation", { name: "Breadcrumb" });
+    expect(within(trail).getAllByRole("listitem").map((item) => item.textContent)).toEqual(["🏠 Home", "中文認字 · 進階篇", "職業"]);
+    expect(within(trail).getByText("職業")).toHaveAttribute("aria-current", "page");
+    expect(within(trail).getByRole("link", { name: /Home/ })).toHaveAttribute("href", "/");
+
+    await user.click(crumb("中文認字 · 進階篇"));
+    expect(currentPathname()).toBe("/chinese-advanced");
+    expect(within(screen.getByRole("navigation", { name: "Breadcrumb" })).getAllByRole("listitem")).toHaveLength(2);
+    await user.click(crumb("Home"));
+    expect(currentPathname()).toBe("/");
+    expect(screen.queryByRole("navigation", { name: "Breadcrumb" })).not.toBeInTheDocument();
+  });
+
+  it("shows the trail in Mochi's den", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    setPathname("/dragon");
+    render(<GameApp />);
+    const trail = await screen.findByRole("navigation", { name: "Breadcrumb" });
+    expect(within(trail).getAllByRole("listitem").map((item) => item.textContent)).toEqual(["🏠 Home", "Mochi the Rainbow Dragon"]);
+  });
+});
+
+describe("measure words", () => {
+  it("deals 20 random questions for 5-6 year olds and plays one", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
+    const user = userEvent.setup();
+    render(<GameApp />);
+
+    await user.click(screen.getByRole("button", { name: /量詞配對/ }));
+    expect(currentPathname()).toBe("/measure-words");
+    expect(screen.getByRole("button", { name: /量詞/ })).toHaveTextContent("每次 20 題");
+    await user.click(screen.getByRole("button", { name: /量詞/ }));
+
+    const deck = storedPlayers().players[0].decks["measure-words/measure-words"];
+    expect(deck).toHaveLength(20);
+    expect(screen.getByLabelText("Word 1 of 20")).toBeInTheDocument();
+
+    // With the order pinned, the first question is 一個橙.
+    expect(screen.getByLabelText("一個，空格")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /橙/ }));
+    expect(screen.getByRole("dialog", { name: /！$/ })).toBeInTheDocument();
+    expect(storedPlayers().players[0].coins).toBe(1);
+  });
+
+  it("isn't offered to 3-4 year olds", () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    render(<GameApp />);
+    expect(shownGames()).not.toContain("量詞配對");
   });
 });
 

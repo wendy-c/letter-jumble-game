@@ -32,7 +32,7 @@ function ActionButton({ action, coins, busy, onUse }) {
   );
 }
 
-export default function DragonDen({ coins, onSpendCoins, onBack }) {
+export default function DragonDen({ coins, onSpendCoins, breadcrumbs }) {
   const [command, setCommand] = useState(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState(idleMessage);
@@ -80,9 +80,7 @@ export default function DragonDen({ coins, onSpendCoins, onBack }) {
     <section className="game-wrap dragon-wrap mx-auto w-full max-w-6xl" aria-labelledby="game-title">
       <div className="game-heading">
         <div>
-          <button className="category-back" type="button" onClick={onBack}>
-            <span aria-hidden="true">←</span> Choose a game
-          </button>
+          {breadcrumbs}
           <p className="eyebrow">MEET YOUR MAGIC PET</p>
           <h1 id="game-title">{dragonName} the <span>Rainbow Dragon</span></h1>
           <p className="heading-note">Spend rainbow coins on yummy treats and pampering.</p>

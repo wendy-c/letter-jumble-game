@@ -3,8 +3,7 @@ function padNumber(number) {
 }
 
 export default function GameHeading({
-  isCvc, topic, round, rainbowCoins, wordMenuOpen, onBack, onOpenWordMenu,
-  backLabel = isCvc ? "All sounds" : "All games",
+  isCvc, topic, round, rainbowCoins, wordMenuOpen, breadcrumbs, onOpenWordMenu,
   eyebrow = "TODAY’S MAGIC LESSON",
   note = isCvc ? "Look, listen, find the missing sound!" : "Look, think, cast the spell!",
 }) {
@@ -13,9 +12,7 @@ export default function GameHeading({
   return (
     <div className="game-heading">
       <div>
-        <button className="category-back" type="button" onClick={onBack}>
-          <span aria-hidden="true">←</span> {backLabel}
-        </button>
+        {breadcrumbs}
         <p className="eyebrow">{eyebrow}</p>
         <h1 id="game-title">{topic.name}</h1>
         <p className="heading-note">{note}</p>

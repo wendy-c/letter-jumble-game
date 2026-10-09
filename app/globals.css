@@ -435,6 +435,49 @@ button {
   transform: translateX(3px);
 }
 
+.breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin: 0 0 13px;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.breadcrumbs li {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.breadcrumbs li + li::before {
+  color: var(--soft-text);
+  content: "›";
+  font-size: 15px;
+}
+
+.breadcrumbs a {
+  border: 2px solid var(--line);
+  border-radius: 20px;
+  background: rgb(255 255 255 / 75%);
+  padding: 3px 11px;
+  color: var(--magic-dark);
+  text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+  border-color: var(--line-strong);
+  background: #fff;
+}
+
+.breadcrumbs [aria-current="page"] {
+  padding: 3px 4px;
+  color: var(--muted);
+}
+
 .category-back {
   display: inline-flex;
   align-items: center;
@@ -2253,6 +2296,104 @@ h1 span {
   stroke-width: 1.9;
 }
 
+/* Measure words: "一 個 ＿＿" with noun choices underneath. */
+.measure-phrase {
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--chinese-font);
+}
+
+.measure-one {
+  font-size: 64px;
+  font-weight: 700;
+}
+
+.measure-phrase .measure-word {
+  width: 170px;
+  height: 170px;
+  font-size: 120px;
+}
+
+.measure-blank {
+  display: inline-flex;
+  min-width: 120px;
+  height: 92px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 3px dashed var(--line-strong);
+  border-radius: 24px;
+  background: rgb(255 255 255 / 60%);
+  padding: 0 14px;
+  color: var(--soft-text);
+  font-size: 44px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.measure-blank-filled {
+  border-style: solid;
+  border-color: var(--mint);
+  background: #eafaf2;
+  color: var(--ink);
+  font-size: 38px;
+  animation: coin-pop 420ms cubic-bezier(0.2, 0.8, 0.3, 1.3) both;
+}
+
+.measure-options {
+  display: grid;
+  width: 100%;
+  max-width: 420px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 18px auto 0;
+}
+
+.measure-option {
+  display: flex;
+  min-height: 72px;
+  align-items: center;
+  gap: 12px;
+  border: 3px solid var(--line);
+  border-radius: 20px;
+  background: #fff;
+  padding: 10px 16px;
+  box-shadow: 0 5px 0 var(--line-strong);
+  color: var(--ink);
+  cursor: pointer;
+  font-family: var(--chinese-font);
+  text-align: left;
+  transition: transform 140ms ease, border-color 140ms ease, opacity 200ms ease;
+}
+
+.measure-option:hover:not(:disabled) {
+  border-color: var(--magic);
+  transform: translateY(-3px);
+}
+
+.measure-icon {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.measure-icon-image {
+  width: 36px;
+  height: 36px;
+}
+
+.measure-blank .measure-icon {
+  font-size: 34px;
+}
+
+.measure-noun {
+  font-size: 26px;
+  font-weight: 700;
+}
+
 /* Everyday phrases with the character, in small text under the big one. */
 .chinese-phrases {
   z-index: 1;
@@ -2477,6 +2618,35 @@ a:focus-visible {
 
   .chinese-character-5 {
     font-size: 46px;
+  }
+
+  .measure-one {
+    font-size: 44px;
+  }
+
+  .measure-phrase .measure-word {
+    width: 120px;
+    height: 120px;
+    font-size: 84px;
+  }
+
+  .measure-blank {
+    min-width: 90px;
+    height: 70px;
+    font-size: 32px;
+  }
+
+  .measure-blank-filled {
+    font-size: 26px;
+  }
+
+  .measure-option {
+    min-height: 60px;
+    padding: 8px 12px;
+  }
+
+  .measure-noun {
+    font-size: 21px;
   }
 
   .chinese-options {

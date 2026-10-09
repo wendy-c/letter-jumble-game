@@ -1,5 +1,10 @@
 const playersKey = "letter-jumble:players";
 
+// Clicks a link in the "Home › Game › Topic" breadcrumb trail.
+function crumb(name) {
+  cy.get('nav[aria-label="Breadcrumb"]').contains("a", name).click();
+}
+
 function addPlayer(name, age = "5-6") {
   cy.get('[role="dialog"]').should("contain.text", "playing?").within(() => {
     cy.get("input").type(name);
@@ -195,7 +200,7 @@ describe("Movers spelling game", () => {
     cy.get(".letter-slot").eq(0).should("have.class", "letter-slot-guide-consonant");
     cy.get(".letter-slot").eq(1).should("have.class", "letter-slot-guide-consonant");
 
-    cy.contains("button", "All games").click();
+    crumb("Letter Jumble for Movers");
     cy.contains("button", "Body and Face").click();
     cy.get('button[aria-label="Browse Body and Face words"]').click();
     cy.get(".word-menu-item").contains("Tooth").click();
@@ -279,7 +284,7 @@ describe("Movers spelling game", () => {
     cy.contains("button", "Body and Face").click();
     cy.contains("01 / 13");
     cy.get(".letter-bank .letter-tile").should("have.length", 5);
-    cy.contains("button", "All games").click();
+    crumb("Letter Jumble for Movers");
     cy.contains("h1", "Letter Jumble");
   });
 });
@@ -288,7 +293,7 @@ describe("CVC sounds game", () => {
   it("offers the games and the four CVC modes", () => {
     cy.visit("/");
     cy.contains("h1", "Choose an adventure!");
-    cy.get(".game-choice-card").should("have.length", 5);
+    cy.get(".game-choice-card").should("have.length", 6);
     cy.contains("button", "CVC Sounds").click();
     addPlayer("Ada", "3-4");
     cy.contains("h1", "CVC Sounds");
@@ -296,7 +301,7 @@ describe("CVC sounds game", () => {
     ["Beginning Sound", "Middle Sound", "Ending Sound", "Mixed Sounds"].forEach((mode) => {
       cy.contains(".category-card", mode).should("contain.text", "20");
     });
-    cy.contains("button", "Choose a game").click();
+    crumb("Home");
     cy.contains("h1", "Choose an adventure!");
   });
 
@@ -367,7 +372,7 @@ describe("CVC sounds game", () => {
 
   it("returns from a CVC mode to the list of sounds", () => {
     visitCvcMode("Beginning Sound");
-    cy.contains("button", "All sounds").click();
+    crumb("CVC Sounds");
     cy.contains("h1", "CVC Sounds");
   });
 });
@@ -394,7 +399,7 @@ describe("players", () => {
     cy.get('button[aria-label^="Playing as Theo"]').click();
     cy.contains('[role="menuitem"]', "Switch player").click();
     cy.get('[role="dialog"] .player-option').contains("Mia").click();
-    cy.contains("button", "All games").click();
+    crumb("Letter Jumble for Movers");
     cy.contains("button", "Animals").should("contain.text", "1 of 13 spells learned").click();
     cy.get('[aria-label="1 rainbow coins collected"]').should("exist");
     cy.contains("02 / 13");
@@ -417,7 +422,7 @@ describe("ages", () => {
     cy.visit("/");
     cy.contains("button", "CVC Sounds").click();
     addPlayer("Mia", "3-4");
-    cy.contains("button", "Choose a game").click();
+    crumb("Home");
     cy.get(".game-choice-card").should("have.length", 3);
     cy.contains(".game-choice-card", "CVC Sounds");
     cy.contains(".game-choice-card", "中文認字 · 入門篇");
@@ -459,8 +464,9 @@ describe("chinese characters", () => {
     cy.contains("button", "中文認字 · 入門篇").click();
     cy.contains("button", "顏色").click();
     cy.contains(".chinese-character", "紅");
-    cy.get(".chinese-option").should("have.length", 4).find("img").each(($img) => {
-      expect($img[0].naturalWidth).to.be.greaterThan(0);
+    cy.get(".chinese-option").should("have.length", 4);
+    cy.get(".chinese-option img").should(($imgs) => {
+      [...$imgs].forEach((img) => expect(img.naturalWidth, img.getAttribute("src")).to.be.greaterThan(0));
     });
 
     cy.get('.chinese-option[data-character="橙"]').click().should("be.disabled");
@@ -503,7 +509,7 @@ describe("routes", () => {
     cy.visit("/cvc/middle-sound", seed("3-4"));
     cy.contains("h1", "Middle Sound");
     cy.get(".letter-given").should("have.length", 2);
-    cy.contains("button", "All sounds").click();
+    crumb("CVC Sounds");
     cy.location("pathname").should("eq", "/cvc");
     cy.go("back");
     cy.location("pathname").should("eq", "/cvc/middle-sound");
@@ -566,6 +572,33 @@ describe("chinese home topic", () => {
     });
     cy.get('.chinese-option[data-character="客廳"]').click();
     cy.get(".reward-card").should("exist");
+  });
+});
+
+describe("measure words", () => {
+  it("plays a measure-word question and shows the breadcrumb trail", () => {
+    cy.visit("/measure-words/measure-words", {
+      onBeforeLoad(win) {
+        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
+      },
+    });
+    cy.get('nav[aria-label="Breadcrumb"] li').should("have.length", 3);
+    cy.contains("01 / 20");
+    cy.get(".measure-option").should("have.length", 4);
+    storedPlayers().then((stored) => {
+      const deck = stored.players[0].decks["measure-words/measure-words"];
+      expect(deck).to.have.length(20);
+    });
+    cy.get(".measure-option").then(($options) => {
+      // Try options until the right one is found; wrong ones get disabled.
+      [...$options].forEach((option) => {
+        cy.get("body").then(($body) => {
+          if (!$body.find(".reward-card").length && !option.disabled) cy.wrap(option).click();
+        });
+      });
+    });
+    cy.get(".reward-card").should("exist");
+    cy.get('[aria-label="1 rainbow coins collected"]').should("exist");
   });
 });
 

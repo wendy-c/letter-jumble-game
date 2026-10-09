@@ -5,15 +5,18 @@ import { usePathname, useRouter } from "next/navigation";
 import { categories } from "../game-data";
 import { cvcModes } from "../cvc-data";
 import { chineseAdvancedTopics, chineseTopics } from "../chinese-data";
+import { measureWordTopics } from "../measure-words-data";
 import { games, gamesForAge, isGameForAge } from "../games-data";
 import AnswerPanel from "./AnswerPanel";
 import ChineseGame from "./ChineseGame";
+import Breadcrumbs from "./Breadcrumbs";
 import CoinLink from "./CoinLink";
 import CompletionDialog, { chineseCompletionText } from "./CompletionDialog";
 import DragonDen from "./DragonDen";
 import GameFooter from "./GameFooter";
 import GameHeading from "./GameHeading";
 import GamePicker from "./GamePicker";
+import MeasureWordGame from "./MeasureWordGame";
 import PictureClue from "./PictureClue";
 import PlayerDialog from "./PlayerDialog";
 import PlayerMenu from "./PlayerMenu";
@@ -33,6 +36,7 @@ const topicsByGame = {
   cvc: cvcModes,
   chinese: chineseTopics,
   "chinese-advanced": chineseAdvancedTopics,
+  "measure-words": measureWordTopics,
   "letter-jumble": categories,
 };
 
@@ -92,6 +96,9 @@ export default function GameApp() {
 
   const isCvc = selectedGame?.id === "cvc";
   const isChinese = Boolean(selectedGame?.id.startsWith("chinese"));
+  const isMeasure = selectedGame?.id === "measure-words";
+  // Games played in Chinese, answered by tapping a picture or word rather than letters.
+  const inChinese = isChinese || isMeasure;
   const puzzle = round === null ? undefined : selectedCategory?.words[round];
   const answer = puzzle?.answers[round % puzzle.answers.length] ?? "";
   const answerLetters = answer.replaceAll(" ", "");
@@ -101,8 +108,8 @@ export default function GameApp() {
   const complete = Boolean(puzzle) && placed.length === blanks.length &&
     placed.every((tile, slotIndex) => tile !== null && tiles[tile] === answerLetters[blanks[slotIndex]]);
   const allPlaced = placed.every((tile) => tile !== null);
-  const guides = showSpellingGuide && !isCvc && !isChinese ? getSpellingGuides(answer) : null;
-  const solved = isChinese ? chineseSolved : complete;
+  const guides = showSpellingGuide && !isCvc && !inChinese ? getSpellingGuides(answer) : null;
+  const solved = inChinese ? chineseSolved : complete;
 
   useEffect(() => () => {
     stopSpeaking();
@@ -183,6 +190,8 @@ export default function GameApp() {
   }
 
   function requestGame(game) {
+    // Until the saved player has loaded we can't tell who's playing.
+    if (!loaded) return;
     if (currentPlayer?.age) {
       selectGame(game);
       return;
@@ -301,6 +310,15 @@ export default function GameApp() {
   }
 
   const playing = Boolean(selectedCategory && puzzle);
+  const breadcrumbs = selectedGame && (
+    <Breadcrumbs
+      items={[
+        { label: "Home", href: "/" },
+        { label: selectedGame.name, href: `/${selectedGame.id}` },
+        ...(routeTopic ? [{ label: routeTopic.name, href: `/${selectedGame.id}/${routeTopic.id}` }] : []),
+      ]}
+    />
+  );
 
   return (
     <main className={`app-shell min-h-screen px-4 py-5 sm:px-8 sm:py-8${selectedGame?.id === "dragon" ? " app-shell-fit" : ""}`}>
@@ -312,30 +330,53 @@ export default function GameApp() {
       </SiteHeader>
 
       {!selectedGame ? (
-        <GamePicker games={gamesForAge(currentPlayer?.age)} onSelectGame={requestGame} />
+        // Wait for the saved player before showing games, so the right ones show and an early
+        // tap doesn't ask "Who's playing?" for someone who's already playing.
+        loaded && <GamePicker games={gamesForAge(currentPlayer?.age)} onSelectGame={requestGame} />
       ) : !routeTopic ? (
         selectedGame.id === "dragon" ? (
-          <DragonDen coins={rainbowCoins} onSpendCoins={spendCoins} onBack={showGames} />
+          <DragonDen coins={rainbowCoins} onSpendCoins={spendCoins} breadcrumbs={breadcrumbs} />
         ) : (
           <TopicMenu
             isCvc={isCvc}
             isChinese={isChinese}
+            isMeasure={isMeasure}
             topics={gameTopics}
             progressFor={(topic) => currentPlayer?.progress?.[`${selectedGame.id}/${topic.id}`] ?? 0}
-            onBack={showGames}
+            breadcrumbs={breadcrumbs}
             onSelectTopic={selectCategory}
           />
         )
-      ) : !playing ? null : isChinese ? (
+      ) : !playing ? null : isMeasure ? (
         <section className="game-wrap mx-auto w-full max-w-6xl" aria-labelledby="game-title">
           <GameHeading
             topic={selectedCategory}
             round={round}
             rainbowCoins={rainbowCoins}
             wordMenuOpen={wordMenuOpen}
-            onBack={showCategories}
+            breadcrumbs={breadcrumbs}
             onOpenWordMenu={() => setWordMenuOpen(true)}
-            backLabel="所有主題"
+            eyebrow="今日嘅魔法堂"
+            note="一個、一枝、一張……邊個量詞啱？"
+          />
+          <MeasureWordGame
+            key={`${selectedCategory.id}-${round}`}
+            topic={selectedCategory}
+            round={round}
+            question={puzzle}
+            onCorrect={handleChineseCorrect}
+          />
+          <GameFooter>一題一題慢慢學</GameFooter>
+        </section>
+      ) : isChinese ? (
+        <section className="game-wrap mx-auto w-full max-w-6xl" aria-labelledby="game-title">
+          <GameHeading
+            topic={selectedCategory}
+            round={round}
+            rainbowCoins={rainbowCoins}
+            wordMenuOpen={wordMenuOpen}
+            breadcrumbs={breadcrumbs}
+            onOpenWordMenu={() => setWordMenuOpen(true)}
             eyebrow="今日嘅魔法堂"
             note="睇吓個字，揀啱嘅圖畫！"
           />
@@ -356,7 +397,7 @@ export default function GameApp() {
             round={round}
             rainbowCoins={rainbowCoins}
             wordMenuOpen={wordMenuOpen}
-            onBack={showCategories}
+            breadcrumbs={breadcrumbs}
             onOpenWordMenu={() => setWordMenuOpen(true)}
           />
 
@@ -389,7 +430,7 @@ export default function GameApp() {
         <WordMenu
           topic={selectedCategory}
           round={round}
-          showGuideToggle={!isCvc && !isChinese}
+          showGuideToggle={!isCvc && !inChinese}
           showSpellingGuide={showSpellingGuide}
           onToggleSpellingGuide={() => setShowSpellingGuide((current) => !current)}
           onSelectWord={selectWord}
@@ -411,12 +452,12 @@ export default function GameApp() {
         <CompletionDialog
           topicName={completedTopic.name}
           count={completedTopic.count}
-          text={isChinese ? chineseCompletionText : undefined}
+          text={inChinese ? chineseCompletionText : undefined}
           onDone={leaveCompletedTopic}
         />
       )}
       {playing && rewardMessage && solved && !completedTopic && (
-        <RewardDialog message={rewardMessage} onContinue={nextWord} labels={isChinese ? chineseRewardLabels : undefined} />
+        <RewardDialog message={rewardMessage} onContinue={nextWord} labels={inChinese ? chineseRewardLabels : undefined} />
       )}
     </main>
   );
