@@ -11,8 +11,8 @@ export default function GameHeading({
 
   return (
     <div className="game-heading">
-      <div>
-        {breadcrumbs}
+      <div className="game-heading-crumbs">{breadcrumbs}</div>
+      <div className="game-heading-title">
         <p className="eyebrow">{eyebrow}</p>
         <h1 id="game-title">{topic.name}</h1>
         <p className="heading-note">{note}</p>
@@ -28,11 +28,6 @@ export default function GameHeading({
       </div>
       <div className="heading-progress">
         <div className="rainbow-coin-tools">
-          <div className="rainbow-coin-counter" aria-label={`${rainbowCoins} rainbow coins collected`}>
-            <img className="rainbow-coin-icon coin-pop" key={rainbowCoins} src="/images/rainbow-coin.svg" alt="" width="32" height="32" />
-            <span className="coin-count">{rainbowCoins}</span>
-            <span className="coin-label">RAINBOW COINS</span>
-          </div>
           <button
             className="hamburger-button"
             type="button"

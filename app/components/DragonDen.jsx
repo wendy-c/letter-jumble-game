@@ -82,15 +82,10 @@ export default function DragonDen({ coins, onSpendCoins, breadcrumbs }) {
         <div>
           {breadcrumbs}
           <p className="eyebrow">MEET YOUR MAGIC PET</p>
-          <h1 id="game-title">{dragonName} the <span>Rainbow Dragon</span></h1>
+          <h1 id="game-title" className="game-title">
+            {dragonName} the <span>Rainbow Dragon</span>
+          </h1>
           <p className="heading-note">Spend rainbow coins on yummy treats and pampering.</p>
-        </div>
-        <div className="heading-progress">
-          <div className="rainbow-coin-counter" aria-label={`${coins} rainbow coins collected`}>
-            <img className="rainbow-coin-icon coin-pop" key={coins} src="/images/rainbow-coin.svg" alt="" width="32" height="32" />
-            <span className="coin-count">{coins}</span>
-            <span className="coin-label">RAINBOW COINS</span>
-          </div>
         </div>
       </div>
 

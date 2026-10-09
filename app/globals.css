@@ -508,6 +508,33 @@ button {
   margin-bottom: 25px;
 }
 
+/* In a game: breadcrumbs across the top, then title, progress and tools side by side. */
+.game-heading:has(> .game-heading-crumbs) {
+  display: grid;
+  grid-template-areas:
+    "crumbs crumbs crumbs"
+    "title progress tools";
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: end;
+  gap: 0 24px;
+}
+
+.game-heading-crumbs {
+  grid-area: crumbs;
+}
+
+.game-heading-title {
+  grid-area: title;
+}
+
+.game-heading > .progress-card {
+  grid-area: progress;
+}
+
+.game-heading > .heading-progress {
+  grid-area: tools;
+}
+
 .eyebrow {
   margin: 0 0 8px;
   color: var(--pink-dark);
@@ -1731,8 +1758,9 @@ h1 span {
 
 .topbar-tools {
   display: flex;
-  align-items: center;
+  align-items: end;
   gap: 10px;
+  flex-direction: column;
 }
 
 .coin-link {
@@ -2579,6 +2607,33 @@ a:focus-visible {
     margin-bottom: 18px;
   }
 
+  .game-heading:has(> .game-heading-crumbs) {
+    grid-template-areas:
+      "crumbs crumbs"
+      "progress tools"
+      "title title";
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px 14px;
+  }
+
+  .game-heading:has(> .game-heading-crumbs) .breadcrumbs ol {
+    margin: 0;
+  }
+
+  .game-heading:has(> .game-heading-crumbs) .progress-card {
+    width: 204px;
+  }
+
+  .game-heading:has(> .game-heading-crumbs) .heading-progress {
+    flex-direction: row;
+    margin-top: 0;
+  }
+
+  .game-heading:has(> .game-heading-crumbs) .game-heading-title {
+    margin-top: 4px;
+  }
+
   .category-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 11px;
@@ -2670,6 +2725,7 @@ a:focus-visible {
 
   .dragon-wrap .heading-note,
   .dragon-wrap .eyebrow,
+  .dragon-wrap .game-title,
   .dragon-wrap .game-footer {
     display: none;
   }
@@ -2929,6 +2985,19 @@ a:focus-visible {
 
   .rainbow-coin-counter {
     min-width: 108px;
+  }
+
+  /* Very narrow phones: just the coin and count, so progress keeps its room. */
+  .game-heading:has(> .game-heading-crumbs) .rainbow-coin-counter {
+    min-width: 0;
+  }
+
+  .game-heading:has(> .game-heading-crumbs) .coin-label {
+    display: none;
+  }
+
+  .game-heading:has(> .game-heading-crumbs) .progress-copy {
+    white-space: nowrap;
   }
 
   .answer-panel {
