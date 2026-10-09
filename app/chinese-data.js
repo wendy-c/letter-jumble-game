@@ -147,6 +147,35 @@ const advancedTopics = [
       { character: "醫治病人", jyutping: "ji1 zi6 beng6 jan4", english: "treating a patient", picture: "treating-patient", groups: ["doctor", "sick"] },
     ],
   },
+  {
+    id: "home",
+    name: "家",
+    english: "Home",
+    icon: "/images/icons/chinese-home.svg",
+    color: "peach",
+    // A room's picture shows things that are also words (a living room has a sofa and TV),
+    // so rooms and their furniture share a look-alike group.
+    words: [
+      { character: "客廳", jyutping: "haak3 teng1", english: "living room", picture: "living-room", groups: ["living"] },
+      { character: "廚房", jyutping: "cyu4 fong4", english: "kitchen", picture: "kitchen", groups: ["kitchen"] },
+      { character: "浴室", jyutping: "juk6 sat1", english: "bathroom", picture: "bathroom" },
+      { character: "睡房", jyutping: "seoi6 fong2", english: "bedroom", picture: "bedroom", groups: ["bed"] },
+      { character: "書房", jyutping: "syu1 fong2", english: "study", picture: "study", groups: ["study"] },
+      { character: "窗戶", jyutping: "coeng1 wu6", english: "window", picture: "window" },
+      { character: "床褥", jyutping: "cong4 juk6", english: "mattress", picture: "mattress", groups: ["bed"] },
+      { character: "椅子", jyutping: "ji2 zi2", english: "chair", picture: "chair", groups: ["study"] },
+      { character: "桌子", jyutping: "coek3 zi2", english: "table", picture: "table", groups: ["study"] },
+      { character: "衣櫃", jyutping: "ji1 gwai6", english: "wardrobe", picture: "wardrobe" },
+      { character: "杯子", jyutping: "bui1 zi2", english: "cup", picture: "cup" },
+      { character: "碗碟", jyutping: "wun2 dip6", english: "bowls and plates", picture: "dishes", groups: ["kitchen"] },
+      { character: "電燈", jyutping: "din6 dang1", english: "light", picture: "light" },
+      { character: "時鐘", jyutping: "si4 zung1", english: "clock", picture: "clock" },
+      { character: "沙發", jyutping: "saa1 faat3", english: "sofa", picture: "sofa", groups: ["living"] },
+      { character: "電視", jyutping: "din6 si6", english: "television", picture: "television", groups: ["living"] },
+      { character: "電腦", jyutping: "din6 nou5", english: "computer", picture: "computer", groups: ["study"] },
+      { character: "空氣淨化機", jyutping: "hung1 hei3 zing6 faa3 gei1", english: "air purifier", picture: "air-purifier" },
+    ],
+  },
 ];
 
 const optionCount = 4;

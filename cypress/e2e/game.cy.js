@@ -484,7 +484,9 @@ describe("chinese characters", () => {
     cy.contains(".chinese-character", "餅");
     cy.get(".chinese-phrase").should("have.length", 2).first().should("contain.text", "餅乾").find("mark").should("have.text", "餅");
     cy.get('button[aria-label="聽提示"]').should("be.visible");
-    cy.get(".chinese-option img").each(($img) => expect($img[0].naturalWidth).to.be.greaterThan(0));
+    cy.get(".chinese-option img").should(($imgs) => {
+      [...$imgs].forEach((img) => expect(img.naturalWidth, img.getAttribute("src")).to.be.greaterThan(0));
+    });
     cy.get('.chinese-option[data-character="餅"]').click();
     cy.get(".reward-card").should("exist");
   });
@@ -542,10 +544,28 @@ describe("chinese words for 5-6 year olds", () => {
     cy.contains("button", "職業").click();
     cy.location("pathname").should("eq", "/chinese-advanced/jobs");
     cy.contains(".chinese-character", "警察");
-    cy.get(".chinese-option img").each(($img) => expect($img[0].naturalWidth).to.be.greaterThan(0));
+    cy.get(".chinese-option img").should(($imgs) => {
+      [...$imgs].forEach((img) => expect(img.naturalWidth, img.getAttribute("src")).to.be.greaterThan(0));
+    });
     cy.get('.chinese-option[data-character="警察"]').click();
     cy.get(".reward-card").should("exist");
     cy.get('[aria-label="1 rainbow coins collected"]').should("exist");
+  });
+});
+
+describe("chinese home topic", () => {
+  it("shows the home words with their pictures", () => {
+    cy.visit("/chinese-advanced/home", {
+      onBeforeLoad(win) {
+        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
+      },
+    });
+    cy.contains(".chinese-character", "客廳");
+    cy.get(".chinese-option img").should(($imgs) => {
+      [...$imgs].forEach((img) => expect(img.naturalWidth, img.getAttribute("src")).to.be.greaterThan(0));
+    });
+    cy.get('.chinese-option[data-character="客廳"]').click();
+    cy.get(".reward-card").should("exist");
   });
 });
 

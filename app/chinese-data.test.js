@@ -147,3 +147,36 @@ describe("jobs (5-6 year olds)", () => {
   });
 });
 
+describe("home (5-6 year olds)", () => {
+  const home = chineseAdvancedTopics.find((topic) => topic.id === "home");
+  const byCharacter = Object.fromEntries(home.words.map((word) => [word.character, word]));
+
+  it("comes after jobs, with the 18 home words in order", () => {
+    expect(chineseAdvancedTopics.map((topic) => topic.name)).toEqual(["職業", "家"]);
+    expect(home.words.map((word) => word.character)).toEqual([
+      "客廳", "廚房", "浴室", "睡房", "書房", "窗戶", "床褥", "椅子", "桌子",
+      "衣櫃", "杯子", "碗碟", "電燈", "時鐘", "沙發", "電視", "電腦", "空氣淨化機",
+    ]);
+  });
+
+  it("never offers a room together with furniture shown in its picture", () => {
+    home.words.forEach((word) => {
+      const characters = word.options.map((option) => option.character);
+      expect(new Set(word.options.map((option) => option.picture)).size).toBe(4);
+      expect(characters).toContain(word.character);
+      const groups = (character) => byCharacter[character].groups ?? [];
+      characters.forEach((first) => characters.forEach((second) => {
+        if (first !== second) expect(groups(first).some((group) => groups(second).includes(group))).toBe(false);
+      }));
+    });
+    const livingRoom = home.words.find((word) => word.character === "客廳").options.map((option) => option.character);
+    expect(livingRoom).not.toContain("沙發");
+    expect(livingRoom).not.toContain("電視");
+  });
+
+  it("has every picture and the icon", () => {
+    const images = [home.icon, ...home.words.flatMap((word) => [word.picture, ...word.options.map((option) => option.picture)])];
+    expect(images.filter((image) => !fs.existsSync(path.join(publicDir, image)))).toEqual([]);
+  });
+});
+

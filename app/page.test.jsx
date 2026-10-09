@@ -646,6 +646,7 @@ describe("chinese words for 5-6 year olds", () => {
     await user.click(screen.getByRole("button", { name: /進階篇/ }));
     expect(currentPathname()).toBe("/chinese-advanced");
     expect(screen.getByRole("button", { name: /職業/ })).toHaveTextContent("27 個字");
+    expect(screen.getByRole("button", { name: /家/ })).toHaveTextContent("18 個字");
     await user.click(screen.getByRole("button", { name: /職業/ }));
     expect(currentPathname()).toBe("/chinese-advanced/jobs");
 
@@ -669,6 +670,17 @@ describe("chinese words for 5-6 year olds", () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
     render(<GameApp />);
     expect(shownGames()).not.toContain("中文認字 · 進階篇");
+  });
+
+  it("plays the home topic", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
+    setPathname("/chinese-advanced/home");
+    const user = userEvent.setup();
+    render(<GameApp />);
+
+    expect(await screen.findByText("客廳", { selector: ".chinese-character" })).toHaveClass("chinese-character-pair");
+    await user.click(screen.getByRole("button", { name: "living room" }));
+    expect(screen.getByRole("dialog", { name: /！$/ })).toBeInTheDocument();
   });
 });
 
