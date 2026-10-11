@@ -12,7 +12,8 @@ jest.mock("./components/DragonScene", () => function MockDragonScene() {
   return <div data-testid="dragon-scene" />;
 });
 
-const coinsLabel = (count) => `${count} rainbow coins collected`;
+// The coin count lives in the header, as a link to Mochi.
+const coinsLabel = (count) => `${count} rainbow coins. Visit Mochi the Rainbow Dragon`;
 const playersKey = "letter-jumble:players";
 const whoIsPlaying = /Who.s playing/;
 
@@ -584,12 +585,13 @@ describe("coins on the home page", () => {
 
     expect(currentPathname()).toBe("/dragon");
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Mochi the Rainbow Dragon");
-    expect(screen.queryByRole("link", { name: /rainbow coins/ })).not.toBeInTheDocument();
+    // It stays in the header on every page.
+    expect(screen.getByRole("link", { name: coinsLabel(12) })).toBeInTheDocument();
   });
 
-  it("isn't shown when nobody is playing", () => {
+  it("shows 0 when nobody is playing", () => {
     render(<GameApp />);
-    expect(screen.queryByRole("link", { name: /rainbow coins/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: coinsLabel(0) })).toBeInTheDocument();
   });
 });
 

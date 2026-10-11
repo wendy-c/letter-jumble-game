@@ -3,6 +3,17 @@ import { speakCantonese, speakWord, stopSpeaking } from "./speech";
 class FakeUtterance {
   constructor(text) {
     this.text = text;
+    this.listeners = {};
+  }
+
+  addEventListener(type, listener) {
+    (this.listeners[type] ??= []).push(listener);
+  }
+
+  // Fires the matching on<type> handler and listeners, like a real utterance.
+  fire(type, event = {}) {
+    this[`on${type}`]?.(event);
+    (this.listeners[type] ?? []).forEach((listener) => listener(event));
   }
 }
 
@@ -11,6 +22,9 @@ function installSpeech(voices) {
     getVoices: jest.fn(() => voices),
     speak: jest.fn(),
     cancel: jest.fn(),
+    resume: jest.fn(),
+    speaking: false,
+    pending: false,
   };
   Object.defineProperty(window, "speechSynthesis", { value: synth, configurable: true });
   global.SpeechSynthesisUtterance = FakeUtterance;
@@ -45,7 +59,6 @@ describe("speakWord", () => {
 
     speakWord("dolphin", jest.fn());
 
-    expect(synth.cancel).toHaveBeenCalled();
     const utterance = synth.speak.mock.calls[0][0];
     expect(utterance.text).toBe("dolphin");
     expect(utterance.voice).toBe(sonia);
@@ -73,7 +86,7 @@ describe("speakWord", () => {
     expect(onStatus).toHaveBeenLastCalledWith("Listen to the word.");
     utterance.onend();
     expect(onStatus).toHaveBeenLastCalledWith("");
-    utterance.onerror();
+    utterance.onerror({ error: "synthesis-failed" });
     expect(onStatus).toHaveBeenLastCalledWith("Sorry, the word audio couldn’t be played.");
   });
 
@@ -145,6 +158,105 @@ describe("speakCantonese", () => {
     synth.getVoices.mockReturnValue([{ name: "Google 粵語（香港）", lang: "zh-HK" }]);
     onVoicesChanged();
     expect(synth.speak).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("Chrome speech bugs", () => {
+  afterEach(() => jest.useRealTimers());
+
+  it("doesn't cancel when nothing is playing, and un-pauses speech before speaking", () => {
+    const synth = installSpeech([{ name: "Kate", lang: "en-GB" }]);
+    speakWord("cat", jest.fn());
+    expect(synth.cancel).not.toHaveBeenCalled();
+    expect(synth.resume).toHaveBeenCalled();
+    expect(synth.speak).toHaveBeenCalledTimes(1);
+  });
+
+  it("after cancelling a word that's playing, waits before speaking (Chrome drops it otherwise)", () => {
+    jest.useFakeTimers();
+    const synth = installSpeech([{ name: "Sinji", lang: "yue-HK" }]);
+    synth.speaking = true;
+
+    speakCantonese("紅", jest.fn());
+    expect(synth.cancel).toHaveBeenCalledTimes(1);
+    expect(synth.speak).not.toHaveBeenCalled();
+
+    jest.advanceTimersByTime(150);
+    expect(synth.speak).toHaveBeenCalledTimes(1);
+    expect(synth.speak.mock.calls[0][0].text).toBe("紅");
+  });
+
+  it("only speaks the latest word when tapped twice quickly", () => {
+    jest.useFakeTimers();
+    const synth = installSpeech([{ name: "Kate", lang: "en-GB" }]);
+    synth.pending = true;
+
+    speakWord("cat", jest.fn());
+    speakWord("hat", jest.fn());
+    jest.advanceTimersByTime(150);
+
+    expect(synth.speak.mock.calls.map(([utterance]) => utterance.text)).toEqual(["hat"]);
+  });
+
+  it("doesn't speak a waiting word after speech was stopped", () => {
+    jest.useFakeTimers();
+    const synth = installSpeech([{ name: "Kate", lang: "en-GB" }]);
+    synth.speaking = true;
+
+    speakWord("cat", jest.fn());
+    stopSpeaking();
+    jest.advanceTimersByTime(150);
+
+    expect(synth.speak).not.toHaveBeenCalled();
+  });
+
+  it("prefers a built-in voice over Chrome's online Google voices", () => {
+    const google = { name: "Google UK English Female", lang: "en-GB", localService: false };
+    const kate = { name: "Kate", lang: "en-GB", localService: true };
+    let synth = installSpeech([google, kate]);
+    speakWord("cat", jest.fn());
+    expect(synth.speak.mock.calls[0][0].voice).toBe(kate);
+
+    const googleCantonese = { name: "Google 粵語（香港）", lang: "zh-HK", localService: false };
+    const sinji = { name: "Sinji", lang: "yue-HK", localService: true };
+    synth = installSpeech([googleCantonese, sinji]);
+    speakCantonese("紅", jest.fn());
+    expect(synth.speak.mock.calls[0][0].voice).toBe(sinji);
+  });
+
+  it("still uses an online voice when it's the only one", () => {
+    const google = { name: "Google UK English Female", lang: "en-GB", localService: false };
+    const synth = installSpeech([google]);
+    speakWord("cat", jest.fn());
+    expect(synth.speak.mock.calls[0][0].voice).toBe(google);
+  });
+
+  it("waits for voices that load after the page starts (English too)", () => {
+    const synth = installSpeech([]);
+    let onVoicesChanged;
+    synth.addEventListener = jest.fn((type, listener) => {
+      onVoicesChanged = listener;
+    });
+    const onStatus = jest.fn();
+
+    speakWord("cat", onStatus);
+    expect(onStatus).not.toHaveBeenCalled();
+
+    synth.getVoices.mockReturnValue([{ name: "Kate", lang: "en-GB" }]);
+    onVoicesChanged();
+    expect(synth.speak).toHaveBeenCalledTimes(1);
+  });
+
+  it("doesn't call it a failure when a word is interrupted by another tap", () => {
+    const synth = installSpeech([{ name: "Kate", lang: "en-GB" }, { name: "Sinji", lang: "yue-HK" }]);
+    const onStatus = jest.fn();
+
+    speakWord("cat", onStatus);
+    synth.speak.mock.calls[0][0].fire("error", { error: "interrupted" });
+    speakCantonese("紅", onStatus);
+    synth.speak.mock.calls[1][0].fire("error", { error: "canceled" });
+
+    expect(onStatus).not.toHaveBeenCalled();
   });
 });
 

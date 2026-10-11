@@ -50,7 +50,7 @@ describe("Movers spelling game", () => {
     cy.contains("button", "Animals").click();
     cy.contains("h1", "Animals");
     cy.get(".letter-bank .letter-tile").should("have.length", 3);
-    cy.get('[aria-label="0 rainbow coins collected"]').should("exist");
+    cy.get('[aria-label="0 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
 
     ["b", "a", "t"].forEach((letter, index) => {
       cy.get(`.letter-tile[data-letter="${letter}"]`).not(".tile-used").click();
@@ -60,7 +60,7 @@ describe("Movers spelling game", () => {
     cy.contains("button", "Check word").click();
     cy.get(".reward-card").should("contain.text", "Amazing!");
     cy.contains("button", "Next word").should("not.exist");
-    cy.get('[aria-label="1 rainbow coins collected"]').should("exist");
+    cy.get('[aria-label="1 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
     cy.get(".reward-card").click();
     cy.contains("02 / 13");
     cy.get(".letter-bank .letter-tile").should("have.length", 7);
@@ -70,7 +70,7 @@ describe("Movers spelling game", () => {
     });
     cy.contains("button", "Check word").click();
     cy.get(".reward-card").should("contain.text", "Well done!");
-    cy.get('[aria-label="2 rainbow coins collected"]').should("exist");
+    cy.get('[aria-label="2 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
     cy.get(".reward-card").click();
     cy.contains("03 / 13");
   });
@@ -82,7 +82,7 @@ describe("Movers spelling game", () => {
       cy.get(`.letter-tile[data-letter="${letter}"]`).not(".tile-used").click();
     });
     cy.contains("button", "Check word").click();
-    cy.get('[aria-label="1 rainbow coins collected"]').should("exist");
+    cy.get('[aria-label="1 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
     storedPlayers().should("deep.equal", { players: [{ name: "Ada", coins: 1, age: "5-6" }], current: "Ada" });
 
     // Reloading stays on the same topic, with the coin still there.
@@ -90,7 +90,7 @@ describe("Movers spelling game", () => {
     cy.location("pathname").should("eq", "/letter-jumble/animals");
     cy.get('[role="dialog"]').should("not.exist");
     cy.contains("h1", "Animals");
-    cy.get('[aria-label="1 rainbow coins collected"]').should("exist");
+    cy.get('[aria-label="1 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
   });
 
   it("starts from a previously saved rainbow coin count", () => {
@@ -100,7 +100,7 @@ describe("Movers spelling game", () => {
       },
     }, null);
     cy.contains("button", "Animals").click();
-    cy.get('[aria-label="7 rainbow coins collected"]').should("exist");
+    cy.get('[aria-label="7 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
   });
 
   it("does not reward an incorrect answer", () => {
@@ -113,7 +113,7 @@ describe("Movers spelling game", () => {
 
     cy.contains("button", "Check word").click();
     cy.contains("Not quite");
-    cy.get('[aria-label="0 rainbow coins collected"]').should("exist");
+    cy.get('[aria-label="0 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
   });
 
   it("opens the word menu and starts a selected word with an empty answer", () => {
@@ -392,7 +392,7 @@ describe("players", () => {
     cy.contains('[role="menuitem"]', "Switch player").click();
     cy.get('[role="dialog"] .player-option').should("have.length", 1).and("contain.text", "Mia");
     addPlayer("Theo");
-    cy.get('[aria-label="0 rainbow coins collected"]').should("exist");
+    cy.get('[aria-label="0 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
 
     cy.reload();
     cy.location("pathname").should("eq", "/letter-jumble/animals");
@@ -401,7 +401,7 @@ describe("players", () => {
     cy.get('[role="dialog"] .player-option').contains("Mia").click();
     crumb("Letter Jumble for Movers");
     cy.contains("button", "Animals").should("contain.text", "1 of 13 spells learned").click();
-    cy.get('[aria-label="1 rainbow coins collected"]').should("exist");
+    cy.get('[aria-label="1 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
     cy.contains("02 / 13");
 
     cy.get('button[aria-label$="Player options"]').click();
@@ -443,12 +443,12 @@ describe("rainbow dragon", () => {
     cy.get(".dragon-canvas", { timeout: 20000 }).should("be.visible");
 
     cy.get('button[aria-label="Ice cream, 2 rainbow coins"]').click();
-    cy.get('[aria-label="1 rainbow coins collected"]').should("exist");
+    cy.get('[aria-label="1 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
     cy.get(".dragon-bubble").should("contain.text", "brrr");
     cy.get('button[aria-label="Apple, 1 rainbow coin"]').should("be.disabled");
 
     cy.get('button[aria-label="Apple, 1 rainbow coin"]', { timeout: 8000 }).should("be.enabled").click();
-    cy.get('[aria-label="0 rainbow coins collected"]').should("exist");
+    cy.get('[aria-label="0 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
     cy.contains("out of rainbow coins");
     storedPlayers().should("deep.equal", { players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" });
   });
@@ -473,7 +473,7 @@ describe("chinese characters", () => {
     cy.contains("唔係呢個，再試吓！");
     cy.get('.chinese-option[data-character="紅"]').click();
     cy.get(".reward-card").should("contain.text", "好叻呀！");
-    cy.get('[aria-label="1 rainbow coins collected"]').should("exist");
+    cy.get('[aria-label="1 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
     cy.get(".reward-card").click();
     cy.contains(".chinese-character", "橙");
     cy.contains("02 / 13");
@@ -555,7 +555,7 @@ describe("chinese words for 5-6 year olds", () => {
     });
     cy.get('.chinese-option[data-character="警察"]').click();
     cy.get(".reward-card").should("exist");
-    cy.get('[aria-label="1 rainbow coins collected"]').should("exist");
+    cy.get('[aria-label="1 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
   });
 });
 
@@ -598,7 +598,7 @@ describe("measure words", () => {
       });
     });
     cy.get(".reward-card").should("exist");
-    cy.get('[aria-label="1 rainbow coins collected"]').should("exist");
+    cy.get('[aria-label="1 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
   });
 });
 
