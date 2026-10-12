@@ -6,7 +6,7 @@ import { categories } from "../game-data";
 import { cvcModes } from "../cvc-data";
 import { chineseAdvancedTopics, chineseTopics } from "../chinese-data";
 import { measureWordTopics } from "../measure-words-data";
-import { games, gamesForAge, isGameForAge } from "../games-data";
+import { games, gamesForPlayer, isGameAvailable } from "../games-data";
 import AnswerPanel from "./AnswerPanel";
 import ChineseGame from "./ChineseGame";
 import Breadcrumbs from "./Breadcrumbs";
@@ -18,6 +18,7 @@ import GameHeading from "./GameHeading";
 import GamePicker from "./GamePicker";
 import MeasureWordGame from "./MeasureWordGame";
 import PictureClue from "./PictureClue";
+import ParentMode from "./ParentMode";
 import PlayerDialog from "./PlayerDialog";
 import PlayerMenu from "./PlayerMenu";
 import RewardDialog, { chineseRewardLabels } from "./RewardDialog";
@@ -54,12 +55,15 @@ export default function GameApp() {
 
   const {
     loaded, players, currentPlayer, createPlayer, setPlayerAge, selectPlayer, logOut, addCoin, spendCoins, saveProgress, saveDeck,
+    setGameEnabled,
   } = usePlayers();
+  const [parentModeOpen, setParentModeOpen] = useState(false);
   const rainbowCoins = currentPlayer?.coins ?? 0;
 
   const routeGame = games.find((game) => game.id === gameId) ?? null;
-  // A game only opens once the saved player has loaded and the game suits their age.
-  const allowed = Boolean(routeGame && loaded && currentPlayer?.age && isGameForAge(routeGame, currentPlayer.age));
+  // A game only opens once the saved player has loaded, the game suits their age, and a parent
+  // hasn't turned it off for them.
+  const allowed = Boolean(routeGame && loaded && currentPlayer?.age && isGameAvailable(routeGame, currentPlayer));
   const selectedGame = allowed ? routeGame : null;
   const gameTopics = topicsByGame[selectedGame?.id] ?? [];
   const routeTopic = (topicId && gameTopics.find((topic) => topic.id === topicId)) || null;
@@ -201,11 +205,11 @@ export default function GameApp() {
     setPlayerDialogOpen(true);
   }
 
-  // Opens the game that was waiting, if it suits the player's age, or leaves a game that doesn't.
-  function finishChoosingPlayer(age) {
+  // Opens the game that was waiting, if this player can play it, or leaves a game they can't.
+  function finishChoosingPlayer(player) {
     if (pendingGame) {
-      if (isGameForAge(pendingGame, age)) selectGame(pendingGame);
-    } else if (selectedGame && !isGameForAge(selectedGame, age)) {
+      if (isGameAvailable(pendingGame, player)) selectGame(pendingGame);
+    } else if (selectedGame && !isGameAvailable(selectedGame, player)) {
       showGames();
     }
     closePlayerDialog();
@@ -213,14 +217,16 @@ export default function GameApp() {
 
   function choosePlayer(name, age) {
     selectPlayer(name);
-    finishChoosingPlayer(age);
+    finishChoosingPlayer({ ...players.find((player) => player.name === name), age });
   }
 
   function addPlayer(name, age) {
     const problem = createPlayer(name, age);
-    if (!problem) finishChoosingPlayer(age);
+    if (!problem) finishChoosingPlayer({ name, age });
     return problem;
   }
+
+  const closeParentMode = useCallback(() => setParentModeOpen(false), []);
 
   function handleLogOut() {
     logOut();
@@ -324,7 +330,12 @@ export default function GameApp() {
     <main className={`app-shell min-h-screen px-4 py-5 sm:px-8 sm:py-8${selectedGame?.id === "dragon" ? " app-shell-fit" : ""}`}>
       <SiteHeader badge={selectedGame?.badge ?? "SPELLING SCHOOL"}>
         {currentPlayer && (
-          <PlayerMenu player={currentPlayer} onSwitch={() => setPlayerDialogOpen(true)} onLogOut={handleLogOut} />
+          <PlayerMenu
+            player={currentPlayer}
+            onSwitch={() => setPlayerDialogOpen(true)}
+            onParentMode={() => setParentModeOpen(true)}
+            onLogOut={handleLogOut}
+          />
         )}
         <CoinLink coins={rainbowCoins} />
       </SiteHeader>
@@ -332,7 +343,13 @@ export default function GameApp() {
       {!selectedGame ? (
         // Wait for the saved player before showing games, so the right ones show and an early
         // tap doesn't ask "Who's playing?" for someone who's already playing.
-        loaded && <GamePicker games={gamesForAge(currentPlayer?.age)} onSelectGame={requestGame} />
+        loaded && (
+          <GamePicker
+            games={gamesForPlayer(currentPlayer)}
+            onSelectGame={requestGame}
+            emptyMessage={currentPlayer && `No games are turned on for ${currentPlayer.name} yet. Ask a grown-up to choose some in Parent mode.`}
+          />
+        )
       ) : !routeTopic ? (
         selectedGame.id === "dragon" ? (
           <DragonDen coins={rainbowCoins} onSpendCoins={spendCoins} breadcrumbs={breadcrumbs} />
@@ -435,6 +452,13 @@ export default function GameApp() {
           onToggleSpellingGuide={() => setShowSpellingGuide((current) => !current)}
           onSelectWord={selectWord}
           onClose={closeWordMenu}
+        />
+      )}
+      {parentModeOpen && (
+        <ParentMode
+          players={players}
+          onSetGameEnabled={setGameEnabled}
+          onClose={closeParentMode}
         />
       )}
       {playerDialogOpen && (

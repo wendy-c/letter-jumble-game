@@ -2523,6 +2523,140 @@ h1 span {
   min-height: 58px;
 }
 
+/* ---------- Parent mode ---------- */
+
+.parent-dialog {
+  width: min(100%, 520px);
+}
+
+.parent-intro {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.parent-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.parent-form label {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.parent-form input {
+  margin-bottom: 14px;
+  border: 2px solid var(--line-strong);
+  border-radius: 999px;
+  background: #fff;
+  padding: 10px 16px;
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;
+}
+
+.parent-form input:focus {
+  border-color: var(--magic);
+  outline: none;
+}
+
+.parent-form .grown-up-question {
+  margin-bottom: 10px;
+  color: var(--ink);
+  font-size: 22px;
+}
+
+.parent-form .grown-up-question strong {
+  color: var(--magic-dark);
+}
+
+.parent-form .action-button {
+  margin-top: 6px;
+}
+
+.parent-child {
+  margin-bottom: 18px;
+  border: 2px solid var(--line);
+  border-radius: 20px;
+  background: #fff;
+  padding: 14px;
+}
+
+.parent-child h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 10px;
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.parent-child-age {
+  margin-left: auto;
+  border-radius: 20px;
+  background: var(--magic-soft);
+  padding: 3px 10px;
+  color: var(--magic-dark);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.parent-games {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.parent-game {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.parent-game .parent-game-toggle {
+  flex: 1;
+  min-width: 0;
+}
+
+.parent-game-off .spelling-guide-toggle-title {
+  color: var(--muted);
+}
+
+.parent-warning {
+  margin: 0 0 10px;
+  border-radius: 12px;
+  background: var(--pink-soft);
+  padding: 8px 12px;
+  color: var(--pink-dark);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.parent-done {
+  width: 100%;
+}
+
+.game-picker-empty {
+  margin: 0 0 18px;
+  border: 2px dashed var(--line-strong);
+  border-radius: 20px;
+  background: rgb(255 255 255 / 70%);
+  padding: 18px;
+  color: var(--magic-dark);
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+}
+
+
 /* ---------- Footer ---------- */
 
 .game-footer {

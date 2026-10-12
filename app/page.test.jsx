@@ -749,3 +749,114 @@ describe("measure words", () => {
   });
 });
 
+describe("parent mode", () => {
+  const seedChildren = (extra = {}) => window.localStorage.setItem(playersKey, JSON.stringify({
+    players: [{ name: "Ada", coins: 0, age: "3-4", ...extra }, { name: "Elly", coins: 0, age: "5-6" }],
+    current: "Ada",
+  }));
+  const parentDialog = () => screen.getByRole("dialog", { name: "Parent mode" });
+
+  async function openParentMode(user) {
+    await user.click(screen.getByRole("button", { name: /Player options/ }));
+    await user.click(screen.getByRole("menuitem", { name: /Parent mode/ }));
+  }
+
+  // With Math.random pinned just below 1, the grown-up question is always 19 × 9.
+  async function passGrownUpCheck(user) {
+    await openParentMode(user);
+    expect(within(parentDialog()).getByLabelText(/What is/)).toHaveAccessibleName(/^What is 19 × 9 ?\?$/);
+    await user.type(within(parentDialog()).getByLabelText(/What is/), "171");
+    await user.click(within(parentDialog()).getByRole("button", { name: /Continue/ }));
+  }
+
+  it("lists every game for each child, with only their age's games on to begin with", async () => {
+    seedChildren();
+    const user = userEvent.setup();
+    render(<GameApp />);
+    await passGrownUpCheck(user);
+
+    const switches = (name) => within(within(parentDialog()).getByRole("region", { name })).getAllByRole("switch")
+      .map((toggle) => [toggle.querySelector(".spelling-guide-toggle-title").textContent, toggle.getAttribute("aria-checked")]);
+    expect(switches(/Ada/)).toEqual([
+      ["CVC Sounds", "true"], ["中文認字 · 入門篇", "true"], ["Letter Jumble for Movers", "false"],
+      ["中文認字 · 進階篇", "false"], ["量詞配對", "false"], ["Mochi the Rainbow Dragon", "true"],
+    ]);
+    expect(switches(/Elly/)).toEqual([
+      ["CVC Sounds", "false"], ["中文認字 · 入門篇", "false"], ["Letter Jumble for Movers", "true"],
+      ["中文認字 · 進階篇", "true"], ["量詞配對", "true"], ["Mochi the Rainbow Dragon", "true"],
+    ]);
+    expect(within(parentDialog()).queryByRole("button", { name: /Focus/ })).not.toBeInTheDocument();
+  });
+
+  it("turning a game off hides it from that child only", async () => {
+    seedChildren();
+    const user = userEvent.setup();
+    render(<GameApp />);
+    await passGrownUpCheck(user);
+
+    const ada = within(parentDialog()).getByRole("region", { name: /Ada/ });
+    await user.click(within(ada).getByRole("switch", { name: /Mochi/ }));
+    expect(within(ada).getByRole("switch", { name: /Mochi/ })).toHaveAttribute("aria-checked", "false");
+    await user.click(within(parentDialog()).getByRole("button", { name: /Done/ }));
+
+    expect(shownGames()).toEqual(["CVC Sounds", "中文認字 · 入門篇"]);
+    expect(storedPlayers().players.find((player) => player.name === "Elly").gameSettings).toBeUndefined();
+    act(() => setPathname("/dragon"));
+    await waitFor(() => expect(currentPathname()).toBe("/"));
+  });
+
+  it("turning on a game for another age lets that child play it", async () => {
+    seedChildren();
+    const user = userEvent.setup();
+    render(<GameApp />);
+    await passGrownUpCheck(user);
+
+    const ada = within(parentDialog()).getByRole("region", { name: /Ada/ });
+    const movers = within(ada).getByRole("switch", { name: /Letter Jumble/ });
+    expect(movers).toHaveTextContent("Off · for 5-6 years old");
+    await user.click(movers);
+    await user.click(within(parentDialog()).getByRole("button", { name: /Done/ }));
+
+    expect(shownGames()).toEqual(["CVC Sounds", "中文認字 · 入門篇", "Letter Jumble for Movers", "Mochi the Rainbow Dragon"]);
+    await user.click(screen.getByRole("button", { name: /Letter Jumble/ }));
+    expect(currentPathname()).toBe("/letter-jumble");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Letter Jumble");
+  });
+
+  it("needs a right answer to the grown-up question, every time", async () => {
+    seedChildren();
+    const user = userEvent.setup();
+    render(<GameApp />);
+
+    await openParentMode(user);
+    expect(within(parentDialog()).queryByRole("switch")).not.toBeInTheDocument();
+    await user.type(within(parentDialog()).getByLabelText(/What is/), "170");
+    await user.click(within(parentDialog()).getByRole("button", { name: /Continue/ }));
+    expect(within(parentDialog()).getByRole("alert")).toHaveTextContent("That’s not right");
+    expect(within(parentDialog()).getByLabelText(/What is/)).toHaveValue("");
+    expect(within(parentDialog()).queryByRole("switch")).not.toBeInTheDocument();
+
+    await user.type(within(parentDialog()).getByLabelText(/What is/), "171");
+    await user.click(within(parentDialog()).getByRole("button", { name: /Continue/ }));
+    expect(within(parentDialog()).getAllByRole("region")).toHaveLength(2);
+
+    // Closing locks it again.
+    await user.click(within(parentDialog()).getByRole("button", { name: /Done/ }));
+    await openParentMode(user);
+    expect(within(parentDialog()).queryByRole("switch")).not.toBeInTheDocument();
+  });
+
+  it("is in the player menu, not the header", async () => {
+    seedChildren();
+    render(<GameApp />);
+    expect(screen.queryByRole("button", { name: "Parent mode" })).not.toBeInTheDocument();
+  });
+
+  it("tells a child with no games to ask a grown-up", () => {
+    seedChildren({ gameSettings: { cvc: false, chinese: false, dragon: false } });
+    render(<GameApp />);
+    expect(shownGames()).toEqual([]);
+    expect(screen.getByText(/No games are turned on for Ada yet/)).toBeInTheDocument();
+  });
+});
+

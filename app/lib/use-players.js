@@ -23,6 +23,10 @@ function cleanPlayer(player) {
     const progress = Object.fromEntries(Object.entries(player.progress).filter(([, index]) => isCount(index)));
     if (Object.keys(progress).length > 0) cleaned.progress = progress;
   }
+  if (player.gameSettings && typeof player.gameSettings === "object") {
+    const gameSettings = Object.fromEntries(Object.entries(player.gameSettings).filter(([, on]) => typeof on === "boolean"));
+    if (Object.keys(gameSettings).length > 0) cleaned.gameSettings = gameSettings;
+  }
   if (player.decks && typeof player.decks === "object") {
     const decks = Object.fromEntries(Object.entries(player.decks).filter(([, deck]) => Array.isArray(deck) && deck.length > 0 && deck.every(isCount)));
     if (Object.keys(decks).length > 0) cleaned.decks = decks;
@@ -115,6 +119,18 @@ export function usePlayers() {
     updatePlayer(state.current, (player) => ({ ...player, progress: { ...player.progress, [key]: wordIndex } }));
   }
 
+  // Parent settings: turn any game on or off for one child. `byDefault` is whether the game is
+  // on for their age anyway; a setting matching it is dropped, so age changes still apply.
+  function setGameEnabled(name, gameId, enabled, byDefault) {
+    updatePlayer(name, (player) => {
+      const { gameSettings: old = {}, ...rest } = player;
+      const gameSettings = { ...old };
+      if (enabled === byDefault) delete gameSettings[gameId];
+      else gameSettings[gameId] = enabled;
+      return Object.keys(gameSettings).length > 0 ? { ...rest, gameSettings } : rest;
+    });
+  }
+
   function selectPlayer(name) {
     setState((current) => ({ ...current, current: name }));
   }
@@ -170,5 +186,6 @@ export function usePlayers() {
     addCoin,
     spendCoins,
     saveProgress,
+    setGameEnabled,
   };
 }

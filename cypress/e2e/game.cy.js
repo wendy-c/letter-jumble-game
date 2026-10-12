@@ -602,3 +602,28 @@ describe("measure words", () => {
   });
 });
 
+describe("parent mode", () => {
+  it("opens from the player menu after a grown-up maths question", () => {
+    cy.visit("/", {
+      onBeforeLoad(win) {
+        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+      },
+    });
+    cy.get(".game-choice-card").should("have.length", 3);
+    cy.get('button[aria-label$="Player options"]').click();
+    cy.contains('[role="menuitem"]', "Parent mode").click();
+
+    cy.get(".grown-up-question strong").invoke("text").then((text) => {
+      const [first, second] = text.split(" × ").map(Number);
+      cy.get("#grown-up-answer").type(String(first * second));
+    });
+    cy.contains("button", "Continue").click();
+    cy.contains('[role="switch"]', "Mochi").click();
+    cy.contains('[role="switch"]', "Letter Jumble").click();
+    cy.contains("button", "Done").click();
+
+    cy.get(".game-choice-card").should("have.length", 3);
+    cy.contains(".game-choice-card", "Letter Jumble");
+    cy.contains(".game-choice-card", "Mochi").should("not.exist");
+  });
+});

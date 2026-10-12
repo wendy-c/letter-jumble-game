@@ -202,4 +202,26 @@ describe("usePlayers", () => {
     act(() => result.current.addCoin());
     expect(result.current.currentPlayer).toEqual({ name: "Ada", coins: 1, age: "3-4" });
   });
+
+  it("turns games on and off for one child, keeping only changes from the age default", () => {
+    seed({ players: [{ name: "Ada", coins: 0, age: "3-4" }, { name: "Elly", coins: 0, age: "3-4" }], current: "Ada" });
+    const { result } = renderHook(() => usePlayers());
+
+    // cvc is on for 3-4 by default; letter-jumble is off by default.
+    act(() => result.current.setGameEnabled("Ada", "cvc", false, true));
+    act(() => result.current.setGameEnabled("Ada", "letter-jumble", true, false));
+    expect(stored().players[0].gameSettings).toEqual({ cvc: false, "letter-jumble": true });
+    expect(stored().players[1].gameSettings).toBeUndefined();
+
+    act(() => result.current.setGameEnabled("Ada", "cvc", true, true));
+    act(() => result.current.setGameEnabled("Ada", "letter-jumble", false, false));
+    expect(stored().players[0].gameSettings).toBeUndefined();
+  });
+
+  it("drops game settings that aren't on/off", () => {
+    seed({ players: [{ name: "Ada", coins: 0, age: "3-4", gameSettings: { cvc: false, dragon: "yes" } }], current: "Ada" });
+    const { result } = renderHook(() => usePlayers());
+    expect(result.current.currentPlayer.gameSettings).toEqual({ cvc: false });
+  });
 });
+
