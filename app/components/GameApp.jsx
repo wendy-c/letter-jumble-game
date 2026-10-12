@@ -373,8 +373,8 @@ export default function GameApp() {
             wordMenuOpen={wordMenuOpen}
             breadcrumbs={breadcrumbs}
             onOpenWordMenu={() => setWordMenuOpen(true)}
-            eyebrow="今日嘅魔法堂"
-            note="一個、一枝、一張……邊個量詞啱？"
+            eyebrow="今日魔法堂"
+            note="一個、一枝、一張……哪個量詞才是對的？"
           />
           <MeasureWordGame
             key={`${selectedCategory.id}-${round}`}
@@ -394,8 +394,8 @@ export default function GameApp() {
             wordMenuOpen={wordMenuOpen}
             breadcrumbs={breadcrumbs}
             onOpenWordMenu={() => setWordMenuOpen(true)}
-            eyebrow="今日嘅魔法堂"
-            note="睇吓個字，揀啱嘅圖畫！"
+            eyebrow="今日魔法堂"
+            note="讀一讀，選擇正確的圖象！"
           />
           <ChineseGame
             key={`${selectedCategory.id}-${round}`}
@@ -404,7 +404,7 @@ export default function GameApp() {
             word={puzzle}
             onCorrect={handleChineseCorrect}
           />
-          <GameFooter>一個一個字慢慢學</GameFooter>
+          <GameFooter>一字一字慢慢學</GameFooter>
         </section>
       ) : (
         <section className="game-wrap mx-auto w-full max-w-6xl" aria-labelledby="game-title">

@@ -4,8 +4,8 @@ export const dragonName = "Mochi";
 // buttons stay disabled until it finishes.
 export const dragonActions = [
   { id: "apple", kind: "treat", label: "Apple", icon: "🍎", cost: 1, duration: 3.2, reaction: "Wheee! Spinny apple!" },
-  { id: "carrot", kind: "treat", label: "Carrot sticks", icon: "🥕", cost: 1, duration: 4.2, reaction: "Crunchy! Happy dance time!" },
-  { id: "cupcake", kind: "treat", label: "Rainbow cupcake", icon: "🧁", cost: 2, duration: 3.8, reaction: "Hee hee hee! It tickles!" },
+  { id: "carrot", kind: "treat", label: "Carrot", icon: "🥕", cost: 1, duration: 4.2, reaction: "Crunchy! Happy dance time!" },
+  { id: "cupcake", kind: "treat", label: "Cupcake", icon: "🧁", cost: 2, duration: 3.8, reaction: "Hee hee hee! It tickles!" },
   { id: "chilli", kind: "treat", label: "Chilli pepper", icon: "🌶️", cost: 3, duration: 4.4, reaction: "So spicy… RAWR! 🔥" },
   { id: "icecream", kind: "treat", label: "Ice cream", icon: "🍦", cost: 2, duration: 4.2, reaction: "Yummy… but b-b-brrr! 🥶" },
   { id: "milkshake", kind: "treat", label: "Milkshake", icon: "🍓", cost: 2, duration: 4.8, reaction: "Slurp! So sweet I’m floating! 💕" },

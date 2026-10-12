@@ -10,7 +10,7 @@ const sections = [
   { kind: "activity", label: "Activities", icon: "🎨" },
 ];
 
-const idleMessage = `Tap ${dragonName} for a snuggle, or treat her with your rainbow coins!`;
+const idleMessage = `Tap ${dragonName} for a snuggle!`;
 
 function ActionButton({ action, coins, busy, onUse }) {
   const affordable = coins >= action.cost;

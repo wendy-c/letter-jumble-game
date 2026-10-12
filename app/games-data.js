@@ -15,15 +15,6 @@ export const games = [
     ages: ["3-4"],
   },
   {
-    id: "chinese",
-    name: "中文認字 · 入門篇",
-    color: "green",
-    pattern: ["中", "文"],
-    note: "For age 3-4 - Chinese characters · Cantonese",
-    badge: "中文認字",
-    ages: ["3-4"],
-  },
-  {
     id: "letter-jumble",
     name: "Letter Jumble for Movers",
     color: "lilac",
@@ -31,6 +22,15 @@ export const games = [
     note: "For age 5-6 - Cambridge Movers · 8 topics",
     badge: "CAMBRIDGE MOVERS",
     ages: ["5-6"],
+  },
+  {
+    id: "chinese",
+    name: "中文認字 · 入門篇",
+    color: "green",
+    pattern: ["單", "字"],
+    note: "For age 3-4 - Chinese characters · Cantonese",
+    badge: "中文認字",
+    ages: ["3-4"],
   },
   {
     id: "chinese-advanced",

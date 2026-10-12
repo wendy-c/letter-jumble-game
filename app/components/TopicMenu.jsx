@@ -13,16 +13,16 @@ export default function TopicMenu({ isCvc, isChinese = false, isMeasure = false,
     <section className="game-wrap category-menu mx-auto w-full max-w-6xl" aria-labelledby="game-title">
       <div className="menu-heading">
         {breadcrumbs}
-        <p className="eyebrow">WELCOME TO SPELLING SCHOOL</p>
+        {isChinese || isMeasure ? null : <p className="eyebrow">WELCOME TO SPELLING SCHOOL</p>}
         {isMeasure ? (
           <>
             <h1 id="game-title" lang="zh-Hant-HK">量詞<span>配對</span></h1>
-            <p className="heading-note" lang="zh-Hant-HK">一個蘋果、一枝鉛筆——揀啱嘅名詞配量詞！</p>
+            <p className="heading-note" lang="zh-Hant-HK">一個蘋果、一枝鉛筆——選擇正確的名詞配量詞！</p>
           </>
         ) : isChinese ? (
           <>
             <h1 id="game-title" lang="zh-Hant-HK">中文<span>認字</span></h1>
-            <p className="heading-note" lang="zh-Hant-HK">揀一個主題，睇字揀圖畫！</p>
+            <p className="heading-note" lang="zh-Hant-HK">選一個主題，齊玩認字遊戲！</p>
           </>
         ) : isCvc ? (
           <>
@@ -51,7 +51,7 @@ export default function TopicMenu({ isCvc, isChinese = false, isMeasure = false,
           />
         ))}
       </div>
-      <GameFooter>{isChinese || isMeasure ? "揀一個主題" : isCvc ? "PICK A SOUND" : "PICK A SPELL BOOK"}</GameFooter>
+      <GameFooter>{isChinese || isMeasure ? "選一個主題" : isCvc ? "PICK A SOUND" : "PICK A SPELL BOOK"}</GameFooter>
     </section>
   );
 }
