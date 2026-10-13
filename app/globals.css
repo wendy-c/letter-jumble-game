@@ -2158,6 +2158,23 @@ h1 span {
   gap: 10px;
 }
 
+/* Treats get a third column, so all nine sit in a neat 3×3 grid. */
+.dragon-actions.dragon-actions-treat {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* In three columns the icon sits above the name, so it fits. */
+.dragon-actions-treat .dragon-action {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  row-gap: 2px;
+  text-align: center;
+}
+
+.dragon-actions-treat .dragon-action-icon {
+  grid-row: auto;
+}
+
 .dragon-action {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -2872,8 +2889,13 @@ a:focus-visible {
     grid-template-rows: minmax(0, 1fr) auto;
   }
 
+  /* A bigger stage for Mochi on phones; the shelf of items scrolls below. */
+  .dragon-wrap .game-card.dragon-card {
+    grid-template-rows: minmax(52dvh, 1fr) auto;
+  }
+
   .dragon-panel {
-    max-height: 48dvh;
+    max-height: 34dvh;
   }
 
   .dragon-stage-wrap {
@@ -3163,6 +3185,10 @@ a:focus-visible {
 /* Short phones: a smaller shelf of items, so Mochi still has room. */
 @media (max-width: 700px) and (max-height: 700px) {
   .dragon-panel {
-    max-height: 40dvh;
+    max-height: 32dvh;
+  }
+
+  .dragon-wrap .game-card.dragon-card {
+    grid-template-rows: minmax(46dvh, 1fr) auto;
   }
 }

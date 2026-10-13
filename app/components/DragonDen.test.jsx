@@ -44,10 +44,12 @@ describe("DragonDen", () => {
 
     const sections = {
       Treats: ["Apple, 1 rainbow coin", "Carrot, 1 rainbow coin", "Cupcake, 2 rainbow coins",
-        "Chilli pepper, 3 rainbow coins", "Ice cream, 2 rainbow coins", "Milkshake, 2 rainbow coins"],
-      Grooming: ["Comb, 1 rainbow coin", "Bath, 3 rainbow coins"],
-      Activities: ["Painting, 2 rainbow coins", "Ballet dancing, 2 rainbow coins"],
+        "Chilli pepper, 3 rainbow coins", "Ice cream, 2 rainbow coins", "Milkshake, 2 rainbow coins",
+        "Lemon, 1 rainbow coin", "Salad, 2 rainbow coins", "Noodles, 2 rainbow coins"],
+      Grooming: ["Comb, 1 rainbow coin", "Bath, 3 rainbow coins", "Brush teeth, 1 rainbow coin"],
+      Activities: ["Painting, 2 rainbow coins", "Ballet dancing, 2 rainbow coins", "Meditation, 2 rainbow coins", "Sandcastle, 2 rainbow coins"],
     };
+    expect(screen.getByRole("tabpanel", { name: /Treats/ })).toHaveClass("dragon-actions-treat");
     for (const [tab, items] of Object.entries(sections)) {
       await user.click(screen.getByRole("tab", { name: new RegExp(tab) }));
       const panel = screen.getByRole("tabpanel", { name: new RegExp(tab) });
@@ -117,4 +119,26 @@ describe("DragonDen", () => {
     expect(onSpendCoins).not.toHaveBeenCalled();
     expect(screen.getByText(dragonActionsById.pet.reaction)).toBeInTheDocument();
   });
+
+  it("takes turns snuggling, twirling and waving when Mochi is tapped, for free", async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    const { onSpendCoins } = renderDen(0);
+
+    for (const [id, message] of [["pet", "Snuggles"], ["twirl", "twirl"], ["wave", "Hi hi"], ["pet", "Snuggles"]]) {
+      await user.click(screen.getByRole("button", { name: "Mochi" }));
+      expect(commands.at(-1)).toBe(id);
+      expect(screen.getByText(new RegExp(message))).toBeInTheDocument();
+      act(() => jest.advanceTimersByTime(dragonActionsById[id].duration * 1000));
+    }
+    expect(onSpendCoins).not.toHaveBeenCalled();
+  });
+
+  it("ignores taps while Mochi is still reacting", async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    renderDen(0);
+    await user.click(screen.getByRole("button", { name: "Mochi" }));
+    await user.click(screen.getByRole("button", { name: "Mochi" }));
+    expect(commands).toEqual(["pet"]);
+  });
 });
+

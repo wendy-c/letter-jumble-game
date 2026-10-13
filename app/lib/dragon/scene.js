@@ -394,6 +394,34 @@ function buildTreat(id, materials) {
     cone.rotation.x = Math.PI;
     add(part(sphere(0.2, 0.7), materials.toon(0xffb3cf), materials, 0.2, 0.025), 0, 0.17, 0);
     add(part(sphere(0.16, 0.6), materials.toon(0xb8f0d8), materials, 0.16, 0.02), 0, 0.36, 0);
+  } else if (id === "lemon") {
+    const lemon = add(part(sphere(0.26), materials.toon(0xfff06a), materials, 0.26, 0.025));
+    lemon.scale.set(1.25, 0.95, 0.95);
+    [-1, 1].forEach((side) => {
+      const tip = add(part(sphere(0.06, 0.5), materials.toon(0xfff06a), materials, 0.06, 0.012), side * 0.33, 0, 0);
+      tip.scale.set(1.2, 0.8, 0.8);
+    });
+    add(part(sphere(0.07, 0.5), materials.toon(0x8fe3a8), materials, 0.07, 0.012), 0.08, 0.24, 0).scale.set(1.6, 0.5, 0.8);
+  } else if (id === "salad") {
+    add(part(new THREE.CylinderGeometry(0.32, 0.2, 0.2, 24), materials.toon(0xffffff), materials, 0.28, 0.025));
+    [[0, 0.14, 0, 0x8fe3a8], [-0.15, 0.12, 0.06, 0x6cc28a], [0.15, 0.12, -0.05, 0x8fe3a8], [0.05, 0.16, 0.14, 0x6cc28a]].forEach(([x, y, z, color]) => {
+      const leaf = add(part(sphere(0.13, 0.5), materials.toon(color), materials, 0.12, 0.015), x, y, z);
+      leaf.scale.set(1.3, 0.6, 1);
+    });
+    [[0.12, 0.2, 0.08], [-0.1, 0.2, -0.08]].forEach(([x, y, z]) => add(part(sphere(0.06, 0.4), materials.toon(0xff6b6b), materials, 0.06, 0.012), x, y, z));
+    add(part(sphere(0.05, 0.4), materials.toon(0xffa552), materials, 0.05, 0.012), -0.02, 0.22, 0.04);
+  } else if (id === "noodles") {
+    add(part(new THREE.CylinderGeometry(0.32, 0.2, 0.24, 24), materials.toon(0x8cc8f2), materials, 0.28, 0.025));
+    const broth = add(new THREE.Mesh(new THREE.CircleGeometry(0.29, 24), materials.toon(0xffe2a8)), 0, 0.121, 0);
+    broth.rotation.x = -Math.PI / 2;
+    [-0.08, 0, 0.08].forEach((x) => {
+      const noodle = add(part(new THREE.CylinderGeometry(0.018, 0.018, 0.4, 8), materials.toon(0xffd27a), materials, 0.02, 0.008), x, 0.3, 0);
+      noodle.rotation.z = x * 2;
+    });
+    [-0.05, 0.05].forEach((x) => {
+      const stick = add(part(new THREE.CylinderGeometry(0.015, 0.015, 0.6, 8), materials.toon(0xe8b27a), materials, 0.02, 0.008), x + 0.12, 0.42, 0);
+      stick.rotation.z = -0.5;
+    });
   } else if (id === "milkshake") {
     add(part(new THREE.CylinderGeometry(0.2, 0.15, 0.5, 24), materials.toon(0xffb3cf), materials, 0.18, 0.025));
     add(part(sphere(0.2, 0.6), materials.toon(0xffffff), materials, 0.2, 0.02), 0, 0.28, 0).scale.set(1, 0.6, 1);
@@ -516,6 +544,76 @@ function buildTutu(materials) {
   bow.scale.set(1.6, 0.9, 0.6);
   tutu.add(bow);
   return tutu;
+}
+
+function buildToothbrush(materials) {
+  const brush = new THREE.Group();
+  const handle = part(new THREE.BoxGeometry(0.07, 0.6, 0.06), materials.toon(0x8cc8f2), materials, 0.05, 0.012);
+  const head = part(new THREE.BoxGeometry(0.09, 0.16, 0.07), materials.toon(0x8cc8f2), materials, 0.05, 0.012);
+  head.position.y = 0.36;
+  const bristles = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.14, 0.07), materials.toon(0xffffff));
+  bristles.position.set(0, 0.36, 0.07);
+  const paste = new THREE.Mesh(sphere(0.045, 0.4), materials.toon(0xb8f0d8));
+  paste.position.set(0, 0.36, 0.12);
+  brush.add(handle, head, bristles, paste);
+  return brush;
+}
+
+// A round floor cushion for meditation.
+function buildCushion(materials) {
+  const cushion = new THREE.Group();
+  const pad = part(new THREE.CylinderGeometry(1.05, 1.1, 0.22, 32), materials.toon(0xffb3d9), materials, 0.3, 0.025);
+  pad.position.y = 0.11;
+  const button = part(sphere(0.08, 0.4), materials.toon(0xf06aa8), materials, 0.08, 0.012);
+  button.position.y = 0.24;
+  cushion.add(pad, button);
+  return cushion;
+}
+
+// A sandcastle that rises out of a sand pile as Mochi pats it, plus a bucket and spade.
+function buildSandcastle(materials) {
+  const group = new THREE.Group();
+  const sand = materials.toon(0xf3d38c);
+  const pile = part(sphere(0.75, 0.6), sand, materials, 0.5, 0.025);
+  pile.scale.set(1, 0.28, 0.8);
+  group.add(pile);
+
+  const castle = new THREE.Group();
+  const keep = part(new THREE.CylinderGeometry(0.28, 0.32, 0.55, 20), sand, materials, 0.25, 0.02);
+  keep.position.y = 0.38;
+  castle.add(keep);
+  [[-0.38, 0.05], [0.38, 0.05], [0, -0.32]].forEach(([x, z]) => {
+    const tower = part(new THREE.CylinderGeometry(0.13, 0.15, 0.42, 16), sand, materials, 0.13, 0.015);
+    tower.position.set(x, 0.3, z);
+    const roof = part(new THREE.ConeGeometry(0.17, 0.24, 16), sand, materials, 0.13, 0.015);
+    roof.position.set(x, 0.63, z);
+    castle.add(tower, roof);
+  });
+  const door = new THREE.Mesh(sphere(0.09, 0.4), materials.toon(0xc9a060));
+  door.scale.set(1, 1.3, 0.3);
+  door.position.set(0, 0.22, 0.3);
+  castle.add(door);
+  const flag = new THREE.Group();
+  const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.32, 6), materials.toon(0x8b5a3c));
+  pole.position.y = 0.16;
+  const cloth = new THREE.Mesh(new THREE.PlaneGeometry(0.18, 0.12), new THREE.MeshBasicMaterial({ color: 0xff8fae, side: THREE.DoubleSide }));
+  cloth.position.set(0.09, 0.26, 0);
+  flag.add(pole, cloth);
+  flag.position.y = 0.65;
+  castle.add(flag);
+  group.add(castle);
+
+  const bucket = part(new THREE.CylinderGeometry(0.2, 0.15, 0.3, 18), materials.toon(0x8cc8f2), materials, 0.18, 0.02);
+  bucket.position.set(0.9, 0.15, 0.3);
+  const spade = part(new THREE.BoxGeometry(0.06, 0.4, 0.04), materials.toon(0xffd45e), materials, 0.05, 0.012);
+  spade.position.set(-0.85, 0.2, 0.35);
+  spade.rotation.z = 0.5;
+  group.add(bucket, spade);
+
+  group.userData.castle = castle;
+  group.userData.flag = flag;
+  group.userData.dispose = () => cloth.material.dispose();
+  return group;
 }
 
 function buildComb(materials) {
@@ -698,7 +796,15 @@ const soundCues = {
   bath: [[0.1, "bubbles"], [1.4, "bubbles"], [3.0, "rub"], [5.3, "sparkle"], [5.6, "coo"]],
   painting: [[0.8, "brush"], [1.5, "brush"], [2.2, "brush"], [2.9, "brush"], [3.6, "brush"], [4.3, "brush"], [5.3, "sparkle"], [5.6, "coo"]],
   ballet: [[0.3, "musicBox"], [4.9, "sparkle"], [5.3, "coo"]],
+  lemon: [[0.8, "chomp"], [1.3, "pucker"], [2.4, "giggle"]],
+  salad: [[0.8, "chomp"], [1.1, "chomp"], [1.5, "sparkle"], [2.2, "coo"]],
+  noodles: [[0.6, "slurp"], [1.6, "slurp"], [2.9, "purr"], [3.3, "coo"]],
+  teeth: [[0.4, "brush"], [0.9, "brush"], [1.4, "brush"], [1.9, "brush"], [2.4, "brush"], [3.0, "bubbles"], [3.9, "sparkle"]],
+  meditation: [[0.2, "bell"], [3.2, "bell"], [5.6, "coo"]],
+  sandcastle: [[0.5, "scoop"], [1.2, "scoop"], [1.9, "scoop"], [2.6, "scoop"], [3.3, "scoop"], [4.6, "sparkle"], [5.0, "coo"]],
   pet: [[0, "purr"], [0.35, "coo"]],
+  twirl: [[0.1, "whee"], [1.6, "coo"]],
+  wave: [[0.2, "coo"], [1.1, "coo"]],
 };
 
 function playSoundCues(run, sfx) {
@@ -1056,6 +1162,218 @@ const actions = {
     if (t > 5.2) once(run, "hearts", () => ctx.fx.hearts(ctx.headWorld().add(new THREE.Vector3(0, 0.9, 0.3)), 3));
   },
 
+  lemon(run, pose, dt, ctx) {
+    const r = eatTreat(run, pose, ctx);
+    if (r < 0) return;
+    // A big sour pucker: scrunched eyes, shivers, then a giggle.
+    const sour = between(r, 0, 0.2) * (1 - between(r, 1.8, 2.3));
+    pose.happyEyes = sour > 0.3;
+    pose.squash -= 0.09 * sour;
+    pose.shakeX += Math.sin(r * 55) * 0.04 * sour;
+    pose.headTilt += Math.sin(r * 12) * 0.12 * sour;
+    pose.armHug = sour;
+    pose.earWiggle += 0.3 * sour;
+    pose.tailLift += 0.8 * sour;
+    pose.mouthOpen = 0.18 * sour;
+    if (r < 1.8) {
+      emit(run, "sour", 2.4, dt, () => ctx.fx.spawn(ctx.fx.text(pick(["sour!", "eek!", "so sour!"]), "#c8a800", ctx.headWorld().add(new THREE.Vector3(pick([-1.3, 1.3]), 0.7, 0.4)), 1.1),
+        { velocity: new THREE.Vector3(0, 0.5, 0), life: 1 }));
+      emit(run, "drops", 10, dt, () => {
+        const drop = ctx.fx.mesh("snow", ctx.headWorld().add(new THREE.Vector3(rand(-0.9, 0.9), rand(0.6, 1.1), 0.4)), 1, 0xfff06a);
+        ctx.fx.spawn(drop, { velocity: new THREE.Vector3(rand(-0.4, 0.4), rand(0.3, 0.8), 0), gravity: 2.5, life: 0.9 });
+      });
+    } else {
+      pose.happyEyes = true;
+      pose.blush = 0.7;
+      pose.mouthOpen = 0.3 * pulse(r, 1.9, 2.5);
+    }
+  },
+
+  salad(run, pose, dt, ctx) {
+    const r = eatTreat(run, pose, ctx);
+    if (r < 0) return;
+    // Flexes both arms: strong and healthy!
+    const flex = between(r, 0.1, 0.4) * (1 - between(r, 2.6, 3.1));
+    pose.armL = pose.armR = 2.1 * flex + 0.15 * Math.sin(r * 10) * flex;
+    pose.armHug = -0.2 * flex;
+    pose.squash += 0.06 * flex;
+    pose.hop += 0.12 * pulse(r, 0.2, 0.6) + 0.12 * pulse(r, 1.4, 1.8);
+    pose.happyEyes = true;
+    pose.blush = 0.6 * flex;
+    pose.wingFlap += 0.4 * flex;
+    pose.headNod -= 0.12 * flex;
+    if (flex > 0.3) {
+      emit(run, "strong", 1.4, dt, () => ctx.fx.spawn(ctx.fx.text(pick(["strong!", "healthy!", "💪"]), "#4fb893", ctx.headWorld().add(new THREE.Vector3(pick([-1.4, 1.4]), 0.6, 0.4)), 1.1),
+        { velocity: new THREE.Vector3(0, 0.5, 0), life: 1.1 }));
+      emit(run, "sparkle", 12, dt, () => ctx.fx.sparkles(ctx.bodyWorld(), 1, 1.6));
+    }
+  },
+
+  noodles(run, pose, dt, ctx) {
+    const r = eatTreat(run, pose, ctx);
+    if (!run.strands) {
+      // Noodles hanging from her mouth that slurp up.
+      run.strands = new THREE.Group();
+      [-0.08, 0, 0.08].forEach((x) => {
+        const strand = part(new THREE.CylinderGeometry(0.02, 0.02, 1, 8), ctx.materials.toon(0xffd27a), ctx.materials, 0.02, 0.008);
+        strand.position.set(x, -0.5, 0);
+        run.strands.add(strand);
+      });
+      run.strands.visible = false;
+      ctx.scene.add(run.strands);
+    }
+    if (r < 0) return;
+    const slurp = between(r, 0, 1.6);
+    run.strands.visible = slurp < 1;
+    run.strands.position.copy(ctx.mouthWorld()).add(new THREE.Vector3(0, -0.05, 0.05));
+    run.strands.scale.set(1, Math.max(0.01, (1 - slurp) * 0.9), 1);
+    run.strands.rotation.z = Math.sin(r * 18) * 0.15 * (1 - slurp);
+    if (slurp < 1) {
+      pose.mouthOpen = 0.25;
+      pose.headNod -= 0.08;
+      pose.shakeX += Math.sin(r * 30) * 0.01;
+    }
+    // Then a cosy, contented sigh: comfort food.
+    const cosy = between(r, 1.7, 2.2) * (1 - between(r, 3.6, 4.0));
+    pose.happyEyes = r > 1.6;
+    pose.blush = Math.max(pose.blush, cosy);
+    pose.armHug = cosy;
+    pose.armL = pose.armR = 0.4 * cosy;
+    pose.headTilt += 0.25 * cosy;
+    pose.squash += 0.04 * Math.sin(r * 3) * cosy;
+    if (cosy > 0.3) {
+      emit(run, "steam", 6, dt, () => {
+        const puff = ctx.fx.mesh("puff", ctx.headWorld().add(new THREE.Vector3(rand(-0.4, 0.4), 1.0, 0.3)), rand(0.4, 0.7));
+        ctx.fx.spawn(puff, { velocity: new THREE.Vector3(0, 0.6, 0), life: 1.2, grow: 1, opacity: 0.5 });
+      });
+      emit(run, "hearts", 2, dt, () => ctx.fx.hearts(ctx.headWorld().add(new THREE.Vector3(0, 0.8, 0.3)), 1));
+    }
+  },
+
+  teeth(run, pose, dt, ctx) {
+    const t = run.t;
+    if (!run.toothbrush) {
+      run.toothbrush = buildToothbrush(ctx.materials);
+      ctx.scene.add(run.toothbrush);
+    }
+    const brushing = t > 0.3 && t < 3.4;
+    run.toothbrush.visible = t < 3.6;
+    // The brush scrubs side to side across her open, smiling mouth.
+    run.toothbrush.position.copy(ctx.mouthWorld()).add(new THREE.Vector3(0.18 + Math.sin(t * 16) * 0.16, -0.36, 0.28));
+    run.toothbrush.rotation.set(0, 0, Math.PI / 2 - 0.2);
+    run.toothbrush.scale.setScalar(Math.min(1, t * 4) * (t > 3.4 ? Math.max(0.01, 1 - (t - 3.4) * 5) : 1));
+    if (brushing) {
+      pose.mouthOpen = 0.55;
+      pose.armR = 1.3 + Math.sin(t * 16) * 0.1;
+      pose.headTilt += Math.sin(t * 16) * 0.04;
+      emit(run, "foam", 14, dt, () => {
+        const bubble = ctx.fx.mesh("bubble", ctx.mouthWorld().add(new THREE.Vector3(rand(-0.25, 0.25), rand(-0.1, 0.1), 0.25)), rand(0.05, 0.1));
+        ctx.fx.spawn(bubble, { velocity: new THREE.Vector3(rand(-0.3, 0.3), rand(0.2, 0.6), 0.2), life: 0.9, opacity: 0.7 });
+      });
+    }
+    // Then a big sparkly grin.
+    if (t > 3.6) {
+      pose.happyEyes = true;
+      pose.mouthOpen = 0.5 * pulse(t, 3.6, 4.8);
+      pose.blush = 0.7;
+      once(run, "clean", () => ctx.fx.sparkles(ctx.mouthWorld().add(new THREE.Vector3(0, 0, 0.3)), 14, 1.2));
+    }
+  },
+
+  meditation(run, pose, dt, ctx) {
+    const t = run.t;
+    if (!run.cushion) {
+      run.cushion = buildCushion(ctx.materials);
+      ctx.turn.add(run.cushion);
+    }
+    run.cushion.scale.setScalar(Math.max(0.01, easeInOut(between(t, 0, 0.5)) * (1 - between(t, 5.8, 6.3))));
+    // Eyes closed, floating gently above the cushion and breathing slowly.
+    const calm = between(t, 0.4, 1.2) * (1 - between(t, 5.2, 6.0));
+    pose.happyEyes = calm > 0.2;
+    pose.hop += 0.35 * calm + 0.06 * Math.sin(t * 1.6) * calm;
+    pose.squash += 0.05 * Math.sin(t * 1.6) * calm;
+    pose.armL = pose.armR = 0.9 * calm;
+    pose.armHug = -0.3 * calm;
+    pose.wingFlap += 0.1 * Math.sin(t * 1.6) * calm;
+    pose.tailSway *= 1 - 0.8 * calm;
+    pose.blush = 0.5 * calm;
+    if (calm > 0.4) {
+      emit(run, "om", 0.6, dt, () => ctx.fx.spawn(ctx.fx.text(pick(["ommm…", "breathe…", "calm…"]), "#8a6ae6", ctx.headWorld().add(new THREE.Vector3(pick([-1.3, 1.3]), 0.8, 0.3)), 1.1),
+        { velocity: new THREE.Vector3(0, 0.25, 0), life: 2 }));
+      emit(run, "petals", 4, dt, () => {
+        const petal = ctx.fx.mesh("heart", ctx.bodyWorld().add(new THREE.Vector3(rand(-1.6, 1.6), rand(1.2, 2), rand(-0.3, 0.6))), 0.6, pick([0xffb3d9, 0xd9c8ff, 0xfff0f6]));
+        ctx.fx.spawn(petal, { velocity: new THREE.Vector3(rand(-0.1, 0.1), -0.35, 0), life: 2.6, spin: 1, wobble: 0.6 });
+      });
+    }
+    if (t > 5.4) once(run, "refreshed", () => ctx.fx.sparkles(ctx.headWorld().add(new THREE.Vector3(0, 0.8, 0.3)), 10, 1));
+  },
+
+  sandcastle(run, pose, dt, ctx) {
+    const t = run.t;
+    if (!run.sandcastle) {
+      run.sandcastle = buildSandcastle(ctx.materials);
+      run.sandcastle.position.set(1.55, 0, 0.9);
+      ctx.turn.add(run.sandcastle);
+    }
+    const appear = easeInOut(between(t, 0, 0.5)) * (1 - between(t, 6.1, 6.6));
+    run.sandcastle.scale.setScalar(Math.max(0.01, appear));
+    // The castle rises out of the pile with each pat, then the flag pops up.
+    const built = easeInOut(between(t, 0.5, 4.0));
+    const { castle, flag } = run.sandcastle.userData;
+    castle.scale.set(1, Math.max(0.01, built), 1);
+    flag.visible = t > 4.3;
+    flag.scale.setScalar(Math.max(0.01, between(t, 4.3, 4.6)));
+
+    const atCastle = between(t, 0.2, 0.6) * (1 - between(t, 4.2, 4.8));
+    pose.turn += 0.55 * atCastle;
+    pose.headTurn += 0.2 * atCastle;
+    pose.headNod += 0.15 * atCastle;
+    if (t > 0.5 && t < 4.0) {
+      const pat = Math.abs(Math.sin(t * 6));
+      pose.armR = 0.6 + 0.8 * pat;
+      pose.armL = 0.6 + 0.8 * (1 - pat);
+      pose.squash += 0.03 * pat;
+      emit(run, "sand", 10, dt, () => {
+        const grain = ctx.fx.mesh("sparkle", run.sandcastle.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(rand(-0.4, 0.4), 0.4, rand(-0.2, 0.3))), 0.6, 0xf3d38c);
+        ctx.fx.spawn(grain, { velocity: new THREE.Vector3(rand(-0.6, 0.6), rand(0.4, 1), rand(-0.2, 0.4)), gravity: 3, life: 0.7 });
+      });
+    }
+    if (t > 4.4) {
+      pose.happyEyes = true;
+      pose.blush = 0.8;
+      pose.hop += pulse(t, 4.5, 5.0) * 0.35;
+      pose.armL = pose.armR = Math.max(pose.armL, 1.4 * pulse(t, 4.4, 5.6));
+      once(run, "done", () => ctx.fx.sparkles(run.sandcastle.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, 0.9, 0)), 16, 1.6));
+    }
+  },
+
+  twirl(run, pose, dt, ctx) {
+    const t = run.t;
+    pose.turn += easeInOut(between(t, 0.1, 1.5)) * Math.PI * 2;
+    pose.hop += pulse(t, 0.1, 1.5) * 0.4;
+    pose.armL = pose.armR = 1.8 * pulse(t, 0, 1.7);
+    pose.wingFlap += 0.4 * Math.sin(t * 16) * pulse(t, 0, 1.7);
+    pose.happyEyes = true;
+    pose.blush = 0.6;
+    if (t < 1.5) emit(run, "trail", 16, dt, () => ctx.fx.sparkles(ctx.bodyWorld(), 1, 1.2));
+  },
+
+  wave(run, pose, dt, ctx) {
+    const t = run.t;
+    const up = between(t, 0, 0.3) * (1 - between(t, 1.8, 2.2));
+    pose.armR = 1.9 * up;
+    pose.headTilt += (0.2 + Math.sin(t * 12) * 0.08) * up;
+    pose.lean += Math.sin(t * 12) * 0.05 * up;
+    pose.happyEyes = true;
+    pose.mouthOpen = 0.3 * up;
+    pose.blush = 0.5;
+    // The waving hand stays up in front and sways side to side.
+    ctx.arms[1].userData.forward = -0.25 * up;
+    ctx.arms[1].userData.wave = Math.sin(t * 12) * 0.5 * up;
+    once(run, "hi", () => ctx.fx.spawn(ctx.fx.text("hi!", "#f06aa8", ctx.headWorld().add(new THREE.Vector3(1.3, 0.9, 0.4)), 1.1),
+      { velocity: new THREE.Vector3(0, 0.4, 0), life: 1.4 }));
+  },
+
   pet(run, pose, dt, ctx) {
     const t = run.t;
     const amount = between(t, 0, 0.2) * (1 - between(t, 1.7, 2.2));
@@ -1104,7 +1422,10 @@ function applyPose(dragon, pose, userTurn) {
   dragon.arms.forEach((arm) => {
     const side = arm.userData.side;
     const raise = side < 0 ? pose.armL : pose.armR;
-    arm.rotation.set(-raise * 0.6, 0, side * (0.35 + raise * 0.9) - side * pose.armHug * 0.9);
+    // A wave holds the arm up in front (`forward`) and sways it (`wave`); both reset each frame.
+    arm.rotation.set(arm.userData.forward ?? -raise * 0.6, arm.userData.wave ?? 0, side * (0.35 + raise * 0.9) - side * pose.armHug * 0.9);
+    arm.userData.wave = 0;
+    arm.userData.forward = undefined;
   });
   dragon.tail.forEach((segment, index) => {
     // The tail curls round to her side, so its rainbow peeks out from the front.
@@ -1191,7 +1512,7 @@ export function createDragonScene(container, { onPet, sfx = sounds } = {}) {
 
   function endRun() {
     if (!run) return;
-    [run.treat, run.comb, run.towel, run.easel, run.brush, run.tutu].forEach((object) => {
+    [run.treat, run.comb, run.towel, run.easel, run.brush, run.tutu, run.strands, run.toothbrush, run.cushion, run.sandcastle].forEach((object) => {
       if (!object) return;
       object.parent?.remove(object);
       object.traverse((child) => child.geometry?.dispose());

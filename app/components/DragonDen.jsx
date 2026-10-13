@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { dragonActions, dragonName, petAction } from "../dragon-data";
+import { dragonActions, dragonName, petActions } from "../dragon-data";
 import { sounds } from "../lib/sounds";
 import DragonScene from "./DragonScene";
 import GameFooter from "./GameFooter";
@@ -62,7 +62,14 @@ export default function DragonDen({ coins, onSpendCoins, breadcrumbs }) {
     }, action.duration * 1000);
   }, [onSpendCoins]);
 
-  const pet = useCallback(() => play(petAction), [play]);
+  // Each tap does the next thing: a snuggle, a twirl, then a wave.
+  const petTurnRef = useRef(0);
+  const pet = useCallback(() => {
+    if (busyRef.current) return;
+    const action = petActions[petTurnRef.current % petActions.length];
+    petTurnRef.current += 1;
+    play(action);
+  }, [play]);
   const cheapest = Math.min(...dragonActions.map((action) => action.cost));
 
   // Left/right arrow keys move between the tabs, as screen reader users expect.
@@ -118,7 +125,7 @@ export default function DragonDen({ coins, onSpendCoins, breadcrumbs }) {
           </div>
 
           <div
-            className="dragon-actions"
+            className={`dragon-actions dragon-actions-${section}`}
             role="tabpanel"
             id={`dragon-section-${section}`}
             aria-labelledby={`dragon-tab-${section}`}

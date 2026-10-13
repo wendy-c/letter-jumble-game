@@ -191,6 +191,21 @@ export const sounds = {
     noise(ac, { duration: 0.3, volume: 0.14, freq: 1800, sweepTo: 900, q: 2, attack: 0.05 });
   }),
 
+  // A wobbly "eek" for something sour.
+  pucker: play((ac) => {
+    tone(ac, { freq: 900, slide: 420, duration: 0.5, type: "triangle", volume: 0.16, vibrato: { rate: 26, depth: 45 } });
+  }),
+
+  // A soft singing-bowl chime.
+  bell: play((ac) => {
+    [notes.C5, notes.G5, notes.C6].forEach((freq) => tone(ac, { freq, duration: 2.6, volume: 0.07, attack: 0.02 }));
+  }),
+
+  // Patting and scooping sand.
+  scoop: play((ac) => {
+    noise(ac, { duration: 0.25, volume: 0.25, filter: "lowpass", freq: 900, sweepTo: 400, q: 0.7, attack: 0.02 });
+  }),
+
   // A tinkly music box waltz for ballet.
   musicBox: play((ac) => {
     const tune = ["E5", "G5", "C6", "B5", "G5", "E5", "D5", "F5", "B5", "A5", "F5", "D5", "C5", "E5", "G5", "C6"];
