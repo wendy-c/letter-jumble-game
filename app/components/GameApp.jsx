@@ -68,14 +68,15 @@ export default function GameApp() {
   const gameTopics = topicsByGame[selectedGame?.id] ?? [];
   const routeTopic = (topicId && gameTopics.find((topic) => topic.id === topicId)) || null;
   const categoryKey = routeTopic ? `${selectedGame.id}/${routeTopic.id}` : null;
-  // Topics with `wordsPerGame` (CVC) play a shuffled hand of that many words, saved per player
-  // so leaving and coming back continues the same words.
-  const deck = routeTopic?.wordsPerGame ? currentPlayer?.decks?.[categoryKey] : null;
-  const validDeck = Boolean(deck) && deck.length === Math.min(routeTopic.wordsPerGame, routeTopic.words.length) &&
+  // Every topic plays its words in a shuffled order, saved per player so leaving and coming
+  // back continues the same order. Topics with `wordsPerGame` (CVC, 量詞) deal only that many.
+  const handSize = routeTopic ? Math.min(routeTopic.wordsPerGame ?? Infinity, routeTopic.words.length) : 0;
+  const deck = routeTopic ? currentPlayer?.decks?.[categoryKey] : null;
+  const validDeck = Boolean(deck) && deck.length === handSize && new Set(deck).size === handSize &&
     deck.every((index) => index < routeTopic.words.length);
-  const selectedCategory = routeTopic?.wordsPerGame
-    ? (validDeck ? { ...routeTopic, words: deck.map((index) => routeTopic.words[index]) } : null)
-    : routeTopic;
+  const selectedCategory = routeTopic && validDeck
+    ? { ...routeTopic, words: deck.map((index) => routeTopic.words[index]) }
+    : null;
 
   // Where we are in the open topic. `key` says which topic this belongs to, so a stale round
   // from another topic is never shown while switching.
@@ -139,11 +140,12 @@ export default function GameApp() {
     if (topicId && !routeTopic) router.replace(`/${routeGame.id}`);
   }, [loaded, gameId, topicId, routeGame, allowed, currentPlayer, routeTopic, router]);
 
-  // A shuffled topic without a hand of words yet gets one dealt.
+  // A topic without a shuffled hand of words yet gets one dealt.
   useEffect(() => {
-    if (!routeTopic?.wordsPerGame || !currentPlayer || validDeck) return;
-    saveDeck(categoryKey, shuffledDeck(routeTopic.words.length, routeTopic.wordsPerGame));
-    saveProgress(categoryKey, 0);
+    if (!routeTopic || !currentPlayer || validDeck) return;
+    // Keeps the child's saved place: dealing only happens the first time, or after a topic is
+    // finished (when the place is already back at the start).
+    saveDeck(categoryKey, shuffledDeck(routeTopic.words.length, handSize));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryKey, currentPlayer?.name, validDeck]);
 
@@ -298,9 +300,9 @@ export default function GameApp() {
   }
 
   function leaveCompletedTopic() {
-    // A shuffled topic deals a fresh hand of words next time. (Not before leaving: dealing
-    // straight away would reset the screen under the pop-up.)
-    if (routeTopic.wordsPerGame) saveDeck(categoryKey, null);
+    // Next time deals a freshly shuffled hand of words. (Not before leaving: dealing straight
+    // away would reset the screen under the pop-up.)
+    saveDeck(categoryKey, null);
     setCompletedTopic(null);
     showCategories();
   }

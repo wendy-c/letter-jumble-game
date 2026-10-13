@@ -29,6 +29,10 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
+// With Math.random pinned, a topic's words are dealt in their original order.
+const inOrder = (count) => [...Array(count).keys()];
+const animalsDeck = { "letter-jumble/animals": inOrder(13) };
+
 const ageFor = (gameName) => (/Letter Jumble/.test(gameName) ? "5-6" : "3-4");
 
 function storedPlayers() {
@@ -91,7 +95,7 @@ describe("Home", () => {
     expect(within(reward).getByText("You collected a rainbow coin!")).toBeInTheDocument();
     expect(screen.getByLabelText(coinsLabel(1))).toBeInTheDocument();
     expect(storedPlayers()).toEqual({
-      players: [{ name: "Ada", coins: 1, age: "5-6" }],
+      players: [{ name: "Ada", coins: 1, age: "5-6", decks: animalsDeck }],
       current: "Ada",
     });
     expect(sounds.correct).toHaveBeenCalledTimes(1);
@@ -261,8 +265,8 @@ describe("players", () => {
 
     expect(storedPlayers()).toEqual({
       players: [
-        { name: "Ada", coins: 1, age: "5-6", progress: { "letter-jumble/animals": 1 } },
-        { name: "Elly", coins: 1, age: "5-6", progress: { "letter-jumble/animals": 1 } },
+        { name: "Ada", coins: 1, age: "5-6", progress: { "letter-jumble/animals": 1 }, decks: animalsDeck },
+        { name: "Elly", coins: 1, age: "5-6", progress: { "letter-jumble/animals": 1 }, decks: animalsDeck },
       ],
       current: "Elly",
     });
@@ -278,7 +282,7 @@ describe("players", () => {
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Choose an adventure!");
     expect(screen.queryByRole("button", { name: /Player options/ })).not.toBeInTheDocument();
-    expect(storedPlayers()).toEqual({ players: [{ name: "Ada", coins: 0, age: "5-6" }], current: null });
+    expect(storedPlayers()).toEqual({ players: [{ name: "Ada", coins: 0, age: "5-6", decks: animalsDeck }], current: null });
 
     await user.click(screen.getByRole("button", { name: /CVC Sounds/ }));
     expect(screen.getByRole("dialog", { name: whoIsPlaying })).toBeInTheDocument();
@@ -857,6 +861,31 @@ describe("parent mode", () => {
     render(<GameApp />);
     expect(shownGames()).toEqual([]);
     expect(screen.getByText(/No games are turned on for Ada yet/)).toBeInTheDocument();
+  });
+});
+
+describe("shuffled questions", () => {
+  it("deals every topic's words in a random order, kept until the topic is finished", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
+    let calls = 0;
+    Math.random.mockImplementation(() => ((calls += 1) * 0.37) % 1);
+    setPathname("/letter-jumble/animals");
+    render(<GameApp />);
+
+    await screen.findByLabelText("Word 1 of 13");
+    const deck = storedPlayers().players[0].decks["letter-jumble/animals"];
+    expect([...deck].sort((first, second) => first - second)).toEqual(inOrder(13));
+    expect(deck).not.toEqual(inOrder(13));
+  });
+
+  it("keeps a child's saved place when their words are first shuffled", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({
+      players: [{ name: "Elly", coins: 0, age: "5-6", progress: { "chinese-advanced/jobs": 4 } }],
+      current: "Elly",
+    }));
+    setPathname("/chinese-advanced/jobs");
+    render(<GameApp />);
+    expect(await screen.findByLabelText(/^Word 5 of/)).toBeInTheDocument();
   });
 });
 

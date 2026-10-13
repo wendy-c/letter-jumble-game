@@ -1,5 +1,13 @@
 const playersKey = "letter-jumble:players";
 
+// Every topic's words are dealt in a random order. Once a page has loaded, random() just below 1
+// keeps the original order (bat, dolphin, ...), so tests know which word comes first. (It can't
+// be stubbed earlier: Next.js needs a real Math.random while starting up.)
+Cypress.Commands.overwrite("visit", (originalVisit, url, options) => originalVisit(url, options).then((win) => {
+  win.Math.random = () => 0.9999999;
+  return win;
+}));
+
 // Clicks a link in the "Home › Game › Topic" breadcrumb trail.
 function crumb(name) {
   cy.get('nav[aria-label="Breadcrumb"]').contains("a", name).click();
@@ -83,7 +91,10 @@ describe("Movers spelling game", () => {
     });
     cy.contains("button", "Check word").click();
     cy.get('[aria-label="1 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
-    storedPlayers().should("deep.equal", { players: [{ name: "Ada", coins: 1, age: "5-6" }], current: "Ada" });
+    storedPlayers().should("deep.equal", {
+      players: [{ name: "Ada", coins: 1, age: "5-6", decks: { "letter-jumble/animals": [...Array(13).keys()] } }],
+      current: "Ada",
+    });
 
     // Reloading stays on the same topic, with the coin still there.
     cy.reload();
@@ -409,8 +420,8 @@ describe("players", () => {
     cy.contains("h1", "Choose an adventure!");
     storedPlayers().should("deep.equal", {
       players: [
-        { name: "Mia", coins: 1, age: "5-6", progress: { "letter-jumble/animals": 1 } },
-        { name: "Theo", coins: 0, age: "5-6" },
+        { name: "Mia", coins: 1, age: "5-6", progress: { "letter-jumble/animals": 1 }, decks: { "letter-jumble/animals": [...Array(13).keys()] } },
+        { name: "Theo", coins: 0, age: "5-6", decks: { "letter-jumble/animals": [...Array(13).keys()] } },
       ],
       current: null,
     });
@@ -563,7 +574,9 @@ describe("chinese home topic", () => {
   it("shows the home words with their pictures", () => {
     cy.visit("/chinese-advanced/home", {
       onBeforeLoad(win) {
-        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
+        // Opened straight from its address, the words are dealt while loading, so give the order.
+        const decks = { "chinese-advanced/home": [...Array(18).keys()] };
+        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6", decks }], current: "Elly" }));
       },
     });
     cy.contains(".chinese-character", "客廳");
