@@ -575,7 +575,7 @@ describe("chinese home topic", () => {
     cy.visit("/chinese-advanced/home", {
       onBeforeLoad(win) {
         // Opened straight from its address, the words are dealt while loading, so give the order.
-        const decks = { "chinese-advanced/home": [...Array(18).keys()] };
+        const decks = { "chinese-advanced/home": [...Array(20).keys()] };
         win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6", decks }], current: "Elly" }));
       },
     });

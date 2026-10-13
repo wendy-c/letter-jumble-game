@@ -115,12 +115,14 @@ describe("jobs (5-6 year olds)", () => {
   const jobs = chineseAdvancedTopics.find((topic) => topic.id === "jobs");
   const byCharacter = Object.fromEntries(jobs.words.map((word) => [word.character, word]));
 
-  it("has the 27 job words, in order", () => {
+  it("has the 43 job words, in order", () => {
     expect(jobs.name).toBe("職業");
     expect(jobs.words.map((word) => word.character)).toEqual([
       "警察", "消防員", "醫生", "護士", "理髮師", "侍應生", "廚師", "郵差", "交通警察", "救護員",
       "飛行服務員", "獸醫", "牙醫", "送遞員", "保安員", "飛機師", "餐廳", "維持治安", "救火", "生病",
       "送信", "老師", "郵政局", "警署", "醫院", "教導學生", "醫治病人",
+      "時裝設計師", "售貨員", "烘焙師", "新聞主播", "電器技工", "建築工人", "機場特警", "時裝模特兒",
+      "製衣工人", "收銀員", "運動員", "記者", "視光師", "科學家", "太空人", "探險家",
     ]);
   });
 
@@ -151,11 +153,11 @@ describe("home (5-6 year olds)", () => {
   const home = chineseAdvancedTopics.find((topic) => topic.id === "home");
   const byCharacter = Object.fromEntries(home.words.map((word) => [word.character, word]));
 
-  it("comes after jobs, with the 18 home words in order", () => {
-    expect(chineseAdvancedTopics.map((topic) => topic.name)).toEqual(["職業", "家"]);
+  it("comes after jobs, with the 20 home words in order", () => {
+    expect(chineseAdvancedTopics.map((topic) => topic.name)).toEqual(["職業", "家", "動物"]);
     expect(home.words.map((word) => word.character)).toEqual([
       "客廳", "廚房", "浴室", "睡房", "書房", "窗戶", "床褥", "椅子", "桌子",
-      "衣櫃", "杯子", "碗碟", "電燈", "時鐘", "沙發", "電視", "電腦", "空氣淨化機",
+      "衣櫃", "杯子", "碗碟", "電燈", "時鐘", "沙發", "電視", "電腦", "空氣淨化機", "露台", "游泳池",
     ]);
   });
 
@@ -176,6 +178,35 @@ describe("home (5-6 year olds)", () => {
 
   it("has every picture and the icon", () => {
     const images = [home.icon, ...home.words.flatMap((word) => [word.picture, ...word.options.map((option) => option.picture)])];
+    expect(images.filter((image) => !fs.existsSync(path.join(publicDir, image)))).toEqual([]);
+  });
+});
+
+describe("animals (5-6 year olds)", () => {
+  const animals = chineseAdvancedTopics.find((topic) => topic.id === "animals-advanced");
+  const byCharacter = Object.fromEntries(animals.words.map((word) => [word.character, word]));
+
+  it("has the 24 animal words, in order", () => {
+    expect(animals.name).toBe("動物");
+    expect(animals.words.map((word) => word.character)).toEqual([
+      "鸚鵡", "海豚", "駱駝", "老虎", "獅子", "熊貓", "鼴鼠", "鯨魚", "北極熊", "花豹", "獵豹", "猴子",
+      "斑馬", "狐狸", "鴕鳥", "袋鼠", "驢子", "大猩猩", "蝙蝠", "蜘蛛", "蝴蝶", "蜜蜂", "蜻蜓", "飛蛾",
+    ]);
+  });
+
+  it("never offers look-alikes together, like 花豹 and 獵豹 or 蝴蝶 and 飛蛾", () => {
+    animals.words.forEach((word) => {
+      const characters = word.options.map((option) => option.character);
+      expect(new Set(word.options.map((option) => option.picture)).size).toBe(4);
+      const groups = (character) => byCharacter[character].groups ?? [];
+      characters.forEach((first) => characters.forEach((second) => {
+        if (first !== second) expect(groups(first).some((group) => groups(second).includes(group))).toBe(false);
+      }));
+    });
+  });
+
+  it("has every picture and the icon", () => {
+    const images = [animals.icon, ...animals.words.flatMap((word) => [word.picture, ...word.options.map((option) => option.picture)])];
     expect(images.filter((image) => !fs.existsSync(path.join(publicDir, image)))).toEqual([]);
   });
 });

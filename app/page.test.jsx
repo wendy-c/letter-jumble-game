@@ -656,8 +656,8 @@ describe("chinese words for 5-6 year olds", () => {
 
     await user.click(screen.getByRole("button", { name: /進階篇/ }));
     expect(currentPathname()).toBe("/chinese-advanced");
-    expect(screen.getByRole("button", { name: /職業/ })).toHaveTextContent("27 個字");
-    expect(screen.getByRole("button", { name: /家/ })).toHaveTextContent("18 個字");
+    expect(screen.getByRole("button", { name: /職業/ })).toHaveTextContent("43 個字");
+    expect(screen.getByRole("button", { name: /家/ })).toHaveTextContent("20 個字");
     await user.click(screen.getByRole("button", { name: /職業/ }));
     expect(currentPathname()).toBe("/chinese-advanced/jobs");
 
