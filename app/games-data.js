@@ -51,6 +51,15 @@ export const games = [
     ages: ["5-6"],
   },
   {
+    id: "idioms",
+    name: "成語",
+    color: "peach",
+    pattern: ["成", "語"],
+    note: "For age 5-6 - Chinese idioms · Cantonese",
+    badge: "成語",
+    ages: ["5-6"],
+  },
+  {
     id: "dragon",
     name: "Mochi the Rainbow Dragon",
     color: "pink",

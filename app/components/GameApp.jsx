@@ -6,6 +6,7 @@ import { categories } from "../game-data";
 import { cvcModes } from "../cvc-data";
 import { chineseAdvancedTopics, chineseTopics } from "../chinese-data";
 import { measureWordTopics } from "../measure-words-data";
+import { idiomTopics } from "../idioms-data";
 import { games, gamesForPlayer, isGameAvailable } from "../games-data";
 import AnswerPanel from "./AnswerPanel";
 import ChineseGame from "./ChineseGame";
@@ -16,6 +17,7 @@ import DragonDen from "./DragonDen";
 import GameFooter from "./GameFooter";
 import GameHeading from "./GameHeading";
 import GamePicker from "./GamePicker";
+import IdiomGame from "./IdiomGame";
 import MeasureWordGame from "./MeasureWordGame";
 import PictureClue from "./PictureClue";
 import ParentMode from "./ParentMode";
@@ -38,6 +40,7 @@ const topicsByGame = {
   chinese: chineseTopics,
   "chinese-advanced": chineseAdvancedTopics,
   "measure-words": measureWordTopics,
+  idioms: idiomTopics,
   "letter-jumble": categories,
 };
 
@@ -102,8 +105,9 @@ export default function GameApp() {
   const isCvc = selectedGame?.id === "cvc";
   const isChinese = Boolean(selectedGame?.id.startsWith("chinese"));
   const isMeasure = selectedGame?.id === "measure-words";
+  const isIdiom = selectedGame?.id === "idioms";
   // Games played in Chinese, answered by tapping a picture or word rather than letters.
-  const inChinese = isChinese || isMeasure;
+  const inChinese = isChinese || isMeasure || isIdiom;
   const puzzle = round === null ? undefined : selectedCategory?.words[round];
   const answer = puzzle?.answers[round % puzzle.answers.length] ?? "";
   const answerLetters = answer.replaceAll(" ", "");
@@ -360,13 +364,35 @@ export default function GameApp() {
             isCvc={isCvc}
             isChinese={isChinese}
             isMeasure={isMeasure}
+            isIdiom={isIdiom}
             topics={gameTopics}
             progressFor={(topic) => currentPlayer?.progress?.[`${selectedGame.id}/${topic.id}`] ?? 0}
             breadcrumbs={breadcrumbs}
             onSelectTopic={selectCategory}
           />
         )
-      ) : !playing ? null : isMeasure ? (
+      ) : !playing ? null : isIdiom ? (
+        <section className="game-wrap mx-auto w-full max-w-6xl" aria-labelledby="game-title">
+          <GameHeading
+            topic={selectedCategory}
+            round={round}
+            rainbowCoins={rainbowCoins}
+            wordMenuOpen={wordMenuOpen}
+            breadcrumbs={breadcrumbs}
+            onOpenWordMenu={() => setWordMenuOpen(true)}
+            eyebrow="今日魔法堂"
+            note="看圖畫，學成語！"
+          />
+          <IdiomGame
+            key={`${selectedCategory.id}-${round}`}
+            topic={selectedCategory}
+            round={round}
+            question={puzzle}
+            onCorrect={handleChineseCorrect}
+          />
+          <GameFooter>一題一題慢慢學</GameFooter>
+        </section>
+      ) : isMeasure ? (
         <section className="game-wrap mx-auto w-full max-w-6xl" aria-labelledby="game-title">
           <GameHeading
             topic={selectedCategory}

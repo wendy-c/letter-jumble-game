@@ -1,0 +1,90 @@
+import { useEffect, useState } from "react";
+import { speakCantonese, stopSpeaking } from "../lib/speech";
+import Mascot from "./Mascot";
+
+// One 成語 question: a picture or short comic and the idiom's meaning; pick the matching idiom.
+// Hearing the meaning in Cantonese is a hint, only when the learner taps the speaker.
+// The parent remounts this (key) for every new question.
+export default function IdiomGame({ topic, round, question, onCorrect }) {
+  const [wrongPicks, setWrongPicks] = useState([]);
+  const [solved, setSolved] = useState(false);
+  const [voiceMessage, setVoiceMessage] = useState("");
+
+  useEffect(() => () => stopSpeaking(), []);
+
+  function pick(option) {
+    if (solved) return;
+    if (option.correct) {
+      setSolved(true);
+      onCorrect();
+    } else if (!wrongPicks.includes(option.idiom)) {
+      setWrongPicks((current) => [...current, option.idiom]);
+    }
+  }
+
+  return (
+    <div className="game-card chinese-card idiom-card">
+      <section className={`picture-panel picture-${topic.color} idiom-picture-panel`} aria-label="成語圖畫">
+        <div className="picture-topline">
+          <span className="category-label"><span className="category-dot" />{topic.name}</span>
+          <span className="picture-count">
+            {String(round + 1).padStart(2, "0")} <span>/ {String(topic.words.length).padStart(2, "0")}</span>
+          </span>
+        </div>
+        <img className="idiom-picture" key={question.picture} src={question.picture} alt="" width="256" height="160" />
+        <p className="idiom-meaning" lang="zh-Hant-HK">{question.meaning}</p>
+        {solved && <p className="idiom-answer" lang="zh-Hant-HK">{question.idiom}</p>}
+      </section>
+
+      <section className="answer-panel chinese-answer-panel" aria-label="揀成語">
+        <div className="answer-intro">
+          <span className="step-number">01</span>
+          <div>
+            <h2 lang="zh-Hant-HK">哪個成語是正確的？</h2>
+            <p lang="zh-Hant-HK">看圖畫和解釋，選擇正確的成語</p>
+          </div>
+          <button
+            className="voice-button"
+            type="button"
+            onClick={() => speakCantonese(question.meaning, setVoiceMessage)}
+            aria-label="聽提示"
+            title="聽吓解釋"
+          >
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
+              <path d="M11 5 6 9H3v6h3l5 4V5Z" />
+              <path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" />
+            </svg>
+          </button>
+        </div>
+        <p className={`voice-status${voiceMessage ? " voice-status-visible" : ""}`} aria-live="polite">{voiceMessage}</p>
+
+        <div className="idiom-options" role="group" aria-label="成語選擇">
+          {question.options.map((option) => {
+            const wrong = wrongPicks.includes(option.idiom);
+            const right = solved && option.correct;
+            return (
+              <button
+                className={`idiom-option${wrong ? " chinese-option-wrong" : ""}${right ? " chinese-option-right" : ""}`}
+                type="button"
+                key={option.idiom}
+                data-idiom={option.idiom}
+                disabled={wrong}
+                lang="zh-Hant-HK"
+                onClick={() => pick(option)}
+              >
+                {option.idiom}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="answer-footer chinese-feedback">
+          {wrongPicks.length > 0 && !solved && <Mascot name="elly" className="mascot-feedback" />}
+          <p className={`feedback${wrongPicks.length > 0 && !solved ? " feedback-try" : ""}`} aria-live="polite" lang="zh-Hant-HK">
+            {wrongPicks.length > 0 && !solved ? "唔係呢個，再試吓！" : " "}
+          </p>
+        </div>
+      </section>
+    </div>
+  );
+}

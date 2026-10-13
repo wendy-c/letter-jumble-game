@@ -75,7 +75,7 @@ describe("Home", () => {
     render(<GameApp />);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Choose an adventure!");
     const gameCards = screen.getAllByRole("button").filter((button) => button.classList.contains("game-choice-card"));
-    expect(gameCards.map((card) => card.querySelector(".category-card-name").textContent)).toEqual(["CVC Sounds", "Letter Jumble for Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "Mochi the Rainbow Dragon"]);
+    expect(gameCards.map((card) => card.querySelector(".category-card-name").textContent)).toEqual(["CVC Sounds", "Letter Jumble for Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語", "Mochi the Rainbow Dragon"]);
     expect(screen.getByText("SPELLING SCHOOL")).toBeInTheDocument();
   });
 
@@ -322,12 +322,12 @@ describe("ages", () => {
     await user.click(screen.getByRole("button", { name: /Player options/ }));
     await user.click(screen.getByRole("menuitem", { name: "Switch player" }));
     await user.click(within(screen.getByRole("list", { name: "Players" })).getByRole("button", { name: /Elly/ }));
-    expect(shownGames()).toEqual(["Letter Jumble for Movers", "中文認字 · 進階篇", "量詞配對", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["Letter Jumble for Movers", "中文認字 · 進階篇", "量詞配對", "成語", "Mochi the Rainbow Dragon"]);
   });
 
   it("shows every game to visitors before anyone is playing", () => {
     render(<GameApp />);
-    expect(shownGames()).toEqual(["CVC Sounds", "Letter Jumble for Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "Letter Jumble for Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語", "Mochi the Rainbow Dragon"]);
   });
 
   it("stays on the picker when the chosen game isn't for the new player's age", async () => {
@@ -753,6 +753,33 @@ describe("measure words", () => {
   });
 });
 
+describe("成語", () => {
+  it("shows a picture and meaning for 5-6 year olds and plays one", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
+    const user = userEvent.setup();
+    render(<GameApp />);
+
+    await user.click(screen.getByRole("button", { name: /成語/ }));
+    expect(currentPathname()).toBe("/idioms");
+    await user.click(screen.getByRole("button", { name: /成語/ }));
+
+    expect(storedPlayers().players[0].decks["idioms/idioms"]).toHaveLength(20);
+    expect(screen.getByLabelText("Word 1 of 20")).toBeInTheDocument();
+
+    // With the order pinned, the first question is 打草驚蛇.
+    expect(screen.getByText("比喻做事不機密，使對方起了警覺。")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "打草驚蛇" }));
+    expect(screen.getByRole("dialog", { name: /！$/ })).toBeInTheDocument();
+    expect(storedPlayers().players[0].coins).toBe(1);
+  });
+
+  it("isn't offered to 3-4 year olds", () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    render(<GameApp />);
+    expect(shownGames()).not.toContain("成語");
+  });
+});
+
 describe("parent mode", () => {
   const seedChildren = (extra = {}) => window.localStorage.setItem(playersKey, JSON.stringify({
     players: [{ name: "Ada", coins: 0, age: "3-4", ...extra }, { name: "Elly", coins: 0, age: "5-6" }],
@@ -783,11 +810,11 @@ describe("parent mode", () => {
       .map((toggle) => [toggle.querySelector(".spelling-guide-toggle-title").textContent, toggle.getAttribute("aria-checked")]);
     expect(switches(/Ada/)).toEqual([
       ["CVC Sounds", "true"], ["Letter Jumble for Movers", "false"], ["中文認字 · 入門篇", "true"],
-      ["中文認字 · 進階篇", "false"], ["量詞配對", "false"], ["Mochi the Rainbow Dragon", "true"],
+      ["中文認字 · 進階篇", "false"], ["量詞配對", "false"], ["成語", "false"], ["Mochi the Rainbow Dragon", "true"],
     ]);
     expect(switches(/Elly/)).toEqual([
       ["CVC Sounds", "false"], ["Letter Jumble for Movers", "true"], ["中文認字 · 入門篇", "false"],
-      ["中文認字 · 進階篇", "true"], ["量詞配對", "true"], ["Mochi the Rainbow Dragon", "true"],
+      ["中文認字 · 進階篇", "true"], ["量詞配對", "true"], ["成語", "true"], ["Mochi the Rainbow Dragon", "true"],
     ]);
     expect(within(parentDialog()).queryByRole("button", { name: /Focus/ })).not.toBeInTheDocument();
   });
