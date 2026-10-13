@@ -31,6 +31,10 @@ function cleanPlayer(player) {
     const decks = Object.fromEntries(Object.entries(player.decks).filter(([, deck]) => Array.isArray(deck) && deck.length > 0 && deck.every(isCount)));
     if (Object.keys(decks).length > 0) cleaned.decks = decks;
   }
+  if (Array.isArray(player.badges)) {
+    const badges = [...new Set(player.badges.filter((badge) => typeof badge === "string" && badge.length > 0))];
+    if (badges.length > 0) cleaned.badges = badges;
+  }
   return cleaned;
 }
 
@@ -174,8 +178,17 @@ export function usePlayers() {
     });
   }
 
+  // Gives the current player a topic's badge (e.g. "letter-jumble/animals"), once.
+  function awardBadge(key) {
+    if (!state.current) return;
+    updatePlayer(state.current, (player) => (
+      player.badges?.includes(key) ? player : { ...player, badges: [...(player.badges ?? []), key] }
+    ));
+  }
+
   return {
     loaded,
+    awardBadge,
     saveDeck,
     players: state.players,
     currentPlayer,

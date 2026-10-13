@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-export default function PlayerMenu({ player, onSwitch, onParentMode, onLogOut }) {
+export default function PlayerMenu({ player, onSwitch, onBadges, onParentMode, onLogOut }) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -47,6 +47,16 @@ export default function PlayerMenu({ player, onSwitch, onParentMode, onLogOut })
             }}
           >
             Switch player
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              setOpen(false);
+              onBadges();
+            }}
+          >
+            <span aria-hidden="true">🏅</span> My badges
           </button>
           <button
             type="button"

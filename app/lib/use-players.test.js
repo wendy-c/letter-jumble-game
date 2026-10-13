@@ -218,6 +218,22 @@ describe("usePlayers", () => {
     expect(stored().players[0].gameSettings).toBeUndefined();
   });
 
+  it("awards each badge to the current player once", () => {
+    seed({ players: [{ name: "Ada", coins: 0, age: "5-6" }, { name: "Elly", coins: 0, age: "5-6" }], current: "Ada" });
+    const { result } = renderHook(() => usePlayers());
+    act(() => result.current.awardBadge("letter-jumble/animals"));
+    act(() => result.current.awardBadge("letter-jumble/animals"));
+    act(() => result.current.awardBadge("idioms/idioms"));
+    expect(stored().players[0].badges).toEqual(["letter-jumble/animals", "idioms/idioms"]);
+    expect(stored().players[1].badges).toBeUndefined();
+  });
+
+  it("keeps saved badges and drops anything that isn't one", () => {
+    seed({ players: [{ name: "Ada", coins: 0, age: "5-6", badges: ["cvc/middle-sound", 3, "", "cvc/middle-sound"] }], current: "Ada" });
+    const { result } = renderHook(() => usePlayers());
+    expect(result.current.currentPlayer.badges).toEqual(["cvc/middle-sound"]);
+  });
+
   it("drops game settings that aren't on/off", () => {
     seed({ players: [{ name: "Ada", coins: 0, age: "3-4", gameSettings: { cvc: false, dragon: "yes" } }], current: "Ada" });
     const { result } = renderHook(() => usePlayers());

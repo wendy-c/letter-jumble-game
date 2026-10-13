@@ -393,8 +393,10 @@ describe("progress", () => {
 
     const praise = screen.getByRole("dialog", { name: "You did it!" });
     expect(praise).toHaveTextContent("You finished all 13 Animals words.");
+    expect(praise).toHaveTextContent("New badge! Animals is in your badge collection.");
     expect(sounds.sparkle).toHaveBeenCalled();
     expect(storedPlayers().players[0].progress).toEqual({ "letter-jumble/animals": 0 });
+    expect(storedPlayers().players[0].badges).toEqual(["letter-jumble/animals"]);
 
     await user.click(within(praise).getByRole("button", { name: /Back to all topics/ }));
     expect(currentPathname()).toBe("/letter-jumble");
@@ -419,6 +421,7 @@ describe("progress", () => {
 
     const praise = screen.getByRole("dialog", { name: "你好叻呀！" });
     expect(praise).toHaveTextContent("你學完「衣物」全部 7 個字");
+    expect(praise).toHaveTextContent("你得到「衣物」徽章！");
     await user.click(within(praise).getByRole("button", { name: /返回所有主題/ }));
     expect(currentPathname()).toBe("/chinese");
   });
@@ -777,6 +780,57 @@ describe("成語", () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
     render(<GameApp />);
     expect(shownGames()).not.toContain("成語");
+  });
+});
+
+describe("badges", () => {
+  const openBadges = async (user) => {
+    await user.click(screen.getByRole("button", { name: /Player options/ }));
+    await user.click(screen.getByRole("menuitem", { name: /My badges/ }));
+    return screen.getByRole("dialog", { name: "Ada’s badges" });
+  };
+
+  it("shows earned badges and a placeholder for every unfinished topic of the player's games", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({
+      players: [{ name: "Ada", coins: 0, age: "5-6", badges: ["letter-jumble/animals", "idioms/idioms"] }],
+      current: "Ada",
+    }));
+    const user = userEvent.setup();
+    render(<GameApp />);
+    const collection = await openBadges(user);
+
+    expect(within(collection).getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent))
+      .toEqual(["Letter Jumble for Movers", "中文認字 · 進階篇", "量詞配對", "成語"]);
+    expect(collection).toHaveTextContent("2 of 13 badges");
+    expect(within(collection).getByRole("listitem", { name: "Animals: earned" })).toBeInTheDocument();
+    expect(within(collection).getByRole("listitem", { name: "成語: earned" })).toBeInTheDocument();
+    expect(within(collection).getByRole("listitem", { name: "Body and Face: not earned yet" })).toBeInTheDocument();
+
+    await user.click(within(collection).getByRole("button", { name: "Close badges" }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("encourages a player with no badges yet", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    const user = userEvent.setup();
+    render(<GameApp />);
+    const collection = await openBadges(user);
+    expect(collection).toHaveTextContent("0 of 9 badges");
+    expect(collection).toHaveTextContent("Finish every word in a topic to earn its badge!");
+  });
+
+  it("doesn't award the same badge twice", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({
+      players: [{ name: "Ada", coins: 0, age: "3-4", progress: { "chinese/clothes": 6 }, badges: ["chinese/clothes"] }],
+      current: "Ada",
+    }));
+    setPathname("/chinese/clothes");
+    const user = userEvent.setup();
+    render(<GameApp />);
+    await user.click(await screen.findByRole("button", { name: "top" }));
+    await user.click(within(screen.getByRole("dialog", { name: /！$/ })).getByRole("button"));
+    expect(screen.getByRole("dialog", { name: "你好叻呀！" })).not.toHaveTextContent("徽章");
+    expect(storedPlayers().players[0].badges).toEqual(["chinese/clothes"]);
   });
 });
 

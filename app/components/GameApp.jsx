@@ -2,13 +2,10 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { categories } from "../game-data";
-import { cvcModes } from "../cvc-data";
-import { chineseAdvancedTopics, chineseTopics } from "../chinese-data";
-import { measureWordTopics } from "../measure-words-data";
-import { idiomTopics } from "../idioms-data";
+import { topicsByGame } from "../badges";
 import { games, gamesForPlayer, isGameAvailable } from "../games-data";
 import AnswerPanel from "./AnswerPanel";
+import BadgeCollection from "./BadgeCollection";
 import ChineseGame from "./ChineseGame";
 import Breadcrumbs from "./Breadcrumbs";
 import CoinLink from "./CoinLink";
@@ -35,15 +32,6 @@ import { usePlayers } from "../lib/use-players";
 const rewardMessages = ["Amazing!", "Well done!", "You did it!", "Fantastic!", "Brilliant!"];
 const chineseRewardMessages = ["好叻呀！", "做得好！", "答啱咗！", "好棒呀！", "你真係叻！"];
 
-const topicsByGame = {
-  cvc: cvcModes,
-  chinese: chineseTopics,
-  "chinese-advanced": chineseAdvancedTopics,
-  "measure-words": measureWordTopics,
-  idioms: idiomTopics,
-  "letter-jumble": categories,
-};
-
 // Routes: "/" is the game picker, "/<game>" lists a game's topics (or is Mochi's den),
 // and "/<game>/<topic>" plays a topic. The address is the source of truth for where we are.
 function parsePath(pathname) {
@@ -58,9 +46,10 @@ export default function GameApp() {
 
   const {
     loaded, players, currentPlayer, createPlayer, setPlayerAge, selectPlayer, logOut, addCoin, spendCoins, saveProgress, saveDeck,
-    setGameEnabled,
+    setGameEnabled, awardBadge,
   } = usePlayers();
   const [parentModeOpen, setParentModeOpen] = useState(false);
+  const [badgesOpen, setBadgesOpen] = useState(false);
   const rainbowCoins = currentPlayer?.coins ?? 0;
 
   const routeGame = games.find((game) => game.id === gameId) ?? null;
@@ -295,11 +284,14 @@ export default function GameApp() {
     selectWord(round + 1);
   }
 
-  // The last word is done: start the topic again next time, and celebrate.
+  // The last word is done: start the topic again next time, celebrate, and award the topic's
+  // badge the first time.
   function finishTopic() {
     saveProgress(categoryKey, 0);
     setRewardMessage("");
-    setCompletedTopic({ name: selectedCategory.name, count: selectedCategory.words.length });
+    const newBadge = !currentPlayer?.badges?.includes(categoryKey);
+    if (newBadge) awardBadge(categoryKey);
+    setCompletedTopic({ name: selectedCategory.name, count: selectedCategory.words.length, badge: newBadge ? routeTopic : null });
     sounds.sparkle?.();
   }
 
@@ -339,6 +331,7 @@ export default function GameApp() {
           <PlayerMenu
             player={currentPlayer}
             onSwitch={() => setPlayerDialogOpen(true)}
+            onBadges={() => setBadgesOpen(true)}
             onParentMode={() => setParentModeOpen(true)}
             onLogOut={handleLogOut}
           />
@@ -482,6 +475,9 @@ export default function GameApp() {
           onClose={closeWordMenu}
         />
       )}
+      {badgesOpen && currentPlayer && (
+        <BadgeCollection player={currentPlayer} onClose={() => setBadgesOpen(false)} />
+      )}
       {parentModeOpen && (
         <ParentMode
           players={players}
@@ -504,6 +500,7 @@ export default function GameApp() {
         <CompletionDialog
           topicName={completedTopic.name}
           count={completedTopic.count}
+          badge={completedTopic.badge}
           text={inChinese ? chineseCompletionText : undefined}
           onDone={leaveCompletedTopic}
         />
