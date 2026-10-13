@@ -8,8 +8,8 @@ const englishLabels = {
 export const chineseRewardLabels = {
   kicker: "魔法獎勵",
   earned: "你得到一個彩虹金幣！",
-  next: "撳一下，玩下一個字",
-  ariaLabel: (message) => `${message}你得到一個彩虹金幣。撳一下玩下一個字。`,
+  next: "下一題",
+  ariaLabel: (message) => `${message}你得到一個彩虹金幣。按一下到下一題。`,
 };
 
 export default function RewardDialog({ message, onContinue, labels = englishLabels }) {

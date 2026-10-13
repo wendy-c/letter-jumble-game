@@ -54,15 +54,15 @@ export default function MeasureWordGame({ topic, round, question, onCorrect }) {
         <div className="answer-intro">
           <span className="step-number">01</span>
           <div>
-            <h2 lang="zh-Hant-HK">邊樣嘢可以用「{measure}」？</h2>
-            <p lang="zh-Hant-HK">揀啱嘅名詞，填入空格</p>
+            <h2 lang="zh-Hant-HK">甚麼東西可以用「{measure}」？</h2>
+            <p lang="zh-Hant-HK">選擇正確的名詞，填入空格</p>
           </div>
           <button
             className="voice-button"
             type="button"
             onClick={() => speakCantonese(`一${measure}`, setVoiceMessage)}
             aria-label="聽提示"
-            title="唔識讀？聽吓提示"
+            title="不會讀？聽聽提示"
           >
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
               <path d="M11 5 6 9H3v6h3l5 4V5Z" />
@@ -96,7 +96,7 @@ export default function MeasureWordGame({ topic, round, question, onCorrect }) {
         <div className="answer-footer chinese-feedback">
           {wrongPicks.length > 0 && !solved && <Mascot name="elly" className="mascot-feedback" />}
           <p className={`feedback${wrongPicks.length > 0 && !solved ? " feedback-try" : ""}`} aria-live="polite" lang="zh-Hant-HK">
-            {wrongPicks.length > 0 && !solved ? "唔係呢個，再試吓！" : " "}
+            {wrongPicks.length > 0 && !solved ? "不是這個，再試一下！" : " "}
           </p>
         </div>
       </section>
