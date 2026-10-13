@@ -43,7 +43,7 @@ describe("DragonDen", () => {
     expect(tabs[0]).toHaveAttribute("aria-selected", "true");
 
     const sections = {
-      Treats: ["Apple, 1 rainbow coin", "Carrot sticks, 1 rainbow coin", "Rainbow cupcake, 2 rainbow coins",
+      Treats: ["Apple, 1 rainbow coin", "Carrot, 1 rainbow coin", "Cupcake, 2 rainbow coins",
         "Chilli pepper, 3 rainbow coins", "Ice cream, 2 rainbow coins", "Milkshake, 2 rainbow coins"],
       Grooming: ["Comb, 1 rainbow coin", "Bath, 3 rainbow coins"],
       Activities: ["Painting, 2 rainbow coins", "Ballet dancing, 2 rainbow coins"],
@@ -86,12 +86,12 @@ describe("DragonDen", () => {
     const { onSpendCoins } = renderDen(10);
 
     await user.click(screen.getByRole("button", { name: /Apple/ }));
-    expect(screen.getByRole("button", { name: /Carrot sticks/ })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /Carrot/ })).toBeDisabled();
     await user.click(screen.getByRole("button", { name: "Mochi" }));
     expect(commands).toEqual(["apple"]);
 
     act(() => jest.advanceTimersByTime(dragonActionsById.apple.duration * 1000));
-    expect(screen.getByRole("button", { name: /Carrot sticks/ })).toBeEnabled();
+    expect(screen.getByRole("button", { name: /Carrot/ })).toBeEnabled();
     expect(screen.getByText(/Tap Mochi for a snuggle/)).toBeInTheDocument();
     expect(onSpendCoins).toHaveBeenCalledTimes(1);
   });
