@@ -3022,8 +3022,12 @@ a:focus-visible {
     grid-template-rows: minmax(52dvh, 1fr) auto;
   }
 
+  /* The shelf scrolls on its own, under the sticky tabs, so every item can be reached. */
   .dragon-panel {
     max-height: 34dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scroll-padding-top: 56px;
   }
 
   .dragon-stage-wrap {
