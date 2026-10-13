@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { speakCantonese, stopSpeaking } from "../lib/speech";
 import Mascot from "./Mascot";
 
-// One 成語 question: a picture or short comic and the idiom's meaning; pick the matching idiom.
+// One 成語 question: a picture or short comic, the idiom with one character missing, and its
+// meaning; pick the character that fills the gap.
 // Hearing the meaning in Cantonese is a hint, only when the learner taps the speaker.
 // The parent remounts this (key) for every new question.
 export default function IdiomGame({ topic, round, question, onCorrect }) {
@@ -12,13 +13,16 @@ export default function IdiomGame({ topic, round, question, onCorrect }) {
 
   useEffect(() => () => stopSpeaking(), []);
 
+  const characters = [...question.idiom];
+  const blankLabel = characters.map((character, index) => (index === question.blank ? "空格" : character)).join("");
+
   function pick(option) {
     if (solved) return;
     if (option.correct) {
       setSolved(true);
       onCorrect();
-    } else if (!wrongPicks.includes(option.idiom)) {
-      setWrongPicks((current) => [...current, option.idiom]);
+    } else if (!wrongPicks.includes(option.character)) {
+      setWrongPicks((current) => [...current, option.character]);
     }
   }
 
@@ -32,16 +36,26 @@ export default function IdiomGame({ topic, round, question, onCorrect }) {
           </span>
         </div>
         <img className="idiom-picture" key={question.picture} src={question.picture} alt="" width="256" height="160" />
+        <p className="idiom-phrase" lang="zh-Hant-HK" aria-label={solved ? question.idiom : blankLabel}>
+          {characters.map((character, index) => (
+            index === question.blank ? (
+              <span className={`idiom-tile idiom-blank${solved ? " idiom-blank-filled" : ""}`} key={index}>
+                {solved ? character : "？"}
+              </span>
+            ) : (
+              <span className="idiom-tile" key={index}>{character}</span>
+            )
+          ))}
+        </p>
         <p className="idiom-meaning" lang="zh-Hant-HK">{question.meaning}</p>
-        {solved && <p className="idiom-answer" lang="zh-Hant-HK">{question.idiom}</p>}
       </section>
 
-      <section className="answer-panel chinese-answer-panel" aria-label="揀成語">
+      <section className="answer-panel chinese-answer-panel" aria-label="揀字">
         <div className="answer-intro">
           <span className="step-number">01</span>
           <div>
-            <h2 lang="zh-Hant-HK">哪個成語是正確的？</h2>
-            <p lang="zh-Hant-HK">看圖畫和解釋，選擇正確的成語</p>
+            <h2 lang="zh-Hant-HK">哪個字可以填入空格？</h2>
+            <p lang="zh-Hant-HK">看圖畫和解釋，選擇正確的字</p>
           </div>
           <button
             className="voice-button"
@@ -58,21 +72,21 @@ export default function IdiomGame({ topic, round, question, onCorrect }) {
         </div>
         <p className={`voice-status${voiceMessage ? " voice-status-visible" : ""}`} aria-live="polite">{voiceMessage}</p>
 
-        <div className="idiom-options" role="group" aria-label="成語選擇">
+        <div className="idiom-options" role="group" aria-label="字的選擇">
           {question.options.map((option) => {
-            const wrong = wrongPicks.includes(option.idiom);
+            const wrong = wrongPicks.includes(option.character);
             const right = solved && option.correct;
             return (
               <button
                 className={`idiom-option${wrong ? " chinese-option-wrong" : ""}${right ? " chinese-option-right" : ""}`}
                 type="button"
-                key={option.idiom}
-                data-idiom={option.idiom}
+                key={option.character}
+                data-character={option.character}
                 disabled={wrong}
                 lang="zh-Hant-HK"
                 onClick={() => pick(option)}
               >
-                {option.idiom}
+                {option.character}
               </button>
             );
           })}

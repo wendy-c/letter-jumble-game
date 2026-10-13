@@ -757,7 +757,7 @@ describe("measure words", () => {
 });
 
 describe("成語", () => {
-  it("shows a picture and meaning for 5-6 year olds and plays one", async () => {
+  it("fills the gap in an idiom for 5-6 year olds", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
     const user = userEvent.setup();
     render(<GameApp />);
@@ -771,7 +771,8 @@ describe("成語", () => {
 
     // With the order pinned, the first question is 打草驚蛇.
     expect(screen.getByText("比喻做事不機密，使對方起了警覺。")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "打草驚蛇" }));
+    expect(screen.getByLabelText("打草驚空格")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "蛇" }));
     expect(screen.getByRole("dialog", { name: /！$/ })).toBeInTheDocument();
     expect(storedPlayers().players[0].coins).toBe(1);
   });

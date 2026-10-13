@@ -17,7 +17,7 @@ export default function TopicMenu({ isCvc, isChinese = false, isMeasure = false,
         {isIdiom ? (
           <>
             <h1 id="game-title" lang="zh-Hant-HK">成<span>語</span></h1>
-            <p className="heading-note" lang="zh-Hant-HK">看圖畫和解釋，選擇正確的成語！</p>
+            <p className="heading-note" lang="zh-Hant-HK">看圖畫和解釋，把成語缺少的字填上！</p>
           </>
         ) : isMeasure ? (
           <>

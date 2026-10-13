@@ -17,20 +17,28 @@ describe("成語", () => {
     });
   });
 
-  it("offers four different idioms, exactly one of them right", () => {
+  it("blanks one character and offers four different characters, exactly one of them right", () => {
     topic.words.forEach((question) => {
+      expect(question.blank).toBeGreaterThanOrEqual(0);
+      expect(question.blank).toBeLessThan(4);
       expect(question.options).toHaveLength(4);
-      expect(new Set(question.options.map((option) => option.idiom)).size).toBe(4);
-      expect(question.options.filter((option) => option.correct).map((option) => option.idiom)).toEqual([question.idiom]);
+      expect(new Set(question.options.map((option) => option.character)).size).toBe(4);
+      expect(question.options.filter((option) => option.correct).map((option) => option.character)).toEqual([question.idiom[question.blank]]);
     });
   });
 
-  it("never offers two idioms that mean nearly the same thing together", () => {
-    const groupOf = Object.fromEntries(topic.words.map((question) => [question.idiom, question.group]));
+  it("never offers a wrong character that's already in the idiom", () => {
     topic.words.forEach((question) => {
-      const groups = question.options.map((option) => groupOf[option.idiom]).filter(Boolean);
-      expect(new Set(groups).size).toBe(groups.length);
+      question.options.filter((option) => !option.correct)
+        .forEach((option) => expect(question.idiom).not.toContain(option.character));
     });
+  });
+
+  it("never blanks a little word like 之 or 而", () => {
+    expect(topic.words.map((question) => question.idiom[question.blank])).not.toContain("之");
+    expect(topic.words.map((question) => question.idiom[question.blank])).not.toContain("而");
+    expect(topic.words.find((question) => question.idiom === "打草驚蛇").options.map((option) => option.character).sort())
+      .toEqual(["蛇", "貓", "魚", "龍"].sort());
   });
 
   it("moves the right answer around", () => {
