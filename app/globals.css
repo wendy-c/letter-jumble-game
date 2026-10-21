@@ -1603,6 +1603,115 @@ h1 span {
   font-weight: 700;
 }
 
+/* ---------- Not quite: the right answer ---------- */
+.reveal-card {
+  min-height: 0;
+  background:
+    radial-gradient(ellipse at 50% 18%, #ffe8f3 0, transparent 45%),
+    linear-gradient(180deg, #f6f0ff, #fffdfb 60%);
+}
+
+.reveal-mascot {
+  width: 86px;
+  margin-top: 6px;
+  animation: reveal-tilt 1.6s ease-in-out infinite alternate;
+}
+
+@keyframes reveal-tilt {
+  from {
+    transform: rotate(-6deg);
+  }
+  to {
+    transform: rotate(6deg);
+  }
+}
+
+.reward-title.reveal-title {
+  margin: 6px 0 0;
+  color: var(--magic-dark);
+  font-size: clamp(24px, 7vw, 30px);
+  text-shadow: none;
+}
+
+.reveal-answer {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  border: 3px solid var(--mint);
+  border-radius: 24px;
+  background: #eafaf2;
+  padding: 14px 16px;
+  animation: coin-pop 460ms 120ms cubic-bezier(0.2, 0.8, 0.3, 1.3) both;
+}
+
+.reveal-picture {
+  width: 96px;
+  height: 96px;
+}
+
+.reveal-picture-wide {
+  width: 100%;
+  max-width: 260px;
+  height: auto;
+  border-radius: 12px;
+}
+
+.reveal-emoji {
+  font-size: 64px;
+  line-height: 1;
+}
+
+.reveal-text {
+  color: var(--ink);
+  font-family: var(--chinese-font), inherit;
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  line-height: 1.1;
+}
+
+.reveal-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* The score at the end of a topic, e.g. 8 / 10 right. */
+.completion-score {
+  margin: 10px 0 0;
+  border-radius: 999px;
+  background: var(--magic-soft);
+  padding: 6px 18px;
+  color: var(--magic-dark);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.completion-score strong {
+  font-size: 30px;
+}
+
+.completion-score span {
+  font-size: 14px;
+}
+
+.completion-score-perfect {
+  background: var(--gold-soft);
+  box-shadow: inset 0 0 0 2px #ffe39a;
+  color: var(--gold-deep);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-mascot,
+  .reveal-answer {
+    animation: none;
+  }
+}
+
 /* ---------- Word menu ---------- */
 
 .word-menu-overlay {

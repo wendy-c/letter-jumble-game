@@ -4,7 +4,11 @@ import Mascot from "./Mascot";
 export const englishCompletionText = {
   kicker: "TOPIC COMPLETE",
   title: "You did it!",
-  message: (topicName, count) => `You finished all ${count} ${topicName} words. Ada and Elly are so proud of you!`,
+  tryTitle: "Good try!",
+  score: "right",
+  message: (topicName) => `You got every ${topicName} word right. Ada and Elly are so proud of you!`,
+  tryMessage: (topicName) => `Get every ${topicName} word right to earn its badge. Try again!`,
+  practiseMessage: () => "Keep practising to get them all right!",
   button: "Back to all topics",
   badge: (topicName) => `New badge! ${topicName} is in your badge collection.`,
 };
@@ -12,14 +16,20 @@ export const englishCompletionText = {
 export const chineseCompletionText = {
   kicker: "全部完成",
   title: "你好叻呀！",
-  message: (topicName, count) => `你學完「${topicName}」全部 ${count} 個字，Ada 同 Elly 好開心！`,
+  tryTitle: "繼續加油！",
+  score: "答對",
+  message: (topicName) => `「${topicName}」全部答對，Ada 同 Elly 好開心！`,
+  tryMessage: (topicName) => `全部答對就可以得到「${topicName}」徽章，再試一次吧！`,
+  practiseMessage: () => "多練習，下次全部答對！",
   button: "返回所有主題",
   badge: (topicName) => `你得到「${topicName}」徽章！`,
 };
 
-// Praise for finishing every word in a topic; continuing goes back to the topic list.
-// `badge` is the topic, when finishing it just earned its badge.
-export default function CompletionDialog({ topicName, count, badge = null, text = englishCompletionText, onDone }) {
+// The end of a topic: how many answers were right (e.g. 8 / 10). Only a perfect score earns the
+// topic's badge; `badge` is the topic when it just did, and `hasBadge` says it was earned before.
+// Continuing goes back to the topic list.
+export default function CompletionDialog({ topicName, count, correct = count, badge = null, hasBadge = false, text = englishCompletionText, onDone }) {
+  const perfect = correct === count;
   return (
     <div className="reward-overlay">
       <div className="reward-dialog completion-dialog" role="dialog" aria-modal="true" aria-labelledby="completion-title">
@@ -32,8 +42,13 @@ export default function CompletionDialog({ topicName, count, badge = null, text 
             <Mascot name="elly" className="completion-mascot" />
           </span>
           <span className="reward-kicker">{text.kicker}</span>
-          <h2 className="reward-title" id="completion-title">{text.title}</h2>
-          <p className="reward-coin-earned completion-message">{text.message(topicName, count)}</p>
+          <h2 className="reward-title" id="completion-title">{perfect ? text.title : text.tryTitle}</h2>
+          <p className={`completion-score${perfect ? " completion-score-perfect" : ""}`} aria-label={`${correct} / ${count} ${text.score}`}>
+            <strong>{correct}</strong> / {count} <span>{text.score}</span>
+          </p>
+          <p className="reward-coin-earned completion-message">
+            {perfect ? text.message(topicName) : hasBadge ? text.practiseMessage() : text.tryMessage(topicName)}
+          </p>
           {badge && (
             <div className="completion-badge">
               <BadgeMedal topic={badge} earned />

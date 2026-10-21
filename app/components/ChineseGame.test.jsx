@@ -10,9 +10,9 @@ const colours = chineseTopics[0];
 const red = colours.words[0];
 
 function renderRound(word = red, round = 0) {
-  const onCorrect = jest.fn();
-  render(<ChineseGame topic={colours} round={round} word={word} onCorrect={onCorrect} />);
-  return { onCorrect };
+  const onAnswer = jest.fn();
+  render(<ChineseGame topic={colours} round={round} word={word} onAnswer={onAnswer} />);
+  return { onAnswer };
 }
 
 beforeEach(() => jest.clearAllMocks());
@@ -42,26 +42,31 @@ describe("ChineseGame", () => {
     expect(choices.map((choice) => choice.dataset.character)).toEqual(red.options.map((option) => option.character));
   });
 
-  it("greys out a wrong picture and encourages another try", async () => {
-    const { onCorrect } = renderRound();
+  it("gives one try: a wrong picture is reported, the right one is shown, and nothing else can be picked", async () => {
+    const { onAnswer } = renderRound();
     const wrong = red.options.find((option) => option.character !== "紅");
 
     await userEvent.click(screen.getByRole("button", { name: wrong.english }));
+    await userEvent.click(screen.getByRole("button", { name: "red" }));
 
-    expect(screen.getByRole("button", { name: wrong.english })).toBeDisabled();
-    expect(screen.getByText("唔係呢個，再試吓！")).toBeInTheDocument();
-    expect(onCorrect).not.toHaveBeenCalled();
+    expect(onAnswer).toHaveBeenCalledTimes(1);
+    expect(onAnswer).toHaveBeenCalledWith(false);
+    expect(screen.getByRole("button", { name: wrong.english })).toHaveClass("chinese-option-wrong");
+    expect(screen.getByRole("button", { name: "red" })).toHaveClass("chinese-option-right");
+    screen.getAllByRole("button").filter((button) => button.classList.contains("chinese-option"))
+      .forEach((choice) => expect(choice).toBeDisabled());
   });
 
   it("reports the right picture once", async () => {
-    const { onCorrect } = renderRound();
+    const { onAnswer } = renderRound();
     const right = screen.getByRole("button", { name: "red" });
 
     await userEvent.click(right);
     await userEvent.click(right);
 
     expect(right).toHaveClass("chinese-option-right");
-    expect(onCorrect).toHaveBeenCalledTimes(1);
+    expect(onAnswer).toHaveBeenCalledTimes(1);
+    expect(onAnswer).toHaveBeenCalledWith(true);
   });
 
   it("shows two-character words like 彩色 on a wider card", () => {
@@ -75,7 +80,7 @@ describe("phrases", () => {
   const biscuit = food.words[0];
 
   it("shows everyday phrases under the character, with the character highlighted", () => {
-    render(<ChineseGame topic={food} round={0} word={biscuit} onCorrect={jest.fn()} />);
+    render(<ChineseGame topic={food} round={0} word={biscuit} onAnswer={jest.fn()} />);
     const list = screen.getByRole("list", { name: "常見詞語" });
     const phrases = screen.getAllByRole("button", { name: /^聽「/ });
     expect(phrases.map((phrase) => phrase.textContent)).toEqual(["餅乾", "月餅"]);
@@ -86,7 +91,7 @@ describe("phrases", () => {
   });
 
   it("reads a phrase in Cantonese when it's tapped", async () => {
-    render(<ChineseGame topic={food} round={0} word={biscuit} onCorrect={jest.fn()} />);
+    render(<ChineseGame topic={food} round={0} word={biscuit} onAnswer={jest.fn()} />);
     await userEvent.click(screen.getByRole("button", { name: "聽「月餅」" }));
     expect(speakCantonese).toHaveBeenCalledWith("月餅", expect.any(Function));
   });

@@ -92,7 +92,7 @@ describe("Movers spelling game", () => {
     cy.contains("button", "Check word").click();
     cy.get('[aria-label="1 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
     storedPlayers().should("deep.equal", {
-      players: [{ name: "Ada", coins: 1, age: "5-6", decks: { "letter-jumble/animals": [...Array(13).keys()] } }],
+      players: [{ name: "Ada", coins: 1, age: "5-6", decks: { "letter-jumble/animals": [...Array(13).keys()] }, results: { "letter-jumble/animals": [true] } }],
       current: "Ada",
     });
 
@@ -351,20 +351,23 @@ describe("CVC sounds game", () => {
     cy.get(".reward-card").should("exist");
   });
 
-  it("says not quite when the wrong ending sound is picked", () => {
+  it("asks to fill the gap, then shows the right word after a wrong ending sound and moves on", () => {
     visitCvcMode("Ending Sound");
     cy.get(".letter-given").then(($letters) => {
       expect([...$letters].map((letter) => letter.textContent)).to.deep.equal(["c", "a"]);
     });
-    cy.get('.letter-tile[data-letter="x"]').click();
-    cy.contains("button", "Check word").click();
-    cy.contains("Not quite");
-    cy.get(".reward-card").should("not.exist");
-
-    cy.get(".letter-slot").click();
-    cy.get(".letter-slot").should("not.contain.text", "x");
     cy.contains("button", "Check word").click();
     cy.contains("Fill every box before you check.");
+    cy.get('[role="dialog"]').should("not.exist");
+
+    cy.get('.letter-tile[data-letter="x"]').click();
+    cy.contains("button", "Check word").click();
+    cy.contains('[role="dialog"]', "The answer is…").should("contain.text", "cat").within(() => {
+      cy.contains("button", "Next question").click();
+    });
+    cy.get('[role="dialog"]').should("not.exist");
+    cy.contains("02 / 12");
+    cy.get('[aria-label="0 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
   });
 
   it("mixes beginning, middle and ending sounds", () => {
@@ -420,7 +423,7 @@ describe("players", () => {
     cy.contains("h1", "Choose an adventure!");
     storedPlayers().should("deep.equal", {
       players: [
-        { name: "Mia", coins: 1, age: "5-6", progress: { "letter-jumble/animals": 1 }, decks: { "letter-jumble/animals": [...Array(13).keys()] } },
+        { name: "Mia", coins: 1, age: "5-6", progress: { "letter-jumble/animals": 1 }, decks: { "letter-jumble/animals": [...Array(13).keys()] }, results: { "letter-jumble/animals": [true] } },
         { name: "Theo", coins: 0, age: "5-6", decks: { "letter-jumble/animals": [...Array(13).keys()] } },
       ],
       current: null,
@@ -480,14 +483,21 @@ describe("chinese characters", () => {
       [...$imgs].forEach((img) => expect(img.naturalWidth, img.getAttribute("src")).to.be.greaterThan(0));
     });
 
-    cy.get('.chinese-option[data-character="橙"]').click().should("be.disabled");
-    cy.contains("唔係呢個，再試吓！");
     cy.get('.chinese-option[data-character="紅"]').click();
     cy.get(".reward-card").should("contain.text", "好叻呀！");
     cy.get('[aria-label="1 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
     cy.get(".reward-card").click();
     cy.contains(".chinese-character", "橙");
     cy.contains("02 / 13");
+
+    // One try: a wrong picture shows the right one, with no coin, then moves on.
+    cy.get('.chinese-option[data-character="紅"]').click();
+    cy.contains('[role="dialog"]', "正確答案是").should("contain.text", "橙").within(() => {
+      cy.contains("button", "下一題").click();
+    });
+    cy.get(".chinese-option").should("not.be.disabled");
+    cy.contains("03 / 13");
+    cy.get('[aria-label="1 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
   });
 
   it("shows everyday phrases for the food topic", () => {
@@ -602,16 +612,13 @@ describe("measure words", () => {
       const deck = stored.players[0].decks["measure-words/measure-words"];
       expect(deck).to.have.length(20);
     });
-    cy.get(".measure-option").then(($options) => {
-      // Try options until the right one is found; wrong ones get disabled.
-      [...$options].forEach((option) => {
-        cy.get("body").then(($body) => {
-          if (!$body.find(".reward-card").length && !option.disabled) cy.wrap(option).click();
-        });
-      });
+    // One try: a right noun earns a coin, a wrong one shows the right answer.
+    cy.get(".measure-option").first().click();
+    cy.get(".measure-option").each(($option) => expect($option).to.be.disabled);
+    cy.get('[role="dialog"]').then(($dialog) => {
+      const right = $dialog.text().includes("好叻呀") || $dialog.text().includes("做得好") || $dialog.text().includes("金幣");
+      cy.get(`[aria-label="${right ? 1 : 0} rainbow coins. Visit Mochi the Rainbow Dragon"]`).should("exist");
     });
-    cy.get(".reward-card").should("exist");
-    cy.get('[aria-label="1 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
   });
 });
 

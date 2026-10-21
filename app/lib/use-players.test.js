@@ -234,6 +234,25 @@ describe("usePlayers", () => {
     expect(result.current.currentPlayer.badges).toEqual(["cvc/middle-sound"]);
   });
 
+  it("keeps only the first answer to each question, and forgets a topic's answers with its hand", () => {
+    seed({ players: [{ name: "Ada", coins: 0, age: "5-6", decks: { "idioms/idioms": [0, 1, 2] } }], current: "Ada" });
+    const { result } = renderHook(() => usePlayers());
+    act(() => result.current.saveResult("idioms/idioms", 2, true));
+    act(() => result.current.saveResult("idioms/idioms", 0, false));
+    act(() => result.current.saveResult("idioms/idioms", 0, true));
+    expect(stored().players[0].results).toEqual({ "idioms/idioms": [false, null, true] });
+
+    act(() => result.current.saveDeck("idioms/idioms", null));
+    expect(stored().players[0].results).toBeUndefined();
+    expect(stored().players[0].decks).toBeUndefined();
+  });
+
+  it("drops saved answers that aren't right/wrong", () => {
+    seed({ players: [{ name: "Ada", coins: 0, age: "5-6", results: { "cvc/middle-sound": [true, null, false], bad: [1], worse: "yes" } }], current: "Ada" });
+    const { result } = renderHook(() => usePlayers());
+    expect(result.current.currentPlayer.results).toEqual({ "cvc/middle-sound": [true, null, false] });
+  });
+
   it("drops game settings that aren't on/off", () => {
     seed({ players: [{ name: "Ada", coins: 0, age: "3-4", gameSettings: { cvc: false, dragon: "yes" } }], current: "Ada" });
     const { result } = renderHook(() => usePlayers());

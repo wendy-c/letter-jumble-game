@@ -4,7 +4,7 @@ import GameApp from "./components/GameApp";
 import { currentPathname, setPathname } from "../test/mock-navigation";
 import { sounds } from "./lib/sounds";
 
-jest.mock("./lib/sounds", () => ({ sounds: { correct: jest.fn(), coin: jest.fn(), sparkle: jest.fn() } }));
+jest.mock("./lib/sounds", () => ({ sounds: { correct: jest.fn(), oops: jest.fn(), coin: jest.fn(), sparkle: jest.fn() } }));
 jest.mock("./lib/speech", () => ({ speakWord: jest.fn(), speakCantonese: jest.fn(), stopSpeaking: jest.fn() }));
 
 // The real dragon scene needs WebGL, which jsdom doesn't have.
@@ -93,7 +93,7 @@ describe("Home", () => {
     expect(within(reward).getByText("You collected a rainbow coin!")).toBeInTheDocument();
     expect(screen.getByLabelText(coinsLabel(1))).toBeInTheDocument();
     expect(storedPlayers()).toEqual({
-      players: [{ name: "Ada", coins: 1, age: "5-6", decks: animalsDeck }],
+      players: [{ name: "Ada", coins: 1, age: "5-6", decks: animalsDeck, results: { "letter-jumble/animals": [true] } }],
       current: "Ada",
     });
     expect(sounds.correct).toHaveBeenCalledTimes(1);
@@ -102,21 +102,30 @@ describe("Home", () => {
     expect(screen.getByLabelText("Word 2 of 13")).toBeInTheDocument();
   });
 
-  it("does not reward a wrong or unfinished answer", async () => {
+  it("asks to fill every box, then shows the right answer for a wrong word and moves on", async () => {
     const user = userEvent.setup();
     render(<GameApp />);
     await openGame(user, "Letter Jumble", "Animals");
 
     await user.click(screen.getByRole("button", { name: /Check word/ }));
     expect(screen.getByText("Fill every box before you check.")).toBeInTheDocument();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
     for (const letter of ["t", "a", "b"]) {
       await user.click(screen.getByRole("button", { name: `Letter ${letter}` }));
     }
     await user.click(screen.getByRole("button", { name: /Check word/ }));
-    expect(screen.getByText("Not quite — give it another try!")).toBeInTheDocument();
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+    const reveal = screen.getByRole("dialog", { name: "The answer is…" });
+    expect(reveal).toHaveTextContent("bat");
+    expect(sounds.oops).toHaveBeenCalledTimes(1);
+    expect(sounds.correct).not.toHaveBeenCalled();
     expect(screen.getByLabelText(coinsLabel(0))).toBeInTheDocument();
+    expect(storedPlayers().players[0].results).toEqual({ "letter-jumble/animals": [false] });
+
+    await user.click(within(reveal).getByRole("button", { name: /Next question/ }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Word 2 of 13")).toBeInTheDocument();
   });
 
   it("plays a CVC word with one missing letter and swaps a wrong pick", async () => {
@@ -262,8 +271,8 @@ describe("players", () => {
 
     expect(storedPlayers()).toEqual({
       players: [
-        { name: "Ada", coins: 1, age: "5-6", progress: { "letter-jumble/animals": 1 }, decks: animalsDeck },
-        { name: "Elly", coins: 1, age: "5-6", progress: { "letter-jumble/animals": 1 }, decks: animalsDeck },
+        { name: "Ada", coins: 1, age: "5-6", progress: { "letter-jumble/animals": 1 }, decks: animalsDeck, results: { "letter-jumble/animals": [true] } },
+        { name: "Elly", coins: 1, age: "5-6", progress: { "letter-jumble/animals": 1 }, decks: animalsDeck, results: { "letter-jumble/animals": [true] } },
       ],
       current: "Elly",
     });
@@ -373,7 +382,10 @@ describe("progress", () => {
 
   it("celebrates finishing a topic, then goes back to the topic list and starts it again next time", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({
-      players: [{ name: "Ada", coins: 0, age: "5-6", progress: { "letter-jumble/animals": 12 } }],
+      players: [{
+        name: "Ada", coins: 0, age: "5-6", progress: { "letter-jumble/animals": 12 }, decks: animalsDeck,
+        results: { "letter-jumble/animals": Array(12).fill(true) },
+      }],
       current: "Ada",
     }));
     const user = userEvent.setup();
@@ -388,7 +400,8 @@ describe("progress", () => {
     await user.click(within(screen.getByRole("dialog", { name: /!$/ })).getByRole("button"));
 
     const praise = screen.getByRole("dialog", { name: "You did it!" });
-    expect(praise).toHaveTextContent("You finished all 13 Animals words.");
+    expect(praise).toHaveTextContent("13 / 13 right");
+    expect(praise).toHaveTextContent("You got every Animals word right.");
     expect(praise).toHaveTextContent("New badge! Animals is in your badge collection.");
     expect(sounds.sparkle).toHaveBeenCalled();
     expect(storedPlayers().players[0].progress).toEqual({ "letter-jumble/animals": 0 });
@@ -405,7 +418,10 @@ describe("progress", () => {
 
   it("praises finishing a Chinese topic in Chinese", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({
-      players: [{ name: "Ada", coins: 0, age: "3-4", progress: { "chinese/clothes": 6 } }],
+      players: [{
+        name: "Ada", coins: 0, age: "3-4", progress: { "chinese/clothes": 6 },
+        decks: { "chinese/clothes": inOrder(7) }, results: { "chinese/clothes": Array(6).fill(true) },
+      }],
       current: "Ada",
     }));
     setPathname("/chinese/clothes");
@@ -416,7 +432,8 @@ describe("progress", () => {
     await user.click(within(screen.getByRole("dialog", { name: /！$/ })).getByRole("button"));
 
     const praise = screen.getByRole("dialog", { name: "你好叻呀！" });
-    expect(praise).toHaveTextContent("你學完「衣物」全部 7 個字");
+    expect(praise).toHaveTextContent("7 / 7 答對");
+    expect(praise).toHaveTextContent("「衣物」全部答對");
     expect(praise).toHaveTextContent("你得到「衣物」徽章！");
     await user.click(within(praise).getByRole("button", { name: /返回所有主題/ }));
     expect(currentPathname()).toBe("/chinese");
@@ -469,10 +486,6 @@ describe("chinese characters", () => {
     await user.click(screen.getByRole("button", { name: /顏色/ }));
 
     expect(screen.getByText("紅")).toHaveClass("chinese-character");
-    await user.click(screen.getByRole("button", { name: "orange" }));
-    expect(screen.getByText("唔係呢個，再試吓！")).toBeInTheDocument();
-    expect(sounds.correct).not.toHaveBeenCalled();
-
     await user.click(screen.getByRole("button", { name: "red" }));
     const reward = screen.getByRole("dialog", { name: "好叻呀！" });
     expect(within(reward).getByText("你得到一個彩虹金幣！")).toBeInTheDocument();
@@ -627,7 +640,10 @@ describe("CVC shuffling", () => {
   });
 
   it("deals a fresh hand of words after finishing all 12", async () => {
-    seed({ progress: { "cvc/beginning-sound": 11 }, decks: { "cvc/beginning-sound": [...Array(12).keys()] } });
+    seed({
+      progress: { "cvc/beginning-sound": 11 }, decks: { "cvc/beginning-sound": [...Array(12).keys()] },
+      results: { "cvc/beginning-sound": Array(11).fill(true) },
+    });
     setPathname("/cvc/beginning-sound");
     const user = userEvent.setup();
     render(<GameApp />);
@@ -640,10 +656,11 @@ describe("CVC shuffling", () => {
     await user.click(within(screen.getByRole("dialog", { name: /!$/ })).getByRole("button"));
 
     const praise = screen.getByRole("dialog", { name: "You did it!" });
-    expect(praise).toHaveTextContent("all 12 Beginning Sound words");
+    expect(praise).toHaveTextContent("12 / 12 right");
     await user.click(within(praise).getByRole("button", { name: /Back to all topics/ }));
     expect(currentPathname()).toBe("/cvc");
     expect(storedPlayers().players[0].decks).toBeUndefined();
+    expect(storedPlayers().players[0].results).toBeUndefined();
   });
 });
 
@@ -780,6 +797,91 @@ describe("成語", () => {
   });
 });
 
+describe("one try per question", () => {
+  const seedClothes = (results, extra = {}) => window.localStorage.setItem(playersKey, JSON.stringify({
+    players: [{
+      name: "Ada", coins: 0, age: "3-4", progress: { "chinese/clothes": 6 },
+      decks: { "chinese/clothes": inOrder(7) }, results: { "chinese/clothes": results }, ...extra,
+    }],
+    current: "Ada",
+  }));
+
+  it("shows the right picture and character after a wrong pick, with no coin and no second try", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    setPathname("/chinese/colours");
+    const user = userEvent.setup();
+    render(<GameApp />);
+
+    await user.click(await screen.findByRole("button", { name: "orange" }));
+    const reveal = screen.getByRole("dialog", { name: "正確答案是……" });
+    expect(reveal).toHaveTextContent("紅");
+    expect(reveal.querySelector(".reveal-picture")).toHaveAttribute("src", "/images/chinese/colours/red.svg");
+    expect(screen.getByRole("button", { name: "red" })).toBeDisabled();
+    expect(screen.getByLabelText(coinsLabel(0))).toBeInTheDocument();
+
+    await user.click(within(reveal).getByRole("button", { name: /下一題/ }));
+    expect(screen.getByText("橙")).toHaveClass("chinese-character");
+    expect(storedPlayers().players[0].results).toEqual({ "chinese/colours": [false] });
+  });
+
+  it("shows the score at the end, and no badge unless every answer was right", async () => {
+    seedClothes([true, false, true, true, false, true]);
+    setPathname("/chinese/clothes");
+    const user = userEvent.setup();
+    render(<GameApp />);
+
+    await user.click(await screen.findByRole("button", { name: "top" }));
+    await user.click(within(screen.getByRole("dialog", { name: /！$/ })).getByRole("button"));
+
+    const done = screen.getByRole("dialog", { name: "繼續加油！" });
+    expect(within(done).getByLabelText("5 / 7 答對")).toBeInTheDocument();
+    expect(done).toHaveTextContent("全部答對就可以得到「衣物」徽章，再試一次吧！");
+    expect(storedPlayers().players[0].badges).toBeUndefined();
+
+    // Trying again starts a new score.
+    await user.click(within(done).getByRole("button", { name: /返回所有主題/ }));
+    expect(storedPlayers().players[0].results).toBeUndefined();
+  });
+
+  it("counts a skipped question as not right", async () => {
+    seedClothes([true, true, null, true, true, true]);
+    setPathname("/chinese/clothes");
+    const user = userEvent.setup();
+    render(<GameApp />);
+
+    await user.click(await screen.findByRole("button", { name: "top" }));
+    await user.click(within(screen.getByRole("dialog", { name: /！$/ })).getByRole("button"));
+    expect(within(screen.getByRole("dialog", { name: "繼續加油！" })).getByLabelText("6 / 7 答對")).toBeInTheDocument();
+  });
+
+  it("awards the badge for a perfect score, even after a wrong last answer the first time round", async () => {
+    seedClothes(Array(6).fill(true));
+    setPathname("/chinese/clothes");
+    const user = userEvent.setup();
+    render(<GameApp />);
+
+    const wrong = (await screen.findAllByRole("button")).find((button) => button.classList.contains("chinese-option") && button.getAttribute("aria-label") !== "top");
+    await user.click(wrong);
+    await user.click(within(screen.getByRole("dialog", { name: "正確答案是……" })).getByRole("button", { name: /下一題/ }));
+    expect(within(screen.getByRole("dialog", { name: "繼續加油！" })).getByLabelText("6 / 7 答對")).toBeInTheDocument();
+    expect(storedPlayers().players[0].badges).toBeUndefined();
+  });
+
+  it("only counts the first answer, so going back can't change the score", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    setPathname("/chinese/colours");
+    const user = userEvent.setup();
+    render(<GameApp />);
+
+    await user.click(await screen.findByRole("button", { name: "orange" }));
+    await user.click(within(screen.getByRole("dialog", { name: "正確答案是……" })).getByRole("button"));
+    await user.click(screen.getByRole("button", { name: /Browse/ }));
+    await user.click(screen.getByRole("button", { name: /^01/ }));
+    await user.click(screen.getByRole("button", { name: "red" }));
+    expect(storedPlayers().players[0].results).toEqual({ "chinese/colours": [false] });
+  });
+});
+
 describe("badges", () => {
   const openBadges = async (user) => {
     await user.click(screen.getByRole("button", { name: /Player options/ }));
@@ -818,7 +920,10 @@ describe("badges", () => {
 
   it("doesn't award the same badge twice", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({
-      players: [{ name: "Ada", coins: 0, age: "3-4", progress: { "chinese/clothes": 6 }, badges: ["chinese/clothes"] }],
+      players: [{
+        name: "Ada", coins: 0, age: "3-4", progress: { "chinese/clothes": 6 }, badges: ["chinese/clothes"],
+        decks: { "chinese/clothes": inOrder(7) }, results: { "chinese/clothes": Array(6).fill(true) },
+      }],
       current: "Ada",
     }));
     setPathname("/chinese/clothes");

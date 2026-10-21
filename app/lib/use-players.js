@@ -31,6 +31,11 @@ function cleanPlayer(player) {
     const decks = Object.fromEntries(Object.entries(player.decks).filter(([, deck]) => Array.isArray(deck) && deck.length > 0 && deck.every(isCount)));
     if (Object.keys(decks).length > 0) cleaned.decks = decks;
   }
+  if (player.results && typeof player.results === "object") {
+    const isResult = (result) => result === true || result === false || result === null;
+    const results = Object.fromEntries(Object.entries(player.results).filter(([, answers]) => Array.isArray(answers) && answers.every(isResult)));
+    if (Object.keys(results).length > 0) cleaned.results = results;
+  }
   if (Array.isArray(player.badges)) {
     const badges = [...new Set(player.badges.filter((badge) => typeof badge === "string" && badge.length > 0))];
     if (badges.length > 0) cleaned.badges = badges;
@@ -167,14 +172,33 @@ export function usePlayers() {
   }
 
   // Remembers the shuffled words dealt for a topic (e.g. 20 of the CVC words), or forgets them.
+  // A new hand starts a new score, so the topic's answers are forgotten too.
   function saveDeck(key, deck) {
     if (!state.current) return;
     updatePlayer(state.current, (player) => {
       const decks = { ...player.decks };
       if (deck) decks[key] = deck;
       else delete decks[key];
-      const { decks: _old, ...rest } = player;
-      return Object.keys(decks).length > 0 ? { ...rest, decks } : rest;
+      const results = { ...player.results };
+      delete results[key];
+      const { decks: _oldDecks, results: _oldResults, ...rest } = player;
+      return {
+        ...rest,
+        ...(Object.keys(decks).length > 0 && { decks }),
+        ...(Object.keys(results).length > 0 && { results }),
+      };
+    });
+  }
+
+  // Records whether the current player got a question right (by its place in the dealt hand).
+  // Only the first answer counts, so going back to a question can't change the score.
+  function saveResult(key, index, correct) {
+    if (!state.current || !isCount(index)) return;
+    updatePlayer(state.current, (player) => {
+      const answers = player.results?.[key] ?? [];
+      if (typeof answers[index] === "boolean") return player;
+      const next = Array.from({ length: Math.max(answers.length, index + 1) }, (_, at) => (at === index ? correct : answers[at] ?? null));
+      return { ...player, results: { ...player.results, [key]: next } };
     });
   }
 
@@ -189,6 +213,7 @@ export function usePlayers() {
   return {
     loaded,
     awardBadge,
+    saveResult,
     saveDeck,
     players: state.players,
     currentPlayer,

@@ -15,7 +15,7 @@ function SpellingGuideLegend() {
 
 function feedbackMessage({ checked, complete, allPlaced }) {
   if (!checked || complete) return " ";
-  return allPlaced ? "Not quite — give it another try!" : "Fill every box before you check.";
+  return allPlaced ? "Not quite!" : "Fill every box before you check.";
 }
 
 export default function AnswerPanel({

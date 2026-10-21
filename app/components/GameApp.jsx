@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { topicsByGame } from "../badges";
 import { games, gamesForPlayer, isGameAvailable } from "../games-data";
 import AnswerPanel from "./AnswerPanel";
+import AnswerRevealDialog, { chineseRevealLabels } from "./AnswerRevealDialog";
 import BadgeCollection from "./BadgeCollection";
 import ChineseGame from "./ChineseGame";
 import Breadcrumbs from "./Breadcrumbs";
@@ -46,7 +47,7 @@ export default function GameApp() {
 
   const {
     loaded, players, currentPlayer, createPlayer, setPlayerAge, selectPlayer, logOut, addCoin, spendCoins, saveProgress, saveDeck,
-    setGameEnabled, awardBadge,
+    setGameEnabled, awardBadge, saveResult,
   } = usePlayers();
   const [parentModeOpen, setParentModeOpen] = useState(false);
   const [badgesOpen, setBadgesOpen] = useState(false);
@@ -86,8 +87,8 @@ export default function GameApp() {
   const [rewardMessage, setRewardMessage] = useState("");
   const [wordMenuOpen, setWordMenuOpen] = useState(false);
   const [showSpellingGuide, setShowSpellingGuide] = useState(false);
-  // The Chinese game answers by tapping a picture rather than filling in letters.
-  const [chineseSolved, setChineseSolved] = useState(false);
+  // How the current question was answered: null, "right" or "wrong". Each question gets one try.
+  const [answered, setAnswered] = useState(null);
   // Set once the last word of a topic is done, to show the "you finished" pop-up.
   const [completedTopic, setCompletedTopic] = useState(null);
 
@@ -107,7 +108,6 @@ export default function GameApp() {
     placed.every((tile, slotIndex) => tile !== null && tiles[tile] === answerLetters[blanks[slotIndex]]);
   const allPlaced = placed.every((tile) => tile !== null);
   const guides = showSpellingGuide && !isCvc && !inChinese ? getSpellingGuides(answer) : null;
-  const solved = inChinese ? chineseSolved : complete;
 
   useEffect(() => () => {
     stopSpeaking();
@@ -150,7 +150,7 @@ export default function GameApp() {
     setPosition({ key: categoryKey, round: start });
     setPlaced(Array(slotCount(selectedCategory.words[start], start)).fill(null));
     setVoiceMessage("");
-    setChineseSolved(false);
+    setAnswered(null);
     setChecked(false);
     setRewardMessage("");
     setWordMenuOpen(false);
@@ -167,7 +167,7 @@ export default function GameApp() {
   }, []);
 
   function resetAnswer() {
-    setChineseSolved(false);
+    setAnswered(null);
     setChecked(false);
     setRewardMessage("");
   }
@@ -259,21 +259,35 @@ export default function GameApp() {
     }
   }
 
+  // Spelling: checking a filled-in word is its one try. (Checking with empty boxes just asks
+  // to fill them.)
   function checkAnswer() {
     setChecked(true);
-    if (complete && !checked) {
+    if (allPlaced) answerQuestion(complete);
+  }
+
+  // A right answer earns a coin; a wrong one shows the right answer. Either way, it's on to the
+  // next question, and only the first answer counts towards the topic's score.
+  function answerQuestion(correct) {
+    if (answered) return;
+    setAnswered(correct ? "right" : "wrong");
+    saveResult(categoryKey, round, correct);
+    if (correct) {
       sounds.correct();
-      setRewardMessage(rewardMessages[rainbowCoins % rewardMessages.length]);
+      const messages = inChinese ? chineseRewardMessages : rewardMessages;
+      setRewardMessage(messages[rainbowCoins % messages.length]);
       addCoin();
+    } else {
+      sounds.oops?.();
     }
   }
 
-  function handleChineseCorrect() {
-    if (chineseSolved) return;
-    setChineseSolved(true);
-    sounds.correct();
-    setRewardMessage(chineseRewardMessages[rainbowCoins % chineseRewardMessages.length]);
-    addCoin();
+  // What the "not quite" card shows for the current question.
+  function revealFor(question) {
+    if (isMeasure) return { text: question.answers[0], picture: question.icon };
+    if (isIdiom) return { text: question.idiom, picture: question.picture, note: question.meaning };
+    if (inChinese) return { text: question.character, picture: question.picture };
+    return { text: answer, picture: question.picture };
   }
 
   function nextWord() {
@@ -284,14 +298,19 @@ export default function GameApp() {
     selectWord(round + 1);
   }
 
-  // The last word is done: start the topic again next time, celebrate, and award the topic's
-  // badge the first time.
+  // The last word is done: start the topic again next time and show the score. Only getting
+  // every question right earns the topic's badge (once).
   function finishTopic() {
     saveProgress(categoryKey, 0);
     setRewardMessage("");
-    const newBadge = !currentPlayer?.badges?.includes(categoryKey);
+    setAnswered(null);
+    const results = currentPlayer?.results?.[categoryKey] ?? [];
+    const count = selectedCategory.words.length;
+    const correct = selectedCategory.words.filter((_, index) => results[index] === true).length;
+    const hasBadge = Boolean(currentPlayer?.badges?.includes(categoryKey));
+    const newBadge = correct === count && !hasBadge;
     if (newBadge) awardBadge(categoryKey);
-    setCompletedTopic({ name: selectedCategory.name, count: selectedCategory.words.length, badge: newBadge ? routeTopic : null });
+    setCompletedTopic({ name: selectedCategory.name, count, correct, hasBadge, badge: newBadge ? routeTopic : null });
     sounds.sparkle?.();
   }
 
@@ -381,7 +400,7 @@ export default function GameApp() {
             topic={selectedCategory}
             round={round}
             question={puzzle}
-            onCorrect={handleChineseCorrect}
+            onAnswer={answerQuestion}
           />
           <GameFooter>一題一題慢慢學</GameFooter>
         </section>
@@ -402,7 +421,7 @@ export default function GameApp() {
             topic={selectedCategory}
             round={round}
             question={puzzle}
-            onCorrect={handleChineseCorrect}
+            onAnswer={answerQuestion}
           />
           <GameFooter>一題一題慢慢學</GameFooter>
         </section>
@@ -423,7 +442,7 @@ export default function GameApp() {
             topic={selectedCategory}
             round={round}
             word={puzzle}
-            onCorrect={handleChineseCorrect}
+            onAnswer={answerQuestion}
           />
           <GameFooter>一字一字慢慢學</GameFooter>
         </section>
@@ -500,12 +519,22 @@ export default function GameApp() {
         <CompletionDialog
           topicName={completedTopic.name}
           count={completedTopic.count}
+          correct={completedTopic.correct}
+          hasBadge={completedTopic.hasBadge}
           badge={completedTopic.badge}
           text={inChinese ? chineseCompletionText : undefined}
           onDone={leaveCompletedTopic}
         />
       )}
-      {playing && rewardMessage && solved && !completedTopic && (
+      {playing && answered === "wrong" && !completedTopic && (
+        <AnswerRevealDialog
+          reveal={revealFor(puzzle)}
+          labels={inChinese ? chineseRevealLabels : undefined}
+          lang={inChinese ? "zh-Hant-HK" : undefined}
+          onContinue={nextWord}
+        />
+      )}
+      {playing && rewardMessage && answered === "right" && !completedTopic && (
         <RewardDialog message={rewardMessage} onContinue={nextWord} labels={inChinese ? chineseRewardLabels : undefined} />
       )}
     </main>

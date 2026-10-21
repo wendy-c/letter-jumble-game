@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { speakCantonese, stopSpeaking } from "../lib/speech";
-import Mascot from "./Mascot";
 
 // Shows a phrase with the character being learned picked out, e.g. 餅乾 with 餅 highlighted.
 function Phrase({ phrase, character }) {
@@ -12,10 +11,10 @@ function Phrase({ phrase, character }) {
 }
 
 // One round of Chinese character recognition: read the character, hear it in Cantonese,
-// and pick the matching picture. The parent remounts this (key) for every new word.
-export default function ChineseGame({ topic, round, word, onCorrect }) {
-  const [wrongPicks, setWrongPicks] = useState([]);
-  const [solved, setSolved] = useState(false);
+// and pick the matching picture. There's one try: the pick is reported with `onAnswer(correct)`
+// and the right picture is shown either way. The parent remounts this (key) for every new word.
+export default function ChineseGame({ topic, round, word, onAnswer }) {
+  const [picked, setPicked] = useState(null);
   const [voiceMessage, setVoiceMessage] = useState("");
 
   // Hearing the character is a hint, only on request. Stop any hint still being spoken
@@ -23,13 +22,9 @@ export default function ChineseGame({ topic, round, word, onCorrect }) {
   useEffect(() => () => stopSpeaking(), []);
 
   function pick(option) {
-    if (solved) return;
-    if (option.character === word.character) {
-      setSolved(true);
-      onCorrect();
-    } else if (!wrongPicks.includes(option.character)) {
-      setWrongPicks((current) => [...current, option.character]);
-    }
+    if (picked) return;
+    setPicked(option.character);
+    onAnswer(option.character === word.character);
   }
 
   return (
@@ -93,8 +88,8 @@ export default function ChineseGame({ topic, round, word, onCorrect }) {
 
         <div className="chinese-options" role="group" aria-label="圖畫選擇">
           {word.options.map((option) => {
-            const wrong = wrongPicks.includes(option.character);
-            const right = solved && option.character === word.character;
+            const wrong = picked === option.character && option.character !== word.character;
+            const right = Boolean(picked) && option.character === word.character;
             return (
               <button
                 className={`chinese-option${wrong ? " chinese-option-wrong" : ""}${right ? " chinese-option-right" : ""}`}
@@ -102,20 +97,13 @@ export default function ChineseGame({ topic, round, word, onCorrect }) {
                 key={option.character}
                 data-character={option.character}
                 aria-label={option.english}
-                disabled={wrong}
+                disabled={Boolean(picked)}
                 onClick={() => pick(option)}
               >
                 <img src={option.picture} alt="" width="128" height="128" />
               </button>
             );
           })}
-        </div>
-
-        <div className="answer-footer chinese-feedback">
-          {wrongPicks.length > 0 && !solved && <Mascot name="elly" className="mascot-feedback" />}
-          <p className={`feedback${wrongPicks.length > 0 && !solved ? " feedback-try" : ""}`} aria-live="polite" lang="zh-Hant-HK">
-            {wrongPicks.length > 0 && !solved ? "唔係呢個，再試吓！" : " "}
-          </p>
         </div>
       </section>
     </div>

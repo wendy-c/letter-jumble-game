@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { speakCantonese, stopSpeaking } from "../lib/speech";
-import Mascot from "./Mascot";
 
 // One 成語 question: a picture or short comic, the idiom with one character missing, and its
-// meaning; pick the character that fills the gap.
+// meaning; pick the character that fills the gap. There's one try: the pick is reported with
+// `onAnswer(correct)`, and the right character fills the gap either way.
 // Hearing the idiom and its meaning in Cantonese is a hint, only when the learner taps the speaker.
 // The parent remounts this (key) for every new question.
-export default function IdiomGame({ topic, round, question, onCorrect }) {
-  const [wrongPicks, setWrongPicks] = useState([]);
-  const [solved, setSolved] = useState(false);
+export default function IdiomGame({ topic, round, question, onAnswer }) {
+  const [picked, setPicked] = useState(null);
+  const solved = Boolean(picked);
   const [voiceMessage, setVoiceMessage] = useState("");
 
   useEffect(() => () => stopSpeaking(), []);
@@ -17,13 +17,9 @@ export default function IdiomGame({ topic, round, question, onCorrect }) {
   const blankLabel = characters.map((character, index) => (index === question.blank ? "空格" : character)).join("");
 
   function pick(option) {
-    if (solved) return;
-    if (option.correct) {
-      setSolved(true);
-      onCorrect();
-    } else if (!wrongPicks.includes(option.character)) {
-      setWrongPicks((current) => [...current, option.character]);
-    }
+    if (picked) return;
+    setPicked(option.character);
+    onAnswer(option.correct);
   }
 
   return (
@@ -74,7 +70,7 @@ export default function IdiomGame({ topic, round, question, onCorrect }) {
 
         <div className="idiom-options" role="group" aria-label="字的選擇">
           {question.options.map((option) => {
-            const wrong = wrongPicks.includes(option.character);
+            const wrong = picked === option.character && !option.correct;
             const right = solved && option.correct;
             return (
               <button
@@ -82,7 +78,7 @@ export default function IdiomGame({ topic, round, question, onCorrect }) {
                 type="button"
                 key={option.character}
                 data-character={option.character}
-                disabled={wrong}
+                disabled={solved}
                 lang="zh-Hant-HK"
                 onClick={() => pick(option)}
               >
@@ -92,12 +88,6 @@ export default function IdiomGame({ topic, round, question, onCorrect }) {
           })}
         </div>
 
-        <div className="answer-footer chinese-feedback">
-          {wrongPicks.length > 0 && !solved && <Mascot name="elly" className="mascot-feedback" />}
-          <p className={`feedback${wrongPicks.length > 0 && !solved ? " feedback-try" : ""}`} aria-live="polite" lang="zh-Hant-HK">
-            {wrongPicks.length > 0 && !solved ? "唔係呢個，再試吓！" : " "}
-          </p>
-        </div>
       </section>
     </div>
   );

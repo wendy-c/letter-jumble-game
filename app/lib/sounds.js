@@ -191,6 +191,12 @@ export const sounds = {
     noise(ac, { duration: 0.3, volume: 0.14, freq: 1800, sweepTo: 900, q: 2, attack: 0.05 });
   }),
 
+  // A soft "uh-oh" for a wrong answer: two gentle falling notes, never harsh.
+  oops: play((ac) => {
+    tone(ac, { freq: notes.E5, duration: 0.18, type: "triangle", volume: 0.12 });
+    tone(ac, { freq: notes.C5, slide: notes.A4, at: 0.16, duration: 0.32, type: "triangle", volume: 0.12 });
+  }),
+
   // A wobbly "eek" for something sour.
   pucker: play((ac) => {
     tone(ac, { freq: 900, slide: 420, duration: 0.5, type: "triangle", volume: 0.16, vibrato: { rate: 26, depth: 45 } });

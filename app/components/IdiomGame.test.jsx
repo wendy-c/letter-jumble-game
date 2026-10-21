@@ -10,9 +10,9 @@ const topic = idiomTopics[0];
 const frog = topic.words.find((question) => question.idiom === "井底之蛙");
 
 function renderQuestion(question = frog) {
-  const onCorrect = jest.fn();
-  const { container } = render(<IdiomGame topic={topic} round={0} question={question} onCorrect={onCorrect} />);
-  return { onCorrect, container };
+  const onAnswer = jest.fn();
+  const { container } = render(<IdiomGame topic={topic} round={0} question={question} onAnswer={onAnswer} />);
+  return { onAnswer, container };
 }
 
 beforeEach(() => jest.clearAllMocks());
@@ -28,22 +28,25 @@ describe("IdiomGame", () => {
     expect(speakCantonese).not.toHaveBeenCalled();
   });
 
-  it("greys out a wrong character and encourages another try", async () => {
-    const { onCorrect } = renderQuestion();
+  it("gives one try: a wrong character is reported and the right one fills the gap", async () => {
+    const { onAnswer } = renderQuestion();
     await userEvent.click(screen.getByRole("button", { name: "魚" }));
-    expect(screen.getByRole("button", { name: "魚" })).toBeDisabled();
-    expect(screen.getByText("唔係呢個，再試吓！")).toBeInTheDocument();
-    expect(screen.getByLabelText("井底之空格")).toBeInTheDocument();
-    expect(onCorrect).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole("button", { name: "蛙" }));
+    expect(onAnswer).toHaveBeenCalledTimes(1);
+    expect(onAnswer).toHaveBeenCalledWith(false);
+    expect(screen.getByRole("button", { name: "魚" })).toHaveClass("chinese-option-wrong");
+    expect(screen.getByRole("button", { name: "蛙" })).toHaveClass("chinese-option-right");
+    expect(screen.getByLabelText("井底之蛙")).toBeInTheDocument();
   });
 
   it("fills the gap with the right character and reports it once", async () => {
-    const { onCorrect } = renderQuestion();
+    const { onAnswer } = renderQuestion();
     const right = screen.getByRole("button", { name: "蛙" });
     await userEvent.click(right);
     await userEvent.click(right);
     expect(screen.getByLabelText("井底之蛙")).toHaveTextContent("井底之蛙");
-    expect(onCorrect).toHaveBeenCalledTimes(1);
+    expect(onAnswer).toHaveBeenCalledTimes(1);
+    expect(onAnswer).toHaveBeenCalledWith(true);
   });
 
   it("reads the idiom and its meaning from the speaker button", async () => {

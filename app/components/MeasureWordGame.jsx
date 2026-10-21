@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { speakCantonese, stopSpeaking } from "../lib/speech";
-import Mascot from "./Mascot";
 
 function NounIcon({ icon }) {
   if (icon?.startsWith("/")) return <img className="measure-icon-image" src={icon} alt="" width="40" height="40" />;
@@ -8,24 +7,22 @@ function NounIcon({ icon }) {
 }
 
 // One measure-word question: "一個 ＿＿" — pick the noun that goes with the measure word.
+// There's one try: the pick is reported with `onAnswer(correct)`, and the right noun fills the
+// blank either way.
 // Hearing it in Cantonese is a hint, only when the learner taps the speaker.
 // The parent remounts this (key) for every new question.
-export default function MeasureWordGame({ topic, round, question, onCorrect }) {
-  const [wrongPicks, setWrongPicks] = useState([]);
-  const [solved, setSolved] = useState(false);
+export default function MeasureWordGame({ topic, round, question, onAnswer }) {
+  const [picked, setPicked] = useState(null);
+  const solved = Boolean(picked);
   const [voiceMessage, setVoiceMessage] = useState("");
   const measure = question.character;
 
   useEffect(() => () => stopSpeaking(), []);
 
   function pick(option) {
-    if (solved) return;
-    if (option.correct) {
-      setSolved(true);
-      onCorrect();
-    } else if (!wrongPicks.includes(option.noun)) {
-      setWrongPicks((current) => [...current, option.noun]);
-    }
+    if (picked) return;
+    setPicked(option.noun);
+    onAnswer(option.correct);
   }
 
   return (
@@ -74,7 +71,7 @@ export default function MeasureWordGame({ topic, round, question, onCorrect }) {
 
         <div className="measure-options" role="group" aria-label="名詞選擇">
           {question.options.map((option) => {
-            const wrong = wrongPicks.includes(option.noun);
+            const wrong = picked === option.noun && !option.correct;
             const right = solved && option.correct;
             return (
               <button
@@ -82,7 +79,7 @@ export default function MeasureWordGame({ topic, round, question, onCorrect }) {
                 type="button"
                 key={option.noun}
                 data-noun={option.noun}
-                disabled={wrong}
+                disabled={solved}
                 lang="zh-Hant-HK"
                 onClick={() => pick(option)}
               >
@@ -93,12 +90,6 @@ export default function MeasureWordGame({ topic, round, question, onCorrect }) {
           })}
         </div>
 
-        <div className="answer-footer chinese-feedback">
-          {wrongPicks.length > 0 && !solved && <Mascot name="elly" className="mascot-feedback" />}
-          <p className={`feedback${wrongPicks.length > 0 && !solved ? " feedback-try" : ""}`} aria-live="polite" lang="zh-Hant-HK">
-            {wrongPicks.length > 0 && !solved ? "不是這個，再試一下！" : " "}
-          </p>
-        </div>
       </section>
     </div>
   );
