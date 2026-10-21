@@ -3024,7 +3024,7 @@ a:focus-visible {
 
   /* The shelf scrolls on its own, under the sticky tabs, so every item can be reached. */
   .dragon-panel {
-    max-height: 34dvh;
+    min-height: 40dvh;
     overflow-y: auto;
     overscroll-behavior: contain;
     scroll-padding-top: 56px;
@@ -3317,7 +3317,7 @@ a:focus-visible {
 /* Short phones: a smaller shelf of items, so Mochi still has room. */
 @media (max-width: 700px) and (max-height: 700px) {
   .dragon-panel {
-    max-height: 32dvh;
+    min-height: 40dvh;
   }
 
   .dragon-wrap .game-card.dragon-card {
