@@ -330,6 +330,25 @@ describe("ages", () => {
     expect(shownGames()).toEqual(["Letter Jumble for Starters", "Letter Jumble for Movers", "中文認字 · 進階篇", "量詞配對", "成語", "Mochi the Rainbow Dragon"]);
   });
 
+  it("lists games under Phonics, Cambridge YLE training, 中文 and Visit Mochi, hiding empty headings", () => {
+    const groups = () => screen.getAllByRole("heading", { level: 2 }).map((heading) => [
+      heading.textContent.replace(heading.querySelector(".game-group-icon").textContent, ""),
+      within(heading.closest("section")).getAllByRole("button").map((card) => card.querySelector(".category-card-name").textContent),
+    ]);
+    const { unmount } = render(<GameApp />);
+    expect(groups()).toEqual([
+      ["Phonics", ["CVC Sounds"]],
+      ["Cambridge YLE training", ["Letter Jumble for Starters", "Letter Jumble for Movers"]],
+      ["中文", ["中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語"]],
+      ["Visit Mochi", ["Mochi the Rainbow Dragon"]],
+    ]);
+    unmount();
+
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    render(<GameApp />);
+    expect(groups().map(([name]) => name)).toEqual(["Phonics", "中文", "Visit Mochi"]);
+  });
+
   it("shows every game to visitors before anyone is playing", () => {
     render(<GameApp />);
     expect(shownGames()).toEqual(["CVC Sounds", "Letter Jumble for Starters", "Letter Jumble for Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語", "Mochi the Rainbow Dragon"]);

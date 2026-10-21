@@ -3,10 +3,20 @@ export const ageGroups = [
   { id: "5-6", label: "5-6 years old" },
 ];
 
-// `ages` limits a game to those age groups; games without it are for everyone.
+// The front page shows games under these headings, in this order.
+export const gameGroups = [
+  { id: "phonics", name: "Phonics", icon: "🔤" },
+  { id: "cambridge", name: "Cambridge YLE training", icon: "🎓" },
+  { id: "chinese", name: "中文", icon: "🏮", lang: "zh-Hant-HK" },
+  { id: "mochi", name: "Visit Mochi", icon: "🐉" },
+];
+
+// `ages` limits a game to those age groups; games without it are for everyone. `group` is the
+// front-page heading it's listed under.
 export const games = [
   {
     id: "cvc",
+    group: "phonics",
     name: "CVC Sounds",
     color: "yellow",
     pattern: ["c", null, "t"],
@@ -16,15 +26,17 @@ export const games = [
   },
   {
     id: "starters",
+    group: "cambridge",
     name: "Letter Jumble for Starters",
     color: "green",
-    pattern: ["c", "a", "t"],
+    pattern: ["t", "a", "c"],
     note: "For age 5-6 - Cambridge Starters · 2 topics",
     badge: "CAMBRIDGE STARTERS",
     ages: ["5-6"],
   },
   {
     id: "letter-jumble",
+    group: "cambridge",
     name: "Letter Jumble for Movers",
     color: "lilac",
     pattern: ["b", "t", "a"],
@@ -34,6 +46,7 @@ export const games = [
   },
   {
     id: "chinese",
+    group: "chinese",
     name: "中文認字 · 入門篇",
     color: "green",
     pattern: ["單", "字"],
@@ -43,6 +56,7 @@ export const games = [
   },
   {
     id: "chinese-advanced",
+    group: "chinese",
     name: "中文認字 · 進階篇",
     color: "blue",
     pattern: ["詞", "語"],
@@ -52,6 +66,7 @@ export const games = [
   },
   {
     id: "measure-words",
+    group: "chinese",
     name: "量詞配對",
     color: "yellow",
     pattern: ["一", "個"],
@@ -61,6 +76,7 @@ export const games = [
   },
   {
     id: "idioms",
+    group: "chinese",
     name: "成語",
     color: "peach",
     pattern: ["成", "語"],
@@ -70,6 +86,7 @@ export const games = [
   },
   {
     id: "dragon",
+    group: "mochi",
     name: "Mochi the Rainbow Dragon",
     color: "pink",
     icon: "/images/icons/dragon.svg",

@@ -384,6 +384,40 @@ button {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+/* Front-page headings: Phonics, Cambridge YLE training, 中文 and Visit Mochi. */
+.game-group + .game-group {
+  margin-top: 30px;
+}
+
+.game-group-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  color: var(--magic-dark);
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.game-group-title::after {
+  flex: 1;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--line-strong), transparent);
+  content: "";
+}
+
+.game-group-icon {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 3px 0 var(--line-strong);
+  font-size: 21px;
+}
+
 .game-choice-card {
   min-height: 210px;
 }
