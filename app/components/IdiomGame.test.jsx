@@ -46,9 +46,9 @@ describe("IdiomGame", () => {
     expect(onCorrect).toHaveBeenCalledTimes(1);
   });
 
-  it("reads the meaning as a hint from the speaker button", async () => {
+  it("reads the idiom and its meaning from the speaker button", async () => {
     renderQuestion();
     await userEvent.click(screen.getByRole("button", { name: "聽提示" }));
-    expect(speakCantonese).toHaveBeenCalledWith("比喻見識狹窄的人。", expect.any(Function));
+    expect(speakCantonese).toHaveBeenCalledWith("井底之蛙，比喻見識狹窄的人。", expect.any(Function));
   });
 });

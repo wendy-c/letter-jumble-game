@@ -4,7 +4,7 @@ import Mascot from "./Mascot";
 
 // One 成語 question: a picture or short comic, the idiom with one character missing, and its
 // meaning; pick the character that fills the gap.
-// Hearing the meaning in Cantonese is a hint, only when the learner taps the speaker.
+// Hearing the idiom and its meaning in Cantonese is a hint, only when the learner taps the speaker.
 // The parent remounts this (key) for every new question.
 export default function IdiomGame({ topic, round, question, onCorrect }) {
   const [wrongPicks, setWrongPicks] = useState([]);
@@ -60,9 +60,9 @@ export default function IdiomGame({ topic, round, question, onCorrect }) {
           <button
             className="voice-button"
             type="button"
-            onClick={() => speakCantonese(question.meaning, setVoiceMessage)}
+            onClick={() => speakCantonese(`${question.idiom}，${question.meaning}`, setVoiceMessage)}
             aria-label="聽提示"
-            title="聽吓解釋"
+            title="聽吓成語同解釋"
           >
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
               <path d="M11 5 6 9H3v6h3l5 4V5Z" />
