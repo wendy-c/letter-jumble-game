@@ -25,13 +25,21 @@ import RewardDialog, { chineseRewardLabels } from "./RewardDialog";
 import SiteHeader from "./SiteHeader";
 import TopicMenu from "./TopicMenu";
 import WordMenu from "./WordMenu";
-import { getSpellingGuides, scramble, shuffledDeck, slotCount } from "../lib/spelling";
+import { getSpellingGuides, scramble, seededRandom, shuffled, shuffledDeck, slotCount } from "../lib/spelling";
 import { speakWord, stopSpeaking } from "../lib/speech";
 import { sounds } from "../lib/sounds";
 import { usePlayers } from "../lib/use-players";
 
 const rewardMessages = ["Amazing!", "Well done!", "You did it!", "Fantastic!", "Brilliant!"];
 const chineseRewardMessages = ["好叻呀！", "做得好！", "答啱咗！", "好棒呀！", "你真係叻！"];
+
+function mixAnswers(question, random) {
+  return {
+    ...question,
+    ...(question.options && { options: shuffled(question.options, random) }),
+    ...(question.choices && question.missing !== 1 && { choices: shuffled(question.choices, random) }),
+  };
+}
 
 // Routes: "/" is the game picker, "/<game>" lists a game's topics (or is Mochi's den),
 // and "/<game>/<topic>" plays a topic. The address is the source of truth for where we are.
@@ -67,8 +75,12 @@ export default function GameApp() {
   const deck = routeTopic ? currentPlayer?.decks?.[categoryKey] : null;
   const validDeck = Boolean(deck) && deck.length === handSize && new Set(deck).size === handSize &&
     deck.every((index) => index < routeTopic.words.length);
+  // The answers move around with every deal too: picture, noun and character choices, and CVC
+  // letters (except the middle sound's a-e-i-o-u, which are always all there). They're mixed from
+  // the dealt hand, so a reload mid-question doesn't move them.
+  const dealSeed = validDeck ? `${categoryKey}:${deck.join(",")}` : "";
   const selectedCategory = routeTopic && validDeck
-    ? { ...routeTopic, words: deck.map((index) => routeTopic.words[index]) }
+    ? { ...routeTopic, words: deck.map((index, position) => mixAnswers(routeTopic.words[index], seededRandom(`${dealSeed}:${position}`))) }
     : null;
 
   // Where we are in the open topic. `key` says which topic this belongs to, so a stale round
@@ -103,7 +115,7 @@ export default function GameApp() {
   const answerLetters = answer.replaceAll(" ", "");
   // Positions the learner fills in: every letter in Letter Jumble, one letter in CVC Sounds.
   const blanks = puzzle?.missing !== undefined ? [puzzle.missing] : answerLetters.split("").map((_, index) => index);
-  const tiles = puzzle ? puzzle.choices ?? scramble(answerLetters, round) : [];
+  const tiles = puzzle ? puzzle.choices ?? scramble(answerLetters, round, seededRandom(`${dealSeed}:${round}:tiles`)) : [];
   const complete = Boolean(puzzle) && placed.length === blanks.length &&
     placed.every((tile, slotIndex) => tile !== null && tiles[tile] === answerLetters[blanks[slotIndex]]);
   const allPlaced = placed.every((tile) => tile !== null);

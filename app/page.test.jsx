@@ -853,6 +853,34 @@ describe("成語", () => {
   });
 });
 
+describe("answers move around", () => {
+  // Where 紅's picture sits, when it's the first question of a dealt hand.
+  function redSpot(deck) {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4", decks: { "chinese/colours": deck } }], current: "Ada" }));
+    setPathname("/chinese/colours");
+    const { unmount } = render(<GameApp />);
+    const spot = [...document.querySelectorAll(".chinese-option")].findIndex((option) => option.dataset.character === "紅");
+    unmount();
+    return spot;
+  }
+
+  it("puts the right answer in a different place with each new deal, but not on a reload", () => {
+    const deal = (rest) => [0, ...rest];
+    const deals = [
+      deal([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
+      deal([12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]),
+      deal([5, 1, 9, 3, 11, 7, 2, 12, 4, 8, 6, 10]),
+      deal([2, 4, 6, 8, 10, 12, 1, 3, 5, 7, 9, 11]),
+      deal([7, 3, 11, 1, 9, 5, 12, 8, 2, 10, 4, 6]),
+      deal([9, 12, 3, 6, 1, 4, 7, 10, 2, 5, 8, 11]),
+    ];
+    const spots = deals.map(redSpot);
+    spots.forEach((spot) => expect(spot).toBeGreaterThanOrEqual(0));
+    expect(new Set(spots).size).toBeGreaterThan(1);
+    expect(redSpot(deals[2])).toBe(spots[2]);
+  });
+});
+
 describe("one try per question", () => {
   const seedClothes = (results, extra = {}) => window.localStorage.setItem(playersKey, JSON.stringify({
     players: [{
