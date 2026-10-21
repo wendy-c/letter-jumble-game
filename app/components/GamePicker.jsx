@@ -6,8 +6,8 @@ export default function GamePicker({ games, onSelectGame, emptyMessage }) {
   return (
     <section className="game-wrap category-menu mx-auto w-full max-w-6xl" aria-labelledby="game-title">
       <div className="menu-heading">
-        <p className="eyebrow">WELCOME TO THE MAGIC ACADEMY</p>
-        <h1 id="game-title">Choose an adventure!</h1>
+        <p className="eyebrow">WELCOME TO THE RAINBOW ACADEMY</p>
+        <h1 id="game-title">Learn, Play, Shine!</h1>
         <p className="heading-note">Which magic lesson shall we play today?</p>
       </div>
       {games.length === 0 && emptyMessage && <p className="game-picker-empty">{emptyMessage}</p>}

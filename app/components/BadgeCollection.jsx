@@ -29,7 +29,7 @@ export default function BadgeCollection({ player, onClose }) {
         <button className="word-menu-close player-dialog-close" type="button" aria-label="Close badges" onClick={onClose}>
           ×
         </button>
-        <p className="eyebrow">MAGIC ACADEMY</p>
+        <p className="eyebrow">RAINBOW ACADEMY</p>
         <h2 id="badge-title">{player.name}’s badges</h2>
         <p className="badge-count">
           <span aria-hidden="true">🏅</span> {earnedCount} of {all.length} badges

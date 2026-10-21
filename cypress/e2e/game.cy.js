@@ -303,7 +303,7 @@ describe("Movers spelling game", () => {
 describe("CVC sounds game", () => {
   it("offers the games and the four CVC modes", () => {
     cy.visit("/");
-    cy.contains("h1", "Choose an adventure!");
+    cy.contains("h1", "Learn, Play, Shine!");
     cy.get(".game-choice-card").should("have.length", 7);
     cy.contains("button", "CVC Sounds").click();
     addPlayer("Ada", "3-4");
@@ -313,7 +313,7 @@ describe("CVC sounds game", () => {
       cy.contains(".category-card", mode).should("contain.text", "12");
     });
     crumb("Home");
-    cy.contains("h1", "Choose an adventure!");
+    cy.contains("h1", "Learn, Play, Shine!");
   });
 
   it("leaves only the beginning letter to fill in", () => {
@@ -420,7 +420,7 @@ describe("players", () => {
 
     cy.get('button[aria-label$="Player options"]').click();
     cy.contains('[role="menuitem"]', "Log out").click();
-    cy.contains("h1", "Choose an adventure!");
+    cy.contains("h1", "Learn, Play, Shine!");
     storedPlayers().should("deep.equal", {
       players: [
         { name: "Mia", coins: 1, age: "5-6", progress: { "letter-jumble/animals": 1 }, decks: { "letter-jumble/animals": [...Array(13).keys()] }, results: { "letter-jumble/animals": [true] } },
@@ -540,7 +540,7 @@ describe("routes", () => {
   it("sends an address for another age group back to the picker", () => {
     cy.visit("/letter-jumble", seed("3-4"));
     cy.location("pathname").should("eq", "/");
-    cy.contains("h1", "Choose an adventure!");
+    cy.contains("h1", "Learn, Play, Shine!");
   });
 });
 

@@ -73,7 +73,7 @@ async function earnCoin(user) {
 describe("Home", () => {
   it("starts on the game picker", () => {
     render(<GameApp />);
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Choose an adventure!");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Learn, Play, Shine!");
     const gameCards = screen.getAllByRole("button").filter((button) => button.classList.contains("game-choice-card"));
     expect(gameCards.map((card) => card.querySelector(".category-card-name").textContent)).toEqual(["CVC Sounds", "Letter Jumble for Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語", "Mochi the Rainbow Dragon"]);
   });
@@ -153,7 +153,7 @@ describe("Home", () => {
     await user.click(crumb("CVC Sounds"));
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("CVC Sounds");
     await user.click(crumb("Home"));
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Choose an adventure!");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Learn, Play, Shine!");
   });
 
   it("turns on the spelling guide from the word menu", async () => {
@@ -184,7 +184,7 @@ describe("players", () => {
 
     await user.click(within(dialog).getByRole("button", { name: "Close" }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Choose an adventure!");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Learn, Play, Shine!");
   });
 
   it("creates a new player with a name and age, and opens the chosen game", async () => {
@@ -286,7 +286,7 @@ describe("players", () => {
     await user.click(screen.getByRole("button", { name: /Player options/ }));
     await user.click(screen.getByRole("menuitem", { name: "Log out" }));
 
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Choose an adventure!");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Learn, Play, Shine!");
     expect(screen.queryByRole("button", { name: /Player options/ })).not.toBeInTheDocument();
     expect(storedPlayers()).toEqual({ players: [{ name: "Ada", coins: 0, age: "5-6", decks: animalsDeck }], current: null });
 
@@ -342,7 +342,7 @@ describe("ages", () => {
     await user.click(screen.getByRole("button", { name: /Letter Jumble/ }));
     await addPlayer(user, "Mia", "3-4");
 
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Choose an adventure!");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Learn, Play, Shine!");
     expect(shownGames()).toEqual(["CVC Sounds", "中文認字 · 入門篇", "Mochi the Rainbow Dragon"]);
   });
 
@@ -558,7 +558,7 @@ describe("routes", () => {
     act(() => setPathname("/cvc"));
     expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent("CVC Sounds");
     act(() => setPathname("/"));
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Choose an adventure!");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Learn, Play, Shine!");
   });
 
   it("asks who's playing when a game's address is opened with nobody playing, then opens it", async () => {
