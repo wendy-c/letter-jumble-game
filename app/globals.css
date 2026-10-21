@@ -3537,77 +3537,57 @@ a:focus-visible {
 }
 
 .badge-medal {
-  --badge-rim: #ffd66b;
-  --badge-face: linear-gradient(160deg, #fff8df, #fff0c4);
   position: relative;
   display: grid;
-  width: 76px;
-  height: 84px;
-  place-items: start center;
-}
-
-.badge-medal-face {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  width: 70px;
-  height: 70px;
+  width: 80px;
+  height: 86px;
   place-items: center;
-  border: 4px solid var(--badge-rim);
-  border-radius: 50%;
-  background: var(--badge-face);
-  box-shadow: 0 0 0 3px #fff, 0 4px 0 3px var(--gold), 0 10px 18px rgb(185 125 12 / 25%);
 }
 
-.badge-medal-face img {
-  width: 44px;
-  height: 44px;
+.badge-medal img {
+  width: 80px;
+  height: 86px;
+  filter: drop-shadow(0 5px 6px rgb(185 125 12 / 22%));
 }
 
-.badge-ribbon {
-  position: absolute;
-  top: 52px;
-  width: 18px;
-  height: 30px;
-  background: var(--pink);
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
+.badge-medal-earned img {
+  animation: badge-bob 3s ease-in-out infinite;
 }
 
-.badge-ribbon-left {
-  left: 18px;
-  transform: rotate(16deg);
-}
-
-.badge-ribbon-right {
-  right: 18px;
-  background: var(--magic);
-  transform: rotate(-16deg);
+@keyframes badge-bob {
+  50% {
+    transform: translateY(-3px) rotate(2deg);
+  }
 }
 
 .badge-shine {
   position: absolute;
-  z-index: 2;
-  top: -4px;
-  right: 2px;
+  top: 0;
+  right: 0;
   color: var(--gold);
   font-size: 16px;
   text-shadow: 0 0 6px #fff;
   animation: twinkle 2.4s ease-in-out infinite;
 }
 
-.badge-peach { --badge-face: linear-gradient(160deg, #fff3ea, #ffe6d9); }
-.badge-lilac { --badge-face: linear-gradient(160deg, #f6f1ff, #ebe1ff); }
-.badge-blue { --badge-face: linear-gradient(160deg, #eef7fd, #ddeefb); }
-.badge-green { --badge-face: linear-gradient(160deg, #eefaf3, #dcf3e6); }
-.badge-yellow { --badge-face: linear-gradient(160deg, #fff8df, #fff0c4); }
-.badge-pink { --badge-face: linear-gradient(160deg, #fff0f6, #ffe1ee); }
+/* Not earned yet: a faded silhouette of the badge to aim for. */
+.badge-medal-locked img {
+  filter: grayscale(1);
+  opacity: 0.32;
+}
 
-.badge-medal-locked .badge-medal-face {
+.badge-lock {
+  position: absolute;
+  top: 26px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
   border: 3px dashed var(--line-strong);
-  background: rgb(241 235 255 / 60%);
-  box-shadow: none;
-  color: var(--line-strong);
-  font-size: 28px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 85%);
+  color: var(--magic);
+  font-size: 18px;
   font-weight: 700;
 }
 
@@ -3634,6 +3614,7 @@ a:focus-visible {
 
 @media (prefers-reduced-motion: reduce) {
   .badge-shine,
+  .badge-medal-earned img,
   .completion-badge {
     animation: none;
   }

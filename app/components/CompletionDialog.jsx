@@ -26,7 +26,7 @@ export const chineseCompletionText = {
 };
 
 // The end of a topic: how many answers were right (e.g. 8 / 10). Only a perfect score earns the
-// topic's badge; `badge` is the topic when it just did, and `hasBadge` says it was earned before.
+// topic's badge; `badge` is { name, image } when it just did, and `hasBadge` says it was earned before.
 // Continuing goes back to the topic list.
 export default function CompletionDialog({ topicName, count, correct = count, badge = null, hasBadge = false, text = englishCompletionText, onDone }) {
   const perfect = correct === count;
@@ -51,7 +51,7 @@ export default function CompletionDialog({ topicName, count, correct = count, ba
           </p>
           {badge && (
             <div className="completion-badge">
-              <BadgeMedal topic={badge} earned />
+              <BadgeMedal image={badge.image} earned />
               <p>{text.badge(badge.name)}</p>
             </div>
           )}

@@ -40,13 +40,13 @@ export default function BadgeCollection({ player, onClose }) {
           <section className="badge-shelf" key={game.id} aria-labelledby={`badge-shelf-${game.id}`}>
             <h3 id={`badge-shelf-${game.id}`}>{game.name}</h3>
             <ul className="badge-grid">
-              {badges.map(({ key, topic, earned }) => (
+              {badges.map(({ key, topic, image, earned }) => (
                 <li
                   className={`badge-item${earned ? " badge-item-earned" : ""}`}
                   key={key}
                   aria-label={`${topic.name}: ${earned ? "earned" : "not earned yet"}`}
                 >
-                  <BadgeMedal topic={topic} earned={earned} />
+                  <BadgeMedal image={image} earned={earned} />
                   <span className="badge-name">{topic.name}</span>
                 </li>
               ))}

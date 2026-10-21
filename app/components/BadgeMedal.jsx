@@ -1,22 +1,10 @@
-import LetterPattern from "./LetterPattern";
-
-// A round medal on a ribbon showing the topic's picture. Unearned, it's a dashed placeholder.
-export default function BadgeMedal({ topic, earned }) {
-  if (!earned) {
-    return (
-      <span className="badge-medal badge-medal-locked" aria-hidden="true">
-        <span className="badge-medal-face">?</span>
-      </span>
-    );
-  }
+// A topic's badge picture. Not earned yet, it's greyed out under a question mark, so children
+// can see what they're working towards.
+export default function BadgeMedal({ image, earned }) {
   return (
-    <span className={`badge-medal badge-${topic.color}`} aria-hidden="true">
-      <span className="badge-ribbon badge-ribbon-left" />
-      <span className="badge-ribbon badge-ribbon-right" />
-      <span className="badge-medal-face">
-        {topic.pattern ? <LetterPattern letters={topic.pattern} /> : <img src={topic.icon} alt="" width="44" height="44" />}
-      </span>
-      <span className="badge-shine">✦</span>
+    <span className={`badge-medal${earned ? " badge-medal-earned" : " badge-medal-locked"}`} aria-hidden="true">
+      <img src={image} alt="" width="80" height="86" />
+      {earned ? <span className="badge-shine">✦</span> : <span className="badge-lock">?</span>}
     </span>
   );
 }

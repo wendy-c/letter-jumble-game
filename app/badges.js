@@ -20,6 +20,9 @@ export const topicsByGame = {
 
 export const badgeKey = (gameId, topicId) => `${gameId}/${topicId}`;
 
+// Each topic's badge picture, drawn by scripts/make-badges.py.
+export const badgeImage = (gameId, topicId) => `/images/badges/${gameId}/${topicId}.svg`;
+
 // The badge shelves a player sees: one per game they can play that has topics, in game order.
 export function badgeShelves(player) {
   return gamesForPlayer(player)
@@ -29,6 +32,7 @@ export function badgeShelves(player) {
       badges: topicsByGame[game.id].map((topic) => ({
         key: badgeKey(game.id, topic.id),
         topic,
+        image: badgeImage(game.id, topic.id),
         earned: Boolean(player?.badges?.includes(badgeKey(game.id, topic.id))),
       })),
     }));

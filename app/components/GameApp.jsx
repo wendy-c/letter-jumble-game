@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { topicsByGame } from "../badges";
+import { badgeImage, topicsByGame } from "../badges";
 import { games, gamesForPlayer, isGameAvailable } from "../games-data";
 import AnswerPanel from "./AnswerPanel";
 import AnswerRevealDialog, { chineseRevealLabels } from "./AnswerRevealDialog";
@@ -322,7 +322,7 @@ export default function GameApp() {
     const hasBadge = Boolean(currentPlayer?.badges?.includes(categoryKey));
     const newBadge = correct === count && !hasBadge;
     if (newBadge) awardBadge(categoryKey);
-    setCompletedTopic({ name: selectedCategory.name, count, correct, hasBadge, badge: newBadge ? routeTopic : null });
+    setCompletedTopic({ name: selectedCategory.name, count, correct, hasBadge, badge: newBadge ? { name: routeTopic.name, image: badgeImage(selectedGame.id, routeTopic.id) } : null });
     sounds.sparkle?.();
   }
 
