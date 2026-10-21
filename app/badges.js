@@ -1,4 +1,5 @@
 import { categories } from "./game-data";
+import { starterCategories } from "./starters-data";
 import { cvcModes } from "./cvc-data";
 import { chineseAdvancedTopics, chineseTopics } from "./chinese-data";
 import { measureWordTopics } from "./measure-words-data";
@@ -13,6 +14,7 @@ export const topicsByGame = {
   "chinese-advanced": chineseAdvancedTopics,
   "measure-words": measureWordTopics,
   idioms: idiomTopics,
+  starters: starterCategories,
   "letter-jumble": categories,
 };
 

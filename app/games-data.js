@@ -15,6 +15,15 @@ export const games = [
     ages: ["3-4"],
   },
   {
+    id: "starters",
+    name: "Letter Jumble for Starters",
+    color: "green",
+    pattern: ["c", "a", "t"],
+    note: "For age 5-6 - Cambridge Starters · 2 topics",
+    badge: "CAMBRIDGE STARTERS",
+    ages: ["5-6"],
+  },
+  {
     id: "letter-jumble",
     name: "Letter Jumble for Movers",
     color: "lilac",

@@ -162,18 +162,23 @@ export const categories = [
       ["Rainbow", "/images/words/weather-and-seasons/rainbow.svg"],
     ],
   }
-].map((category) => ({
-  ...category,
-  words: category.words.map((entry) => {
-    const [word, picture] = Array.isArray(entry) ? entry : [null, entry.picture];
-    const answers = Array.isArray(entry) ? [word.toLowerCase()] : entry.answers;
+].map(wordCategory);
 
-    return {
-      word: answers[0],
-      answers,
-      picture,
-      category: category.name.toUpperCase(),
-      color: category.color,
-    };
-  }),
-}));
+// Turns a topic's [word, picture] pairs into spelling puzzles. Shared with Letter Jumble for Starters.
+export function wordCategory(category) {
+  return {
+    ...category,
+    words: category.words.map((entry) => {
+      const [word, picture] = Array.isArray(entry) ? entry : [null, entry.picture];
+      const answers = Array.isArray(entry) ? [word.toLowerCase()] : entry.answers;
+
+      return {
+        word: answers[0],
+        answers,
+        picture,
+        category: category.name.toUpperCase(),
+        color: category.color,
+      };
+    }),
+  };
+}

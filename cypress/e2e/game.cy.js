@@ -25,7 +25,7 @@ function addPlayer(name, age = "5-6") {
 // pass null when a player is already selected (e.g. seeded in localStorage).
 function visitLetterJumble(options, newPlayer = "Ada") {
   cy.visit("/", options);
-  cy.contains("button", "Letter Jumble").click();
+  cy.contains("button", "Letter Jumble for Movers").click();
   if (newPlayer) addPlayer(newPlayer);
 }
 
@@ -304,7 +304,7 @@ describe("CVC sounds game", () => {
   it("offers the games and the four CVC modes", () => {
     cy.visit("/");
     cy.contains("h1", "Learn, Play, Shine!");
-    cy.get(".game-choice-card").should("have.length", 7);
+    cy.get(".game-choice-card").should("have.length", 8);
     cy.contains("button", "CVC Sounds").click();
     addPlayer("Ada", "3-4");
     cy.contains("h1", "CVC Sounds");
