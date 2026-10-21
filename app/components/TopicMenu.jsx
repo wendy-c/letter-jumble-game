@@ -5,7 +5,7 @@ import LetterPattern from "./LetterPattern";
 function cardNote(isChinese, isMeasure, done, total) {
   if (isMeasure || isChinese === "idiom") return done > 0 ? `已答 ${done} / ${total} 題` : `每次 ${total} 題`;
   if (isChinese) return done > 0 ? `已學 ${done} / ${total} 個字` : `${total} 個字`;
-  return done > 0 ? `${done} of ${total} spells learned` : `${total} spells to learn`;
+  return done > 0 ? `${done} of ${total} words learned` : `${total} words to learn`;
 }
 
 export default function TopicMenu({ isCvc, isChinese = false, isMeasure = false, isIdiom = false, topics, progressFor = () => 0, breadcrumbs, onSelectTopic }) {
@@ -56,7 +56,7 @@ export default function TopicMenu({ isCvc, isChinese = false, isMeasure = false,
           />
         ))}
       </div>
-      <GameFooter>{isChinese || isMeasure || isIdiom ? "選一個主題" : isCvc ? "PICK A SOUND" : "PICK A SPELL BOOK"}</GameFooter>
+      <GameFooter>{isChinese || isMeasure || isIdiom ? "選一個主題" : isCvc ? "PICK A GAME" : "PICK A SPELL BOOK"}</GameFooter>
     </section>
   );
 }

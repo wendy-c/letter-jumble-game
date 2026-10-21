@@ -1,4 +1,4 @@
-export default function SiteHeader({ badge, children }) {
+export default function SiteHeader({ children }) {
   return (
     <header className="topbar mx-auto flex w-full max-w-6xl items-center justify-between">
       <a className="brand" href="/" aria-label="Word Wave home">
@@ -6,10 +6,6 @@ export default function SiteHeader({ badge, children }) {
         <span className="brand-wave">The Magic Academy</span>
       </a>
       <div className="topbar-tools">
-        <div className="exam-badge">
-          <span className="badge-sparkle" aria-hidden="true">✦</span>
-          {badge}
-        </div>
         {children}
       </div>
     </header>
