@@ -21,7 +21,7 @@ beforeEach(() => {
   window.localStorage.clear();
   jest.clearAllMocks();
   // A shuffle with random() just below 1 keeps the original order, so CVC games deal the
-  // first 20 words in order (cat, hat, bat, ...). Tests about shuffling override this.
+  // first 12 words in order (cat, hat, bat, ...). Tests about shuffling override this.
   jest.spyOn(Math, "random").mockReturnValue(0.9999999);
 });
 
@@ -76,7 +76,6 @@ describe("Home", () => {
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Choose an adventure!");
     const gameCards = screen.getAllByRole("button").filter((button) => button.classList.contains("game-choice-card"));
     expect(gameCards.map((card) => card.querySelector(".category-card-name").textContent)).toEqual(["CVC Sounds", "Letter Jumble for Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語", "Mochi the Rainbow Dragon"]);
-    expect(screen.getByText("SPELLING SCHOOL")).toBeInTheDocument();
   });
 
   it("plays a Letter Jumble word and earns a rainbow coin", async () => {
@@ -85,7 +84,6 @@ describe("Home", () => {
     await openGame(user, "Letter Jumble", "Animals");
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Animals");
-    expect(screen.getByText("CAMBRIDGE MOVERS")).toBeInTheDocument();
     for (const letter of ["b", "a", "t"]) {
       await user.click(screen.getByRole("button", { name: `Letter ${letter}` }));
     }
@@ -126,7 +124,6 @@ describe("Home", () => {
     render(<GameApp />);
     await openGame(user, "CVC Sounds", "Middle Sound");
 
-    expect(screen.getByText("CVC SOUNDS")).toBeInTheDocument();
     expect(screen.queryByRole("switch")).not.toBeInTheDocument();
     expect(screen.getByLabelText("Letter 1 of 3, c")).toHaveClass("letter-given");
 
@@ -299,7 +296,6 @@ describe("rainbow dragon", () => {
     await user.click(within(screen.getByRole("dialog", { name: whoIsPlaying })).getByRole("button", { name: /Ada/ }));
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Mochi the Rainbow Dragon");
-    expect(screen.getByText("RAINBOW DRAGON")).toBeInTheDocument();
     expect(screen.getByTestId("dragon-scene")).toBeInTheDocument();
 
     await user.click(screen.getByRole("tab", { name: /Grooming/ }));
@@ -364,8 +360,8 @@ describe("progress", () => {
     expect(screen.getByLabelText("Word 2 of 13")).toBeInTheDocument();
 
     await user.click(crumb("Letter Jumble for Movers"));
-    expect(screen.getByRole("button", { name: /Animals/ })).toHaveTextContent("1 of 13 spells learned");
-    expect(screen.getByRole("button", { name: /Body and Face/ })).toHaveTextContent("13 spells to learn");
+    expect(screen.getByRole("button", { name: /Animals/ })).toHaveTextContent("1 of 13 words learned");
+    expect(screen.getByRole("button", { name: /Body and Face/ })).toHaveTextContent("13 words to learn");
 
     // Like reloading the page: the address stays on the game's topic list.
     unmount();
@@ -401,7 +397,7 @@ describe("progress", () => {
     await user.click(within(praise).getByRole("button", { name: /Back to all topics/ }));
     expect(currentPathname()).toBe("/letter-jumble");
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Animals/ })).toHaveTextContent("13 spells to learn");
+    expect(screen.getByRole("button", { name: /Animals/ })).toHaveTextContent("13 words to learn");
 
     await user.click(screen.getByRole("button", { name: /Animals/ }));
     expect(screen.getByLabelText("Word 1 of 13")).toBeInTheDocument();
@@ -433,17 +429,17 @@ describe("progress", () => {
         coins: 0,
         age: "3-4",
         progress: { "cvc/middle-sound": 5 },
-        decks: { "cvc/middle-sound": [...Array(20).keys()] },
+        decks: { "cvc/middle-sound": [...Array(12).keys()] },
       }],
       current: "Ada",
     }));
     const user = userEvent.setup();
     render(<GameApp />);
     await openGame(user, "CVC Sounds", "Middle Sound");
-    expect(screen.getByLabelText("Word 6 of 20")).toBeInTheDocument();
+    expect(screen.getByLabelText("Word 6 of 12")).toBeInTheDocument();
     await user.click(crumb("CVC Sounds"));
     await user.click(screen.getByRole("button", { name: /Beginning Sound/ }));
-    expect(screen.getByLabelText("Word 1 of 20")).toBeInTheDocument();
+    expect(screen.getByLabelText("Word 1 of 12")).toBeInTheDocument();
   });
 
   it("plays the correct-answer sound only for a correct answer", async () => {
@@ -608,7 +604,7 @@ describe("CVC shuffling", () => {
     current: "Ada",
   }));
 
-  it("deals 20 different words at random and keeps them when coming back", async () => {
+  it("deals 12 different words at random and keeps them when coming back", async () => {
     seed();
     let calls = 0;
     Math.random.mockImplementation(() => ((calls += 1) * 0.37) % 1);
@@ -616,35 +612,35 @@ describe("CVC shuffling", () => {
     render(<GameApp />);
 
     await user.click(screen.getByRole("button", { name: /CVC Sounds/ }));
-    expect(screen.getByRole("button", { name: /Beginning Sound/ })).toHaveTextContent("20 spells to learn");
+    expect(screen.getByRole("button", { name: /Beginning Sound/ })).toHaveTextContent("12 words to learn");
     await user.click(screen.getByRole("button", { name: /Beginning Sound/ }));
 
     const deck = storedPlayers().players[0].decks["cvc/beginning-sound"];
-    expect(deck).toHaveLength(20);
-    expect(new Set(deck).size).toBe(20);
-    expect(deck).not.toEqual([...Array(20).keys()]);
-    expect(screen.getByLabelText("Word 1 of 20")).toBeInTheDocument();
+    expect(deck).toHaveLength(12);
+    expect(new Set(deck).size).toBe(12);
+    expect(deck).not.toEqual([...Array(12).keys()]);
+    expect(screen.getByLabelText("Word 1 of 12")).toBeInTheDocument();
 
     await user.click(crumb("CVC Sounds"));
     await user.click(screen.getByRole("button", { name: /Beginning Sound/ }));
     expect(storedPlayers().players[0].decks["cvc/beginning-sound"]).toEqual(deck);
   });
 
-  it("deals a fresh hand of words after finishing all 20", async () => {
-    seed({ progress: { "cvc/beginning-sound": 19 }, decks: { "cvc/beginning-sound": [...Array(20).keys()] } });
+  it("deals a fresh hand of words after finishing all 12", async () => {
+    seed({ progress: { "cvc/beginning-sound": 11 }, decks: { "cvc/beginning-sound": [...Array(12).keys()] } });
     setPathname("/cvc/beginning-sound");
     const user = userEvent.setup();
     render(<GameApp />);
 
-    // Word 20 of the original order is "web".
-    expect(await screen.findByLabelText("Word 20 of 20")).toBeInTheDocument();
+    // Word 12 of the original order is "bed".
+    expect(await screen.findByLabelText("Word 12 of 12")).toBeInTheDocument();
     expect(screen.getByLabelText("Letter 2 of 3, e")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Letter w" }));
+    await user.click(screen.getByRole("button", { name: "Letter b" }));
     await user.click(screen.getByRole("button", { name: /Check word/ }));
     await user.click(within(screen.getByRole("dialog", { name: /!$/ })).getByRole("button"));
 
     const praise = screen.getByRole("dialog", { name: "You did it!" });
-    expect(praise).toHaveTextContent("all 20 Beginning Sound words");
+    expect(praise).toHaveTextContent("all 12 Beginning Sound words");
     await user.click(within(praise).getByRole("button", { name: /Back to all topics/ }));
     expect(currentPathname()).toBe("/cvc");
     expect(storedPlayers().players[0].decks).toBeUndefined();
@@ -847,11 +843,11 @@ describe("parent mode", () => {
     await user.click(screen.getByRole("menuitem", { name: /Parent mode/ }));
   }
 
-  // With Math.random pinned just below 1, the grown-up question is always 19 × 9.
+  // With Math.random pinned just below 1, the grown-up question is always 11 × 9.
   async function passGrownUpCheck(user) {
     await openParentMode(user);
-    expect(within(parentDialog()).getByLabelText(/What is/)).toHaveAccessibleName(/^What is 19 × 9 ?\?$/);
-    await user.type(within(parentDialog()).getByLabelText(/What is/), "171");
+    expect(within(parentDialog()).getByLabelText(/What is/)).toHaveAccessibleName(/^What is 11 × 9 ?\?$/);
+    await user.type(within(parentDialog()).getByLabelText(/What is/), "99");
     await user.click(within(parentDialog()).getByRole("button", { name: /Continue/ }));
   }
 
@@ -922,7 +918,7 @@ describe("parent mode", () => {
     expect(within(parentDialog()).getByLabelText(/What is/)).toHaveValue("");
     expect(within(parentDialog()).queryByRole("switch")).not.toBeInTheDocument();
 
-    await user.type(within(parentDialog()).getByLabelText(/What is/), "171");
+    await user.type(within(parentDialog()).getByLabelText(/What is/), "99");
     await user.click(within(parentDialog()).getByRole("button", { name: /Continue/ }));
     expect(within(parentDialog()).getAllByRole("region")).toHaveLength(2);
 

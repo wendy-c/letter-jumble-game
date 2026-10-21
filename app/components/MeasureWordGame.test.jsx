@@ -32,7 +32,7 @@ describe("MeasureWordGame", () => {
     const wrong = pencil.options.find((option) => !option.correct);
     await userEvent.click(screen.getByRole("button", { name: new RegExp(wrong.noun) }));
     expect(screen.getByRole("button", { name: new RegExp(wrong.noun) })).toBeDisabled();
-    expect(screen.getByText("唔係呢個，再試吓！")).toBeInTheDocument();
+    expect(screen.getByText("不是這個，再試一下！")).toBeInTheDocument();
     expect(onCorrect).not.toHaveBeenCalled();
   });
 

@@ -29,7 +29,7 @@ function visitLetterJumble(options, newPlayer = "Ada") {
   if (newPlayer) addPlayer(newPlayer);
 }
 
-// CVC games deal 20 random words; random() just below 1 keeps the original order
+// CVC games deal 12 random words; random() just below 1 keeps the original order
 // (cat, hat, bat, ...) so tests know which word comes first. It's stubbed after the page
 // has loaded, because Next.js itself needs a real Math.random while starting up.
 function keepWordOrder() {
@@ -310,7 +310,7 @@ describe("CVC sounds game", () => {
     cy.contains("h1", "CVC Sounds");
     cy.get(".category-card").should("have.length", 4);
     ["Beginning Sound", "Middle Sound", "Ending Sound", "Mixed Sounds"].forEach((mode) => {
-      cy.contains(".category-card", mode).should("contain.text", "20");
+      cy.contains(".category-card", mode).should("contain.text", "12");
     });
     crumb("Home");
     cy.contains("h1", "Choose an adventure!");
@@ -318,7 +318,7 @@ describe("CVC sounds game", () => {
 
   it("leaves only the beginning letter to fill in", () => {
     visitCvcMode("Beginning Sound");
-    cy.contains("01 / 20");
+    cy.contains("01 / 12");
     cy.get(".letter-slot").should("have.length", 1);
     cy.get(".letter-given").should("have.length", 2).then(($letters) => {
       expect([...$letters].map((letter) => letter.textContent)).to.deep.equal(["a", "t"]);
@@ -331,7 +331,7 @@ describe("CVC sounds game", () => {
     cy.contains("button", "Check word").click();
     cy.get(".reward-card").should("contain.text", "Amazing!");
     cy.get(".reward-card").click();
-    cy.contains("02 / 20");
+    cy.contains("02 / 12");
   });
 
   it("offers every short vowel for the middle sound", () => {
@@ -411,7 +411,7 @@ describe("players", () => {
     cy.contains('[role="menuitem"]', "Switch player").click();
     cy.get('[role="dialog"] .player-option').contains("Mia").click();
     crumb("Letter Jumble for Movers");
-    cy.contains("button", "Animals").should("contain.text", "1 of 13 spells learned").click();
+    cy.contains("button", "Animals").should("contain.text", "1 of 13 words learned").click();
     cy.get('[aria-label="1 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
     cy.contains("02 / 13");
 
@@ -535,17 +535,17 @@ describe("routes", () => {
 });
 
 describe("CVC shuffling", () => {
-  it("deals 20 words in a random order", () => {
+  it("deals 12 words in a random order", () => {
     cy.visit("/cvc/ending-sound", {
       onBeforeLoad(win) {
         win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
       },
     });
-    cy.contains("01 / 20");
+    cy.contains("01 / 12");
     storedPlayers().then((stored) => {
       const deck = stored.players[0].decks["cvc/ending-sound"];
-      expect(deck).to.have.length(20);
-      expect(new Set(deck).size).to.eq(20);
+      expect(deck).to.have.length(12);
+      expect(new Set(deck).size).to.eq(12);
     });
   });
 });
