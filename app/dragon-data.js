@@ -18,6 +18,7 @@ export const dragonActions = [
   { id: "painting", kind: "activity", label: "Painting", icon: "🎨", cost: 2, duration: 6.8, reaction: "Look! I painted a rainbow! 🌈" },
   { id: "ballet", kind: "activity", label: "Ballet dancing", icon: "🩰", cost: 2, duration: 6.2, reaction: "Twirl, twirl, curtsy! ✨" },
   { id: "meditation", kind: "activity", label: "Meditation", icon: "🧘", cost: 2, duration: 6.4, reaction: "Breathe in… breathe out… so calm. 🌸" },
+  { id: "friend", kind: "activity", label: "Invite a friend", icon: "💌", cost: 3, duration: 9.0, reaction: "Yay, Tofu’s here! Best friends dance time! 💛" },
   { id: "sandcastle", kind: "activity", label: "Sandcastle", icon: "🏰", cost: 2, duration: 6.6, reaction: "Ta-da! A sandcastle fit for a dragon! 🏖️" },
 ];
 

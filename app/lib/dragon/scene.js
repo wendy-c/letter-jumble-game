@@ -103,8 +103,13 @@ function heartGeometry() {
 
 /* ---------- The dragon ---------- */
 
-function buildDragon(materials) {
-  const lilac = materials.toon(LILAC);
+// Mochi's friend Tofu: pale yellow, with floppy ears and two pairs of rainbow wings.
+const TOFU = { color: 0xfff0a8, belly: 0xfffcf0, snout: 0xffe3c8, ears: "floppy", wingPairs: 2 };
+
+// Builds Mochi, or with `options` another dragon: { color, belly, snout, ears: "floppy", wingPairs }.
+function buildDragon(materials, options = {}) {
+  const bodyColor = options.color ?? LILAC;
+  const lilac = materials.toon(bodyColor);
   const root = new THREE.Group();
   const turn = new THREE.Group();
   const bodyGroup = new THREE.Group();
@@ -116,7 +121,7 @@ function buildDragon(materials) {
   body.position.y = 1.05;
   bodyGroup.add(body);
 
-  const belly = part(sphere(0.62), materials.toon(CREAM), materials, 0.62, 0.035);
+  const belly = part(sphere(0.62), materials.toon(options.belly ?? CREAM), materials, 0.62, 0.035);
   belly.scale.set(1, 1.15, 0.5);
   belly.position.set(0, 0.95, 0.66);
   bodyGroup.add(belly);
@@ -177,17 +182,22 @@ function buildDragon(materials) {
   const wingMaterial = new THREE.MeshToonMaterial({
     vertexColors: true, side: THREE.DoubleSide, gradientMap: materials.toon(LILAC).gradientMap,
   });
-  const wings = [-1, 1].map((side) => {
+  // One pair of wings, or a second smaller pair below that angles downwards.
+  const wingPairs = [
+    { y: 1.6, x: 0.42, scale: 1.15, tilt: 0.1 },
+    { y: 1.15, x: 0.5, scale: 0.85, tilt: -0.55 },
+  ].slice(0, options.wingPairs ?? 1);
+  const wings = wingPairs.flatMap(({ y, x, scale, tilt }) => [-1, 1].map((side) => {
     const pivot = new THREE.Group();
-    pivot.position.set(side * 0.42, 1.6, -0.62);
+    pivot.position.set(side * x, y, -0.62);
     const wing = new THREE.Mesh(wingGeometry, wingMaterial);
-    wing.scale.set(side * 1.15, 1.15, 1);
-    wing.rotation.set(0.15, 0, side * 0.1);
+    wing.scale.set(side * scale, scale, 1);
+    wing.rotation.set(0.15, 0, side * tilt);
     pivot.add(wing);
     pivot.userData.side = side;
     bodyGroup.add(pivot);
     return pivot;
-  });
+  }));
 
   // Rainbow spikes down the back.
   RAINBOW.forEach((color, index) => {
@@ -227,7 +237,7 @@ function buildDragon(materials) {
   skull.position.y = 0.55;
   head.add(skull);
 
-  const snout = part(sphere(0.5), materials.toon(SNOUT), materials, 0.42, 0.035);
+  const snout = part(sphere(0.5), materials.toon(options.snout ?? SNOUT), materials, 0.42, 0.035);
   snout.scale.set(1.05, 0.62, 0.72);
   snout.position.set(0, 0.28, 0.74);
   head.add(snout);
@@ -303,8 +313,28 @@ function buildDragon(materials) {
   horn.add(hornSparkle);
   head.add(horn);
 
+  // Long floppy ears that hang down and flap (Tofu's).
+  const floppyEars = () => [-1, 1].map((side) => {
+    const ear = new THREE.Group();
+    ear.position.set(side * 0.98, 0.95, -0.05);
+    ear.rotation.set(0.1, side * 0.35, 0);
+    const outer = part(sphere(0.3, 0.8), lilac, materials, 0.3, 0.035);
+    outer.scale.set(0.72, 1.7, 0.42);
+    outer.position.y = -0.42;
+    const inner = new THREE.Mesh(sphere(0.22, 0.6), materials.toon(0xffc2dc));
+    inner.scale.set(0.6, 1.55, 0.22);
+    inner.position.set(0, -0.44, 0.1);
+    const tip = part(sphere(0.12, 0.5), materials.toon(side < 0 ? RAINBOW[0] : RAINBOW[4]), materials, 0.12, 0.015);
+    tip.position.y = -0.92;
+    ear.add(outer, inner, tip);
+    ear.userData.side = side;
+    ear.userData.floppy = true;
+    head.add(ear);
+    return ear;
+  });
+
   // Big fluffy ears with pink insides and white fur tufts.
-  const ears = [-1, 1].map((side) => {
+  const ears = options.ears === "floppy" ? floppyEars() : [-1, 1].map((side) => {
     const ear = new THREE.Group();
     ear.position.set(side * 0.82, 1.12, -0.06);
     ear.rotation.set(0, side * 0.35, -side * 0.55);
@@ -350,7 +380,7 @@ function buildDragon(materials) {
 
   return {
     root, turn, bodyGroup, body, feet, arms, wings, tail, head, mouth, mouthShape, tongue, smile, eyes, ears, horn, blushMaterial,
-    blushes, foam, lilac, baseColor: new THREE.Color(LILAC), wingMaterial, wingGeometry,
+    blushes, foam, lilac, baseColor: new THREE.Color(bodyColor), wingMaterial, wingGeometry,
   };
 }
 
@@ -782,7 +812,7 @@ function restPose() {
     headNod: 0, headTurn: 0, headTilt: 0,
     mouthOpen: 0, happyEyes: false, eyeOpen: 1, eyeScale: 1,
     wingFlap: 0, armL: 0, armR: 0, armHug: 0, tailSway: 0, tailLift: 0,
-    blush: 0, chill: 0, heat: 0, fire: 0, foam: 0, fluff: 0, earWiggle: 0, step: 0,
+    blush: 0, chill: 0, heat: 0, fire: 0, foam: 0, fluff: 0, earWiggle: 0, step: 0, x: 0, earFlap: 0,
   };
 }
 
@@ -825,6 +855,7 @@ const soundCues = {
   pet: [[0, "purr"], [0.35, "coo"]],
   twirl: [[0.1, "whee"], [1.6, "coo"]],
   wave: [[0.2, "coo"], [1.1, "coo"]],
+  friend: [[0.1, "coo"], [0.9, "whee"], [2.5, "giggle"], [3.1, "danceTune"], [5.8, "purr"], [6.1, "sparkle"], [7.0, "coo"], [7.7, "whee"]],
 };
 
 function playSoundCues(run, sfx) {
@@ -1394,6 +1425,114 @@ const actions = {
       { velocity: new THREE.Vector3(0, 0.4, 0), life: 1.4 }));
   },
 
+  // Mochi calls her friend Tofu, who flies in. They say hi, dance, hug, and Tofu flies home.
+  friend(run, pose, dt, ctx) {
+    const t = run.t;
+    if (!run.friend) {
+      run.friend = ctx.makeFriend();
+      run.friendShadow = ctx.makeShadow();
+    }
+    const tofu = run.friend;
+    const tofuPose = restPose();
+    tofuPose.squash = 1 + 0.022 * Math.sin(t * 2.4);
+    tofuPose.tailSway = 0.45 * Math.sin(t * 1.7);
+    tofuPose.headTilt = -0.06 * Math.sin(t * 0.8);
+
+    // Mochi calls out and makes room on her left.
+    const together = easeInOut(between(t, 0.8, 2.0)) * (1 - easeInOut(between(t, 7.8, 8.8)));
+    pose.x = -1.15 * together;
+    pose.turn += 0.35 * together;
+    tofuPose.turn = -0.45;
+    if (t < 1.0) {
+      pose.armR = 1.6 * pulse(t, 0, 1.0);
+      pose.headNod -= 0.15 * pulse(t, 0, 1.0);
+      pose.headTurn += 0.3 * pulse(t, 0, 1.0);
+      once(run, "call", () => ctx.fx.spawn(ctx.fx.text("Tofu!", "#f06aa8", ctx.headWorld().add(new THREE.Vector3(1.1, 0.9, 0.4)), 1.1),
+        { velocity: new THREE.Vector3(0.3, 0.4, 0), life: 1.3 }));
+    }
+
+    // Tofu flies in on both pairs of wings, lands with a bounce, and later flies off again.
+    const landed = new THREE.Vector3(1.35, 0, 0);
+    const sky = new THREE.Vector3(4.8, 5.2, -1.5);
+    const arrive = easeInOut(between(t, 0.7, 2.4));
+    const leave = easeInOut(between(t, 7.7, 9.0));
+    const position = new THREE.Vector3().lerpVectors(sky, landed, arrive).lerp(sky, leave);
+    const flying = (1 - between(t, 2.2, 2.5)) + between(t, 7.5, 7.8);
+    position.y += Math.sin(t * 9) * 0.08 * Math.min(1, flying);
+    tofuPose.wingFlap = Math.min(1, flying) * 0.7 * Math.sin(t * 24) + 0.14 * Math.sin(t * 2.6);
+    tofuPose.earFlap = Math.min(1, flying) * 0.5 * Math.sin(t * 24 + 1) + 0.3 * pulse(t, 2.3, 2.9);
+    tofuPose.squash -= 0.12 * pulse(t, 2.35, 2.75);
+    tofuPose.turn += 0.6 * leave;
+    if (t > 0.7 && t < 2.3) emit(run, "trail", 14, dt, () => ctx.fx.sparkles(tofu.body.getWorldPosition(new THREE.Vector3()), 1, 1));
+
+    // Hi!
+    if (t > 2.5 && t < 3.1) {
+      pose.happyEyes = tofuPose.happyEyes = true;
+      tofuPose.armR = 1.7 * pulse(t, 2.5, 3.1);
+      once(run, "hi", () => {
+        ctx.fx.spawn(ctx.fx.text("hi!", "#f2b632", tofu.head.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0.6, 1.0, 0.3)), 1.0),
+          { velocity: new THREE.Vector3(0, 0.4, 0), life: 1.3 });
+        ctx.fx.hearts(new THREE.Vector3(0.1, 3.3, 0.4), 3);
+      });
+    }
+
+    // Dance together: bouncing in turn, arms up, and a twirl each.
+    if (t > 3.1 && t < 5.7) {
+      const beat = (t - 3.1) * 4.6;
+      pose.hop += Math.max(0, Math.sin(beat)) * 0.35;
+      tofuPose.hop = Math.max(0, -Math.sin(beat)) * 0.35;
+      pose.armL = pose.armR = 1.3 + 0.4 * Math.sin(beat);
+      tofuPose.armL = tofuPose.armR = 1.3 - 0.4 * Math.sin(beat);
+      pose.happyEyes = tofuPose.happyEyes = true;
+      pose.blush = tofuPose.blush = 0.7;
+      const spin = easeInOut(between(t, 4.4, 5.2)) * Math.PI * 2;
+      pose.turn += spin;
+      tofuPose.turn += spin;
+      emit(run, "notes", 3, dt, () => ctx.fx.spawn(ctx.fx.text(pick(["♪", "♫"]), pick(["#8a6ae6", "#f06aa8", "#f2b632"]), new THREE.Vector3(rand(-2, 2), rand(3, 3.8), 0.5), 0.9),
+        { velocity: new THREE.Vector3(rand(-0.2, 0.2), 0.6, 0), life: 1.4 }));
+    }
+
+    // A big hug.
+    const hug = pulse(t, 5.7, 7.0);
+    if (hug > 0) {
+      pose.lean -= 0.16 * hug;
+      tofuPose.lean += 0.16 * hug;
+      pose.armHug = tofuPose.armHug = hug;
+      pose.armL = pose.armR = Math.max(pose.armL, 0.6 * hug);
+      tofuPose.armL = tofuPose.armR = 0.6 * hug;
+      pose.happyEyes = tofuPose.happyEyes = true;
+      pose.blush = tofuPose.blush = hug;
+      once(run, "hug", () => {
+        ctx.fx.hearts(new THREE.Vector3(0.1, 2.9, 0.4), 7);
+        ctx.fx.spawn(ctx.fx.text("hugs!", "#f06aa8", new THREE.Vector3(0.1, 3.75, 1.3), 1.0), { velocity: new THREE.Vector3(0, 0.15, 0), life: 1.6 });
+      });
+    }
+
+    // Bye-bye waves from both.
+    const bye = between(t, 7.0, 7.3) * (1 - between(t, 8.6, 9.0));
+    if (bye > 0) {
+      tofuPose.armR = 1.9 * bye;
+      tofu.arms[1].userData.forward = -0.25 * bye;
+      tofu.arms[1].userData.wave = Math.sin(t * 12) * 0.5 * bye;
+      pose.armR = Math.max(pose.armR, 1.9 * bye);
+      ctx.arms[1].userData.forward = -0.25 * bye;
+      ctx.arms[1].userData.wave = Math.sin(t * 12 + 1) * 0.5 * bye;
+      pose.happyEyes = true;
+      once(run, "bye", () => ctx.fx.spawn(ctx.fx.text("bye-bye!", "#8a6ae6", ctx.headWorld().add(new THREE.Vector3(-0.2, 1.1, 0.4)), 1.0),
+        { velocity: new THREE.Vector3(0, 0.4, 0), life: 1.4 }));
+    }
+
+    if (tofuPose.happyEyes) tofuPose.earWiggle += 0.12 * Math.sin(t * 14);
+    tofuPose.x = position.x;
+    tofuPose.hop += position.y;
+    applyPose(tofu, tofuPose, 0);
+    tofu.root.position.z = position.z;
+    tofu.root.scale.setScalar(0.85);
+    run.friendShadow.position.set(position.x, 0.006, position.z);
+    run.friendShadow.scale.setScalar(Math.max(0.2, 0.85 - position.y * 0.18));
+    run.friendShadow.material.opacity = Math.max(0, 1 - position.y * 0.25);
+  },
+
   pet(run, pose, dt, ctx) {
     const t = run.t;
     const amount = between(t, 0, 0.2) * (1 - between(t, 1.7, 2.2));
@@ -1409,7 +1548,7 @@ const actions = {
 };
 
 function applyPose(dragon, pose, userTurn) {
-  dragon.root.position.y = pose.hop;
+  dragon.root.position.set(pose.x, pose.hop, 0);
   dragon.root.rotation.z = pose.lean;
   dragon.turn.rotation.y = pose.turn + userTurn;
   dragon.bodyGroup.position.x = pose.shakeX;
@@ -1438,7 +1577,10 @@ function applyPose(dragon, pose, userTurn) {
 
   dragon.ears.forEach((ear) => {
     const side = ear.userData.side;
-    ear.rotation.z = -side * (0.55 + pose.earWiggle);
+    // Floppy ears hang down and swing out; pointy ones stand up and wiggle.
+    ear.rotation.z = ear.userData.floppy
+      ? side * (0.45 + pose.earWiggle * 1.5 + pose.earFlap)
+      : -side * (0.55 + pose.earWiggle);
   });
   dragon.wings.forEach((wing) => {
     const side = wing.userData.side;
@@ -1511,6 +1653,23 @@ export function createDragonScene(container, { onPet, sfx = sounds } = {}) {
 
   const fx = new Effects(scene, materials);
   const ctx = {
+    // Tofu, built fresh for each visit and removed when it ends.
+    makeFriend() {
+      const friend = buildDragon(materials, TOFU);
+      friend.root.userData.dispose = () => {
+        friend.wingMaterial.dispose();
+        friend.blushMaterial.dispose();
+      };
+      scene.add(friend.root);
+      return friend;
+    },
+    makeShadow() {
+      const friendShadow = new THREE.Mesh(new THREE.CircleGeometry(1.5, 32), new THREE.MeshBasicMaterial({ map: shadowMap, transparent: true, depthWrite: false }));
+      friendShadow.rotation.x = -Math.PI / 2;
+      friendShadow.userData.dispose = () => friendShadow.material.dispose();
+      scene.add(friendShadow);
+      return friendShadow;
+    },
     scene,
     materials,
     fx,
@@ -1538,7 +1697,7 @@ export function createDragonScene(container, { onPet, sfx = sounds } = {}) {
 
   function endRun() {
     if (!run) return;
-    [run.treat, run.comb, run.towel, run.easel, run.brush, run.tutu, run.strands, run.toothbrush, run.cushion, run.sandcastle].forEach((object) => {
+    [run.treat, run.comb, run.towel, run.easel, run.brush, run.tutu, run.strands, run.toothbrush, run.cushion, run.sandcastle, run.friend?.root, run.friendShadow].forEach((object) => {
       if (!object) return;
       object.parent?.remove(object);
       object.traverse((child) => child.geometry?.dispose());
@@ -1584,6 +1743,7 @@ export function createDragonScene(container, { onPet, sfx = sounds } = {}) {
     userTurn += (targetTurn - userTurn) * Math.min(1, dt * 8);
     applyPose(dragon, pose, userTurn);
     shadow.scale.setScalar(1 - Math.min(0.4, pose.hop * 0.4));
+    shadow.position.x = pose.x;
 
     fireLight.intensity = pose.fire * (6 + Math.random() * 3);
     fireLight.position.copy(ctx.mouthWorld()).addScaledVector(ctx.headForward(), 0.8);
