@@ -20,7 +20,7 @@ export default function AnswerRevealDialog({ reveal, labels = englishRevealLabel
     <div className="reward-overlay">
       <div className="reward-dialog reveal-dialog" role="dialog" aria-modal="true" aria-labelledby="reveal-title">
         <div className="reward-card completion-card reveal-card">
-          <Mascot name="elly" className="reveal-mascot" />
+          <Mascot mood="confused" className="reveal-mascot" />
           <span className="reward-kicker">{labels.kicker}</span>
           <h2 className="reward-title reveal-title" id="reveal-title">{labels.title}</h2>
           <div className="reveal-answer" lang={lang}>

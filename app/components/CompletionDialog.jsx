@@ -6,7 +6,7 @@ export const englishCompletionText = {
   title: "You did it!",
   tryTitle: "Good try!",
   score: "right",
-  message: (topicName) => `You got every ${topicName} word right. Ada and Elly are so proud of you!`,
+  message: (topicName) => `You got every ${topicName} word right. Mochi is so proud of you!`,
   tryMessage: (topicName) => `Get every ${topicName} word right to earn its badge. Try again!`,
   practiseMessage: () => "Keep practising to get them all right!",
   button: "Back to all topics",
@@ -18,7 +18,7 @@ export const chineseCompletionText = {
   title: "你好叻呀！",
   tryTitle: "繼續加油！",
   score: "答對",
-  message: (topicName) => `「${topicName}」全部答對，Ada 同 Elly 好開心！`,
+  message: (topicName) => `「${topicName}」全部答對，Mochi 好開心！`,
   tryMessage: (topicName) => `全部答對就可以得到「${topicName}」徽章，再試一次吧！`,
   practiseMessage: () => "多練習，下次全部答對！",
   button: "返回所有主題",
@@ -38,8 +38,7 @@ export default function CompletionDialog({ topicName, count, correct = count, ba
           <span className="reward-sparkle reward-sparkle-two" aria-hidden="true">✧</span>
           <span className="completion-confetti" aria-hidden="true">🎉</span>
           <span className="completion-mascots" aria-hidden="true">
-            <Mascot name="ada" className="completion-mascot" />
-            <Mascot name="elly" className="completion-mascot" />
+            <Mascot mood="idea" className="completion-mascot" />
           </span>
           <span className="reward-kicker">{text.kicker}</span>
           <h2 className="reward-title" id="completion-title">{perfect ? text.title : text.tryTitle}</h2>

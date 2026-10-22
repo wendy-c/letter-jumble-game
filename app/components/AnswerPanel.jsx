@@ -82,7 +82,7 @@ export default function AnswerPanel({
       />
 
       <div className="answer-footer">
-        {checked && !complete && <Mascot name="elly" className="mascot-feedback" />}
+        {checked && !complete && <Mascot mood="confused" className="mascot-feedback" />}
         <p className={`feedback${checked ? (complete ? " feedback-success" : " feedback-try") : ""}`} aria-live="polite">
           {feedbackMessage({ checked, complete, allPlaced })}
         </p>

@@ -203,31 +203,13 @@ button {
   height: auto;
 }
 
-.wizard-hat {
-  position: absolute;
-  width: 46%;
-  height: auto;
-}
-
-.mascot-ada .wizard-hat {
-  top: -32%;
-  right: 8%;
-  transform: rotate(16deg);
-}
-
-.mascot-elly .wizard-hat {
-  top: -36%;
-  left: 5%;
-  transform: rotate(-16deg);
-}
-
 .mascot-caption {
   width: 46px;
   margin-top: 10px;
 }
 
 .mascot-feedback {
-  width: 50px;
+  width: 58px;
   margin-top: 12px;
   animation: float-in 300ms ease-out both;
 }
@@ -1611,7 +1593,7 @@ h1 span {
 }
 
 .completion-mascot {
-  width: 104px;
+  width: 150px;
   animation: mascot-cheer 900ms ease-in-out infinite alternate;
 }
 
@@ -1646,7 +1628,7 @@ h1 span {
 }
 
 .reveal-mascot {
-  width: 86px;
+  width: 104px;
   margin-top: 6px;
   animation: reveal-tilt 1.6s ease-in-out infinite alternate;
 }
