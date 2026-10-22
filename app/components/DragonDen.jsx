@@ -4,10 +4,11 @@ import { sounds } from "../lib/sounds";
 import DragonScene from "./DragonScene";
 import GameFooter from "./GameFooter";
 
+// Each tab is a room: treats at home, grooming in the bathroom, activities at the beach.
 const sections = [
-  { kind: "treat", label: "Treats", icon: "🍎" },
-  { kind: "groom", label: "Grooming", icon: "🛁" },
-  { kind: "activity", label: "Activities", icon: "🎨" },
+  { kind: "treat", label: "Treats", icon: "🍎", room: "home" },
+  { kind: "groom", label: "Grooming", icon: "🛁", room: "bathroom" },
+  { kind: "activity", label: "Activities", icon: "🎨", room: "beach" },
 ];
 
 const idleMessage = `Tap ${dragonName} for a snuggle!`;
@@ -98,7 +99,7 @@ export default function DragonDen({ coins, onSpendCoins, breadcrumbs }) {
 
       <div className="game-card dragon-card">
         <div className="dragon-stage-wrap">
-          <DragonScene command={command} onPet={pet} />
+          <DragonScene command={command} onPet={pet} room={sections.find((candidate) => candidate.kind === section).room} />
           <p className="dragon-bubble" aria-live="polite">{message}</p>
         </div>
 

@@ -8,9 +8,9 @@ jest.mock("../lib/sounds", () => ({ sounds: { coin: jest.fn() } }));
 
 // The real scene needs WebGL; this stand-in records commands and lets tests "tap" Mochi.
 const commands = [];
-jest.mock("./DragonScene", () => function MockDragonScene({ command, onPet }) {
+jest.mock("./DragonScene", () => function MockDragonScene({ command, onPet, room }) {
   if (command) commands.push(command.id);
-  return <button type="button" onClick={onPet}>Mochi</button>;
+  return <button type="button" onClick={onPet} data-room={room}>Mochi</button>;
 });
 
 function renderDen(coins) {
@@ -35,6 +35,19 @@ afterEach(() => {
 });
 
 describe("DragonDen", () => {
+  it("is at home for treats, walks to the bathroom for grooming and to the beach for activities", async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    renderDen(10);
+    const room = () => screen.getByRole("button", { name: "Mochi" }).dataset.room;
+    expect(room()).toBe("home");
+    await user.click(screen.getByRole("tab", { name: /Grooming/ }));
+    expect(room()).toBe("bathroom");
+    await user.click(screen.getByRole("tab", { name: /Activities/ }));
+    expect(room()).toBe("beach");
+    await user.click(screen.getByRole("tab", { name: /Treats/ }));
+    expect(room()).toBe("home");
+  });
+
   it("lists every treat, grooming item and activity with its price, one tab at a time", async () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     renderDen(10);

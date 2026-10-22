@@ -2205,7 +2205,31 @@ h1 span {
   inset: 0;
 }
 
+/* Mochi's rooms, side by side behind the see-through 3D canvas; the strip slides to the room
+   she's walking to, in step with her walk. */
+.dragon-backdrop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.dragon-backdrop-strip {
+  display: flex;
+  width: 300%;
+  height: 100%;
+  transition: transform 1.2s cubic-bezier(0.45, 0, 0.4, 1) 0.3s;
+}
+
+.dragon-backdrop-strip img {
+  width: calc(100% / 3);
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+}
+
 .dragon-canvas {
+  position: relative;
+  z-index: 1;
   display: block;
   width: 100%;
   height: 100%;
@@ -3610,6 +3634,12 @@ a:focus-visible {
   font-size: 15px;
   font-weight: 700;
   line-height: 1.35;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dragon-backdrop-strip {
+    transition: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

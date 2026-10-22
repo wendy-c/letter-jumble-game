@@ -149,11 +149,12 @@ function buildDragon(materials) {
 
     const foot = new THREE.Group();
     foot.position.set(side * 0.55, 0.16, 0.32);
+    foot.userData.baseY = 0.16;
     const pad = part(sphere(0.3), lilac, materials, 0.3, 0.035);
     pad.scale.set(1, 0.55, 1.3);
     foot.add(pad);
     addClaws(foot, [[-0.15, -0.02, 0.36], [0, -0.02, 0.4], [0.15, -0.02, 0.36]], new THREE.Euler(Math.PI / 2, 0, 0));
-    root.add(foot);
+    turn.add(foot);
     return foot;
   });
 
@@ -781,8 +782,27 @@ function restPose() {
     headNod: 0, headTurn: 0, headTilt: 0,
     mouthOpen: 0, happyEyes: false, eyeOpen: 1, eyeScale: 1,
     wingFlap: 0, armL: 0, armR: 0, armHug: 0, tailSway: 0, tailLift: 0,
-    blush: 0, chill: 0, heat: 0, fire: 0, foam: 0, fluff: 0, earWiggle: 0,
+    blush: 0, chill: 0, heat: 0, fire: 0, foam: 0, fluff: 0, earWiggle: 0, step: 0,
   };
+}
+
+// Walking to another room: turn sideways, toddle on the spot while the room slides past, then
+// turn back. `direction` is 1 for the next room on the right, -1 for the left.
+const walkTime = 1.9;
+function walkPose(walk, pose, userTurn) {
+  const t = walk.t;
+  const sideways = easeInOut(between(t, 0, 0.3)) * (1 - easeInOut(between(t, 1.55, walkTime)));
+  pose.turn += (walk.direction * Math.PI / 2 - userTurn) * sideways;
+  const stepping = between(t, 0.25, 0.4) * (1 - between(t, 1.45, 1.6));
+  const stride = Math.sin((t - 0.25) * 12);
+  pose.step = stride * stepping;
+  pose.hop += Math.abs(stride) * 0.1 * stepping;
+  pose.lean += stride * 0.05 * stepping;
+  pose.armL += (0.3 + stride * 0.35) * stepping;
+  pose.armR += (0.3 - stride * 0.35) * stepping;
+  pose.tailSway += stride * 0.6 * stepping;
+  pose.headNod += 0.05 * Math.abs(stride) * stepping;
+  if (stepping > 0.5) pose.happyEyes = true;
 }
 
 const soundCues = {
@@ -1411,6 +1431,11 @@ function applyPose(dragon, pose, userTurn) {
   dragon.blushMaterial.opacity = 0.45 + pose.blush * 0.5;
   dragon.blushes.forEach((blush) => blush.scale.set(1 + pose.blush * 0.25, 0.65 + pose.blush * 0.15, 1));
 
+  // Walking lifts one foot, then the other.
+  dragon.feet.forEach((foot, index) => {
+    foot.position.y = foot.userData.baseY + Math.max(0, (index === 0 ? 1 : -1) * pose.step) * 0.16;
+  });
+
   dragon.ears.forEach((ear) => {
     const side = ear.userData.side;
     ear.rotation.z = -side * (0.55 + pose.earWiggle);
@@ -1501,6 +1526,7 @@ export function createDragonScene(container, { onPet, sfx = sounds } = {}) {
   const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
   const idleAmount = reducedMotion ? 0.3 : 1;
   let run = null;
+  let walk = null;
   const restTurn = 0.2;
   let userTurn = restTurn;
   let targetTurn = restTurn;
@@ -1546,6 +1572,11 @@ export function createDragonScene(container, { onPet, sfx = sounds } = {}) {
       actions[run.id](run, pose, dt, ctx);
       playSoundCues(run, sfx);
       if (run.t >= run.duration) endRun();
+    }
+    if (walk) {
+      walk.t += dt;
+      walkPose(walk, pose, userTurn);
+      if (walk.t >= walkTime) walk = null;
     }
     // Happy ears wiggle.
     if (pose.happyEyes) pose.earWiggle += 0.16 * Math.sin(elapsed * 14);
@@ -1609,6 +1640,10 @@ export function createDragonScene(container, { onPet, sfx = sounds } = {}) {
       if (!action || !actions[id]) return;
       endRun();
       run = { id, t: 0, duration: action.duration, emitters: {}, done: {} };
+    },
+    // Walks to the next room on the right (1) or left (-1). Skipped when motion is reduced.
+    walk(direction) {
+      if (!reducedMotion) walk = { t: 0, direction };
     },
     dispose() {
       cancelAnimationFrame(frame);
