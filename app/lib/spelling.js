@@ -92,5 +92,5 @@ export function shuffledDeck(size, count, random = Math.random) {
 
 export function slotCount(word, wordIndex) {
   if (word.missing !== undefined) return 1;
-  return word.answers[wordIndex % word.answers.length].replaceAll(" ", "").length;
+  return word.answers[wordIndex % word.answers.length].replaceAll(" ", "").replaceAll("-", "").length;
 }

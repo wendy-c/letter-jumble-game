@@ -794,6 +794,23 @@ describe("Letter Jumble for Starters", () => {
     render(<GameApp />);
     expect(shownGames()).not.toContain("Letter Jumble for Starters");
   });
+
+  it("shows the hyphen in T-shirt and only asks for its letters", async () => {
+    const deck = { "starters/clothing-and-accessories": [7, ...[...Array(18).keys()].filter((index) => index !== 7)] };
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6", decks: deck }], current: "Elly" }));
+    setPathname("/starters/clothing-and-accessories");
+    const user = userEvent.setup();
+    render(<GameApp />);
+
+    expect(await screen.findByLabelText("Letter 2 of 7, -")).toHaveClass("letter-given");
+    const tiles = screen.getAllByRole("button", { name: /^Letter [a-z]$/ }).map((tile) => tile.getAttribute("aria-label").at(-1));
+    expect(tiles.sort()).toEqual(["h", "i", "r", "s", "t", "t"]);
+    for (const letter of ["t", "s", "h", "i", "r", "t"]) {
+      await user.click(screen.getAllByRole("button", { name: `Letter ${letter}` }).find((tile) => !tile.disabled && !tile.classList.contains("tile-used")));
+    }
+    await user.click(screen.getByRole("button", { name: /Check word/ }));
+    expect(screen.getByRole("dialog", { name: /!$/ })).toBeInTheDocument();
+  });
 });
 
 describe("measure words", () => {
@@ -984,10 +1001,11 @@ describe("badges", () => {
 
     expect(within(collection).getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent))
       .toEqual(["Letter Jumble for Starters", "Letter Jumble for Movers", "中文認字 · 進階篇", "量詞配對", "成語"]);
-    expect(collection).toHaveTextContent("2 of 15 badges");
+    expect(collection).toHaveTextContent("2 of 21 badges");
     expect(within(collection).getByRole("listitem", { name: "Animals: earned" })).toBeInTheDocument();
     expect(within(collection).getByRole("listitem", { name: "成語: earned" })).toBeInTheDocument();
-    expect(within(collection).getByRole("listitem", { name: "Body and Face: not earned yet" })).toBeInTheDocument();
+    const movers = within(collection).getByRole("region", { name: "Letter Jumble for Movers" });
+    expect(within(movers).getByRole("listitem", { name: "Body and Face: not earned yet" })).toBeInTheDocument();
 
     await user.click(within(collection).getByRole("button", { name: "Close badges" }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();

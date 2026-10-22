@@ -113,9 +113,12 @@ export default function GameApp() {
   const puzzle = round === null ? undefined : selectedCategory?.words[round];
   const answer = puzzle?.answers[round % puzzle.answers.length] ?? "";
   const answerLetters = answer.replaceAll(" ", "");
-  // Positions the learner fills in: every letter in Letter Jumble, one letter in CVC Sounds.
-  const blanks = puzzle?.missing !== undefined ? [puzzle.missing] : answerLetters.split("").map((_, index) => index);
-  const tiles = puzzle ? puzzle.choices ?? scramble(answerLetters, round, seededRandom(`${dealSeed}:${round}:tiles`)) : [];
+  // Positions the learner fills in: every letter in Letter Jumble (a hyphen, as in T-shirt, is
+  // shown), one letter in CVC Sounds.
+  const blanks = puzzle?.missing !== undefined
+    ? [puzzle.missing]
+    : answerLetters.split("").flatMap((letter, index) => (letter === "-" ? [] : [index]));
+  const tiles = puzzle ? puzzle.choices ?? scramble(answerLetters.replaceAll("-", ""), round, seededRandom(`${dealSeed}:${round}:tiles`)) : [];
   const complete = Boolean(puzzle) && placed.length === blanks.length &&
     placed.every((tile, slotIndex) => tile !== null && tiles[tile] === answerLetters[blanks[slotIndex]]);
   const allPlaced = placed.every((tile) => tile !== null);

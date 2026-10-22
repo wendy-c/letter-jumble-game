@@ -7,8 +7,8 @@ export const ageGroups = [
 export const gameGroups = [
   { id: "phonics", name: "Phonics", icon: "🔤" },
   { id: "cambridge", name: "Cambridge YLE training", icon: "🎓" },
-  { id: "chinese", name: "中文", icon: "🏮", lang: "zh-Hant-HK" },
-  { id: "mochi", name: "Visit Mochi", icon: "🐉" },
+  { id: "chinese", name: "中文", icon: "🪭", lang: "zh-Hant-HK" },
+  { id: "mochi", name: "Visit Mochi", icon: "❤️" },
 ];
 
 // `ages` limits a game to those age groups; games without it are for everyone. `group` is the
@@ -30,7 +30,7 @@ export const games = [
     name: "Letter Jumble for Starters",
     color: "green",
     pattern: ["t", "a", "c"],
-    note: "For age 5-6 - Cambridge Starters · 2 topics",
+    note: "For age 5-6 - Cambridge Starters · 8 topics",
     badge: "CAMBRIDGE STARTERS",
     ages: ["5-6"],
   },
