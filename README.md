@@ -11,6 +11,7 @@ The front page groups the games under four headings:
 | Heading | Game | Ages | What it is |
 | --- | --- | --- | --- |
 | Phonics | CVC Sounds | 3–4 | Fill in the beginning, middle or ending letter of a three-letter word. 12 words per round. |
+| | Consonant Digraphs | 5–6 | Fill the missing digraph (ch, sh, th, ph, wh, ck, ng) in a word. 10 words per round. |
 | Cambridge YLE training | Letter Jumble for Starters | 5–6 | Spell Cambridge Starters words from jumbled letters (8 topics, from Pets and Farm to Home). |
 | | Letter Jumble for Movers | 5–6 | The same game with Cambridge Movers words (8 topics). |
 | 中文 | 中文認字 · 入門篇 | 3–4 | Read a character, pick its picture. |

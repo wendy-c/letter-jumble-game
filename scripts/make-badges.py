@@ -95,11 +95,11 @@ def heart(r):  # 量詞: a heart
 
 
 SHAPES = {
-    "cvc": sunburst, "starters": scallop, "letter-jumble": shield, "chinese": flower,
+    "cvc": sunburst, "digraphs": sunburst, "starters": scallop, "letter-jumble": shield, "chinese": flower,
     "chinese-advanced": hexagon, "measure-words": heart, "idioms": octagon,
 }
 # Little extras on top of each game's badge.
-CROWN = {"letter-jumble": "crown", "starters": "star", "cvc": "star", "chinese": "lantern", "chinese-advanced": "crown",
+CROWN = {"letter-jumble": "crown", "starters": "star", "cvc": "star", "digraphs": "crown", "chinese": "lantern", "chinese-advanced": "crown",
          "measure-words": "star", "idioms": "lantern"}
 
 

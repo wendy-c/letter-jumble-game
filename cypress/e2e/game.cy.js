@@ -304,7 +304,7 @@ describe("CVC sounds game", () => {
   it("offers the games and the four CVC modes", () => {
     cy.visit("/");
     cy.contains("h1", "Learn, Play, Shine!");
-    cy.get(".game-choice-card").should("have.length", 8);
+    cy.get(".game-choice-card").should("have.length", 9);
     cy.contains("button", "CVC Sounds").click();
     addPlayer("Ada", "3-4");
     cy.contains("h1", "CVC Sounds");

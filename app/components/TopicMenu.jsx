@@ -8,7 +8,7 @@ function cardNote(isChinese, isMeasure, done, total) {
   return done > 0 ? `${done} of ${total} words learned` : `${total} words to learn`;
 }
 
-export default function TopicMenu({ isCvc, isChinese = false, isMeasure = false, isIdiom = false, topics, progressFor = () => 0, breadcrumbs, onSelectTopic }) {
+export default function TopicMenu({ isCvc, isDigraph = false, isChinese = false, isMeasure = false, isIdiom = false, topics, progressFor = () => 0, breadcrumbs, onSelectTopic }) {
   return (
     <section className="game-wrap category-menu mx-auto w-full max-w-6xl" aria-labelledby="game-title">
       <div className="menu-heading">
@@ -29,6 +29,11 @@ export default function TopicMenu({ isCvc, isChinese = false, isMeasure = false,
             <h1 id="game-title" lang="zh-Hant-HK">中文<span>認字</span></h1>
             <p className="heading-note" lang="zh-Hant-HK">選一個主題，齊玩認字遊戲！</p>
           </>
+        ) : isDigraph ? (
+          <>
+            <h1 id="game-title">Consonant <span>Digraphs</span></h1>
+            <p className="heading-note">Two letters, one sound. Find the pair that’s missing!</p>
+          </>
         ) : isCvc ? (
           <>
             <h1 id="game-title">CVC <span>Sounds</span></h1>
@@ -41,7 +46,7 @@ export default function TopicMenu({ isCvc, isChinese = false, isMeasure = false,
           </>
         )}
       </div>
-      <div className={`category-grid${isCvc ? " mode-grid" : ""}`}>
+      <div className={`category-grid${isCvc && !isDigraph ? " mode-grid" : ""}`}>
         {topics.map((topic, index) => (
           <ChoiceCard
             key={topic.id}

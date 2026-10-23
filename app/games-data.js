@@ -25,6 +25,16 @@ export const games = [
     ages: ["3-4"],
   },
   {
+    id: "digraphs",
+    group: "phonics",
+    name: "Consonant Digraphs",
+    color: "pink",
+    pattern: ["sh", null],
+    note: "For age 5-6 - ch, sh, th, ph, wh, ck and ng",
+    badge: "DIGRAPHS",
+    ages: ["5-6"],
+  },
+  {
     id: "starters",
     group: "cambridge",
     name: "Letter Jumble for Starters",

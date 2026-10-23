@@ -1054,6 +1054,13 @@ h1 span {
   transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
 }
 
+/* A two-letter gap, for a digraph like "sh". */
+.letter-slot.letter-slot-wide {
+  width: auto;
+  min-width: calc(var(--slot-size, 48px) * 1.7);
+  padding: 0 8px;
+}
+
 /* Letters already given in CVC Sounds: solid and not tappable, so the gap stands out. */
 .letter-given {
   display: grid;

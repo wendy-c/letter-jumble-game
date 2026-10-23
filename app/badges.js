@@ -1,6 +1,7 @@
 import { categories } from "./game-data";
 import { starterCategories } from "./starters-data";
 import { cvcModes } from "./cvc-data";
+import { digraphTopics } from "./digraphs-data";
 import { chineseAdvancedTopics, chineseTopics } from "./chinese-data";
 import { measureWordTopics } from "./measure-words-data";
 import { idiomTopics } from "./idioms-data";
@@ -10,6 +11,7 @@ import { gamesForPlayer } from "./games-data";
 // "<game>/<topic>" (the same key as the topic's progress).
 export const topicsByGame = {
   cvc: cvcModes,
+  digraphs: digraphTopics,
   chinese: chineseTopics,
   "chinese-advanced": chineseAdvancedTopics,
   "measure-words": measureWordTopics,

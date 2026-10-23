@@ -37,7 +37,7 @@ function mixAnswers(question, random) {
   return {
     ...question,
     ...(question.options && { options: shuffled(question.options, random) }),
-    ...(question.choices && question.missing !== 1 && { choices: shuffled(question.choices, random) }),
+    ...(question.choices && (question.missing !== 1 || question.gapLength) && { choices: shuffled(question.choices, random) }),
   };
 }
 
@@ -104,7 +104,9 @@ export default function GameApp() {
   // Set once the last word of a topic is done, to show the "you finished" pop-up.
   const [completedTopic, setCompletedTopic] = useState(null);
 
-  const isCvc = selectedGame?.id === "cvc";
+  const isDigraph = selectedGame?.id === "digraphs";
+  // Phonics games fill a gap in a shown word (one letter for CVC, two for a digraph).
+  const isCvc = selectedGame?.id === "cvc" || isDigraph;
   const isChinese = Boolean(selectedGame?.id.startsWith("chinese"));
   const isMeasure = selectedGame?.id === "measure-words";
   const isIdiom = selectedGame?.id === "idioms";
@@ -119,8 +121,10 @@ export default function GameApp() {
     ? [puzzle.missing]
     : answerLetters.split("").flatMap((letter, index) => (letter === "-" ? [] : [index]));
   const tiles = puzzle ? puzzle.choices ?? scramble(answerLetters.replaceAll("-", ""), round, seededRandom(`${dealSeed}:${round}:tiles`)) : [];
+  // How many letters each gap holds: two for a digraph, otherwise one.
+  const gapLength = puzzle?.gapLength ?? 1;
   const complete = Boolean(puzzle) && placed.length === blanks.length &&
-    placed.every((tile, slotIndex) => tile !== null && tiles[tile] === answerLetters[blanks[slotIndex]]);
+    placed.every((tile, slotIndex) => tile !== null && tiles[tile] === answerLetters.slice(blanks[slotIndex], blanks[slotIndex] + gapLength));
   const allPlaced = placed.every((tile) => tile !== null);
   const guides = showSpellingGuide && !isCvc && !inChinese ? getSpellingGuides(answer) : null;
 
@@ -389,6 +393,7 @@ export default function GameApp() {
         ) : (
           <TopicMenu
             isCvc={isCvc}
+            isDigraph={isDigraph}
             isChinese={isChinese}
             isMeasure={isMeasure}
             isIdiom={isIdiom}
@@ -477,9 +482,11 @@ export default function GameApp() {
             <PictureClue puzzle={puzzle} topic={selectedCategory} round={round} />
             <AnswerPanel
               isCvc={isCvc}
+              isDigraph={isDigraph}
               answer={answer}
               round={round}
               blanks={blanks}
+              gapLength={gapLength}
               placed={placed}
               tiles={tiles}
               checked={checked}

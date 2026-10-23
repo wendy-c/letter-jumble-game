@@ -75,7 +75,7 @@ describe("Home", () => {
     render(<GameApp />);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Learn, Play, Shine!");
     const gameCards = screen.getAllByRole("button").filter((button) => button.classList.contains("game-choice-card"));
-    expect(gameCards.map((card) => card.querySelector(".category-card-name").textContent)).toEqual(["CVC Sounds", "Letter Jumble for Starters", "Letter Jumble for Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語", "Mochi the Rainbow Dragon"]);
+    expect(gameCards.map((card) => card.querySelector(".category-card-name").textContent)).toEqual(["CVC Sounds", "Consonant Digraphs", "Letter Jumble for Starters", "Letter Jumble for Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語", "Mochi the Rainbow Dragon"]);
   });
 
   it("plays a Letter Jumble word and earns a rainbow coin", async () => {
@@ -327,7 +327,7 @@ describe("ages", () => {
     await user.click(screen.getByRole("button", { name: /Player options/ }));
     await user.click(screen.getByRole("menuitem", { name: "Switch player" }));
     await user.click(within(screen.getByRole("list", { name: "Players" })).getByRole("button", { name: /Elly/ }));
-    expect(shownGames()).toEqual(["Letter Jumble for Starters", "Letter Jumble for Movers", "中文認字 · 進階篇", "量詞配對", "成語", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["Consonant Digraphs", "Letter Jumble for Starters", "Letter Jumble for Movers", "中文認字 · 進階篇", "量詞配對", "成語", "Mochi the Rainbow Dragon"]);
   });
 
   it("lists games under Phonics, Cambridge YLE training, 中文 and Visit Mochi, hiding empty headings", () => {
@@ -337,7 +337,7 @@ describe("ages", () => {
     ]);
     const { unmount } = render(<GameApp />);
     expect(groups()).toEqual([
-      ["Phonics", ["CVC Sounds"]],
+      ["Phonics", ["CVC Sounds", "Consonant Digraphs"]],
       ["Cambridge YLE training", ["Letter Jumble for Starters", "Letter Jumble for Movers"]],
       ["中文", ["中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語"]],
       ["Visit Mochi", ["Mochi the Rainbow Dragon"]],
@@ -351,7 +351,7 @@ describe("ages", () => {
 
   it("shows every game to visitors before anyone is playing", () => {
     render(<GameApp />);
-    expect(shownGames()).toEqual(["CVC Sounds", "Letter Jumble for Starters", "Letter Jumble for Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "Letter Jumble for Starters", "Letter Jumble for Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語", "Mochi the Rainbow Dragon"]);
   });
 
   it("stays on the picker when the chosen game isn't for the new player's age", async () => {
@@ -759,6 +759,55 @@ describe("breadcrumbs", () => {
   });
 });
 
+describe("Consonant Digraphs", () => {
+  const seed = () => window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
+
+  it("has three modules of 10 words for 5-6 year olds", async () => {
+    seed();
+    const user = userEvent.setup();
+    render(<GameApp />);
+    await user.click(screen.getByRole("button", { name: /Consonant Digraphs/ }));
+    expect(currentPathname()).toBe("/digraphs");
+    expect(screen.getAllByRole("button").filter((button) => button.classList.contains("category-card")).map((card) => card.querySelector(".category-card-name").textContent))
+      .toEqual(["ch · sh · th", "ph · wh · ck · ng", "Mixed Digraphs"]);
+    expect(screen.getByRole("button", { name: /Mixed Digraphs/ })).toHaveTextContent("10 words to learn");
+  });
+
+  it("shows the word with a two-letter gap and fills it with the right digraph", async () => {
+    seed();
+    const user = userEvent.setup();
+    render(<GameApp />);
+    await user.click(screen.getByRole("button", { name: /Consonant Digraphs/ }));
+    await user.click(screen.getByRole("button", { name: /ch · sh · th/ }));
+
+    // With the order pinned, the first word is "chair": one wide gap, then "air".
+    expect(screen.getByLabelText("Word 1 of 10")).toBeInTheDocument();
+    expect(storedPlayers().players[0].decks["digraphs/ch-sh-th"]).toHaveLength(10);
+    const gap = screen.getByLabelText("Letter 1 of 5, empty");
+    expect(gap).toHaveClass("letter-slot-wide");
+    expect(screen.getByLabelText("Letter 3 of 5, a")).toHaveClass("letter-given");
+    expect(screen.getAllByRole("button", { name: /^Letter (ch|sh|th)$/ })).toHaveLength(3);
+
+    await user.click(screen.getByRole("button", { name: "Letter ch" }));
+    expect(screen.getByLabelText("Letter 1 of 5, ch")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /Check word/ }));
+    expect(screen.getByRole("dialog", { name: /!$/ })).toBeInTheDocument();
+    expect(storedPlayers().players[0].coins).toBe(1);
+  });
+
+  it("shows the right word after a wrong digraph", async () => {
+    seed();
+    const user = userEvent.setup();
+    render(<GameApp />);
+    await user.click(screen.getByRole("button", { name: /Consonant Digraphs/ }));
+    await user.click(screen.getByRole("button", { name: /ch · sh · th/ }));
+    await user.click(screen.getByRole("button", { name: "Letter sh" }));
+    await user.click(screen.getByRole("button", { name: /Check word/ }));
+    expect(screen.getByRole("dialog", { name: "The answer is…" })).toHaveTextContent("chair");
+    expect(storedPlayers().players[0].coins).toBe(0);
+  });
+});
+
 describe("Letter Jumble for Starters", () => {
   it("is offered to 5-6 year olds before Movers, with Pets and Farm and Wild Animals", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
@@ -1000,8 +1049,8 @@ describe("badges", () => {
     const collection = await openBadges(user);
 
     expect(within(collection).getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent))
-      .toEqual(["Letter Jumble for Starters", "Letter Jumble for Movers", "中文認字 · 進階篇", "量詞配對", "成語"]);
-    expect(collection).toHaveTextContent("2 of 21 badges");
+      .toEqual(["Consonant Digraphs", "Letter Jumble for Starters", "Letter Jumble for Movers", "中文認字 · 進階篇", "量詞配對", "成語"]);
+    expect(collection).toHaveTextContent("2 of 24 badges");
     expect(within(collection).getByRole("listitem", { name: "Animals: earned" })).toBeInTheDocument();
     expect(within(collection).getByRole("listitem", { name: "成語: earned" })).toBeInTheDocument();
     const movers = within(collection).getByRole("region", { name: "Letter Jumble for Movers" });
@@ -1067,11 +1116,11 @@ describe("parent mode", () => {
     const switches = (name) => within(within(parentDialog()).getByRole("region", { name })).getAllByRole("switch")
       .map((toggle) => [toggle.querySelector(".spelling-guide-toggle-title").textContent, toggle.getAttribute("aria-checked")]);
     expect(switches(/Ada/)).toEqual([
-      ["CVC Sounds", "true"], ["Letter Jumble for Starters", "false"], ["Letter Jumble for Movers", "false"], ["中文認字 · 入門篇", "true"],
+      ["CVC Sounds", "true"], ["Consonant Digraphs", "false"], ["Letter Jumble for Starters", "false"], ["Letter Jumble for Movers", "false"], ["中文認字 · 入門篇", "true"],
       ["中文認字 · 進階篇", "false"], ["量詞配對", "false"], ["成語", "false"], ["Mochi the Rainbow Dragon", "true"],
     ]);
     expect(switches(/Elly/)).toEqual([
-      ["CVC Sounds", "false"], ["Letter Jumble for Starters", "true"], ["Letter Jumble for Movers", "true"], ["中文認字 · 入門篇", "false"],
+      ["CVC Sounds", "false"], ["Consonant Digraphs", "true"], ["Letter Jumble for Starters", "true"], ["Letter Jumble for Movers", "true"], ["中文認字 · 入門篇", "false"],
       ["中文認字 · 進階篇", "true"], ["量詞配對", "true"], ["成語", "true"], ["Mochi the Rainbow Dragon", "true"],
     ]);
     expect(within(parentDialog()).queryByRole("button", { name: /Focus/ })).not.toBeInTheDocument();
