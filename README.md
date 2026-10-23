@@ -53,6 +53,11 @@ npm run dev
 
 Then open <http://localhost:3000>.
 
+To try it on a phone or tablet on the same Wi-Fi, open the computer's IP address instead, e.g.
+`http://192.168.1.20:3000`. The *Network* address `npm run dev` prints is the one to use. Private
+network addresses and `.local` names are allowed in `allowedDevOrigins` in `next.config.js`.
+Restart the dev server after changing that file.
+
 For a production build:
 
 ```sh
