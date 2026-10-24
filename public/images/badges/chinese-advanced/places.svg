@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 172">
+<defs><linearGradient id="g-chinese-advanced-places" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff0f6"/><stop offset="1" stop-color="#fbbfd8"/></linearGradient></defs>
+<path d="M58 118 L40 166 L52 158 L60 170 L74 124Z" fill="#f06aa8" stroke="#4b2e22" stroke-width="3" stroke-linejoin="round"/>
+<path d="M102 118 L120 166 L108 158 L100 170 L86 124Z" fill="#a98cf2" stroke="#4b2e22" stroke-width="3" stroke-linejoin="round"/>
+<path d="M70.0 13.8 Q80.0 8.0 90.0 13.8 L132.4 38.2 Q142.4 44.0 142.4 55.5 L142.4 104.5 Q142.4 116.0 132.4 121.8 L90.0 146.2 Q80.0 152.0 70.0 146.2 L27.6 121.8 Q17.6 116.0 17.6 104.5 L17.6 55.5 Q17.6 44.0 27.6 38.2Z" fill="#4b2e22" stroke="#4b2e22" stroke-width="7" stroke-linejoin="round"/>
+<path d="M70.0 13.8 Q80.0 8.0 90.0 13.8 L132.4 38.2 Q142.4 44.0 142.4 55.5 L142.4 104.5 Q142.4 116.0 132.4 121.8 L90.0 146.2 Q80.0 152.0 70.0 146.2 L27.6 121.8 Q17.6 116.0 17.6 104.5 L17.6 55.5 Q17.6 44.0 27.6 38.2Z" fill="#f2b632"/>
+<path d="M70.0 13.8 Q80.0 8.0 90.0 13.8 L132.4 38.2 Q142.4 44.0 142.4 55.5 L142.4 104.5 Q142.4 116.0 132.4 121.8 L90.0 146.2 Q80.0 152.0 70.0 146.2 L27.6 121.8 Q17.6 116.0 17.6 104.5 L17.6 55.5 Q17.6 44.0 27.6 38.2Z" fill="#ffd45e" transform="translate(0 -2)"/>
+<path d="M71.7 24.8 Q80.0 20.0 88.3 24.8 L123.6 45.2 Q132.0 50.0 132.0 59.6 L132.0 100.4 Q132.0 110.0 123.6 114.8 L88.3 135.2 Q80.0 140.0 71.7 135.2 L36.4 114.8 Q28.0 110.0 28.0 100.4 L28.0 59.6 Q28.0 50.0 36.4 45.2Z" fill="#4b2e22" stroke="#4b2e22" stroke-width="5" stroke-linejoin="round"/>
+<path d="M71.7 24.8 Q80.0 20.0 88.3 24.8 L123.6 45.2 Q132.0 50.0 132.0 59.6 L132.0 100.4 Q132.0 110.0 123.6 114.8 L88.3 135.2 Q80.0 140.0 71.7 135.2 L36.4 114.8 Q28.0 110.0 28.0 100.4 L28.0 59.6 Q28.0 50.0 36.4 45.2Z" fill="url(#g-chinese-advanced-places)"/>
+<circle cx="129.0" cy="80.0" r="1.6" fill="#f06aa8" opacity=".55"/>
+<circle cx="126.0" cy="96.8" r="1.6" fill="#f06aa8" opacity=".55"/>
+<circle cx="117.5" cy="111.5" r="1.6" fill="#f06aa8" opacity=".55"/>
+<circle cx="104.5" cy="122.4" r="1.6" fill="#f06aa8" opacity=".55"/>
+<circle cx="88.5" cy="128.3" r="1.6" fill="#f06aa8" opacity=".55"/>
+<circle cx="71.5" cy="128.3" r="1.6" fill="#f06aa8" opacity=".55"/>
+<circle cx="55.5" cy="122.4" r="1.6" fill="#f06aa8" opacity=".55"/>
+<circle cx="42.5" cy="111.5" r="1.6" fill="#f06aa8" opacity=".55"/>
+<circle cx="34.0" cy="96.8" r="1.6" fill="#f06aa8" opacity=".55"/>
+<circle cx="31.0" cy="80.0" r="1.6" fill="#f06aa8" opacity=".55"/>
+<circle cx="34.0" cy="63.2" r="1.6" fill="#f06aa8" opacity=".55"/>
+<circle cx="42.5" cy="48.5" r="1.6" fill="#f06aa8" opacity=".55"/>
+<circle cx="55.5" cy="37.6" r="1.6" fill="#f06aa8" opacity=".55"/>
+<circle cx="71.5" cy="31.7" r="1.6" fill="#f06aa8" opacity=".55"/>
+<circle cx="88.5" cy="31.7" r="1.6" fill="#f06aa8" opacity=".55"/>
+<circle cx="104.5" cy="37.6" r="1.6" fill="#f06aa8" opacity=".55"/>
+<circle cx="117.5" cy="48.5" r="1.6" fill="#f06aa8" opacity=".55"/>
+<circle cx="126.0" cy="63.2" r="1.6" fill="#f06aa8" opacity=".55"/>
+<circle cx="80" cy="80" r="38" fill="#fff" stroke="#4b2e22" stroke-width="3"/>
+<path d="M54 66 A30 30 0 0 1 74 46" fill="none" stroke="#fff0f6" stroke-width="4" stroke-linecap="round"/>
+<svg x="52" y="52" width="56" height="56" viewBox="0 0 128 128"><g stroke="#4b2e22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<circle cx="64" cy="68" r="52" fill="#d8f0ff"/><path d="M18 92h92v8H18Z" fill="#9fdcbf" stroke-width="3"/><path d="M26 92V70l12-10 12 10v22Z" fill="#fff2bf" stroke-width="3"/><path d="M78 92V64h24v28Z" fill="#e3d6fb" stroke-width="3"/><path d="M64 74q-22-24-22-38a22 22 0 0 1 44 0q0 14-22 38Z" fill="#ff8fa3"/><circle cx="64" cy="36" r="8" fill="#ffffff" stroke-width="3"/>
+</g>
+</svg>
+<path d="M62 22 L66 6 L74 16 L80 2 L86 16 L94 6 L98 22Z" fill="#ffd45e" stroke="#4b2e22" stroke-width="3" stroke-linejoin="round"/><circle cx="80" cy="15" r="2.6" fill="#f06aa8"/>
+<path d="M18 25Q19.62 32.38 27 34Q19.62 35.62 18 43Q16.38 35.62 9 34Q16.38 32.38 18 25Z" fill="#fff6c8" stroke="#4b2e22" stroke-width="2"/>
+<path d="M144 45Q145.26 50.74 151 52Q145.26 53.26 144 59Q142.74 53.26 137 52Q142.74 50.74 144 45Z" fill="#ffe0ee" stroke="#4b2e22" stroke-width="2"/>
+<path d="M140 120Q141.08 124.92 146 126Q141.08 127.08 140 132Q138.92 127.08 134 126Q138.92 124.92 140 120Z" fill="#fff6c8" stroke="#4b2e22" stroke-width="2"/>
+</svg>

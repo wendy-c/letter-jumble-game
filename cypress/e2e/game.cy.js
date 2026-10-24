@@ -437,7 +437,7 @@ describe("ages", () => {
     cy.contains("button", "CVC Sounds").click();
     addPlayer("Mia", "3-4");
     crumb("Home");
-    cy.get(".game-choice-card").should("have.length", 3);
+    cy.get(".game-choice-card").should("have.length", 4);
     cy.contains(".game-choice-card", "CVC Sounds");
     cy.contains(".game-choice-card", "中文認字 · 入門篇");
     cy.contains(".game-choice-card", "Rainbow Dragon");
@@ -629,7 +629,7 @@ describe("parent mode", () => {
         win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
       },
     });
-    cy.get(".game-choice-card").should("have.length", 3);
+    cy.get(".game-choice-card").should("have.length", 4);
     cy.get('button[aria-label$="Player options"]').click();
     cy.contains('[role="menuitem"]', "Parent mode").click();
 
@@ -642,7 +642,7 @@ describe("parent mode", () => {
     cy.contains('[role="switch"]', "Letter Jumble").click();
     cy.contains("button", "Done").click();
 
-    cy.get(".game-choice-card").should("have.length", 3);
+    cy.get(".game-choice-card").should("have.length", 4);
     cy.contains(".game-choice-card", "Letter Jumble");
     cy.contains(".game-choice-card", "Mochi").should("not.exist");
   });

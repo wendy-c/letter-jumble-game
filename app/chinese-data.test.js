@@ -115,12 +115,12 @@ describe("jobs (5-6 year olds)", () => {
   const jobs = chineseAdvancedTopics.find((topic) => topic.id === "jobs");
   const byCharacter = Object.fromEntries(jobs.words.map((word) => [word.character, word]));
 
-  it("has the 43 job words, in order", () => {
+  it("has the 39 job words, in order (the places are in 地點)", () => {
     expect(jobs.name).toBe("職業");
     expect(jobs.words.map((word) => word.character)).toEqual([
       "警察", "消防員", "醫生", "護士", "理髮師", "侍應生", "廚師", "郵差", "交通警察", "救護員",
-      "飛行服務員", "獸醫", "牙醫", "送遞員", "保安員", "飛機師", "餐廳", "維持治安", "救火", "生病",
-      "送信", "老師", "郵政局", "警署", "醫院", "教導學生", "醫治病人",
+      "飛行服務員", "獸醫", "牙醫", "送遞員", "保安員", "飛機師", "維持治安", "救火", "生病",
+      "送信", "老師", "教導學生", "醫治病人",
       "時裝設計師", "售貨員", "烘焙師", "新聞主播", "電器技工", "建築工人", "機場特警", "時裝模特兒",
       "製衣工人", "收銀員", "運動員", "記者", "視光師", "科學家", "太空人", "探險家",
     ]);
@@ -154,7 +154,7 @@ describe("home (5-6 year olds)", () => {
   const byCharacter = Object.fromEntries(home.words.map((word) => [word.character, word]));
 
   it("comes after jobs, with the 20 home words in order", () => {
-    expect(chineseAdvancedTopics.map((topic) => topic.name)).toEqual(["職業", "家", "動物"]);
+    expect(chineseAdvancedTopics.map((topic) => topic.name)).toEqual(["職業", "家", "動物", "地點"]);
     expect(home.words.map((word) => word.character)).toEqual([
       "客廳", "廚房", "浴室", "睡房", "書房", "窗戶", "床褥", "椅子", "桌子",
       "衣櫃", "杯子", "碗碟", "電燈", "時鐘", "沙發", "電視", "電腦", "空氣淨化機", "露台", "游泳池",
@@ -211,3 +211,24 @@ describe("animals (5-6 year olds)", () => {
   });
 });
 
+
+describe("places (5-6 year olds)", () => {
+  const places = chineseAdvancedTopics.find((topic) => topic.id === "places");
+
+  it("has the 21 place words, in order, and jobs no longer has any of them", () => {
+    expect(places.name).toBe("地點");
+    expect(places.words.map((word) => word.character)).toEqual([
+      "學校", "音樂室", "操場", "課室", "禮堂", "超級市場", "遊樂場", "圖書館", "沙灘", "郊野公園", "商場",
+      "戲院", "電影院", "餐廳", "主題公園", "醫院", "警署", "郵政局", "消防局", "銀行", "街市",
+    ]);
+    const jobs = chineseAdvancedTopics.find((topic) => topic.id === "jobs").words.map((word) => word.character);
+    places.words.forEach((word) => expect(jobs).not.toContain(word.character));
+  });
+
+  it("never offers 戲院 and 電影院 (both cinemas) together", () => {
+    const cinemaWords = ["戲院", "電影院"];
+    places.words.filter((word) => cinemaWords.includes(word.character)).forEach((word) => {
+      expect(word.options.filter((option) => cinemaWords.includes(option.character))).toHaveLength(1);
+    });
+  });
+});

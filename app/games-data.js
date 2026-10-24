@@ -30,9 +30,9 @@ export const games = [
     name: "Consonant Digraphs",
     color: "pink",
     pattern: ["sh", null],
-    note: "For age 5-6 - ch, sh, th, ph, wh, ck and ng",
+    note: "For age 3-4 - ch, sh, th, ph, wh, ck and ng",
     badge: "DIGRAPHS",
-    ages: ["5-6"],
+    ages: ["3-4"],
   },
   {
     id: "starters",
