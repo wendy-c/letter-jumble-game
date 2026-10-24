@@ -148,7 +148,7 @@ def beach():
     for i in range(12):
         a = 2 * math.pi * i / 12
         b.append(f'<path d="M{404 + math.cos(a) * 40:.1f} {64 + math.sin(a) * 40:.1f}L{404 + math.cos(a) * 52:.1f} {64 + math.sin(a) * 52:.1f}" stroke="#f2b632" stroke-width="5"/>')
-    b.append('<circle cx="404" cy="64" r="32" fill="#ffe27a"/>' + face(404, 64, 1.1))
+    b.append('<circle cx="404" cy="64" r="32" fill="#ffe27a"/>')
     for cx, cy, s in [(120, 64, 1.0), (300, 40, 0.75)]:
         b.append(f'<path d="M{cx - 44 * s} {cy + 14 * s}q-16 0-14-14t20-10q4-20 26-18 18 2 22 16 18-6 26 8 8 18-10 18Z" fill="#ffffff"/>')
     # The sea, with white wave crests.
@@ -162,12 +162,6 @@ def beach():
     b.append(f'<path d="M-10 236q40-14 80 0t80 0 80 0 80 0 80 0 80 0 80 0 80 0" fill="none" stroke="#fff" stroke-width="5"/>')
     for x, y in [(60, 300), (140, 360), (240, 380), (420, 372), (520, 320), (560, 380), (360, 300), (200, 290)]:
         b.append(f'<circle cx="{x}" cy="{y}" r="2.5" fill="#f2c779" stroke="none"/>')
-    # Towel for Mochi to stand on.
-    b.append('<path d="M168 318 L432 318 L452 356 L148 356Z" fill="#b79cf2" stroke-width="3"/>')
-    for i in range(1, 6):
-        x0 = 168 + 264 * i / 6
-        x1 = 148 + 304 * i / 6
-        b.append(f'<path d="M{x0:.0f} 318L{x1:.0f} 356" stroke="#fff" stroke-width="6"/>')
     # Palm tree (left).
     b.append('<path d="M128 290q-6-90 26-160" fill="none" stroke-width="16"/><path d="M128 290q-6-90 26-160" fill="none" stroke="#c98a55" stroke-width="10"/>')
     for i in range(5):
@@ -175,12 +169,18 @@ def beach():
     for rot in (-150, -110, -60, -20, 20):
         b.append(f'<path d="M154 130q40-30 80-6-38-2-80 6Z" fill="#8fe3a8" transform="rotate({rot} 154 130)"/>')
     b.append('<circle cx="146" cy="138" r="7" fill="#a46a3c"/><circle cx="160" cy="140" r="7" fill="#a46a3c"/>')
-    # Striped beach umbrella and a beach ball (right).
-    b.append('<path d="M500 300V128" stroke-width="5"/>')
-    b.append('<path d="M432 150q68-74 136 0Z" fill="#ff8fa3"/>')
-    b.append('<path d="M478 150q4-52 22-74 18 22 22 74q-22-8-44 0Z" fill="#fff6c8"/>')
-    b.append('<path d="M432 150q68-74 136 0q-12-8-23 0-11-8-23 0-11-8-22 0-11-8-22 0-11-8-23 0-11-8-23 0" fill="none" stroke-width="3"/>')
-    b.append('<path d="M500 76v-8" stroke-width="4"/>')
+    # Beach umbrella (right): a dome of pink and cream panels with a scalloped hem, on a pole.
+    b.append('<path d="M500 300V76" stroke-width="5"/>')
+    dome = "M432 150Q500 46 568 150Z"
+    b.append(f'<defs><clipPath id="umbrella"><path d="{dome}"/></clipPath></defs>')
+    b.append(f'<path d="{dome}" fill="#ff8fa3" stroke="none"/>')
+    b.append('<g clip-path="url(#umbrella)" stroke="none" fill="#fff6c8">'
+             '<path d="M500 84L446 150H478Z"/><path d="M500 84L522 150H554Z"/></g>')
+    for i, x in enumerate(range(432, 568, 34)):
+        b.append(f'<path d="M{x} 150a17 11 0 0 0 34 0Z" fill="{"#ff8fa3" if i % 2 == 0 else "#fff6c8"}" stroke-width="3"/>')
+    b.append(f'<path d="{dome}" fill="none" stroke-width="3"/>')
+    b.append('<path d="M500 84L462 150M500 84L538 150" fill="none" stroke-width="2.5"/>')
+    b.append('<circle cx="500" cy="74" r="5" fill="#ffd45e" stroke-width="3"/>')
     b.append('<circle cx="452" cy="292" r="20" fill="#fff"/>')
     b.append('<path d="M436 280q16 10 32 0M434 298q18 10 36 0" fill="none" stroke="#ff8fa3" stroke-width="6"/>')
     b.append('<path d="M452 272q-8 20 0 40" fill="none" stroke="#8cc8f2" stroke-width="6"/>')
