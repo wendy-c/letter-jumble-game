@@ -1,13 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
 <g stroke="#4b2e22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
-<path d="M26 54 30 16l26 24Z" fill="#ffffff"/><path d="M102 54 98 16 72 40Z" fill="#ffa552"/>
-<path d="M32 46l2-20 14 14Z" fill="#ffc2dc" stroke="none"/>
-<circle cx="64" cy="70" r="42" fill="#ffffff"/>
-<path d="M76 30q30 6 30 40-20 4-30-20Z" fill="#ffa552" stroke="none"/>
-<path d="M24 74q2-18 16-24 10 14-2 28Z" fill="#5a4a48" stroke="none"/>
-<circle cx="64" cy="70" r="42" fill="none"/>
-<g stroke="none"><ellipse cx="49" cy="66" rx="3.6" ry="4.1" fill="#4b2e22"/><ellipse cx="79" cy="66" rx="3.6" ry="4.1" fill="#4b2e22"/><circle cx="50.2" cy="64.6" r="1.2" fill="#fff"/><circle cx="80.2" cy="64.6" r="1.2" fill="#fff"/><g fill="#ff9bb5" opacity=".75"><ellipse cx="41" cy="74" rx="5" ry="3"/><ellipse cx="87" cy="74" rx="5" ry="3"/></g></g>
-<path d="M60 76h8l-4 5Z" fill="#ff8fae" stroke-width="2.5"/><path d="M58 84q3 4 6 0 3 4 6 0" fill="none" stroke-width="2.6"/>
-<g stroke-width="2.2"><path d="M30 80l-16-2M30 86l-16 4M98 80l16-2M98 86l16 4"/></g>
+<defs><clipPath id="cat-head"><circle cx="64" cy="70" r="40"/></clipPath></defs><path d="M28 52 30 14l28 26Z" fill="#ffffff"/><path d="M100 52 98 14 70 40Z" fill="#ffa552"/><path d="M34 44l1-20 14 13Z" fill="#ffc2dc" stroke="none"/><circle cx="64" cy="70" r="40" fill="#ffffff"/><g clip-path="url(#cat-head)" stroke="none"><path d="M70 26q40 4 40 50-24 0-34-20Z" fill="#ffa552"/><path d="M20 70q4-20 20-24 8 16-4 30Z" fill="#5a4a48"/></g><circle cx="64" cy="70" r="40" fill="none"/><g stroke="none"><ellipse cx="54.4" cy="68" rx="3.5" ry="4.0" fill="#4b2e22"/><ellipse cx="73.6" cy="68" rx="3.5" ry="4.0" fill="#4b2e22"/><circle cx="55.6" cy="66.6" r="1.2" fill="#fff"/><circle cx="74.8" cy="66.6" r="1.2" fill="#fff"/><ellipse cx="47.8" cy="76.4" rx="4.3" ry="2.6" fill="#ffb3c6"/><ellipse cx="80.2" cy="76.4" rx="4.3" ry="2.6" fill="#ffb3c6"/></g><path d="M60 77h8l-4 5Z" fill="#ff8fae" stroke-width="2.5"/><path d="M58 85q3 4 6 0 3 4 6 0" fill="none" stroke-width="2.6"/><g stroke-width="2.2"><path d="M34 80l-18-2M34 86l-18 4M94 80l18-2M94 86l18 4"/></g>
 </g>
 </svg>
