@@ -381,7 +381,7 @@ export default function GameApp() {
   );
 
   return (
-    <main className={`app-shell min-h-screen px-4 py-5 sm:px-8 sm:py-8${selectedGame?.id === "dragon" ? " app-shell-fit" : ""}`}>
+    <main className="app-shell min-h-screen px-4 py-5 sm:px-8 sm:py-8">
       <SiteHeader>
         {currentPlayer && (
           <PlayerMenu

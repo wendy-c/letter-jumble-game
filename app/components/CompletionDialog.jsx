@@ -1,7 +1,7 @@
 import BadgeMedal from "./BadgeMedal";
 import Mascot from "./Mascot";
 
-export const englishCompletionText = {
+const englishCompletionText = {
   kicker: "TOPIC COMPLETE",
   title: "You did it!",
   tryTitle: "Good try!",

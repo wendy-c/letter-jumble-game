@@ -76,7 +76,7 @@ const modes = [
 ];
 
 // Each CVC game deals this many words, picked at random from the full list.
-export const cvcWordsPerGame = 12;
+const cvcWordsPerGame = 12;
 
 export const cvcModes = modes.map((mode) => ({
   ...mode,

@@ -1,6 +1,6 @@
 import Mascot from "./Mascot";
 
-export const englishRevealLabels = {
+const englishRevealLabels = {
   kicker: "NOT QUITE",
   title: "The answer is…",
   next: "Next question",

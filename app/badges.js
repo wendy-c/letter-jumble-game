@@ -20,7 +20,7 @@ export const topicsByGame = {
   "letter-jumble": categories,
 };
 
-export const badgeKey = (gameId, topicId) => `${gameId}/${topicId}`;
+const badgeKey = (gameId, topicId) => `${gameId}/${topicId}`;
 
 // Each topic's badge picture, drawn by scripts/make-badges.py.
 export const badgeImage = (gameId, topicId) => `/images/badges/${gameId}/${topicId}.svg`;
