@@ -18,7 +18,7 @@ The front page groups the games under four headings:
 | | 中文認字 · 進階篇 | 5–6 | Two- to five-character words: jobs, home, animals, places. |
 | | 量詞配對 | 5–6 | Pick the noun that goes with a measure word (一個橙). 20 questions per round. |
 | | 成語 | 5–6 | Fill the missing character of a four-character idiom, from a picture and its meaning. |
-| Visit Mochi | Mochi the Rainbow Dragon | All | A 3D pet dragon. Spend coins on treats, grooming and activities. |
+| Visit Mochi | Mochi the Rainbow Dragon | All | A 3D pet dragon. Spend coins on treats, grooming and activities. Save 100 coins to unlock her shy friend Tofu; then the game opens in Rainbow Village. |
 
 ### How rounds work
 
@@ -133,7 +133,7 @@ app/
   lib/speech.js, lib/sounds.js         Voices and sound effects
   lib/dragon/scene.js                  The 3D dragon scene, Mochi, Tofu and their animations
 public/images/                         Pictures (mostly hand-made SVGs)
-scripts/                               Generators for badges and Mochi's rooms
+scripts/                               Generators for badges, pictures, the dragons' rooms and the village
 cypress/e2e/                           End-to-end tests
 ```
 
@@ -152,5 +152,10 @@ cypress/e2e/                           End-to-end tests
   1. Add it to `games-data.js`, with its `group` and `ages`.
   2. Add its topics to `topicsByGame` in `badges.js`.
   3. Add a branch for how it plays in `GameApp.jsx`.
-- **Mochi's rooms:** `python3 scripts/make-rooms.py .` redraws `public/images/dragon/` (home,
-  bathroom, beach).
+- **The dragons' rooms:** `python3 scripts/make-rooms.py .` redraws `public/images/dragon/`: Mochi's
+  home, bathroom and beach, and Tofu's reading nook, bathroom and kitchen.
+- **Rainbow Village:** `python3 scripts/make-village.py` redraws `public/images/village/`.
+- **Hand-drawn pictures:** `python3 scripts/draw-pictures.py` redraws the 地點 places and other
+  pictures it lists. Faces go only on people and animals.
+- **A dragon's treats and activities:** add them to `dragon-data.js`. An action can reuse another's
+  animation (`animation`) or get its own in `lib/dragon/scene.js`.
