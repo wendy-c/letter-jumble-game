@@ -7,8 +7,8 @@ const phones = [
   ["small Android", 360, 640],
 ];
 
-function seedPlayer(win) {
-  win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 50, age: "5-6" }], current: "Elly" }));
+function seedPlayer(win, extra = {}) {
+  win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 50, age: "5-6", ...extra }], current: "Elly" }));
 }
 
 // Scrolls the way a finger can: only boxes that scroll (overflow auto/scroll) and the page. The
@@ -60,6 +60,24 @@ describe("Mochi's den on phones", () => {
       cy.get('[role="tabpanel"] button').last().then(($button) => scrollLikeAFinger($button[0]));
       cy.get('[role="tabpanel"] button').last().click({ scrollBehavior: false });
       cy.get('[aria-label="48 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
+    });
+  });
+});
+
+describe("Tofu's den and Rainbow Village on phones", () => {
+  phones.forEach(([phone, width, height]) => {
+    it(`can tap every control on ${phone} (${width}×${height})`, () => {
+      cy.viewport(width, height);
+      cy.visit("/dragon", { onBeforeLoad: (win) => seedPlayer(win, { unlocks: ["tofu"] }) });
+      cy.contains("h1", "Rainbow Village");
+      cy.get(".village-place:not(:disabled)").each(($place) => expectTappable($place[0]));
+
+      cy.contains("button", "Tofu’s House").click();
+      cy.get(".dragon-canvas", { timeout: 20000 }).should("be.visible");
+      cy.get('[role="tab"]').each(($tab) => {
+        cy.wrap($tab).click({ scrollBehavior: "center" }).should("have.attr", "aria-selected", "true");
+        cy.get('[role="tabpanel"] button').should("have.length.at.least", 1).each(($button) => expectTappable($button[0]));
+      });
     });
   });
 });

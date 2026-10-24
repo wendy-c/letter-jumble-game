@@ -212,6 +212,48 @@ export const sounds = {
     noise(ac, { duration: 0.25, volume: 0.25, filter: "lowpass", freq: 900, sweepTo: 400, q: 0.7, attack: 0.02 });
   }),
 
+  // Tofu's sounds: dainty nibbles, a tiny squeak and a sweet little song.
+  nibble: play((ac) => {
+    noise(ac, { duration: 0.06, volume: 0.16, freq: 2400, q: 1.5, attack: 0.004 });
+  }),
+
+  squeak: play((ac) => {
+    tone(ac, { freq: 1300, slide: 1900, duration: 0.14, type: "triangle", volume: 0.1, vibrato: { rate: 30, depth: 40 } });
+  }),
+
+  // The oven's "ding!" when the cupcakes are ready.
+  ding: play((ac) => {
+    tone(ac, { freq: notes.E6, duration: 1.2, volume: 0.12, attack: 0.005 });
+    tone(ac, { freq: notes.E6 * 2, duration: 0.6, volume: 0.03, attack: 0.005 });
+  }),
+
+  // A bubbling potion.
+  fizz: play((ac) => {
+    for (let index = 0; index < 8; index += 1) {
+      const freq = 700 + Math.random() * 900;
+      tone(ac, { freq, slide: freq * 1.6, at: index * 0.12 + Math.random() * 0.05, duration: 0.06, volume: 0.08 });
+    }
+  }),
+
+  // POOF! A puff of rainbow smoke.
+  poof: play((ac) => {
+    noise(ac, { duration: 0.5, volume: 0.3, filter: "lowpass", freq: 1800, sweepTo: 300, q: 0.7, attack: 0.01 });
+  }),
+
+  // A storybook page turning.
+  page: play((ac) => {
+    noise(ac, { duration: 0.28, volume: 0.12, freq: 3200, sweepTo: 1800, q: 0.8, attack: 0.06 });
+  }),
+
+  // Tofu's song: a gentle lullaby.
+  song: play((ac) => {
+    const tune = ["G5", "E5", "G5", "A5", "G5", "E5", "D5", "E5", "G5", "E5", "C5", "D5", "E5", "D5", "C5"];
+    tune.forEach((note, index) => {
+      const at = index * 0.34;
+      tone(ac, { freq: notes[note] * 1.0, at, duration: 0.42, type: "triangle", volume: 0.09, vibrato: { rate: 6, depth: 6 } });
+    });
+  }),
+
   // A tinkly music box waltz for ballet.
   musicBox: play((ac) => {
     const tune = ["E5", "G5", "C6", "B5", "G5", "E5", "D5", "F5", "B5", "A5", "F5", "D5", "C5", "E5", "G5", "C6"];

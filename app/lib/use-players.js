@@ -36,6 +36,10 @@ function cleanPlayer(player) {
     const results = Object.fromEntries(Object.entries(player.results).filter(([, answers]) => Array.isArray(answers) && answers.every(isResult)));
     if (Object.keys(results).length > 0) cleaned.results = results;
   }
+  if (Array.isArray(player.unlocks)) {
+    const unlocks = [...new Set(player.unlocks.filter((unlock) => typeof unlock === "string" && unlock.length > 0))];
+    if (unlocks.length > 0) cleaned.unlocks = unlocks;
+  }
   if (Array.isArray(player.badges)) {
     const badges = [...new Set(player.badges.filter((badge) => typeof badge === "string" && badge.length > 0))];
     if (badges.length > 0) cleaned.badges = badges;
@@ -210,8 +214,17 @@ export function usePlayers() {
     ));
   }
 
+  // Unlocks something for the current player for good (e.g. "tofu", once her house is bought).
+  function unlock(key) {
+    if (!state.current) return;
+    updatePlayer(state.current, (player) => (
+      player.unlocks?.includes(key) ? player : { ...player, unlocks: [...(player.unlocks ?? []), key] }
+    ));
+  }
+
   return {
     loaded,
+    unlock,
     awardBadge,
     saveResult,
     saveDeck,

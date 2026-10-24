@@ -1,17 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { dragonActions, dragonName, petActions } from "../dragon-data";
+
 import { sounds } from "../lib/sounds";
 import DragonScene from "./DragonScene";
 import GameFooter from "./GameFooter";
 
-// Each tab is a room: treats at home, grooming in the bathroom, activities at the beach.
+// Each tab is one of the dragon's rooms (see `rooms` in dragon-data).
 const sections = [
-  { kind: "treat", label: "Treats", icon: "🍎", room: "home" },
-  { kind: "groom", label: "Grooming", icon: "🛁", room: "bathroom" },
-  { kind: "activity", label: "Activities", icon: "🎨", room: "beach" },
+  { kind: "treat", label: "Treats", icon: "🍎" },
+  { kind: "groom", label: "Grooming", icon: "🛁" },
+  { kind: "activity", label: "Activities", icon: "🎨" },
 ];
-
-const idleMessage = `Tap ${dragonName} for a snuggle!`;
 
 function ActionButton({ action, coins, busy, onUse }) {
   const affordable = coins >= action.cost;
@@ -33,7 +31,10 @@ function ActionButton({ action, coins, busy, onUse }) {
   );
 }
 
-export default function DragonDen({ coins, onSpendCoins, breadcrumbs }) {
+// A dragon's den (Mochi's or Tofu's, from dragon-data): spend coins on treats, grooming and
+// activities, or tap her for something free. `banner` shows above the den (e.g. unlocking Tofu).
+export default function DragonDen({ dragon, coins, onSpendCoins, breadcrumbs, banner = null }) {
+  const { idleMessage, actions: dragonActions, petActions } = dragon;
   const [command, setCommand] = useState(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState(idleMessage);
@@ -61,16 +62,16 @@ export default function DragonDen({ coins, onSpendCoins, breadcrumbs }) {
       setBusy(false);
       setMessage(idleMessage);
     }, action.duration * 1000);
-  }, [onSpendCoins]);
+  }, [onSpendCoins, idleMessage]);
 
-  // Each tap does the next thing: a snuggle, a twirl, then a wave.
+  // Each tap does the next free thing in turn (for Mochi: a snuggle, a twirl, then a wave).
   const petTurnRef = useRef(0);
   const pet = useCallback(() => {
     if (busyRef.current) return;
     const action = petActions[petTurnRef.current % petActions.length];
     petTurnRef.current += 1;
     play(action);
-  }, [play]);
+  }, [play, petActions]);
   const cheapest = Math.min(...dragonActions.map((action) => action.cost));
 
   // Left/right arrow keys move between the tabs, as screen reader users expect.
@@ -89,22 +90,31 @@ export default function DragonDen({ coins, onSpendCoins, breadcrumbs }) {
       <div className="game-heading">
         <div>
           {breadcrumbs}
-          <p className="eyebrow">MEET YOUR MAGIC PET</p>
+          <p className="eyebrow">{dragon.eyebrow}</p>
           <h1 id="game-title" className="game-title">
-            {dragonName} the <span>Rainbow Dragon</span>
+            {dragon.name} the <span>{dragon.title.replace(`${dragon.name} the `, "")}</span>
           </h1>
-          <p className="heading-note">Spend rainbow coins on yummy treats and pampering.</p>
+          <p className="heading-note">{dragon.note}</p>
         </div>
       </div>
 
+      {banner}
+
       <div className="game-card dragon-card">
         <div className="dragon-stage-wrap">
-          <DragonScene command={command} onPet={pet} room={sections.find((candidate) => candidate.kind === section).room} />
+          <DragonScene
+            dragon={dragon.id}
+            name={dragon.name}
+            rooms={sections.map(({ kind }) => dragon.rooms[kind])}
+            room={dragon.rooms[section]}
+            command={command}
+            onPet={pet}
+          />
           <p className="dragon-bubble" aria-live="polite">{message}</p>
         </div>
 
         <div className="dragon-panel">
-          <div className="dragon-tabs" role="tablist" aria-label={`Things to do with ${dragonName}`} onKeyDown={handleTabKeyDown}>
+          <div className="dragon-tabs" role="tablist" aria-label={`Things to do with ${dragon.name}`} onKeyDown={handleTabKeyDown}>
             {sections.map(({ kind, label, icon }) => (
               <button
                 className="dragon-tab"
@@ -137,12 +147,12 @@ export default function DragonDen({ coins, onSpendCoins, breadcrumbs }) {
           </div>
 
           {coins < cheapest && (
-            <p className="dragon-hint">You’re out of rainbow coins! Spell some words to earn more for {dragonName}.</p>
+            <p className="dragon-hint">You’re out of rainbow coins! Spell some words to earn more for {dragon.name}.</p>
           )}
         </div>
       </div>
 
-      <GameFooter>DRAG TO TURN · TAP TO SNUGGLE</GameFooter>
+      <GameFooter>{dragon.footer}</GameFooter>
     </section>
   );
 }

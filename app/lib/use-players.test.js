@@ -253,6 +253,15 @@ describe("usePlayers", () => {
     expect(result.current.currentPlayer.results).toEqual({ "cvc/middle-sound": [true, null, false] });
   });
 
+  it("unlocks things for the current player for good, once", () => {
+    seed({ players: [{ name: "Ada", coins: 0, age: "3-4" }, { name: "Elly", coins: 0, age: "5-6" }], current: "Ada" });
+    const { result } = renderHook(() => usePlayers());
+    act(() => result.current.unlock("tofu"));
+    act(() => result.current.unlock("tofu"));
+    expect(stored().players[0].unlocks).toEqual(["tofu"]);
+    expect(stored().players[1].unlocks).toBeUndefined();
+  });
+
   it("drops game settings that aren't on/off", () => {
     seed({ players: [{ name: "Ada", coins: 0, age: "3-4", gameSettings: { cvc: false, dragon: "yes" } }], current: "Ada" });
     const { result } = renderHook(() => usePlayers());

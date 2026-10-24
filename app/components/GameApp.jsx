@@ -12,6 +12,9 @@ import Breadcrumbs from "./Breadcrumbs";
 import CoinLink from "./CoinLink";
 import CompletionDialog, { chineseCompletionText } from "./CompletionDialog";
 import DragonDen from "./DragonDen";
+import RainbowVillage from "./RainbowVillage";
+import TofuUnlock from "./TofuUnlock";
+import { dragons } from "../dragon-data";
 import GameFooter from "./GameFooter";
 import GameHeading from "./GameHeading";
 import GamePicker from "./GamePicker";
@@ -55,7 +58,7 @@ export default function GameApp() {
 
   const {
     loaded, players, currentPlayer, createPlayer, setPlayerAge, selectPlayer, logOut, addCoin, spendCoins, saveProgress, saveDeck,
-    setGameEnabled, awardBadge, saveResult,
+    setGameEnabled, awardBadge, saveResult, unlock,
   } = usePlayers();
   const [parentModeOpen, setParentModeOpen] = useState(false);
   const [badgesOpen, setBadgesOpen] = useState(false);
@@ -68,6 +71,11 @@ export default function GameApp() {
   const selectedGame = allowed ? routeGame : null;
   const gameTopics = topicsByGame[selectedGame?.id] ?? [];
   const routeTopic = (topicId && gameTopics.find((topic) => topic.id === topicId)) || null;
+  // The dragon game: "/dragon" is Rainbow Village once Tofu has moved in (Mochi's den before), and
+  // "/dragon/mochi" or "/dragon/tofu" is a dragon's den. Tofu's house needs unlocking first.
+  const tofuUnlocked = Boolean(currentPlayer?.unlocks?.includes("tofu"));
+  const dragonPlace = selectedGame?.id === "dragon" ? topicId ?? (tofuUnlocked ? "village" : "mochi") : null;
+  const isDragonDen = (place) => place === "mochi" || (place === "tofu" && tofuUnlocked);
   const categoryKey = routeTopic ? `${selectedGame.id}/${routeTopic.id}` : null;
   // Every topic plays its words in a shuffled order, saved per player so leaving and coming
   // back continues the same order. Topics with `wordsPerGame` (CVC, 量詞) deal only that many.
@@ -149,8 +157,9 @@ export default function GameApp() {
       }
       return;
     }
-    if (topicId && !routeTopic) router.replace(`/${routeGame.id}`);
-  }, [loaded, gameId, topicId, routeGame, allowed, currentPlayer, routeTopic, router]);
+    if (topicId && !routeTopic && !(routeGame.id === "dragon" && isDragonDen(topicId))) router.replace(`/${routeGame.id}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded, gameId, topicId, routeGame, allowed, currentPlayer, routeTopic, router, tofuUnlocked]);
 
   // A topic without a shuffled hand of words yet gets one dealt.
   useEffect(() => {
@@ -241,6 +250,14 @@ export default function GameApp() {
   }
 
   const closeParentMode = useCallback(() => setParentModeOpen(false), []);
+
+  // Spends the coins to move Tofu into Rainbow Village, then goes to meet her.
+  function unlockTofu() {
+    if (!spendCoins(dragons.tofu.unlockCost)) return;
+    unlock("tofu");
+    sounds.sparkle?.();
+    router.push("/dragon/tofu");
+  }
 
   function handleLogOut() {
     logOut();
@@ -358,6 +375,7 @@ export default function GameApp() {
         { label: "Home", href: "/" },
         { label: selectedGame.name, href: `/${selectedGame.id}` },
         ...(routeTopic ? [{ label: routeTopic.name, href: `/${selectedGame.id}/${routeTopic.id}` }] : []),
+        ...(dragonPlace && topicId && dragons[topicId] ? [{ label: dragons[topicId].house, href: `/dragon/${topicId}` }] : []),
       ]}
     />
   );
@@ -389,7 +407,20 @@ export default function GameApp() {
         )
       ) : !routeTopic ? (
         selectedGame.id === "dragon" ? (
-          <DragonDen coins={rainbowCoins} onSpendCoins={spendCoins} breadcrumbs={breadcrumbs} />
+          dragonPlace === "village" ? (
+            <RainbowVillage breadcrumbs={breadcrumbs} onVisit={(place) => router.push(`/dragon/${place}`)} />
+          ) : isDragonDen(dragonPlace) && (
+            <DragonDen
+              key={dragonPlace}
+              dragon={dragons[dragonPlace]}
+              coins={rainbowCoins}
+              onSpendCoins={spendCoins}
+              breadcrumbs={breadcrumbs}
+              banner={dragonPlace === "mochi" && !tofuUnlocked && (
+                <TofuUnlock coins={rainbowCoins} cost={dragons.tofu.unlockCost} onUnlock={unlockTofu} />
+              )}
+            />
+          )
         ) : (
           <TopicMenu
             isCvc={isCvc}

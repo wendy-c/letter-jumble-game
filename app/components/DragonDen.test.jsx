@@ -1,27 +1,27 @@
 import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import DragonDen from "./DragonDen";
-import { dragonActionsById } from "../dragon-data";
+import { dragonActionsById, dragons } from "../dragon-data";
 import { sounds } from "../lib/sounds";
 
 jest.mock("../lib/sounds", () => ({ sounds: { coin: jest.fn() } }));
 
 // The real scene needs WebGL; this stand-in records commands and lets tests "tap" Mochi.
 const commands = [];
-jest.mock("./DragonScene", () => function MockDragonScene({ command, onPet, room }) {
+jest.mock("./DragonScene", () => function MockDragonScene({ command, onPet, room, name }) {
   if (command) commands.push(command.id);
-  return <button type="button" onClick={onPet} data-room={room}>Mochi</button>;
+  return <button type="button" onClick={onPet} data-room={room}>{name}</button>;
 });
 
-function renderDen(coins) {
+function renderDen(coins, dragon = dragons.mochi) {
   let balance = coins;
   const onSpendCoins = jest.fn((amount) => {
     if (balance < amount) return false;
     balance -= amount;
     return true;
   });
-  const view = render(<DragonDen coins={coins} onSpendCoins={onSpendCoins} onBack={jest.fn()} />);
-  return { ...view, onSpendCoins, rerenderWith: (next) => view.rerender(<DragonDen coins={next} onSpendCoins={onSpendCoins} onBack={jest.fn()} />) };
+  const view = render(<DragonDen dragon={dragon} coins={coins} onSpendCoins={onSpendCoins} />);
+  return { ...view, onSpendCoins, rerenderWith: (next) => view.rerender(<DragonDen dragon={dragon} coins={next} onSpendCoins={onSpendCoins} />) };
 }
 
 beforeEach(() => {
@@ -155,3 +155,41 @@ describe("DragonDen", () => {
   });
 });
 
+describe("Tofu's den", () => {
+  it("has her own treats, grooming and kitchen activities, in her own rooms", async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    renderDen(10, dragons.tofu);
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Tofu the Fairy Dragon");
+    const room = () => screen.getByRole("button", { name: "Tofu" }).dataset.room;
+    const items = () => within(screen.getByRole("tabpanel")).getAllByRole("button").map((button) => button.textContent.replace(/\d+$/, "").replace(/^\W+/u, ""));
+
+    expect(room()).toBe("tofu-home");
+    expect(items()).toEqual(["Apple", "Cupcake", "Chilli pepper", "Ice cream", "Lemon", "Milkshake"]);
+    await user.click(screen.getByRole("tab", { name: /Grooming/ }));
+    expect(room()).toBe("tofu-bathroom");
+    await user.click(screen.getByRole("tab", { name: /Activities/ }));
+    expect(room()).toBe("kitchen");
+    expect(items()).toEqual(["Banana cupcakes", "Science", "Singing", "Reading"]);
+  });
+
+  it("reacts to treats in her own shy way", async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    renderDen(10, dragons.tofu);
+    await user.click(screen.getByRole("button", { name: "Chilli pepper, 3 rainbow coins" }));
+    expect(commands).toEqual(["tofu-chilli"]);
+    expect(dragonActionsById["tofu-chilli"].animation).toBe("shyChilli");
+    expect(screen.getByText(dragonActionsById["tofu-chilli"].reaction)).toBeInTheDocument();
+    expect(dragonActionsById["tofu-chilli"].reaction).not.toBe(dragonActionsById.chilli.reaction);
+  });
+
+  it("peeks, flutters and giggles when tapped", async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    renderDen(0, dragons.tofu);
+    expect(screen.getByText("H-hello… tap me gently?")).toBeInTheDocument();
+    for (const id of ["tofu-shy", "tofu-flutter", "tofu-giggle"]) {
+      await user.click(screen.getByRole("button", { name: "Tofu" }));
+      expect(commands.at(-1)).toBe(id);
+      act(() => jest.advanceTimersByTime(dragonActionsById[id].duration * 1000));
+    }
+  });
+});

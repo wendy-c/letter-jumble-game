@@ -1087,6 +1087,60 @@ describe("badges", () => {
   });
 });
 
+describe("Tofu and Rainbow Village", () => {
+  const seedPlayer = (extra) => window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4", ...extra }], current: "Ada" }));
+
+  it("shows Mochi's den with Tofu's house to save up for, until she's unlocked", async () => {
+    seedPlayer({ coins: 37 });
+    setPathname("/dragon");
+    render(<GameApp />);
+    expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent("Mochi the Rainbow Dragon");
+    expect(screen.getByRole("button", { name: "Unlock Tofu: 37 of 100 rainbow coins" })).toBeDisabled();
+  });
+
+  it("spends 100 coins to unlock Tofu, then meets her in her house", async () => {
+    seedPlayer({ coins: 120 });
+    setPathname("/dragon");
+    const user = userEvent.setup();
+    render(<GameApp />);
+    await user.click(await screen.findByRole("button", { name: "Unlock Tofu for 100 rainbow coins" }));
+
+    expect(currentPathname()).toBe("/dragon/tofu");
+    expect(storedPlayers().players[0]).toMatchObject({ coins: 20, unlocks: ["tofu"] });
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Tofu the Fairy Dragon");
+    expect(within(screen.getByRole("navigation", { name: "Breadcrumb" })).getAllByRole("listitem").map((item) => item.textContent))
+      .toEqual(["🏠 Home", "Mochi the Rainbow Dragon", "Tofu’s House"]);
+  });
+
+  it("starts at Rainbow Village once Tofu has moved in, with the park locked", async () => {
+    seedPlayer({ unlocks: ["tofu"] });
+    setPathname("/dragon");
+    const user = userEvent.setup();
+    render(<GameApp />);
+    expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent("Rainbow Village");
+    expect(screen.getByRole("button", { name: "Park, coming soon" })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: /Unlock Tofu/ })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Visit Mochi’s House" }));
+    expect(currentPathname()).toBe("/dragon/mochi");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Mochi the Rainbow Dragon");
+    expect(screen.queryByRole("button", { name: /Unlock Tofu/ })).not.toBeInTheDocument();
+
+    await user.click(crumb("Mochi the Rainbow Dragon"));
+    await user.click(screen.getByRole("button", { name: "Visit Tofu’s House" }));
+    expect(currentPathname()).toBe("/dragon/tofu");
+  });
+
+  it("sends Tofu's address back to the start until she's unlocked", async () => {
+    seedPlayer({ coins: 5 });
+    setPathname("/dragon/tofu");
+    render(<GameApp />);
+    await screen.findByRole("heading", { level: 1 });
+    expect(currentPathname()).toBe("/dragon");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Mochi the Rainbow Dragon");
+  });
+});
+
 describe("parent mode", () => {
   const seedChildren = (extra = {}) => window.localStorage.setItem(playersKey, JSON.stringify({
     players: [{ name: "Ada", coins: 0, age: "3-4", ...extra }, { name: "Elly", coins: 0, age: "5-6" }],

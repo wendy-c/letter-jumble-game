@@ -194,8 +194,149 @@ def beach():
     return svg("\n".join(b))
 
 
+# ---------- Tofu's rooms ----------
+
+def bookshelf(x, y, w, h):
+    out = f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="6" fill="#c98a55"/>'
+    shelves = 4
+    colors = ["#ff8fa3", "#ffe27a", "#8cc8f2", "#8fe3a8", "#b79cf2", "#ffb86b"]
+    for row in range(shelves):
+        top = y + 8 + row * (h - 16) / shelves
+        bottom = top + (h - 16) / shelves - 4
+        out += f'<rect x="{x + 8}" y="{top:.0f}" width="{w - 16}" height="{bottom - top:.0f}" fill="#8b5a3c" stroke-width="3"/>'
+        bx = x + 12
+        i = row
+        while bx < x + w - 18:
+            bw = 8 + (i * 5) % 6
+            bh = (bottom - top) - 4 - (i * 7) % 8
+            out += f'<rect x="{bx}" y="{bottom - bh:.0f}" width="{bw}" height="{bh:.0f}" rx="1.5" fill="{colors[i % len(colors)]}" stroke-width="2.5"/>'
+            bx += bw + 2
+            i += 1
+    return out
+
+
+def tofu_home():
+    # A cosy reading nook: bookshelves, a starry window with a telescope, and a star mobile.
+    b = []
+    b.append(f'<rect x="-10" y="-10" width="620" height="{FLOOR + 10}" fill="#e6f7f0" stroke="none"/>')
+    for row in range(5):
+        for col in range(9):
+            x, y = 26 + col * 70 + (35 if row % 2 else 0), 30 + row * 46
+            b.append(sparkle(x, y, 5, "#c8eed8", stroke=False))
+    b.append(f'<rect x="-10" y="{FLOOR - 24}" width="620" height="24" fill="#c8eed8"/>')
+    b.append(f'<rect x="-10" y="{FLOOR}" width="620" height="{H - FLOOR + 10}" fill="#f6e3c4"/>')
+    for y in (300, 345):
+        b.append(f'<path d="M-10 {y}H610" stroke="#e8c79a" stroke-width="2.5"/>')
+    b.append('<ellipse cx="300" cy="332" rx="160" ry="42" fill="#fff2bf"/>')
+    b.append('<ellipse cx="300" cy="332" rx="130" ry="31" fill="none" stroke="#ffe27a" stroke-width="4" stroke-dasharray="10 8"/>')
+    b.append(bookshelf(96, 70, 112, 196))
+    # Round window with the night sky, and a telescope pointing out of it.
+    b.append('<circle cx="452" cy="120" r="58" fill="#b79cf2"/><circle cx="452" cy="120" r="46" fill="#5a4a9e"/>')
+    b.append('<path d="M452 74v92M406 120h92" stroke-width="4"/>')
+    b.append(sparkle(430, 98, 6) + sparkle(476, 140, 5) + sparkle(470, 96, 4))
+    b.append('<circle cx="428" cy="142" r="8" fill="#fff6c8" stroke-width="3"/>')
+    b.append('<path d="M470 268l18-60 18 60M488 208v60" fill="none" stroke-width="5"/>')
+    b.append('<path d="M462 214l56-34" stroke-width="18"/><path d="M462 214l56-34" stroke="#8cc8f2" stroke-width="12"/>')
+    b.append('<path d="M514 182l10-6" stroke-width="20"/><path d="M514 182l10-6" stroke="#ffd45e" stroke-width="14"/>')
+    # A star mobile hanging in the middle.
+    b.append('<path d="M300 -10v34M262 24h76M262 24v18M300 24v26M338 24v14" fill="none" stroke-width="3"/>')
+    b.append(sparkle(262, 50, 10, "#ffe27a") + sparkle(300, 60, 11, "#ffb3d1") + sparkle(338, 46, 9, "#8cc8f2"))
+    # A plant and a stack of books on the floor.
+    b.append('<rect x="540" y="222" width="40" height="40" rx="6" fill="#ffb3d1"/>')
+    for dx, dy, rot in [(-12, -16, -30), (0, -26, 0), (12, -16, 30)]:
+        b.append(f'<ellipse cx="{560 + dx}" cy="{222 + dy}" rx="8" ry="18" fill="#8fe3a8" transform="rotate({rot} {560 + dx} {222 + dy})"/>')
+    for i, c in enumerate(["#ff8fa3", "#ffe27a", "#b79cf2"]):
+        b.append(f'<rect x="{40 + i * 3}" y="{252 - i * 12}" width="44" height="12" rx="2" fill="{c}" stroke-width="3"/>')
+    return svg("\n".join(b))
+
+
+def tofu_bathroom():
+    # Lemon-yellow tiles, a pink round tub full of bubbles, and a flower mirror.
+    b = []
+    b.append(f'<rect x="-10" y="-10" width="620" height="{FLOOR + 10}" fill="#fff6d4" stroke="none"/>')
+    for y in range(18, FLOOR, 36):
+        b.append(f'<path d="M-10 {y}H610" stroke="#f6e3a0" stroke-width="2"/>')
+    for row, y in enumerate(range(-18, FLOOR, 36)):
+        for x in range(-20 + (18 if row % 2 else 0), 620, 36):
+            b.append(f'<path d="M{x} {y}V{y + 36}" stroke="#f6e3a0" stroke-width="2"/>')
+    b.append(f'<rect x="-10" y="{FLOOR - 64}" width="620" height="64" fill="#e3d6fb" stroke="none"/>')
+    b.append(f'<path d="M-10 {FLOOR - 64}H610" stroke-width="3"/>')
+    b.append(f'<rect x="-10" y="{FLOOR}" width="620" height="{H - FLOOR + 10}" fill="#ffffff"/>')
+    for row, y in enumerate(range(FLOOR, H, 36)):
+        for col, x in enumerate(range(-10, 620, 40)):
+            if (row + col) % 2:
+                b.append(f'<rect x="{x}" y="{y}" width="40" height="36" fill="#f4ebff" stroke="none"/>')
+    b.append(f'<path d="M-10 {FLOOR}H610" stroke-width="3"/>')
+    b.append('<ellipse cx="300" cy="334" rx="150" ry="36" fill="#c8eed8"/>')
+    b.append('<ellipse cx="300" cy="334" rx="124" ry="27" fill="none" stroke="#ffffff" stroke-width="5" stroke-dasharray="1 12"/>')
+    # Round pink tub with bubbles (left).
+    b.append('<path d="M70 214h170q0 56-50 62h-70q-50-6-50-62Z" fill="#ffb3d1"/>')
+    b.append('<rect x="62" y="204" width="186" height="14" rx="7" fill="#ffffff"/>')
+    for x, y, r in [(92, 196, 16), (120, 188, 20), (152, 194, 17), (184, 186, 21), (214, 196, 16)]:
+        b.append(f'<circle cx="{x}" cy="{y}" r="{r}" fill="#fff" stroke="#b79cf2" stroke-width="3"/>')
+    b.append('<path d="M98 276l-6 16h14l2-14M206 276l6 16h-14l-2-14" fill="#ffd45e" stroke-width="3"/>')
+    # Flower mirror and a shelf with a duck (right).
+    b.append(''.join(f'<circle cx="{452 + 50 * math.cos(a):.1f}" cy="{110 + 50 * math.sin(a):.1f}" r="16" fill="#ffd3e6" stroke-width="3"/>'
+                     for a in [i * math.pi / 4 for i in range(8)]))
+    b.append('<circle cx="452" cy="110" r="44" fill="#e6f6ff"/><path d="M430 86q8-12 22-14" fill="none" stroke="#fff" stroke-width="5"/>')
+    b.append('<path d="M410 190h84" stroke-width="6"/><path d="M410 190h84" stroke="#c98a55" stroke-width="2"/>')
+    b.append('<path d="M420 188q-4-16 10-18 12 0 10 12l8 2q-2 10-14 10h-8q-8 0-6-6Z" fill="#ffe27a"/>')
+    b.append('<rect x="464" y="164" width="12" height="24" rx="4" fill="#8cc8f2" stroke-width="3"/><rect x="482" y="170" width="10" height="18" rx="4" fill="#ff8fa3" stroke-width="3"/>')
+    # A plant in the corner.
+    b.append('<rect x="530" y="226" width="40" height="36" rx="6" fill="#b79cf2"/>')
+    for dx, dy, rot in [(-12, -16, -30), (0, -26, 0), (12, -16, 30)]:
+        b.append(f'<ellipse cx="{550 + dx}" cy="{226 + dy}" rx="8" ry="18" fill="#8fe3a8" transform="rotate({rot} {550 + dx} {226 + dy})"/>')
+    return svg("\n".join(b))
+
+
+def kitchen():
+    # Tofu's kitchen: counters, an oven, shelves of jars, hanging spoons and a window.
+    b = []
+    b.append(f'<rect x="-10" y="-10" width="620" height="{FLOOR + 10}" fill="#ffe8ef" stroke="none"/>')
+    b.append(f'<rect x="-10" y="150" width="620" height="{FLOOR - 150}" fill="#ffffff" stroke="none"/>')
+    for y in range(150, FLOOR, 22):
+        b.append(f'<path d="M-10 {y}H610" stroke="#f3dbe5" stroke-width="2"/>')
+    b.append(f'<rect x="-10" y="{FLOOR}" width="620" height="{H - FLOOR + 10}" fill="#ffffff"/>')
+    for row, y in enumerate(range(FLOOR, H, 34)):
+        for col, x in enumerate(range(-10, 620, 38)):
+            if (row + col) % 2:
+                b.append(f'<rect x="{x}" y="{y}" width="38" height="34" fill="#ffe0cc" stroke="none"/>')
+    b.append(f'<path d="M-10 {FLOOR}H610" stroke-width="3"/>')
+    # Window with curtains (left).
+    b.append('<rect x="70" y="30" width="110" height="80" rx="8" fill="#cfe8ff"/><path d="M125 30v80M70 70h110" stroke-width="4"/>')
+    b.append('<path d="M60 24q20 50 0 96h20q10-48 0-96Z M190 24q-20 50 0 96h-20q-10-48 0-96Z" fill="#ffb3d1"/>')
+    b.append('<path d="M54 22h142" stroke-width="6"/><path d="M54 22h142" stroke="#f2b632" stroke-width="2"/>')
+    # Counter with cupboards (left) and an oven with a glowing window (right).
+    b.append('<path d="M-10 196h220v66H-10Z" fill="#f6e3c4"/><path d="M-10 190h226v10H-10Z" fill="#ffffff"/>')
+    b.append('<path d="M60 204v54M140 204v54" stroke-width="3"/><circle cx="52" cy="230" r="3" fill="#ffd45e" stroke-width="2"/><circle cx="148" cy="230" r="3" fill="#ffd45e" stroke-width="2"/>')
+    b.append('<rect x="20" y="166" width="22" height="24" rx="4" fill="#ffffff" stroke-width="3"/><rect x="24" y="160" width="14" height="8" rx="2" fill="#8cc8f2" stroke-width="2.5"/>')
+    b.append('<path d="M166 190v-20q0-10 12-10h10" fill="none" stroke-width="4"/>')
+    b.append('<rect x="408" y="150" width="120" height="112" rx="8" fill="#ffffff"/><rect x="408" y="150" width="120" height="22" rx="6" fill="#b79cf2" stroke-width="3"/>')
+    b.append(''.join(f'<circle cx="{x}" cy="161" r="5" fill="#ffffff" stroke-width="2.5"/>' for x in (428, 448, 468)))
+    b.append('<rect x="424" y="186" width="88" height="54" rx="6" fill="#ffd8a0" stroke-width="3"/><path d="M424 196h88" stroke="#ffb86b" stroke-width="3"/>')
+    b.append('<path d="M434 178h68" stroke-width="5"/>')
+    b.append('<rect x="536" y="80" width="60" height="182" rx="10" fill="#cfe8ff"/><path d="M536 150h60M548 110v24M548 164v40" stroke-width="3"/>')
+    # Shelf with jars, and hanging spoons.
+    b.append('<path d="M240 100h120" stroke-width="7"/><path d="M240 100h120" stroke="#c98a55" stroke-width="3"/>')
+    for x, c, h in [(250, "#fff6c8", 30), (282, "#ffd3e6", 24), (310, "#c8eed8", 34), (340, "#e3d6fb", 26)]:
+        b.append(f'<rect x="{x}" y="{96 - h}" width="22" height="{h}" rx="5" fill="{c}" stroke-width="3"/><rect x="{x - 2}" y="{92 - h}" width="26" height="6" rx="2" fill="#ffb86b" stroke-width="2.5"/>')
+    b.append('<path d="M400 40h126" stroke-width="5"/>')
+    for x, kind in [(414, "spoon"), (446, "whisk"), (480, "spoon"), (512, "spatula")]:
+        b.append(f'<path d="M{x} 40v16" stroke-width="3.5"/>')
+        if kind == "spoon":
+            b.append(f'<ellipse cx="{x}" cy="62" rx="7" ry="9" fill="#ffd3a0" stroke-width="3"/>')
+        elif kind == "whisk":
+            b.append(f'<path d="M{x} 56q-10 10 0 22 10-12 0-22Zq-4 10 0 22" fill="none" stroke-width="2.5"/>')
+        else:
+            b.append(f'<rect x="{x - 7}" y="56" width="14" height="18" rx="3" fill="#8cc8f2" stroke-width="3"/>')
+    # A rug for Tofu.
+    b.append('<ellipse cx="300" cy="334" rx="150" ry="36" fill="#ffd3e6"/>')
+    b.append('<ellipse cx="300" cy="334" rx="124" ry="27" fill="none" stroke="#ffffff" stroke-width="5" stroke-dasharray="1 12"/>')
+    return svg("\n".join(b))
+
+
 os.makedirs(OUT, exist_ok=True)
-for name, draw in [("home", home), ("bathroom", bathroom), ("beach", beach)]:
+for name, draw in [("home", home), ("bathroom", bathroom), ("beach", beach), ("tofu-home", tofu_home), ("tofu-bathroom", tofu_bathroom), ("kitchen", kitchen)]:
     with open(os.path.join(OUT, f"{name}.svg"), "w") as f:
         f.write(draw())
 print("done")

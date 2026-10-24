@@ -103,10 +103,45 @@ function heartGeometry() {
 
 /* ---------- The dragon ---------- */
 
-// Mochi's friend Tofu: pale yellow, with floppy ears and two pairs of rainbow wings.
-const TOFU = { color: 0xfff0a8, belly: 0xfffcf0, snout: 0xffe3c8, ears: "floppy", wingPairs: 2 };
+// Mochi's friend Tofu: pale yellow, with floppy ears and two pairs of fairy wings.
+const TOFU = { color: 0xfff0a8, belly: 0xfffcf0, snout: 0xffe3c8, ears: "floppy", wings: "fairy" };
 
-// Builds Mochi, or with `options` another dragon: { color, belly, snout, ears: "floppy", wingPairs }.
+// Fairy wings: see-through pastel petals with soft white edges. The top pair sweeps up and out;
+// the bottom pair is smaller and hangs down.
+function fairyWingShape(lower) {
+  const shape = new THREE.Shape();
+  shape.moveTo(0, 0);
+  if (lower) {
+    shape.bezierCurveTo(0.3, -0.04, 0.85, -0.22, 0.98, -0.58);
+    shape.bezierCurveTo(1.06, -0.92, 0.62, -0.98, 0.42, -0.72);
+    shape.bezierCurveTo(0.26, -0.48, 0.1, -0.2, 0, 0);
+  } else {
+    shape.bezierCurveTo(0.1, 0.6, 0.66, 1.42, 1.22, 1.32);
+    shape.bezierCurveTo(1.62, 1.2, 1.4, 0.58, 0.94, 0.32);
+    shape.bezierCurveTo(0.62, 0.13, 0.3, 0.02, 0, 0);
+  }
+  return shape;
+}
+
+function fairyWingGeometry(lower) {
+  const shape = fairyWingShape(lower);
+  const geometry = new THREE.ShapeGeometry(shape, 24);
+  const pastel = [0xffb3dc, 0xd2b8ff, 0xa8e8cc, 0xa9d4ff].map((color) => new THREE.Color(color));
+  const position = geometry.attributes.position;
+  const colors = new Float32Array(position.count * 3);
+  const color = new THREE.Color();
+  for (let index = 0; index < position.count; index += 1) {
+    const reach = clamp01(Math.hypot(position.getX(index), position.getY(index)) / (lower ? 1.1 : 1.7)) * (pastel.length - 1);
+    const low = Math.min(Math.floor(reach), pastel.length - 2);
+    color.copy(pastel[low]).lerp(pastel[low + 1], reach - low);
+    color.toArray(colors, index * 3);
+  }
+  geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+  const edge = new THREE.CatmullRomCurve3(shape.getPoints(40).map((point) => new THREE.Vector3(point.x, point.y, 0.01)), true);
+  return { geometry, edgeGeometry: new THREE.TubeGeometry(edge, 80, 0.022, 6, true) };
+}
+
+// Builds Mochi, or with `options` another dragon: { color, belly, snout, ears: "floppy", wings: "fairy" }.
 function buildDragon(materials, options = {}) {
   const bodyColor = options.color ?? LILAC;
   const lilac = materials.toon(bodyColor);
@@ -182,17 +217,21 @@ function buildDragon(materials, options = {}) {
   const wingMaterial = new THREE.MeshToonMaterial({
     vertexColors: true, side: THREE.DoubleSide, gradientMap: materials.toon(LILAC).gradientMap,
   });
-  // One pair of wings, or a second smaller pair below that angles downwards.
-  const wingPairs = [
-    { y: 1.6, x: 0.42, scale: 1.15, tilt: 0.1 },
-    { y: 1.15, x: 0.5, scale: 0.85, tilt: -0.55 },
-  ].slice(0, options.wingPairs ?? 1);
-  const wings = wingPairs.flatMap(({ y, x, scale, tilt }) => [-1, 1].map((side) => {
+  // Mochi has one pair of rainbow wings; Tofu has two pairs of see-through fairy wings.
+  const fairy = options.wings === "fairy";
+  const fairyMaterial = fairy
+    ? new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.78, side: THREE.DoubleSide, depthWrite: false })
+    : null;
+  const wingPairs = fairy
+    ? [{ y: 1.62, x: 0.36, scale: 1.1, tilt: 0.05, ...fairyWingGeometry(false) }, { y: 1.28, x: 0.44, scale: 0.95, tilt: 0, ...fairyWingGeometry(true) }]
+    : [{ y: 1.6, x: 0.42, scale: 1.15, tilt: 0.1, geometry: wingGeometry }];
+  const wings = wingPairs.flatMap(({ y, x, scale, tilt, geometry, edgeGeometry }) => [-1, 1].map((side) => {
     const pivot = new THREE.Group();
     pivot.position.set(side * x, y, -0.62);
-    const wing = new THREE.Mesh(wingGeometry, wingMaterial);
+    const wing = new THREE.Mesh(geometry, fairy ? fairyMaterial : wingMaterial);
     wing.scale.set(side * scale, scale, 1);
     wing.rotation.set(0.15, 0, side * tilt);
+    if (edgeGeometry) wing.add(new THREE.Mesh(edgeGeometry, materials.toon(0xc4b0f5)));
     pivot.add(wing);
     pivot.userData.side = side;
     bodyGroup.add(pivot);
@@ -380,7 +419,13 @@ function buildDragon(materials, options = {}) {
 
   return {
     root, turn, bodyGroup, body, feet, arms, wings, tail, head, mouth, mouthShape, tongue, smile, eyes, ears, horn, blushMaterial,
-    blushes, foam, lilac, baseColor: new THREE.Color(bodyColor), wingMaterial, wingGeometry,
+    blushes, foam, lilac, baseColor: new THREE.Color(bodyColor),
+    // Frees the materials that belong to this dragon (geometries go with the scene).
+    dispose() {
+      wingMaterial.dispose();
+      fairyMaterial?.dispose();
+      blushMaterial.dispose();
+    },
   };
 }
 
@@ -403,7 +448,7 @@ function buildTreat(id, materials) {
       const stick = add(part(new THREE.CylinderGeometry(0.05, 0.04, 0.5, 12), materials.toon(0xffa552), materials, 0.05, 0.015), x, 0, 0);
       stick.rotation.z = (index - 1) * 0.3;
     });
-  } else if (id === "cupcake") {
+  } else if (id === "cupcake" || id === "bananaCupcake") {
     add(part(new THREE.CylinderGeometry(0.22, 0.16, 0.24, 20), materials.toon(0xf7a8c8), materials, 0.2, 0.025));
     add(part(sphere(0.25, 0.7), materials.toon(0xfff0f6), materials, 0.25, 0.025), 0, 0.17, 0).scale.set(1, 0.55, 1);
     add(part(sphere(0.17, 0.6), materials.toon(0xc9b2f7), materials, 0.17, 0.02), 0, 0.29, 0).scale.set(1, 0.65, 1);
@@ -413,6 +458,10 @@ function buildTreat(id, materials) {
       const sprinkle = add(new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.018, 0.018), materials.toon(RAINBOW[index % 6])),
         Math.cos(angle) * 0.17, 0.22, Math.sin(angle) * 0.17);
       sprinkle.rotation.y = angle;
+    }
+    if (id === "bananaCupcake") {
+      const slice = add(part(new THREE.CylinderGeometry(0.11, 0.11, 0.05, 20), materials.toon(0xfff0a8), materials, 0.1, 0.012), 0.05, 0.42, 0.06);
+      slice.rotation.set(0.5, 0, 0.3);
     }
   } else if (id === "chilli") {
     add(part(new THREE.CylinderGeometry(0.3, 0.3, 0.08, 28), materials.toon(0xe8b27a), materials, 0.3, 0.025));
@@ -647,6 +696,97 @@ function buildSandcastle(materials) {
   return group;
 }
 
+// A mixing bowl of batter with a whisk, for baking.
+function buildMixingBowl(materials) {
+  const group = new THREE.Group();
+  const bowl = part(new THREE.SphereGeometry(0.42, 32, 16, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), materials.toon(0x8cc8f2), materials, 0.42, 0.03);
+  const batter = new THREE.Mesh(new THREE.CircleGeometry(0.38, 32), materials.toon(0xfff3d6));
+  batter.rotation.x = -Math.PI / 2;
+  batter.position.y = -0.04;
+  const whisk = new THREE.Group();
+  whisk.add(new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.5), materials.toon(0xb79cf2)));
+  [0, Math.PI / 3, (2 * Math.PI) / 3].forEach((angle) => {
+    const loop = new THREE.Mesh(new THREE.TorusGeometry(0.1, 0.012, 6, 20), materials.toon(0xdfe6ef));
+    loop.scale.set(1, 1.6, 1);
+    loop.rotation.y = angle;
+    loop.position.y = -0.3;
+    whisk.add(loop);
+  });
+  whisk.position.y = 0.2;
+  group.add(bowl, batter, whisk);
+  group.userData.whisk = whisk;
+  return group;
+}
+
+// A round flask whose liquid changes colour, for a science experiment.
+function buildFlask(materials) {
+  const group = new THREE.Group();
+  const glass = new THREE.Mesh(sphere(0.32), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.35, depthWrite: false }));
+  const neck = part(new THREE.CylinderGeometry(0.09, 0.11, 0.36, 20, 1, true), materials.toon(0xe6f4fc), materials, 0.1, 0.012);
+  neck.position.y = 0.42;
+  const liquidMaterial = new THREE.MeshToonMaterial({ color: 0xff8fae, gradientMap: materials.toon(LILAC).gradientMap });
+  const liquid = new THREE.Mesh(new THREE.SphereGeometry(0.28, 28, 18, 0, Math.PI * 2, Math.PI * 0.35, Math.PI * 0.65), liquidMaterial);
+  const rim = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.02, 8, 32), materials.ink);
+  rim.rotation.x = Math.PI / 2;
+  group.add(liquid, glass, neck, rim);
+  group.userData.liquid = liquidMaterial;
+  group.userData.dispose = () => {
+    liquidMaterial.dispose();
+    glass.material.dispose();
+  };
+  return group;
+}
+
+// Glasses that sit on Tofu's snout: round reading glasses, or big science goggles.
+function buildGlasses(materials, goggles) {
+  const group = new THREE.Group();
+  const frame = materials.toon(goggles ? 0x8cc8f2 : 0xc98a55);
+  const lensMaterial = new THREE.MeshBasicMaterial({ color: goggles ? 0xcfe8ff : 0xffffff, transparent: true, opacity: goggles ? 0.45 : 0.2, depthWrite: false });
+  [-1, 1].forEach((side) => {
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(goggles ? 0.22 : 0.19, goggles ? 0.05 : 0.03, 10, 28), frame);
+    ring.position.set(side * 0.4, 0, 0);
+    ring.rotation.y = side * 0.3;
+    const lens = new THREE.Mesh(new THREE.CircleGeometry(goggles ? 0.2 : 0.17, 24), lensMaterial);
+    lens.position.copy(ring.position);
+    lens.rotation.y = ring.rotation.y;
+    group.add(ring, lens);
+  });
+  const bridge = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.4), frame);
+  bridge.rotation.z = Math.PI / 2;
+  group.add(bridge);
+  group.position.set(0, 0.66, 0.95);
+  group.userData.dispose = () => lensMaterial.dispose();
+  return group;
+}
+
+// An open storybook held up to read, with a page that turns.
+function buildBook(materials) {
+  const group = new THREE.Group();
+  const cover = materials.toon(0xb79cf2);
+  [-1, 1].forEach((side) => {
+    const half = new THREE.Group();
+    const board = part(new THREE.BoxGeometry(0.46, 0.62, 0.03), cover, materials, 0.3, 0.015);
+    board.position.x = side * 0.23;
+    const pages = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.56, 0.05), materials.toon(0xfffdf5));
+    pages.position.set(side * 0.22, 0, 0.04);
+    half.add(board, pages);
+    half.rotation.y = -side * 0.35;
+    group.add(half);
+  });
+  const star = part(new THREE.OctahedronGeometry(0.08), materials.toon(GOLD), materials, 0.07, 0.012);
+  star.position.set(0.23, 0.05, -0.05);
+  group.add(star);
+  const turning = new THREE.Group();
+  const page = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.56), new THREE.MeshBasicMaterial({ color: 0xfffaf0, side: THREE.DoubleSide }));
+  page.position.x = 0.21;
+  turning.add(page);
+  turning.position.z = 0.08;
+  group.add(turning);
+  group.userData.page = turning;
+  group.userData.dispose = () => page.material.dispose();
+  return group;
+}
+
 function buildComb(materials) {
   const comb = new THREE.Group();
   comb.add(part(new THREE.BoxGeometry(0.7, 0.14, 0.07), materials.toon(0xf7a8c8), materials, 0.07, 0.015));
@@ -855,14 +995,28 @@ const soundCues = {
   pet: [[0, "purr"], [0.35, "coo"]],
   twirl: [[0.1, "whee"], [1.6, "coo"]],
   wave: [[0.2, "coo"], [1.1, "coo"]],
+  // Tofu: soft nibbles, squeaks and a higher-pitched coo.
+  shyApple: [[1.05, "nibble"], [1.45, "nibble"], [1.85, "nibble"], [2.5, "coo", 1.35]],
+  shyCupcake: [[1.05, "nibble"], [1.45, "nibble"], [1.85, "nibble"], [2.5, "sparkle"], [2.8, "coo", 1.35]],
+  shyChilli: [[1.05, "nibble"], [1.45, "nibble"], [1.85, "nibble"], [2.45, "squeak"], [2.9, "gasp"], [3.4, "squeak"]],
+  shyIcecream: [[1.05, "nibble"], [1.45, "nibble"], [1.85, "nibble"], [2.5, "shiver"]],
+  shyLemon: [[1.05, "nibble"], [1.45, "nibble"], [1.85, "nibble"], [2.45, "pucker"], [3.2, "giggle"]],
+  shyMilkshake: [[1.1, "slurp"], [2.6, "float"], [3.0, "coo", 1.35]],
+  tofuShy: [[0, "squeak"], [1.1, "coo", 1.35]],
+  tofuFlutter: [[0.1, "whee"], [1.5, "coo", 1.35]],
+  tofuGiggle: [[0.1, "giggle"]],
+  baking: [[0.6, "rub"], [2.0, "rub"], [4.3, "ding"], [4.6, "sparkle"], [5.0, "coo", 1.35]],
+  science: [[0.5, "fizz"], [2.0, "fizz"], [3.5, "poof"], [4.6, "giggle"], [5.0, "sparkle"]],
+  singing: [[0.2, "song"], [5.8, "coo", 1.35]],
+  reading: [[1.4, "page"], [3.0, "page"], [4.6, "page"], [5.7, "sparkle"], [6.0, "coo", 1.35]],
   friend: [[0.1, "coo"], [0.9, "whee"], [2.5, "giggle"], [3.1, "danceTune"], [5.8, "purr"], [6.1, "sparkle"], [7.0, "coo"], [7.7, "whee"]],
 };
 
 function playSoundCues(run, sfx) {
-  (soundCues[run.id] ?? []).forEach(([at, name], index) => {
+  (soundCues[run.id] ?? []).forEach(([at, name, value], index) => {
     if (run.t >= at && !run.done[`sound${index}`]) {
       run.done[`sound${index}`] = true;
-      sfx[name]?.();
+      sfx[name]?.(value);
     }
   });
 }
@@ -886,7 +1040,7 @@ function once(run, key, fn) {
 function eatTreat(run, pose, ctx) {
   const t = run.t;
   if (!run.treat) {
-    run.treat = buildTreat(run.id, ctx.materials);
+    run.treat = buildTreat(run.model, ctx.materials);
     ctx.scene.add(run.treat);
     run.treatStart = ctx.mouthWorld().add(new THREE.Vector3(1.4, -1.6, 1.8));
   }
@@ -905,6 +1059,40 @@ function eatTreat(run, pose, ctx) {
     pose.squash += 0.025 * Math.sin(t * 32);
   }
   return t - 1.25;
+}
+
+// Tofu takes a treat in both paws and nibbles it: three shy little bites. Returns the time since
+// the nibbling ended.
+function nibbleTreat(run, pose, ctx) {
+  const t = run.t;
+  if (!run.treat) {
+    run.treat = buildTreat(run.model, ctx.materials);
+    ctx.scene.add(run.treat);
+    run.treatStart = ctx.mouthWorld().add(new THREE.Vector3(1.3, -1.5, 1.6));
+  }
+  const held = ctx.mouthWorld().add(new THREE.Vector3(0, -0.3, 0.45));
+  const k = easeInOut(between(t, 0, 0.9));
+  run.treat.position.lerpVectors(run.treatStart, held, k);
+  run.treat.position.y += Math.sin(k * Math.PI) * 0.4;
+  run.treat.rotation.y = Math.sin(t * 2) * 0.3;
+  const bites = Math.min(3, Math.floor(between(t, 1.0, 2.2) * 3));
+  const gone = t < 2.3 ? 1 : Math.max(0.01, 1 - (t - 2.3) * 8);
+  run.treat.scale.setScalar(1.1 * (1 - bites * 0.25) * gone);
+  run.treat.visible = t < 2.42;
+  const hold = between(t, 0.6, 0.95) * (1 - between(t, 2.2, 2.55));
+  pose.armL = Math.max(pose.armL, 1.05 * hold);
+  pose.armR = Math.max(pose.armR, 1.05 * hold);
+  pose.armHug = Math.max(pose.armHug, 0.85 * hold);
+  pose.headNod += 0.18 * hold;
+  pose.blush = Math.max(pose.blush, 0.6 * hold);
+  if (t > 1.0 && t < 2.2) pose.mouthOpen = Math.max(pose.mouthOpen, 0.3 * Math.abs(Math.sin((t - 1.0) * Math.PI * 2.5)));
+  return t - 2.4;
+}
+
+// A short word floating up beside the dragon's head, once per action.
+function say(run, ctx, text, color) {
+  once(run, `say:${text}`, () => ctx.fx.spawn(ctx.fx.text(text, color, ctx.headWorld().add(new THREE.Vector3(1.2, 0.9, 0.4)), 1.0),
+    { velocity: new THREE.Vector3(0, 0.35, 0), life: 1.4 }));
 }
 
 const actions = {
@@ -1533,6 +1721,292 @@ const actions = {
     run.friendShadow.material.opacity = Math.max(0, 1 - position.y * 0.25);
   },
 
+  /* ----- Tofu: shy treats ----- */
+
+  shyApple(run, pose, dt, ctx) {
+    const after = nibbleTreat(run, pose, ctx);
+    if (after <= 0) return;
+    const wiggle = pulse(after, 0, 1.0);
+    pose.happyEyes = true;
+    pose.blush = 0.9;
+    pose.squash += 0.05 * Math.sin(after * 18) * wiggle;
+    pose.earFlap += 0.4 * Math.sin(after * 10) * wiggle;
+    pose.tailSway += Math.sin(after * 9) * wiggle;
+    once(run, "hearts", () => ctx.fx.hearts(ctx.headWorld().add(new THREE.Vector3(0, 0.8, 0.4)), 3));
+    say(run, ctx, "thanks!", "#f06aa8");
+  },
+
+  shyCupcake(run, pose, dt, ctx) {
+    const after = nibbleTreat(run, pose, ctx);
+    if (after <= 0) return;
+    pose.eyeScale = 1 + 0.3 * pulse(after, 0, 1.4);
+    pose.hop += 0.18 * (pulse(after, 0.1, 0.45) + pulse(after, 0.55, 0.9));
+    pose.blush = 0.8;
+    pose.earFlap += 0.3 * pulse(after, 0, 1.2);
+    if (after < 1) {
+      emit(run, "sprinkles", 12, dt, () => {
+        const sprinkle = ctx.fx.mesh("sprinkle", ctx.headWorld().add(new THREE.Vector3(rand(-0.8, 0.8), rand(0.6, 1.2), 0.4)), 1.2, pick([0xff8fae, 0xffe27a, 0x8cc8f2, 0x8fe3a8]));
+        ctx.fx.spawn(sprinkle, { velocity: new THREE.Vector3(rand(-0.3, 0.3), rand(0.2, 0.6), 0), gravity: 1.5, life: 1, spin: 6 });
+      });
+    }
+    say(run, ctx, "sweet!", "#f2b632");
+  },
+
+  // Too spicy: her ears shoot up, her eyes water and she fans her mouth. No fire for Tofu!
+  shyChilli(run, pose, dt, ctx) {
+    const after = nibbleTreat(run, pose, ctx);
+    if (after <= 0) return;
+    const hot = between(after, 0, 0.3) * (1 - between(after, 1.7, 2.0));
+    pose.heat = hot;
+    pose.eyeOpen = Math.min(pose.eyeOpen, 1 - 0.85 * hot);
+    pose.earFlap += 1.0 * hot;
+    pose.armR = Math.max(pose.armR, (1.3 + 0.5 * Math.sin(after * 24)) * hot);
+    pose.mouthOpen = Math.max(pose.mouthOpen, 0.45 * hot);
+    pose.shakeX += 0.03 * Math.sin(after * 40) * hot;
+    if (hot > 0.5) {
+      emit(run, "steam", 6, dt, () => ctx.fx.spawn(ctx.fx.mesh("puff", ctx.headWorld().add(new THREE.Vector3(pick([-0.9, 0.9]), 0.9, 0)), 0.8, 0xffffff),
+        { velocity: new THREE.Vector3(0, 0.9, 0), life: 0.8, grow: 1.2, opacity: 0.7 }));
+      emit(run, "tears", 5, dt, () => ctx.fx.spawn(ctx.fx.mesh("snow", ctx.headWorld().add(new THREE.Vector3(pick([-0.45, 0.45]), 0.55, 0.85)), 1.4, 0x8cc8f2),
+        { velocity: new THREE.Vector3(pick([-0.5, 0.5]), 0.4, 0.2), gravity: 3, life: 0.7 }));
+    }
+    say(run, ctx, "eep! hot!", "#ff6f6f");
+  },
+
+  shyIcecream(run, pose, dt, ctx) {
+    const after = nibbleTreat(run, pose, ctx);
+    if (after <= 0) return;
+    const cold = between(after, 0, 0.3) * (1 - between(after, 1.5, 1.8));
+    pose.chill = cold;
+    pose.armHug = Math.max(pose.armHug, cold);
+    pose.armL = Math.max(pose.armL, 0.6 * cold);
+    pose.armR = Math.max(pose.armR, 0.6 * cold);
+    pose.shakeX += 0.04 * Math.sin(after * 50) * cold;
+    pose.wingFlap -= 0.5 * cold;
+    pose.earFlap -= 0.25 * cold;
+    pose.eyeOpen = Math.min(pose.eyeOpen, 1 - 0.6 * cold);
+    if (cold > 0.5) {
+      emit(run, "snow", 8, dt, () => ctx.fx.spawn(ctx.fx.mesh("snow", ctx.headWorld().add(new THREE.Vector3(rand(-1.2, 1.2), rand(0.8, 1.4), 0.3)), 1.5),
+        { velocity: new THREE.Vector3(0, -0.6, 0), life: 1.2, spin: 2, wobble: 0.4 }));
+    }
+    say(run, ctx, "brrr!", "#6fb3e6");
+  },
+
+  shyLemon(run, pose, dt, ctx) {
+    const after = nibbleTreat(run, pose, ctx);
+    if (after <= 0) return;
+    const sour = pulse(after, 0, 0.8);
+    pose.eyeOpen = Math.min(pose.eyeOpen, 1 - 0.85 * sour);
+    pose.squash -= 0.08 * sour;
+    pose.earFlap += 1.1 * sour;
+    pose.mouthOpen = Math.max(pose.mouthOpen, 0.2 * sour);
+    if (after > 0.8) {
+      pose.happyEyes = true;
+      pose.squash += 0.04 * Math.sin(after * 20) * (1 - between(after, 1.6, 2.0));
+    }
+    say(run, ctx, "sour!", "#f2b632");
+  },
+
+  // Sips a milkshake and floats up dreamily on her fairy wings.
+  shyMilkshake(run, pose, dt, ctx) {
+    const after = nibbleTreat(run, pose, ctx);
+    if (after <= 0) return;
+    const float = easeInOut(between(after, 0, 0.6)) * (1 - easeInOut(between(after, 1.6, 2.2)));
+    pose.hop += 0.5 * float;
+    pose.wingFlap += 0.5 * Math.sin(after * 28) * float;
+    pose.happyEyes = true;
+    pose.blush = 1;
+    pose.headTilt += 0.15 * Math.sin(after * 3) * float;
+    once(run, "hearts", () => ctx.fx.hearts(ctx.headWorld().add(new THREE.Vector3(0, 0.8, 0.4)), 4));
+    say(run, ctx, "mmm!", "#f06aa8");
+  },
+
+  /* ----- Tofu: when she's tapped ----- */
+
+  // Hides her face in her paws, then peeks out with a shy smile.
+  tofuShy(run, pose, dt, ctx) {
+    const t = run.t;
+    const hide = between(t, 0, 0.25) * (1 - between(t, 1.3, 1.7));
+    const peek = between(t, 0.85, 1.05);
+    pose.armL = Math.max(pose.armL, 1.5 * hide);
+    pose.armR = Math.max(pose.armR, 1.5 * hide * (1 - 0.6 * peek));
+    pose.armHug = Math.max(pose.armHug, hide);
+    pose.headNod += 0.25 * hide;
+    pose.blush = 1;
+    pose.earFlap -= 0.3 * hide;
+    if (t < 0.9) pose.eyeOpen = 0.1;
+    else pose.happyEyes = true;
+    pose.headTilt += 0.2 * peek * hide;
+  },
+
+  // Flutters her fairy wings and hovers for a moment.
+  tofuFlutter(run, pose, dt, ctx) {
+    const t = run.t;
+    const up = easeInOut(between(t, 0, 0.5)) * (1 - easeInOut(between(t, 1.5, 2.1)));
+    pose.hop += 0.45 * up;
+    pose.wingFlap += 0.6 * Math.sin(t * 30) * up;
+    pose.earFlap += 0.35 * Math.sin(t * 15) * up;
+    pose.happyEyes = true;
+    pose.blush = 0.7;
+    if (up > 0.3) emit(run, "glitter", 14, dt, () => ctx.fx.sparkles(ctx.bodyWorld().add(new THREE.Vector3(0, -0.4, -0.6)), 1, 0.6));
+  },
+
+  // Giggles behind her paw, ears bouncing.
+  tofuGiggle(run, pose, dt, ctx) {
+    const t = run.t;
+    const giggle = between(t, 0, 0.2) * (1 - between(t, 1.6, 2.1));
+    pose.squash += 0.05 * Math.sin(t * 26) * giggle;
+    pose.armR = Math.max(pose.armR, 1.3 * giggle);
+    pose.armHug = Math.max(pose.armHug, 0.5 * giggle);
+    pose.happyEyes = true;
+    pose.blush = 0.9;
+    pose.earFlap += 0.45 * Math.sin(t * 13) * giggle;
+    pose.tailSway += Math.sin(t * 11) * giggle;
+    say(run, ctx, "hee hee", "#b79cf2");
+  },
+
+  /* ----- Tofu: activities in the kitchen ----- */
+
+  // Whisks up banana cupcake batter, then ding! A cupcake pops out of the oven.
+  baking(run, pose, dt, ctx) {
+    const t = run.t;
+    if (!run.bowl) {
+      run.bowl = buildMixingBowl(ctx.materials);
+      run.bowl.position.set(0, 1.0, 1.25);
+      ctx.turn.add(run.bowl);
+      run.props.push(run.bowl);
+    }
+    run.bowl.scale.setScalar(Math.max(0.01, easeInOut(between(t, 0, 0.4)) * (1 - easeInOut(between(t, 4.1, 4.5)))));
+    const { whisk } = run.bowl.userData;
+    const stirring = between(t, 0.5, 0.8) * (1 - between(t, 3.6, 3.9));
+    whisk.position.set(0.12 * Math.sin(t * 9) * stirring, 0.2, 0.12 * Math.cos(t * 9) * stirring);
+    whisk.rotation.y = t * 9;
+    pose.armR = Math.max(pose.armR, (0.9 + 0.2 * Math.sin(t * 9)) * stirring);
+    pose.armL = Math.max(pose.armL, 0.7 * stirring);
+    pose.headNod += 0.2 * stirring;
+    pose.headTilt += 0.08 * Math.sin(t * 3) * stirring;
+    if (stirring > 0.5) {
+      emit(run, "flour", 3, dt, () => ctx.fx.spawn(ctx.fx.mesh("puff", run.bowl.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(rand(-0.2, 0.2), 0.3, 0)), 0.6, 0xffffff),
+        { velocity: new THREE.Vector3(rand(-0.2, 0.2), 0.6, 0.1), life: 0.9, grow: 1, opacity: 0.8 }));
+    }
+    if (t > 4.3) {
+      if (!run.cupcake) {
+        run.cupcake = buildTreat("bananaCupcake", ctx.materials);
+        ctx.turn.add(run.cupcake);
+        run.props.push(run.cupcake);
+      }
+      const pop = easeInOut(between(t, 4.3, 4.8));
+      run.cupcake.position.set(0, 1.1 + 0.6 * pop, 1.3);
+      run.cupcake.scale.setScalar(Math.max(0.01, 1.3 * pop * (1 - between(t, 6.7, 7.1))));
+      run.cupcake.rotation.y = t * 1.5;
+      pose.happyEyes = true;
+      pose.blush = 0.8;
+      pose.armL = pose.armR = Math.max(pose.armL, 1.4 * pulse(t, 4.4, 6.6));
+      pose.hop += 0.25 * pulse(t, 4.5, 5.0);
+      once(run, "ding", () => ctx.fx.sparkles(run.cupcake.getWorldPosition(new THREE.Vector3()), 12, 1.2));
+      say(run, ctx, "ding!", "#f2b632");
+    }
+  },
+
+  // Swirls a flask of potion in her goggles: it changes colour, bubbles, then POOF!
+  science(run, pose, dt, ctx) {
+    const t = run.t;
+    if (!run.flask) {
+      run.goggles = buildGlasses(ctx.materials, true);
+      ctx.head.add(run.goggles);
+      run.flask = buildFlask(ctx.materials);
+      run.flask.position.set(0, 1.05, 1.3);
+      ctx.turn.add(run.flask);
+      run.props.push(run.goggles, run.flask);
+    }
+    run.flask.scale.setScalar(Math.max(0.01, easeInOut(between(t, 0, 0.4)) * (1 - easeInOut(between(t, 6.8, 7.2)))));
+    run.goggles.scale.setScalar(Math.max(0.01, easeInOut(between(t, 0, 0.3)) * (1 - easeInOut(between(t, 6.9, 7.3)))));
+    run.flask.userData.liquid.color.setHSL((0.95 + t * 0.22) % 1, 0.75, 0.72);
+    const swirl = between(t, 0.4, 0.7) * (1 - between(t, 3.2, 3.5));
+    run.flask.rotation.z = 0.25 * Math.sin(t * 6) * swirl;
+    pose.armL = Math.max(pose.armL, 0.9 * (swirl + between(t, 3.5, 3.6)) * (1 - between(t, 6.4, 6.8)));
+    pose.armR = Math.max(pose.armR, 0.9 * (swirl + between(t, 3.5, 3.6)) * (1 - between(t, 6.4, 6.8)));
+    pose.headTilt += 0.18 * swirl;
+    pose.eyeScale = 1 + 0.15 * swirl;
+    if (swirl > 0.5) {
+      emit(run, "bubbles", 6, dt, () => {
+        const bubble = ctx.fx.mesh("bubble", run.flask.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(rand(-0.05, 0.05), 0.65, 0)), rand(0.05, 0.09));
+        ctx.fx.spawn(bubble, { velocity: new THREE.Vector3(rand(-0.15, 0.15), 0.9, 0), life: 0.9, wobble: 0.5 });
+      });
+    }
+    // POOF: a rainbow cloud, and Tofu jumps!
+    const startled = pulse(t, 3.5, 4.3);
+    pose.hop += 0.4 * startled;
+    pose.earFlap += 1.2 * startled;
+    pose.eyeScale += 0.4 * startled;
+    pose.shakeX += 0.04 * Math.sin(t * 40) * startled;
+    if (t > 3.5) {
+      once(run, "poof", () => {
+        [0xff8fa3, 0xffb86b, 0xffe27a, 0x8fe3a8, 0x8cc8f2, 0xb79cf2].forEach((color) => {
+          const puff = ctx.fx.mesh("puff", run.flask.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, 0.7, 0)), 1.2, color);
+          ctx.fx.spawn(puff, { velocity: new THREE.Vector3(rand(-1, 1), rand(0.4, 1.2), rand(0, 0.4)), life: 1.4, grow: 1.6, opacity: 0.85 });
+        });
+      });
+    }
+    if (t > 4.5) {
+      pose.happyEyes = true;
+      pose.blush = 0.8;
+      pose.squash += 0.04 * Math.sin(t * 22) * (1 - between(t, 5.8, 6.3));
+      say(run, ctx, "eureka!", "#5cc596");
+    }
+  },
+
+  // Sings a sweet song, swaying with her paws together.
+  singing(run, pose, dt, ctx) {
+    const t = run.t;
+    const singing = between(t, 0.1, 0.4) * (1 - between(t, 5.4, 5.8));
+    pose.lean += 0.1 * Math.sin(t * 3) * singing;
+    pose.headTilt += 0.15 * Math.sin(t * 3) * singing;
+    pose.mouthOpen = Math.max(pose.mouthOpen, (0.15 + 0.35 * Math.abs(Math.sin(t * 6))) * singing * (Math.sin(t * 1.6) > -0.6 ? 1 : 0.2));
+    pose.armL = Math.max(pose.armL, 0.6 * singing);
+    pose.armR = Math.max(pose.armR, 0.6 * singing);
+    pose.armHug = Math.max(pose.armHug, 0.6 * singing);
+    pose.wingFlap += 0.2 * Math.sin(t * 8) * singing;
+    pose.happyEyes = t > 0.5;
+    pose.blush = 0.6;
+    if (singing > 0.5) {
+      emit(run, "notes", 2.5, dt, () => ctx.fx.spawn(ctx.fx.text(pick(["♪", "♫"]), pick(["#8a6ae6", "#f06aa8", "#f2b632", "#5cc596"]), ctx.headWorld().add(new THREE.Vector3(rand(-1.2, 1.2), 1.0, 0.4)), 0.8),
+        { velocity: new THREE.Vector3(rand(-0.2, 0.2), 0.6, 0), life: 1.6, wobble: 0.5 }));
+    }
+    pose.hop += 0.2 * pulse(t, 5.8, 6.3);
+  },
+
+  // Reads a storybook in her glasses, turning the pages, then looks up delighted.
+  reading(run, pose, dt, ctx) {
+    const t = run.t;
+    if (!run.book) {
+      run.glasses = buildGlasses(ctx.materials, false);
+      ctx.head.add(run.glasses);
+      run.book = buildBook(ctx.materials);
+      run.book.position.set(0, 1.3, 1.2);
+      run.book.rotation.x = -0.35;
+      ctx.turn.add(run.book);
+      run.props.push(run.glasses, run.book);
+    }
+    const show = easeInOut(between(t, 0, 0.4)) * (1 - easeInOut(between(t, 6.9, 7.3)));
+    run.book.scale.setScalar(Math.max(0.01, show));
+    run.glasses.scale.setScalar(Math.max(0.01, show));
+    const turnPage = (t % 1.6) / 1.6;
+    run.book.userData.page.rotation.y = t > 0.8 && t < 5.5 ? -Math.PI * easeInOut(between(turnPage, 0.5, 0.85)) : 0;
+    const reading = between(t, 0.3, 0.6) * (1 - between(t, 5.4, 5.7));
+    pose.armL = Math.max(pose.armL, 0.85 * reading);
+    pose.armR = Math.max(pose.armR, 0.85 * reading);
+    pose.armHug = Math.max(pose.armHug, 0.7 * reading);
+    pose.headNod += (0.25 + 0.04 * Math.sin(t * 2)) * reading;
+    pose.headTilt += 0.06 * Math.sin(t * 1.5) * reading;
+    if (t > 5.6) {
+      pose.happyEyes = true;
+      pose.blush = 0.8;
+      pose.earFlap += 0.4 * pulse(t, 5.6, 6.6);
+      once(run, "idea", () => ctx.fx.sparkles(ctx.headWorld().add(new THREE.Vector3(0, 1.0, 0.3)), 10, 1));
+      say(run, ctx, "so fun!", "#8a6ae6");
+    }
+  },
+
   pet(run, pose, dt, ctx) {
     const t = run.t;
     const amount = between(t, 0, 0.2) * (1 - between(t, 1.7, 2.2));
@@ -1622,8 +2096,9 @@ function shadowTexture() {
 
 /* ---------- Public API ---------- */
 
-// Builds the scene inside `container`. Throws if WebGL isn't available.
-export function createDragonScene(container, { onPet, sfx = sounds } = {}) {
+// Builds the scene inside `container`, with Mochi or (`dragon: "tofu"`) Tofu. Throws if WebGL
+// isn't available.
+export function createDragonScene(container, { onPet, sfx = sounds, dragon: who = "mochi" } = {}) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.domElement.className = "dragon-canvas";
@@ -1642,7 +2117,7 @@ export function createDragonScene(container, { onPet, sfx = sounds } = {}) {
   scene.add(fireLight);
 
   const materials = createMaterials();
-  const dragon = buildDragon(materials);
+  const dragon = who === "tofu" ? buildDragon(materials, TOFU) : buildDragon(materials);
   scene.add(dragon.root);
 
   const shadowMap = shadowTexture();
@@ -1656,10 +2131,7 @@ export function createDragonScene(container, { onPet, sfx = sounds } = {}) {
     // Tofu, built fresh for each visit and removed when it ends.
     makeFriend() {
       const friend = buildDragon(materials, TOFU);
-      friend.root.userData.dispose = () => {
-        friend.wingMaterial.dispose();
-        friend.blushMaterial.dispose();
-      };
+      friend.root.userData.dispose = friend.dispose;
       scene.add(friend.root);
       return friend;
     },
@@ -1674,6 +2146,7 @@ export function createDragonScene(container, { onPet, sfx = sounds } = {}) {
     materials,
     fx,
     turn: dragon.turn,
+    head: dragon.head,
     bodyGroup: dragon.bodyGroup,
     arms: dragon.arms,
     mouthWorld: () => dragon.mouth.getWorldPosition(new THREE.Vector3()),
@@ -1697,7 +2170,7 @@ export function createDragonScene(container, { onPet, sfx = sounds } = {}) {
 
   function endRun() {
     if (!run) return;
-    [run.treat, run.comb, run.towel, run.easel, run.brush, run.tutu, run.strands, run.toothbrush, run.cushion, run.sandcastle, run.friend?.root, run.friendShadow].forEach((object) => {
+    [run.treat, run.comb, run.towel, run.easel, run.brush, run.tutu, run.strands, run.toothbrush, run.cushion, run.sandcastle, run.friend?.root, run.friendShadow, ...run.props].forEach((object) => {
       if (!object) return;
       object.parent?.remove(object);
       object.traverse((child) => child.geometry?.dispose());
@@ -1719,6 +2192,11 @@ export function createDragonScene(container, { onPet, sfx = sounds } = {}) {
     pose.tailSway = 0.45 * Math.sin(elapsed * 1.6) * idleAmount;
     pose.wingFlap = 0.14 * Math.sin(elapsed * 2.4) * idleAmount;
     pose.armL = pose.armR = 0.05 * Math.sin(elapsed * 2.2) * idleAmount;
+    if (who === "tofu") {
+      // Tofu's fairy wings shimmer and her floppy ears sway.
+      pose.wingFlap = 0.08 * Math.sin(elapsed * 7) * idleAmount;
+      pose.earFlap = 0.1 * Math.sin(elapsed * 1.7) * idleAmount;
+    }
 
     if (elapsed > nextBlink) {
       blinkStart = elapsed;
@@ -1795,11 +2273,13 @@ export function createDragonScene(container, { onPet, sfx = sounds } = {}) {
   frame = requestAnimationFrame(tick);
 
   return {
+    // Plays an action from dragon-data (by its id), using its `animation` if it has one.
     play(id) {
       const action = dragonActionsById[id];
-      if (!action || !actions[id]) return;
+      const animation = action?.animation ?? id;
+      if (!action || !actions[animation]) return;
       endRun();
-      run = { id, t: 0, duration: action.duration, emitters: {}, done: {} };
+      run = { id: animation, model: action.model ?? animation, t: 0, duration: action.duration, emitters: {}, done: {}, props: [] };
     },
     // Walks to the next room on the right (1) or left (-1). Skipped when motion is reduced.
     walk(direction) {
@@ -1817,8 +2297,7 @@ export function createDragonScene(container, { onPet, sfx = sounds } = {}) {
       scene.traverse((object) => {
         if (object.geometry) object.geometry.dispose();
       });
-      dragon.wingMaterial.dispose();
-      dragon.blushMaterial.dispose();
+      dragon.dispose();
       shadow.material.dispose();
       shadowMap.dispose();
       materials.dispose();
