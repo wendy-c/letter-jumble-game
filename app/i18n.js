@@ -93,7 +93,7 @@ const strings = {
 
     welcomeEyebrow: "歡迎",
     pickerEyebrow: "歡迎來到 RAINBOW ACADEMY",
-    pickerTitle: "快樂學習，閃閃發光！",
+    pickerTitle: "一起邊玩邊學吧！",
     pickerNote: "今天玩哪一課魔法課堂？",
     pickAGame: "選一個遊戲",
     noGames: (name) => `${name} 還沒有可以玩的遊戲。請家長在「家長模式」選擇遊戲。`,

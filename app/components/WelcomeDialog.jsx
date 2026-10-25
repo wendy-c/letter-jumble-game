@@ -10,17 +10,17 @@ const text = {
       "The games are designed around the learning objectives and topics commonly found in Hong Kong’s kindergarten curriculum. Through fun and engaging activities, children can build phonics skills, prepare for Cambridge English exams, strengthen Chinese character recognition, and explore many other areas of learning.",
       "We hope every child can learn through play, discover new knowledge with confidence, and develop a lifelong love of learning.",
     ],
-    motto: "Learn through play, discover with confidence.",
-    button: "Let’s Play",
+    motto: "Learn, Play, Shine!",
+    button: "Let’s Start",
   },
   zh: {
     title: "歡迎來到 Rainbow Academy！",
     paragraphs: [
-      "本應用程式由一位軟體工程師兼兩名孩子的母親親手打造，初心很簡單：創造孩子真正喜愛，並能從中學習的遊戲體驗。",
+      "這個APP由一位兩名孩子的港媽兼軟件工程師親手打造，初心很簡單：創造孩子真正喜愛，並能從中學習的遊戲體驗。",
       "遊戲內容以香港幼稚園課程為基礎，結合孩子的實際學習需要而設計，涵蓋自然拼讀（Phonics）、劍橋英語考試預備、中文識字及更多學習主題。",
       "希望每位孩子都能透過遊戲快樂學習、主動探索，並在成長路上建立自信與成就感。",
     ],
-    motto: "寓學習於遊戲，讓孩子自信探索世界。",
+    motto: "學中玩，玩中學，閃耀每一天！",
     button: "一起玩吧！",
   },
 };

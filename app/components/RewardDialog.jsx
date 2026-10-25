@@ -1,7 +1,7 @@
 const englishLabels = {
   kicker: "MAGIC REWARD",
   earned: "You collected a rainbow coin!",
-  next: "Tap to play the next word",
+  next: "Next",
   ariaLabel: (message) => `${message} You earned a rainbow coin. Tap to go to the next word.`,
 };
 

@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import GameApp from "./components/GameApp";
 
@@ -13,6 +14,7 @@ export default function RootLayout({ children }) {
       <body>
         <GameApp />
         {children}
+        <Analytics />
       </body>
     </html>
   );

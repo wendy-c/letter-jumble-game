@@ -1119,12 +1119,12 @@ describe("welcome card", () => {
     render(<GameApp />);
     const welcome = await screen.findByRole("dialog", { name: "Welcome to Rainbow Academy!" });
     expect(welcome).toHaveTextContent("This app was created by a software engineer and a mother of two");
-    expect(welcome).toHaveTextContent("Learn through play, discover with confidence.");
+    expect(welcome).toHaveTextContent("Learn, Play, Shine!");
     expect(welcome.querySelector(".welcome-logo")).toHaveAttribute("src", "/images/logo.png");
 
     await user.click(within(welcome).getByRole("switch", { name: /Language/ }));
     const chinese = screen.getByRole("dialog", { name: "歡迎來到 Rainbow Academy！" });
-    expect(chinese).toHaveTextContent("寓學習於遊戲，讓孩子自信探索世界。");
+    expect(chinese).toHaveTextContent("學中玩，玩中學，閃耀每一天！");
     expect(within(chinese).getByRole("switch")).toHaveAttribute("aria-checked", "true");
 
     // "一起玩吧！" creates the player from the form (and asks for what's missing first).
@@ -1137,7 +1137,7 @@ describe("welcome card", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(storedPlayers()).toEqual({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" });
     expect(JSON.parse(window.localStorage.getItem(siteKey))).toMatchObject({ language: "zh" });
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("快樂學習，閃閃發光！");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("一起邊玩邊學吧！");
   });
 
   it("isn't shown to a family that already has players", async () => {
@@ -1167,7 +1167,7 @@ describe("welcome card", () => {
     expect(currentPathname()).toBe("/");
     const welcome = screen.getByRole("dialog", { name: "Welcome to Rainbow Academy!" });
     expect(within(welcome).queryByRole("textbox")).not.toBeInTheDocument();
-    await user.click(within(welcome).getByRole("button", { name: /Let’s Play/ }));
+    await user.click(within(welcome).getByRole("button", { name: /Let’s Start/ }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(storedPlayers().players).toHaveLength(1);
   });
@@ -1185,7 +1185,7 @@ describe("site language", () => {
 
     expect(screen.getByRole("menuitemcheckbox", { name: /語言/ })).toHaveAttribute("aria-checked", "true");
     expect(screen.getByRole("menuitem", { name: /我的徽章/ })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("快樂學習，閃閃發光！");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("一起邊玩邊學吧！");
     expect(screen.getByRole("heading", { level: 2, name: /劍橋英語考試預備/ })).toBeInTheDocument();
     expect(JSON.parse(window.localStorage.getItem(siteKey))).toMatchObject({ language: "zh" });
 
