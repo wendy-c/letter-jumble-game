@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "react";
+import { useLanguage, useText } from "../i18n";
 
-export default function PlayerMenu({ player, onSwitch, onBadges, onParentMode, onLogOut }) {
+// The player chip and its menu: switch player, badges, Parent mode, the site's language, log out.
+export default function PlayerMenu({ player, onSwitch, onBadges, onParentMode, onLanguage, onLogOut }) {
+  const text = useText();
+  const language = useLanguage();
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -27,7 +31,7 @@ export default function PlayerMenu({ player, onSwitch, onBadges, onParentMode, o
       <button
         className="player-chip"
         type="button"
-        aria-label={`Playing as ${player.name}. Player options`}
+        aria-label={text.playerOptions(player.name)}
         aria-expanded={open}
         aria-haspopup="menu"
         onClick={() => setOpen((current) => !current)}
@@ -46,7 +50,7 @@ export default function PlayerMenu({ player, onSwitch, onBadges, onParentMode, o
               onSwitch();
             }}
           >
-            Switch player
+            {text.switchPlayer}
           </button>
           <button
             type="button"
@@ -56,7 +60,7 @@ export default function PlayerMenu({ player, onSwitch, onBadges, onParentMode, o
               onBadges();
             }}
           >
-            <span aria-hidden="true">🏅</span> My badges
+            <span aria-hidden="true">🏅</span> {text.myBadges}
           </button>
           <button
             type="button"
@@ -66,7 +70,22 @@ export default function PlayerMenu({ player, onSwitch, onBadges, onParentMode, o
               onParentMode();
             }}
           >
-            <span aria-hidden="true">🔒</span> Parent mode
+            <span aria-hidden="true">🔒</span> {text.parentMode}
+          </button>
+          {/* Switches the site's language; the menu stays open to show the change. */}
+          <button
+            className="player-menu-language"
+            type="button"
+            role="menuitemcheckbox"
+            aria-checked={language === "zh"}
+            aria-label={text.languageSwitch}
+            onClick={() => onLanguage(language === "zh" ? "en" : "zh")}
+          >
+            <span><span aria-hidden="true">🌐</span> {text.language}</span>
+            <span className="language-switch language-switch-small" aria-hidden="true">
+              <span className={language === "en" ? "language-on" : ""}>En</span>
+              <span className={language === "zh" ? "language-on" : ""}>繁</span>
+            </span>
           </button>
           <button
             type="button"
@@ -76,7 +95,7 @@ export default function PlayerMenu({ player, onSwitch, onBadges, onParentMode, o
               onLogOut();
             }}
           >
-            Log out
+            {text.logOut}
           </button>
         </div>
       )}

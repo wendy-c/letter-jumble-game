@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { ageGroups, games, isGameAvailable, isGameForAge } from "../games-data";
 import { isRightAnswer, makeGrownUpQuestion } from "../lib/grown-up-question";
+import { useText } from "../i18n";
 
 function GrownUpCheck({ onPass }) {
+  const text = useText();
   const [question, setQuestion] = useState(() => makeGrownUpQuestion());
   const [typed, setTyped] = useState("");
   const [error, setError] = useState("");
@@ -16,14 +18,14 @@ function GrownUpCheck({ onPass }) {
     // A new question each time, so it can't be guessed by trying every number.
     setQuestion(makeGrownUpQuestion());
     setTyped("");
-    setError("That’s not right — here’s another one.");
+    setError(text.notRight);
   }
 
   return (
     <form className="parent-form" onSubmit={handleSubmit} noValidate>
-      <p className="parent-intro">Grown-ups only! Answer this to manage each child’s games.</p>
+      <p className="parent-intro">{text.grownUpsOnly}</p>
       <label htmlFor="grown-up-answer" className="grown-up-question">
-        What is <strong>{question.text}</strong>?
+        {text.whatIs} <strong>{question.text}</strong>?
       </label>
       <input
         id="grown-up-answer"
@@ -40,13 +42,14 @@ function GrownUpCheck({ onPass }) {
       />
       {error && <p className="player-form-error" role="alert">{error}</p>}
       <button className="action-button check-button" type="submit">
-        Continue <span aria-hidden="true">🔓</span>
+        {text.continue} <span aria-hidden="true">🔓</span>
       </button>
     </form>
   );
 }
 
 function GameSwitch({ game, enabled, suitsAge, onToggle }) {
+  const text = useText();
   return (
     <li className={`parent-game${enabled ? "" : " parent-game-off"}`}>
       <button
@@ -59,8 +62,8 @@ function GameSwitch({ game, enabled, suitsAge, onToggle }) {
         <span className="spelling-guide-toggle-copy">
           <span className="spelling-guide-toggle-title">{game.name}</span>
           <span className="spelling-guide-toggle-note">
-            {enabled ? "On" : "Off"}
-            {!suitsAge && ` · for ${game.ages.map((age) => ageGroups.find((group) => group.id === age)?.label).join(", ")}`}
+            {enabled ? text.on : text.off}
+            {!suitsAge && text.forAges(game.ages.map((age) => text.ageGroup[age] ?? ageGroups.find((group) => group.id === age)?.label).join(", "))}
           </span>
         </span>
         <span className="toggle-track" aria-hidden="true"><span className="toggle-thumb" /></span>
@@ -70,7 +73,8 @@ function GameSwitch({ game, enabled, suitsAge, onToggle }) {
 }
 
 function ChildSettings({ player, onSetGameEnabled }) {
-  const ageLabel = ageGroups.find((group) => group.id === player.age)?.label;
+  const text = useText();
+  const ageLabel = player.age && (text.ageGroup[player.age] ?? ageGroups.find((group) => group.id === player.age)?.label);
   const onCount = games.filter((game) => isGameAvailable(game, player)).length;
 
   return (
@@ -80,7 +84,7 @@ function ChildSettings({ player, onSetGameEnabled }) {
         {player.name}
         {ageLabel && <span className="parent-child-age">{ageLabel}</span>}
       </h3>
-      {onCount === 0 && <p className="parent-warning">All games are off — {player.name} can’t play anything yet.</p>}
+      {onCount === 0 && <p className="parent-warning">{text.allGamesOff(player.name)}</p>}
       <ul className="parent-games">
         {games.map((game) => {
           const enabled = isGameAvailable(game, player);
@@ -102,6 +106,7 @@ function ChildSettings({ player, onSetGameEnabled }) {
 
 // Parent mode: a grown-up maths question, then each child's game settings. Closing it locks it.
 export default function ParentMode({ players, onSetGameEnabled, onClose }) {
+  const text = useText();
   const [unlocked, setUnlocked] = useState(false);
 
   useEffect(() => {
@@ -121,27 +126,24 @@ export default function ParentMode({ players, onSetGameEnabled, onClose }) {
         aria-labelledby="parent-title"
         onClick={(event) => event.stopPropagation()}
       >
-        <button className="word-menu-close player-dialog-close" type="button" aria-label="Close parent mode" onClick={onClose}>
+        <button className="word-menu-close player-dialog-close" type="button" aria-label={text.closeParentMode} onClick={onClose}>
           ×
         </button>
-        <p className="eyebrow">FOR GROWN-UPS</p>
-        <h2 id="parent-title">Parent mode</h2>
+        <p className="eyebrow">{text.forGrownUps}</p>
+        <h2 id="parent-title">{text.parentMode}</h2>
 
         {!unlocked ? (
           <GrownUpCheck onPass={() => setUnlocked(true)} />
         ) : players.length === 0 ? (
-          <p className="parent-intro">No children yet. Add a player from “Who’s playing?”, then come back to choose their games.</p>
+          <p className="parent-intro">{text.noChildren}</p>
         ) : (
           <>
-            <p className="parent-intro">
-              Turn games on or off for each child. Games for their age are on to begin with; you can also turn on games
-              for other ages.
-            </p>
+            <p className="parent-intro">{text.parentIntro}</p>
             {players.map((player) => (
               <ChildSettings key={player.name} player={player} onSetGameEnabled={onSetGameEnabled} />
             ))}
             <button className="action-button check-button parent-done" type="button" onClick={onClose}>
-              Done — lock parent mode <span aria-hidden="true">🔒</span>
+              {text.lockParentMode} <span aria-hidden="true">🔒</span>
             </button>
           </>
         )}

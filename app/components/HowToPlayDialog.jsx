@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { LanguageSwitch } from "./WelcomeDialog";
 
 const oneTry = {
   en: ["🌈", "Each question has one try. A right answer earns a rainbow coin, and getting a whole topic right earns its badge!"],
@@ -70,12 +69,21 @@ const howTo = {
 
 export const hasHowToPlay = (gameId) => Boolean(howTo[gameId]);
 
+// Instructions come in the game's own language: Chinese for the Chinese games, English for the
+// English ones. Mochi's den isn't a language game, so it follows the site's language.
+const chineseGames = ["chinese", "chinese-advanced", "measure-words", "idioms"];
+export function howToLanguage(gameId, siteLanguage) {
+  if (chineseGames.includes(gameId)) return "zh";
+  if (gameId === "dragon") return siteLanguage;
+  return "en";
+}
+
 const titles = { en: (name) => `How to play ${name}`, zh: (name) => `${name}：玩法` };
 const buttons = { en: "Got it, let’s go!", zh: "明白了，開始吧！" };
 
-// Explains a game's controls before the first time it's played (and whenever "How to play" is
-// tapped), in the language chosen on the welcome card.
-export default function HowToPlayDialog({ game, language, onLanguage, onClose }) {
+// Explains a game's controls before the first time it's played, and whenever its "?" button is
+// tapped. `language` is howToLanguage's choice for the game.
+export default function HowToPlayDialog({ game, language, onClose }) {
   const steps = howTo[game.id][language];
 
   useEffect(() => {
@@ -89,11 +97,8 @@ export default function HowToPlayDialog({ game, language, onLanguage, onClose })
   return (
     <div className="player-overlay">
       <div className="player-dialog how-to-dialog" role="dialog" aria-modal="true" aria-labelledby="how-to-title">
-        <div className="how-to-top">
-          <p className="eyebrow">{language === "zh" ? "遊戲玩法" : "HOW TO PLAY"}</p>
-          <LanguageSwitch language={language} onChange={onLanguage} />
-        </div>
         <div lang={language === "zh" ? "zh-Hant-HK" : "en"}>
+          <p className="eyebrow">{language === "zh" ? "遊戲玩法" : "HOW TO PLAY"}</p>
           <h2 id="how-to-title">{titles[language](game.name)}</h2>
           <ol className="how-to-steps">
             {steps.map(([icon, step]) => (
@@ -112,11 +117,11 @@ export default function HowToPlayDialog({ game, language, onLanguage, onClose })
   );
 }
 
-// A small "How to play" button for the top of a game.
+// A round "?" button beside a game's title that shows how to play it.
 export function HowToPlayButton({ language, onClick }) {
   return (
-    <button className="how-to-open" type="button" onClick={onClick}>
-      <span aria-hidden="true">❓</span> {language === "zh" ? "玩法" : "How to play"}
+    <button className="how-to-open" type="button" aria-label={language === "zh" ? "玩法" : "How to play"} title={language === "zh" ? "玩法" : "How to play"} onClick={onClick}>
+      <span aria-hidden="true">?</span>
     </button>
   );
 }

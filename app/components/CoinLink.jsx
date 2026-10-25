@@ -1,14 +1,16 @@
 import { useRouter } from "next/navigation";
+import { useText } from "../i18n";
 
 // The player's rainbow coins, shown on the home page. Tapping them visits Mochi, where
 // the coins can be spent.
 export default function CoinLink({ coins }) {
   const router = useRouter();
+  const text = useText();
   return (
     <a
       className="coin-link"
       href="/dragon"
-      aria-label={`${coins} rainbow coins. Visit Mochi the Rainbow Dragon`}
+      aria-label={text.coins(coins)}
       onClick={(event) => {
         event.preventDefault();
         router.push("/dragon");

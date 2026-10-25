@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react";
 
-// Settings for this browser (not per player): the language for the welcome and how-to-play cards,
-// whether the welcome card has been seen, and which games' how-to-play cards have been seen.
+// Settings for this browser (not per player): the site's language, and which games' how-to-play
+// cards have been seen.
 export const siteStorageKey = "letter-jumble:site";
 export const languages = ["en", "zh"];
 
-const defaults = { language: "en", welcomed: false, howToSeen: [] };
+const defaults = { language: "en", howToSeen: [] };
 
 function readSettings() {
   try {
     const stored = JSON.parse(window.localStorage.getItem(siteStorageKey) ?? "null");
     return {
       language: languages.includes(stored?.language) ? stored.language : defaults.language,
-      welcomed: stored?.welcomed === true,
       howToSeen: Array.isArray(stored?.howToSeen) ? stored.howToSeen.filter((id) => typeof id === "string") : [],
     };
   } catch {
@@ -46,7 +45,6 @@ export function useSiteSettings() {
     loaded,
     ...settings,
     setLanguage: (language) => setSettings((current) => ({ ...current, language })),
-    markWelcomed: () => setSettings((current) => ({ ...current, welcomed: true })),
     markHowToSeen: (gameId) => setSettings((current) => (
       current.howToSeen.includes(gameId) ? current : { ...current, howToSeen: [...current.howToSeen, gameId] }
     )),

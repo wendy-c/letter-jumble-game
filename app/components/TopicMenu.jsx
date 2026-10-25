@@ -8,7 +8,7 @@ function cardNote(isChinese, isMeasure, done, total) {
   return done > 0 ? `${done} of ${total} words learned` : `${total} words to learn`;
 }
 
-export default function TopicMenu({ isCvc, isDigraph = false, isChinese = false, isMeasure = false, isIdiom = false, topics, progressFor = () => 0, breadcrumbs, onSelectTopic }) {
+export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false, isChinese = false, isMeasure = false, isIdiom = false, topics, progressFor = () => 0, breadcrumbs, onSelectTopic }) {
   return (
     <section className="game-wrap category-menu mx-auto w-full max-w-6xl" aria-labelledby="game-title">
       <div className="menu-heading">
@@ -16,32 +16,50 @@ export default function TopicMenu({ isCvc, isDigraph = false, isChinese = false,
         {isChinese || isMeasure || isIdiom ? null : <p className="eyebrow">WELCOME TO SPELLING SCHOOL</p>}
         {isIdiom ? (
           <>
-            <h1 id="game-title" lang="zh-Hant-HK">成<span>語</span></h1>
+            <div className="title-row">
+              <h1 id="game-title" lang="zh-Hant-HK">成<span>語</span></h1>
+              {titleAction}
+            </div>
             <p className="heading-note" lang="zh-Hant-HK">看圖畫和解釋，把成語缺少的字填上！</p>
           </>
         ) : isMeasure ? (
           <>
-            <h1 id="game-title" lang="zh-Hant-HK">量詞<span>配對</span></h1>
+            <div className="title-row">
+              <h1 id="game-title" lang="zh-Hant-HK">量詞<span>配對</span></h1>
+              {titleAction}
+            </div>
             <p className="heading-note" lang="zh-Hant-HK">一個蘋果、一枝鉛筆——選擇正確的名詞配量詞！</p>
           </>
         ) : isChinese ? (
           <>
-            <h1 id="game-title" lang="zh-Hant-HK">中文<span>認字</span></h1>
+            <div className="title-row">
+              <h1 id="game-title" lang="zh-Hant-HK">中文<span>認字</span></h1>
+              {titleAction}
+            </div>
             <p className="heading-note" lang="zh-Hant-HK">選一個主題，齊玩認字遊戲！</p>
           </>
         ) : isDigraph ? (
           <>
-            <h1 id="game-title">Consonant <span>Digraphs</span></h1>
+            <div className="title-row">
+              <h1 id="game-title">Consonant <span>Digraphs</span></h1>
+              {titleAction}
+            </div>
             <p className="heading-note">Two letters, one sound. Find the pair that’s missing!</p>
           </>
         ) : isCvc ? (
           <>
-            <h1 id="game-title">CVC <span>Sounds</span></h1>
+            <div className="title-row">
+              <h1 id="game-title">CVC <span>Sounds</span></h1>
+              {titleAction}
+            </div>
             <p className="heading-note">Listen for the missing sound and pick the right letter.</p>
           </>
         ) : (
           <>
-            <h1 id="game-title">Letter <span>Jumble</span></h1>
+            <div className="title-row">
+              <h1 id="game-title">Letter <span>Jumble</span></h1>
+              {titleAction}
+            </div>
             <p className="heading-note">Pick a spell book and start today’s magic lesson.</p>
           </>
         )}

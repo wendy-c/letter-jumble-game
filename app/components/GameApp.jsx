@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { badgeImage, topicsByGame } from "../badges";
 import { games, gamesForPlayer, isGameAvailable } from "../games-data";
@@ -33,11 +33,28 @@ import { speakWord, stopSpeaking } from "../lib/speech";
 import { sounds } from "../lib/sounds";
 import { usePlayers } from "../lib/use-players";
 import { useSiteSettings } from "../lib/use-site-settings";
-import HowToPlayDialog, { HowToPlayButton, hasHowToPlay } from "./HowToPlayDialog";
+import HowToPlayDialog, { HowToPlayButton, hasHowToPlay, howToLanguage } from "./HowToPlayDialog";
+import { LanguageContext, textFor } from "../i18n";
 import WelcomeDialog from "./WelcomeDialog";
 
 const rewardMessages = ["Amazing!", "Well done!", "You did it!", "Fantastic!", "Brilliant!"];
 const chineseRewardMessages = ["做得好！", "答對了！", "好棒呀！", "太厲害了！"];
+
+const welcomeClosedKey = "letter-jumble:welcome-closed";
+const readSession = (key) => {
+  try {
+    return window.sessionStorage.getItem(key) === "true";
+  } catch {
+    return false;
+  }
+};
+const writeSession = (key) => {
+  try {
+    window.sessionStorage.setItem(key, "true");
+  } catch {
+    // Storage can be blocked; the card just shows again next time.
+  }
+};
 
 function mixAnswers(question, random) {
   return {
@@ -65,7 +82,12 @@ export default function GameApp() {
   } = usePlayers();
   const [parentModeOpen, setParentModeOpen] = useState(false);
   const site = useSiteSettings();
+  const text = textFor(site.language);
   const [howToOpen, setHowToOpen] = useState(false);
+  // The welcome card: shown to a new family (no players yet) when they arrive, and whenever the
+  // logo is tapped.
+  const [welcomeOpen, setWelcomeOpen] = useState(false);
+  const welcomedRef = useRef(false);
   const rainbowCoins = currentPlayer?.coins ?? 0;
 
   const routeGame = games.find((game) => game.id === gameId) ?? null;
@@ -258,6 +280,31 @@ export default function GameApp() {
 
   const closeParentMode = useCallback(() => setParentModeOpen(false), []);
 
+  // Once closed, it stays closed for the rest of the visit (this browser tab's session).
+  useEffect(() => {
+    if (!loaded || welcomedRef.current) return;
+    welcomedRef.current = true;
+    if (players.length === 0 && !readSession(welcomeClosedKey)) setWelcomeOpen(true);
+  }, [loaded, players.length]);
+
+  function closeWelcome() {
+    writeSession(welcomeClosedKey);
+    setWelcomeOpen(false);
+  }
+
+  // The logo goes home and shows the welcome card.
+  function openWelcome() {
+    router.push("/");
+    setWelcomeOpen(true);
+  }
+
+  // The welcome card's form makes a new family's first player.
+  function createFirstPlayer(name, age) {
+    const problem = createPlayer(name, age);
+    if (!problem) closeWelcome();
+    return problem;
+  }
+
   // Spends the coins to move Tofu into Rainbow Village, then goes to meet her.
   function unlockTofu() {
     if (!spendCoins(dragons.tofu.unlockCost)) return;
@@ -365,6 +412,21 @@ export default function GameApp() {
     showCategories();
   }
 
+  // Deals a fresh, shuffled hand of questions and starts it from the first one. Topics that play
+  // only some of their words (wordsPerGame) pick them again from the whole list. A new hand starts
+  // a new score, so earlier answers in this round are forgotten.
+  function shuffleQuestions() {
+    const newDeck = shuffledDeck(routeTopic.words.length, handSize);
+    saveDeck(categoryKey, newDeck);
+    saveProgress(categoryKey, 0);
+    setPosition({ key: categoryKey, round: 0 });
+    setPlaced(Array(slotCount(routeTopic.words[newDeck[0]], 0)).fill(null));
+    setVoiceMessage("");
+    resetAnswer();
+    setWordMenuOpen(false);
+    stopSpeaking();
+  }
+
   function selectWord(wordIndex) {
     saveProgress(categoryKey, wordIndex);
     setPosition({ key: categoryKey, round: wordIndex });
@@ -379,35 +441,36 @@ export default function GameApp() {
   // How to play: shown before a game is played for the first time (after the welcome card), and
   // whenever its "How to play" button is tapped.
   const gameHasHowTo = Boolean(selectedGame && hasHowToPlay(selectedGame.id));
-  const howToShown = gameHasHowTo && site.loaded && site.welcomed &&
+  const howToShown = gameHasHowTo && site.loaded && !welcomeOpen && !playerDialogOpen &&
     (howToOpen || !site.howToSeen.includes(selectedGame.id));
+  const gameLanguage = selectedGame ? howToLanguage(selectedGame.id, site.language) : site.language;
+  const howToButton = gameHasHowTo && <HowToPlayButton language={gameLanguage} onClick={() => setHowToOpen(true)} />;
   function closeHowTo() {
     site.markHowToSeen(selectedGame.id);
     setHowToOpen(false);
   }
   const breadcrumbs = selectedGame && (
-    <div className="crumbs-row">
-      <Breadcrumbs
-        items={[
-          { label: "Home", href: "/" },
-          { label: selectedGame.name, href: `/${selectedGame.id}` },
-          ...(routeTopic ? [{ label: routeTopic.name, href: `/${selectedGame.id}/${routeTopic.id}` }] : []),
-          ...(dragonPlace && topicId && dragons[topicId] ? [{ label: dragons[topicId].house, href: `/dragon/${topicId}` }] : []),
-        ]}
-      />
-      {gameHasHowTo && <HowToPlayButton language={site.language} onClick={() => setHowToOpen(true)} />}
-    </div>
+    <Breadcrumbs
+      items={[
+        { label: text.home, href: "/" },
+        { label: selectedGame.name, href: `/${selectedGame.id}` },
+        ...(routeTopic ? [{ label: routeTopic.name, href: `/${selectedGame.id}/${routeTopic.id}` }] : []),
+        ...(dragonPlace && topicId && dragons[topicId] ? [{ label: dragons[topicId].house, href: `/dragon/${topicId}` }] : []),
+      ]}
+    />
   );
 
   return (
+    <LanguageContext.Provider value={site.language}>
     <main className="app-shell min-h-screen px-4 py-5 sm:px-8 sm:py-8">
-      <SiteHeader>
+      <SiteHeader onBrandClick={openWelcome}>
         {currentPlayer && (
           <PlayerMenu
             player={currentPlayer}
             onSwitch={() => setPlayerDialogOpen(true)}
             onBadges={() => router.push("/badges")}
             onParentMode={() => setParentModeOpen(true)}
+            onLanguage={site.setLanguage}
             onLogOut={handleLogOut}
           />
         )}
@@ -417,7 +480,7 @@ export default function GameApp() {
       {onBadgesPage ? (
         <BadgeCollection
           player={currentPlayer}
-          breadcrumbs={<Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "My badges", href: "/badges" }]} />}
+          breadcrumbs={<Breadcrumbs items={[{ label: text.home, href: "/" }, { label: text.myBadges, href: "/badges" }]} />}
         />
       ) : !selectedGame ? (
         // Wait for the saved player before showing games, so the right ones show and an early
@@ -426,15 +489,16 @@ export default function GameApp() {
           <GamePicker
             games={gamesForPlayer(currentPlayer)}
             onSelectGame={requestGame}
-            emptyMessage={currentPlayer && `No games are turned on for ${currentPlayer.name} yet. Ask a grown-up to choose some in Parent mode.`}
+            emptyMessage={currentPlayer && text.noGames(currentPlayer.name)}
           />
         )
       ) : !routeTopic ? (
         selectedGame.id === "dragon" ? (
           dragonPlace === "village" ? (
-            <RainbowVillage breadcrumbs={breadcrumbs} onVisit={(place) => router.push(`/dragon/${place}`)} />
+            <RainbowVillage breadcrumbs={breadcrumbs} titleAction={howToButton} onVisit={(place) => router.push(`/dragon/${place}`)} />
           ) : isDragonDen(dragonPlace) && (
             <DragonDen
+              titleAction={howToButton}
               key={dragonPlace}
               dragon={dragons[dragonPlace]}
               coins={rainbowCoins}
@@ -448,6 +512,7 @@ export default function GameApp() {
           )
         ) : (
           <TopicMenu
+            titleAction={howToButton}
             isCvc={isCvc}
             isDigraph={isDigraph}
             isChinese={isChinese}
@@ -462,6 +527,7 @@ export default function GameApp() {
       ) : !playing ? null : isIdiom ? (
         <section className="game-wrap mx-auto w-full max-w-6xl" aria-labelledby="game-title">
           <GameHeading
+            titleAction={howToButton}
             topic={selectedCategory}
             round={round}
             rainbowCoins={rainbowCoins}
@@ -483,6 +549,7 @@ export default function GameApp() {
       ) : isMeasure ? (
         <section className="game-wrap mx-auto w-full max-w-6xl" aria-labelledby="game-title">
           <GameHeading
+            titleAction={howToButton}
             topic={selectedCategory}
             round={round}
             rainbowCoins={rainbowCoins}
@@ -504,6 +571,7 @@ export default function GameApp() {
       ) : isChinese ? (
         <section className="game-wrap mx-auto w-full max-w-6xl" aria-labelledby="game-title">
           <GameHeading
+            titleAction={howToButton}
             topic={selectedCategory}
             round={round}
             rainbowCoins={rainbowCoins}
@@ -525,6 +593,7 @@ export default function GameApp() {
       ) : (
         <section className="game-wrap mx-auto w-full max-w-6xl" aria-labelledby="game-title">
           <GameHeading
+            titleAction={howToButton}
             isCvc={isCvc}
             topic={selectedCategory}
             round={round}
@@ -569,14 +638,22 @@ export default function GameApp() {
           showSpellingGuide={showSpellingGuide}
           onToggleSpellingGuide={() => setShowSpellingGuide((current) => !current)}
           onSelectWord={selectWord}
+          onShuffle={shuffleQuestions}
+          totalWords={routeTopic.words.length}
+          language={gameLanguage}
           onClose={closeWordMenu}
         />
       )}
-      {site.loaded && !site.welcomed && (
-        <WelcomeDialog language={site.language} onLanguage={site.setLanguage} onClose={site.markWelcomed} />
+      {welcomeOpen && (
+        <WelcomeDialog
+          language={site.language}
+          onLanguage={site.setLanguage}
+          onCreate={players.length === 0 ? createFirstPlayer : null}
+          onClose={closeWelcome}
+        />
       )}
       {howToShown && (
-        <HowToPlayDialog game={selectedGame} language={site.language} onLanguage={site.setLanguage} onClose={closeHowTo} />
+        <HowToPlayDialog game={selectedGame} language={gameLanguage} onClose={closeHowTo} />
       )}
       {parentModeOpen && (
         <ParentMode
@@ -619,5 +696,6 @@ export default function GameApp() {
         <RewardDialog message={rewardMessage} onContinue={nextWord} labels={inChinese ? chineseRewardLabels : undefined} />
       )}
     </main>
+    </LanguageContext.Provider>
   );
 }

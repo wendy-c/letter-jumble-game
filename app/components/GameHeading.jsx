@@ -3,7 +3,7 @@ function padNumber(number) {
 }
 
 export default function GameHeading({
-  isCvc, topic, round, rainbowCoins, wordMenuOpen, breadcrumbs, onOpenWordMenu,
+  isCvc, topic, round, rainbowCoins, wordMenuOpen, breadcrumbs, onOpenWordMenu, titleAction = null,
   eyebrow = "TODAY’S MAGIC LESSON",
   note = isCvc ? "Look, listen, find the missing sound!" : "Look, think, cast the spell!",
 }) {
@@ -14,7 +14,10 @@ export default function GameHeading({
       <div className="game-heading-crumbs">{breadcrumbs}</div>
       <div className="game-heading-title">
         <p className="eyebrow">{eyebrow}</p>
-        <h1 id="game-title">{topic.name}</h1>
+        <div className="title-row">
+          <h1 id="game-title">{topic.name}</h1>
+          {titleAction}
+        </div>
         <p className="heading-note">{note}</p>
       </div>
       <div className="progress-card" aria-label={`Word ${round + 1} of ${total}`}>

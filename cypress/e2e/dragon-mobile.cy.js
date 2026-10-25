@@ -10,7 +10,8 @@ const phones = [
 function seedPlayer(win, extra = {}) {
   win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 50, age: "5-6", ...extra }], current: "Elly" }));
   // Skip the welcome and how-to-play cards, as if they'd been seen before.
-  win.localStorage.setItem("letter-jumble:site", JSON.stringify({ language: "en", welcomed: true, howToSeen: ["dragon"] }));
+  win.localStorage.setItem("letter-jumble:site", JSON.stringify({ language: "en", howToSeen: ["dragon"] }));
+  win.sessionStorage.setItem("letter-jumble:welcome-closed", "true");
 }
 
 // Scrolls the way a finger can: only boxes that scroll (overflow auto/scroll) and the page. The

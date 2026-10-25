@@ -10,13 +10,16 @@ const places = [
 
 // Rainbow Village: once Tofu has moved in, the dragon game starts here. Each house opens that
 // dragon's den; the park is locked for now.
-export default function RainbowVillage({ breadcrumbs, onVisit }) {
+export default function RainbowVillage({ breadcrumbs, onVisit, titleAction = null }) {
   return (
     <section className="game-wrap village-wrap mx-auto w-full max-w-6xl" aria-labelledby="game-title">
       <div className="menu-heading">
         {breadcrumbs}
         <p className="eyebrow">WELCOME TO</p>
-        <h1 id="game-title">Rainbow <span>Village</span></h1>
+        <div className="title-row">
+          <h1 id="game-title">Rainbow <span>Village</span></h1>
+          {titleAction}
+        </div>
         <p className="heading-note">Who shall we visit today?</p>
       </div>
 

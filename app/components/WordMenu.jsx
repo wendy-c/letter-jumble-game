@@ -20,7 +20,15 @@ function SpellingGuideToggle({ checked, onToggle }) {
   );
 }
 
-export default function WordMenu({ topic, round, showGuideToggle, showSpellingGuide, onToggleSpellingGuide, onSelectWord, onClose }) {
+const shuffleText = {
+  en: { button: "Shuffle questions", note: (count, total) => (count < total ? `A new ${count} from all ${total}, in a new order` : "Start again in a new order") },
+  zh: { button: "打亂題目次序", note: (count, total) => (count < total ? `從全部 ${total} 題中重新抽出 ${count} 題` : "用新的次序重新開始") },
+};
+
+// The topic's words, to jump to any one. `onShuffle` deals a fresh shuffled hand (from the whole
+// list when a round only plays some of its words); `language` is the game's.
+export default function WordMenu({ topic, round, totalWords, language = "en", showGuideToggle, showSpellingGuide, onToggleSpellingGuide, onSelectWord, onShuffle, onClose }) {
+  const shuffle = shuffleText[language];
   useEffect(() => {
     function handleKeyDown(event) {
       if (event.key === "Escape") onClose();
@@ -55,6 +63,13 @@ export default function WordMenu({ topic, round, showGuideToggle, showSpellingGu
           </button>
         </div>
         {showGuideToggle && <SpellingGuideToggle checked={showSpellingGuide} onToggle={onToggleSpellingGuide} />}
+        <button className="word-menu-shuffle" type="button" lang={language === "zh" ? "zh-Hant-HK" : undefined} onClick={onShuffle}>
+          <span className="word-menu-shuffle-icon" aria-hidden="true">🔀</span>
+          <span>
+            <span className="word-menu-shuffle-title">{shuffle.button}</span>
+            <span className="word-menu-shuffle-note">{shuffle.note(topic.words.length, totalWords ?? topic.words.length)}</span>
+          </span>
+        </button>
         <nav className="word-menu-list" aria-label={`${topic.name} words`}>
           {topic.words.map((word, index) => {
             const displayWord = word.answers[index % word.answers.length];

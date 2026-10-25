@@ -1,4 +1,6 @@
 import { useEffect } from "react";
+import { useText } from "../i18n";
+import { NewPlayerForm } from "./PlayerDialog";
 
 const text = {
   en: {
@@ -23,15 +25,16 @@ const text = {
   },
 };
 
-// The En / 繁 switch, used on the welcome and how-to-play cards.
+// The En / 繁 switch for the site's language.
 export function LanguageSwitch({ language, onChange }) {
+  const text = useText();
   return (
     <button
       className="language-switch"
       type="button"
       role="switch"
       aria-checked={language === "zh"}
-      aria-label="Language: English or 繁體中文"
+      aria-label={text.languageSwitch}
       onClick={() => onChange(language === "zh" ? "en" : "zh")}
     >
       <span className={language === "en" ? "language-on" : ""}>En</span>
@@ -40,9 +43,12 @@ export function LanguageSwitch({ language, onChange }) {
   );
 }
 
-// The first thing a visitor sees: what Rainbow Academy is, in English or Chinese.
-export default function WelcomeDialog({ language, onLanguage, onClose }) {
+// What Rainbow Academy is, in English or Chinese. A new family (no players yet) sees it on
+// arriving, with a form to create their first player: "Let's Play" creates them. Opened from the
+// logo when there are players already, the button just closes it.
+export default function WelcomeDialog({ language, onLanguage, onCreate = null, onClose }) {
   const copy = text[language];
+  const siteText = useText();
 
   useEffect(() => {
     function handleKeyDown(event) {
@@ -53,8 +59,11 @@ export default function WelcomeDialog({ language, onLanguage, onClose }) {
   }, [onClose]);
 
   return (
-    <div className="player-overlay">
-      <div className="player-dialog welcome-dialog" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+    <div className="player-overlay" onClick={onClose}>
+      <div onClick={(event) => event.stopPropagation()} className="player-dialog welcome-dialog" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+        <button className="word-menu-close player-dialog-close" type="button" aria-label={siteText.close} onClick={onClose}>
+          ×
+        </button>
         <div className="welcome-top">
           <img className="welcome-logo" src="/images/logo.png" alt="" width="84" height="84" />
           <LanguageSwitch language={language} onChange={onLanguage} />
@@ -63,9 +72,20 @@ export default function WelcomeDialog({ language, onLanguage, onClose }) {
           <h2 id="welcome-title">{copy.title}</h2>
           {copy.paragraphs.map((paragraph) => <p className="welcome-text" key={paragraph}>{paragraph}</p>)}
           <p className="welcome-motto"><span aria-hidden="true">🌈 </span>{copy.motto}</p>
-          <button className="reward-continue completion-button welcome-button" type="button" autoFocus onClick={onClose}>
-            {copy.button} <span aria-hidden="true">→</span>
-          </button>
+          {onCreate ? (
+            <div className="welcome-form">
+              <NewPlayerForm
+                label={siteText.yourName}
+                onCreate={onCreate}
+                submitLabel={<>{copy.button} <span aria-hidden="true">→</span></>}
+                submitClassName="reward-continue completion-button welcome-button"
+              />
+            </div>
+          ) : (
+            <button className="reward-continue completion-button welcome-button" type="button" autoFocus onClick={onClose}>
+              {copy.button} <span aria-hidden="true">→</span>
+            </button>
+          )}
         </div>
       </div>
     </div>

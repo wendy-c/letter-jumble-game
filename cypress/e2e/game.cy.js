@@ -3,7 +3,6 @@ const playersKey = "letter-jumble:players";
 // Every visit skips the welcome and how-to-play cards, as if they'd been seen before.
 const seenEverything = JSON.stringify({
   language: "en",
-  welcomed: true,
   howToSeen: ["cvc", "digraphs", "starters", "letter-jumble", "chinese", "chinese-advanced", "measure-words", "idioms", "dragon"],
 });
 
@@ -14,6 +13,7 @@ Cypress.Commands.overwrite("visit", (originalVisit, url, options = {}) => origin
   ...options,
   onBeforeLoad(win) {
     win.localStorage.setItem("letter-jumble:site", seenEverything);
+    win.sessionStorage.setItem("letter-jumble:welcome-closed", "true");
     options.onBeforeLoad?.(win);
   },
 }).then((win) => {
