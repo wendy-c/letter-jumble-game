@@ -3760,7 +3760,7 @@ a:focus-visible {
   width: calc(100% - 40px);
   align-items: center;
   gap: 12px;
-  margin: 0 20px 14px;
+  margin: 14px 20px 7px;
   border: 2px solid var(--line-strong);
   border-radius: 18px;
   background: var(--magic-soft);
