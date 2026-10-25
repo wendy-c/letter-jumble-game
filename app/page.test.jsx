@@ -514,7 +514,7 @@ describe("chinese characters", () => {
 
     expect(screen.getByText("紅")).toHaveClass("chinese-character");
     await user.click(screen.getByRole("button", { name: "red" }));
-    const reward = screen.getByRole("dialog", { name: "好叻呀！" });
+    const reward = screen.getByRole("dialog", { name: "做得好！" });
     expect(within(reward).getByText("你得到一個彩虹金幣！")).toBeInTheDocument();
     expect(sounds.correct).toHaveBeenCalledTimes(1);
     expect(screen.getByLabelText(coinsLabel(1))).toBeInTheDocument();
@@ -699,7 +699,7 @@ describe("chinese words for 5-6 year olds", () => {
 
     await user.click(screen.getByRole("button", { name: /進階篇/ }));
     expect(currentPathname()).toBe("/chinese-advanced");
-    expect(screen.getByRole("button", { name: /職業/ })).toHaveTextContent("39 個字");
+    expect(screen.getByRole("button", { name: /職業/ })).toHaveTextContent("34 個字");
     expect(screen.getByRole("button", { name: /家/ })).toHaveTextContent("20 個字");
     await user.click(screen.getByRole("button", { name: /職業/ }));
     expect(currentPathname()).toBe("/chinese-advanced/jobs");

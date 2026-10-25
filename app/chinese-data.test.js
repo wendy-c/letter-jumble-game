@@ -115,12 +115,11 @@ describe("jobs (5-6 year olds)", () => {
   const jobs = chineseAdvancedTopics.find((topic) => topic.id === "jobs");
   const byCharacter = Object.fromEntries(jobs.words.map((word) => [word.character, word]));
 
-  it("has the 39 job words, in order (the places are in 地點)", () => {
+  it("has the 34 job words, in order (the places are in 地點)", () => {
     expect(jobs.name).toBe("職業");
     expect(jobs.words.map((word) => word.character)).toEqual([
       "警察", "消防員", "醫生", "護士", "理髮師", "侍應生", "廚師", "郵差", "交通警察", "救護員",
-      "飛行服務員", "獸醫", "牙醫", "送遞員", "保安員", "飛機師", "維持治安", "救火", "生病",
-      "送信", "老師", "教導學生", "醫治病人",
+      "飛行服務員", "獸醫", "牙醫", "送遞員", "保安員", "飛機師", "老師", "醫治病人",
       "時裝設計師", "售貨員", "烘焙師", "新聞主播", "電器技工", "建築工人", "機場特警", "時裝模特兒",
       "製衣工人", "收銀員", "運動員", "記者", "視光師", "科學家", "太空人", "探險家",
     ]);

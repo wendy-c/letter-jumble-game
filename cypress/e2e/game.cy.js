@@ -497,7 +497,7 @@ describe("chinese characters", () => {
     });
 
     cy.get('.chinese-option[data-character="紅"]').click();
-    cy.get(".reward-card").should("contain.text", "好叻呀！");
+    cy.get(".reward-card").should("contain.text", "做得好！");
     cy.get('[aria-label="1 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
     cy.get(".reward-card").click();
     cy.contains(".chinese-character", "橙");
