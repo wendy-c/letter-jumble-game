@@ -3850,3 +3850,39 @@ a:focus-visible {
   margin-top: 16px;
 }
 
+/* CVC's how-to card: numbered steps, then letter tiles to hear each sound. */
+.how-to-numbered {
+  margin: 0;
+  list-style: decimal;
+  padding-left: 24px;
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.how-to-numbered li::marker {
+  color: var(--magic);
+  font-weight: 700;
+}
+
+.how-to-revision-title {
+  margin: 20px 0 4px;
+  color: var(--magic-dark);
+  font-size: 20px;
+}
+
+.how-to-revision-note {
+  margin: 0 0 12px;
+}
+
+.how-to-letters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.how-to-letter {
+  width: 40px;
+  height: 44px;
+}
+

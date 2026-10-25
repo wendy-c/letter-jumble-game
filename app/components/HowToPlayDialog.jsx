@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { speakWord } from "../lib/speech";
 
 const oneTry = {
   en: ["🌈", "Each question has one try. A right answer earns a rainbow coin, and getting a whole topic right earns its badge!"],
@@ -17,10 +18,6 @@ const pictureGame = (en, zh) => ({
 
 // How to play each game: a few steps, each with an icon, in English and Chinese.
 const howTo = {
-  cvc: spelling(
-    [["🔤", "Tap the letter that fills the gap. Tap another letter to swap it."]],
-    [["🔤", "按一個字母填入空格。想換字母，再按另一個便可以。"]],
-  ),
   digraphs: spelling(
     [["🔤", "Tap the two letters (like sh) that fill the gap."]],
     [["🔤", "按兩個字母（例如 sh）填入空格。"]],
@@ -67,7 +64,106 @@ const howTo = {
   },
 };
 
-export const hasHowToPlay = (gameId) => Boolean(howTo[gameId]);
+export const hasHowToPlay = (gameId) => gameId === "cvc" || Boolean(howTo[gameId]);
+
+// CVC Sounds has its own simpler card: three numbered steps, then letter tiles that say their
+// sound, for a quick revision.
+const cvcSteps = [
+  "Look at the picture and tap the speaker icon for a hint.",
+  "Tap the letter that fills the gap.",
+  "Tap “Check word” when you’re done.",
+];
+const consonants = "bcdfghjklmnprstvwxyz".split("");
+const vowels = "aeiou".split("");
+
+// How each letter sounds, spelled so the browser's voice says the sound rather than the letter's
+// name (b says "buh", not "bee").
+const letterSounds = {
+  a: "ah", e: "eh", i: "ih", o: "awe", u: "uh",
+  b: "buh", c: "kuh", d: "duh", f: "fuh", g: "guh", h: "huh", j: "juh", k: "kuh", l: "luh", m: "muh",
+  n: "nuh", p: "puh", r: "ruh", s: "suh", t: "tuh", v: "vuh", w: "wuh", x: "ks", y: "yuh", z: "zuh",
+};
+
+// The middle sound's revision is the vowels; every other CVC mode revises the consonants.
+const revisionLetters = (topicId) => (topicId === "middle-sound" ? vowels : consonants);
+
+function CvcHowTo({ topicId, onClose }) {
+  const [voiceMessage, setVoiceMessage] = useState("");
+  return (
+    <div lang="en">
+      <h2 id="how-to-title">How to play</h2>
+      <ol className="how-to-numbered">
+        {cvcSteps.map((step) => <li key={step}>{step}</li>)}
+      </ol>
+      <h3 className="how-to-revision-title">Need a revision?</h3>
+      <p className="heading-note how-to-revision-note">Tap the letters to hear the letter sound.</p>
+      <div className="how-to-letters" role="group" aria-label="Letter sounds">
+        {revisionLetters(topicId).map((letter) => (
+          <button
+            className="letter-tile how-to-letter"
+            type="button"
+            key={letter}
+            aria-label={`Hear the ${letter} sound`}
+            onClick={() => speakWord(letterSounds[letter], setVoiceMessage)}
+          >
+            {letter}
+          </button>
+        ))}
+      </div>
+      <p className={`voice-status${voiceMessage ? " voice-status-visible" : ""}`} aria-live="polite">{voiceMessage}</p>
+      <button className="reward-continue completion-button how-to-button" type="button" autoFocus onClick={onClose}>
+        {buttons.en} <span aria-hidden="true">→</span>
+      </button>
+    </div>
+  );
+}
+
+// "About this game": what a game is for, opened from the info button beside its title.
+const about = {
+  cvc: {
+    title: "About CVC Sounds",
+    text: "The CVC (Consonant-Vowel-Consonant) games are designed to help children develop phonics skills by identifying individual sounds within simple words. Through separate activities focusing on beginning sounds, middle vowel sounds, and ending sounds, learners build a stronger understanding of how letters and sounds work together to form words.",
+  },
+};
+
+export const hasAbout = (gameId) => Boolean(about[gameId]);
+
+export function AboutDialog({ game, onClose }) {
+  const { title, text } = about[game.id];
+
+  useEffect(() => {
+    function handleKeyDown(event) {
+      if (event.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
+  return (
+    <div className="player-overlay" onClick={onClose}>
+      <div className="player-dialog how-to-dialog" role="dialog" aria-modal="true" aria-labelledby="about-title" onClick={(event) => event.stopPropagation()}>
+        <h2 id="about-title">{title}</h2>
+        <p className="welcome-text">{text}</p>
+        <button className="reward-continue completion-button how-to-button" type="button" autoFocus onClick={onClose}>
+          Got it <span aria-hidden="true">→</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// A round info button (a circled "i") beside a game's title, for "About this game".
+export function AboutButton({ onClick }) {
+  return (
+    <button className="how-to-open" type="button" aria-label="About this game" title="About this game" onClick={onClick}>
+      <svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22">
+        <circle cx="12" cy="12" r="11" fill="currentColor" />
+        <circle cx="12" cy="7" r="1.6" fill="#fff" />
+        <path d="M10 10.5h2.6v6.5H14" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </button>
+  );
+}
 
 // Instructions come in the game's own language: Chinese for the Chinese games, English for the
 // English ones. Mochi's den isn't a language game, so it follows the site's language.
@@ -82,9 +178,9 @@ const titles = { en: (name) => `How to play ${name}`, zh: (name) => `${name}：�
 const buttons = { en: "Got it, let’s go!", zh: "明白了，開始吧！" };
 
 // Explains a game's controls before the first time it's played, and whenever its "?" button is
-// tapped. `language` is howToLanguage's choice for the game.
-export default function HowToPlayDialog({ game, language, onClose }) {
-  const steps = howTo[game.id][language];
+// tapped. `language` is howToLanguage's choice for the game; `topicId` is the topic being played.
+export default function HowToPlayDialog({ game, topicId = null, language, onClose }) {
+  const steps = howTo[game.id]?.[language] ?? [];
 
   useEffect(() => {
     function handleKeyDown(event) {
@@ -97,6 +193,7 @@ export default function HowToPlayDialog({ game, language, onClose }) {
   return (
     <div className="player-overlay">
       <div className="player-dialog how-to-dialog" role="dialog" aria-modal="true" aria-labelledby="how-to-title">
+        {game.id === "cvc" ? <CvcHowTo topicId={topicId} onClose={onClose} /> : (
         <div lang={language === "zh" ? "zh-Hant-HK" : "en"}>
           <p className="eyebrow">{language === "zh" ? "遊戲玩法" : "HOW TO PLAY"}</p>
           <h2 id="how-to-title">{titles[language](game.name)}</h2>
@@ -112,6 +209,7 @@ export default function HowToPlayDialog({ game, language, onClose }) {
             {buttons[language]} <span aria-hidden="true">→</span>
           </button>
         </div>
+        )}
       </div>
     </div>
   );

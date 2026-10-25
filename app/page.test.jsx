@@ -1200,40 +1200,85 @@ describe("site language", () => {
 describe("how to play", () => {
   beforeEach(() => window.localStorage.setItem(siteKey, JSON.stringify({ language: "en", howToSeen: [] })));
 
-  it("explains a game the first time it's opened, then from the ? beside the title", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+  it("explains a game when its first topic starts, then from the ? beside the title", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "5-6" }], current: "Ada" }));
     const user = userEvent.setup();
     render(<GameApp />);
-    await user.click(screen.getByRole("button", { name: /CVC Sounds/ }));
+    await user.click(screen.getByRole("button", { name: /Letter Jumble for Movers/ }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
-    const howTo = screen.getByRole("dialog", { name: "How to play CVC Sounds" });
-    expect(within(howTo).getAllByRole("listitem").length).toBeGreaterThanOrEqual(3);
-    expect(howTo).toHaveTextContent("Tap the letter that fills the gap.");
+    await user.click(screen.getByRole("button", { name: /Animals/ }));
+    const howTo = screen.getByRole("dialog", { name: "How to play Letter Jumble for Movers" });
+    expect(howTo).toHaveTextContent("Tap the letters in spelling order");
     await user.click(within(howTo).getByRole("button", { name: /Got it/ }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /Middle Sound/ }));
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     const help = screen.getByRole("button", { name: "How to play" });
     expect(help).toHaveTextContent(/^\?$/);
     expect(help.closest(".title-row")).toContainElement(screen.getByRole("heading", { level: 1 }));
     await user.click(help);
-    expect(screen.getByRole("dialog", { name: "How to play CVC Sounds" })).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "How to play Letter Jumble for Movers" })).toBeInTheDocument();
+  });
+
+  it("shows CVC Sounds' three steps and consonant tiles that say their sound", async () => {
+    const { speakWord } = jest.requireMock("./lib/speech");
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    setPathname("/cvc/beginning-sound");
+    const user = userEvent.setup();
+    render(<GameApp />);
+    const howTo = await screen.findByRole("dialog", { name: "How to play" });
+    expect(howTo.querySelector(".eyebrow")).toBeNull();
+    expect(within(howTo).getAllByRole("listitem").map((item) => item.textContent)).toEqual([
+      "Look at the picture and tap the speaker icon for a hint.",
+      "Tap the letter that fills the gap.",
+      "Tap “Check word” when you’re done.",
+    ]);
+    expect(within(howTo).getByRole("heading", { name: "Need a revision?" })).toBeInTheDocument();
+    expect(howTo).toHaveTextContent("Tap the letters to hear the letter sound.");
+    const tiles = within(within(howTo).getByRole("group", { name: "Letter sounds" })).getAllByRole("button");
+    expect(tiles.map((tile) => tile.textContent).join("")).toBe("bcdfghjklmnprstvwxyz");
+
+    await user.click(within(howTo).getByRole("button", { name: "Hear the b sound" }));
+    expect(speakWord).toHaveBeenLastCalledWith("buh", expect.any(Function));
+  });
+
+  it("revises the vowels for the middle sound", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    setPathname("/cvc/middle-sound");
+    render(<GameApp />);
+    const howTo = await screen.findByRole("dialog", { name: "How to play" });
+    const tiles = within(within(howTo).getByRole("group", { name: "Letter sounds" })).getAllByRole("button");
+    expect(tiles.map((tile) => tile.textContent).join("")).toBe("aeiou");
+  });
+
+  it("has an About this game info button, instead of ?, beside CVC Sounds", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    setPathname("/cvc");
+    const user = userEvent.setup();
+    render(<GameApp />);
+    await screen.findByRole("heading", { level: 1 });
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "How to play" })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "About this game" }));
+    const about = screen.getByRole("dialog", { name: "About CVC Sounds" });
+    expect(about).toHaveTextContent("The CVC (Consonant-Vowel-Consonant) games are designed to help children develop phonics skills");
+    await user.click(within(about).getByRole("button", { name: /Got it/ }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
   it("explains Chinese games only in Chinese, and English games only in English, whatever the site's language", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
-    setPathname("/chinese");
+    setPathname("/chinese/colours");
     const { unmount } = render(<GameApp />);
     const chinese = await screen.findByRole("dialog", { name: "中文認字 · 入門篇：玩法" });
     expect(chinese).toHaveTextContent("按一按正確的圖畫。");
-    expect(within(chinese).queryByRole("switch")).not.toBeInTheDocument();
     unmount();
 
     window.localStorage.setItem(siteKey, JSON.stringify({ language: "zh", howToSeen: [] }));
-    setPathname("/cvc");
+    setPathname("/cvc/ending-sound");
     render(<GameApp />);
-    expect(await screen.findByRole("dialog", { name: "How to play CVC Sounds" })).toHaveTextContent("Tap the letter that fills the gap.");
+    expect(await screen.findByRole("dialog", { name: "How to play" })).toHaveTextContent("Tap the letter that fills the gap.");
   });
 
   it("has how-to-play steps for every game", async () => {

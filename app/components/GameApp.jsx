@@ -33,7 +33,7 @@ import { speakWord, stopSpeaking } from "../lib/speech";
 import { sounds } from "../lib/sounds";
 import { usePlayers } from "../lib/use-players";
 import { useSiteSettings } from "../lib/use-site-settings";
-import HowToPlayDialog, { HowToPlayButton, hasHowToPlay, howToLanguage } from "./HowToPlayDialog";
+import HowToPlayDialog, { AboutButton, AboutDialog, HowToPlayButton, hasAbout, hasHowToPlay, howToLanguage } from "./HowToPlayDialog";
 import { LanguageContext, textFor } from "../i18n";
 import WelcomeDialog from "./WelcomeDialog";
 
@@ -84,6 +84,7 @@ export default function GameApp() {
   const site = useSiteSettings();
   const text = textFor(site.language);
   const [howToOpen, setHowToOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
   // The welcome card: shown to a new family (no players yet) when they arrive, and whenever the
   // logo is tapped.
   const [welcomeOpen, setWelcomeOpen] = useState(false);
@@ -441,10 +442,15 @@ export default function GameApp() {
   // How to play: shown before a game is played for the first time (after the welcome card), and
   // whenever its "How to play" button is tapped.
   const gameHasHowTo = Boolean(selectedGame && hasHowToPlay(selectedGame.id));
+  // It opens by itself once a topic is being played (or in the dragon's home), not on the list
+  // of topics.
+  const startingToPlay = Boolean(routeTopic) || selectedGame?.id === "dragon";
   const howToShown = gameHasHowTo && site.loaded && !welcomeOpen && !playerDialogOpen &&
-    (howToOpen || !site.howToSeen.includes(selectedGame.id));
+    (howToOpen || (startingToPlay && !site.howToSeen.includes(selectedGame.id)));
   const gameLanguage = selectedGame ? howToLanguage(selectedGame.id, site.language) : site.language;
   const howToButton = gameHasHowTo && <HowToPlayButton language={gameLanguage} onClick={() => setHowToOpen(true)} />;
+  // A game's list of topics shows "About this game" (an info button) where it has one.
+  const aboutButton = selectedGame && hasAbout(selectedGame.id) && <AboutButton onClick={() => setAboutOpen(true)} />;
   function closeHowTo() {
     site.markHowToSeen(selectedGame.id);
     setHowToOpen(false);
@@ -512,7 +518,7 @@ export default function GameApp() {
           )
         ) : (
           <TopicMenu
-            titleAction={howToButton}
+            titleAction={aboutButton || howToButton}
             isCvc={isCvc}
             isDigraph={isDigraph}
             isChinese={isChinese}
@@ -653,7 +659,10 @@ export default function GameApp() {
         />
       )}
       {howToShown && (
-        <HowToPlayDialog game={selectedGame} language={gameLanguage} onClose={closeHowTo} />
+        <HowToPlayDialog game={selectedGame} topicId={topicId} language={gameLanguage} onClose={closeHowTo} />
+      )}
+      {aboutOpen && selectedGame && hasAbout(selectedGame.id) && (
+        <AboutDialog game={selectedGame} onClose={() => setAboutOpen(false)} />
       )}
       {parentModeOpen && (
         <ParentMode
