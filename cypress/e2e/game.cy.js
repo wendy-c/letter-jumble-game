@@ -1,9 +1,22 @@
 const playersKey = "letter-jumble:players";
 
+// Every visit skips the welcome and how-to-play cards, as if they'd been seen before.
+const seenEverything = JSON.stringify({
+  language: "en",
+  welcomed: true,
+  howToSeen: ["cvc", "digraphs", "starters", "letter-jumble", "chinese", "chinese-advanced", "measure-words", "idioms", "dragon"],
+});
+
 // Every topic's words are dealt in a random order. Once a page has loaded, random() just below 1
 // keeps the original order (bat, dolphin, ...), so tests know which word comes first. (It can't
 // be stubbed earlier: Next.js needs a real Math.random while starting up.)
-Cypress.Commands.overwrite("visit", (originalVisit, url, options) => originalVisit(url, options).then((win) => {
+Cypress.Commands.overwrite("visit", (originalVisit, url, options = {}) => originalVisit(url, {
+  ...options,
+  onBeforeLoad(win) {
+    win.localStorage.setItem("letter-jumble:site", seenEverything);
+    options.onBeforeLoad?.(win);
+  },
+}).then((win) => {
   win.Math.random = () => 0.9999999;
   return win;
 }));

@@ -9,6 +9,8 @@ const phones = [
 
 function seedPlayer(win, extra = {}) {
   win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 50, age: "5-6", ...extra }], current: "Elly" }));
+  // Skip the welcome and how-to-play cards, as if they'd been seen before.
+  win.localStorage.setItem("letter-jumble:site", JSON.stringify({ language: "en", welcomed: true, howToSeen: ["dragon"] }));
 }
 
 // Scrolls the way a finger can: only boxes that scroll (overflow auto/scroll) and the page. The
@@ -47,7 +49,7 @@ describe("Mochi's den on phones", () => {
       cy.visit("/dragon", { onBeforeLoad: seedPlayer });
       cy.get(".dragon-canvas", { timeout: 20000 }).should("be.visible");
 
-      cy.get('.player-chip, .topbar a, nav[aria-label="Breadcrumb"] a, .dragon-canvas').each(($element) => expectTappable($element[0]));
+      cy.get('.player-chip, .topbar a, nav[aria-label="Breadcrumb"] a, .how-to-open, .dragon-canvas').each(($element) => expectTappable($element[0]));
 
       cy.get('[role="tab"]').each(($tab) => {
         cy.wrap($tab).click({ scrollBehavior: "center" }).should("have.attr", "aria-selected", "true");

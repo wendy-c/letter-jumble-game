@@ -40,9 +40,8 @@ export default function AnswerPanel({
   return (
     <section className="answer-panel" aria-label="Spell the word">
       <div className="answer-intro">
-        <span className="step-number">01</span>
         <div>
-          <h2>{isCvc ? "Find the sound" : "Spell it out"}</h2>
+          <h2>{isCvc ? "Click to play the sound" : "Spell it out"}</h2>
           <p>{isDigraph ? "Which two letters fill the gap?" : isCvc ? "Which letter fills the gap?" : "Tap letters to fill the boxes"}</p>
         </div>
         <button className="voice-button" type="button" onClick={onSpeak} aria-label="Hear the word" title="Hear the word">
@@ -71,7 +70,6 @@ export default function AnswerPanel({
       {guides && <SpellingGuideLegend />}
 
       <div className="tile-instructions">
-        <span className="step-number">02</span>
         <span>{isDigraph ? "Tap the missing letters" : isCvc ? "Tap the missing letter" : "Tap letters in spelling order"}</span>
         <span className="instruction-line" />
       </div>

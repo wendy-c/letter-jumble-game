@@ -7,7 +7,7 @@ const englishRevealLabels = {
 };
 
 export const chineseRevealLabels = {
-  kicker: "差少少",
+  kicker: "答錯了",
   title: "正確答案是……",
   next: "下一題",
 };

@@ -1,6 +1,7 @@
 import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import GameApp from "./components/GameApp";
+import { games } from "./games-data";
 import { currentPathname, setPathname } from "../test/mock-navigation";
 import { sounds } from "./lib/sounds";
 
@@ -17,8 +18,15 @@ const coinsLabel = (count) => `${count} rainbow coins. Visit Mochi the Rainbow D
 const playersKey = "letter-jumble:players";
 const whoIsPlaying = /Who.s playing/;
 
+// Most tests skip the welcome and how-to-play cards, as if they'd been seen before.
+const siteKey = "letter-jumble:site";
+const seenEverything = () => window.localStorage.setItem(siteKey, JSON.stringify({
+  language: "en", welcomed: true, howToSeen: games.map((game) => game.id),
+}));
+
 beforeEach(() => {
   window.localStorage.clear();
+  seenEverything();
   jest.clearAllMocks();
   // A shuffle with random() just below 1 keeps the original order, so CVC games deal the
   // first 12 words in order (cat, hat, bat, ...). Tests about shuffling override this.
@@ -1033,10 +1041,13 @@ describe("one try per question", () => {
 });
 
 describe("badges", () => {
+  // "My badges" in the player menu opens the badge page.
   const openBadges = async (user) => {
     await user.click(screen.getByRole("button", { name: /Player options/ }));
     await user.click(screen.getByRole("menuitem", { name: /My badges/ }));
-    return screen.getByRole("dialog", { name: "Ada’s badges" });
+    expect(currentPathname()).toBe("/badges");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    return screen.getByRole("region", { name: "Ada’s badges" });
   };
 
   it("shows earned badges and a placeholder for every unfinished topic of the player's games", async () => {
@@ -1048,7 +1059,7 @@ describe("badges", () => {
     render(<GameApp />);
     const collection = await openBadges(user);
 
-    expect(within(collection).getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent))
+    expect(within(collection).getAllByRole("heading", { level: 2 }).map((heading) => heading.textContent))
       .toEqual(["Letter Jumble for Starters", "Letter Jumble for Movers", "中文認字 · 進階篇", "量詞配對", "成語"]);
     expect(collection).toHaveTextContent("2 of 22 badges");
     expect(within(collection).getByRole("listitem", { name: "Animals: earned" })).toBeInTheDocument();
@@ -1056,8 +1067,18 @@ describe("badges", () => {
     const movers = within(collection).getByRole("region", { name: "Letter Jumble for Movers" });
     expect(within(movers).getByRole("listitem", { name: "Body and Face: not earned yet" })).toBeInTheDocument();
 
-    await user.click(within(collection).getByRole("button", { name: "Close badges" }));
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    // The breadcrumb leads back home.
+    expect(within(screen.getByRole("navigation", { name: "Breadcrumb" })).getAllByRole("listitem").map((item) => item.textContent))
+      .toEqual(["🏠 Home", "My badges"]);
+    await user.click(crumb("Home"));
+    expect(currentPathname()).toBe("/");
+  });
+
+  it("sends the badge page home when nobody is playing", async () => {
+    setPathname("/badges");
+    render(<GameApp />);
+    await waitFor(() => expect(currentPathname()).toBe("/"));
+    expect(screen.queryByRole("region", { name: /badges/ })).not.toBeInTheDocument();
   });
 
   it("encourages a player with no badges yet", async () => {
@@ -1066,7 +1087,7 @@ describe("badges", () => {
     render(<GameApp />);
     const collection = await openBadges(user);
     expect(collection).toHaveTextContent("0 of 12 badges");
-    expect(collection).toHaveTextContent("Finish every word in a topic to earn its badge!");
+    expect(collection).toHaveTextContent("Get every answer in a topic right to earn its badge!");
   });
 
   it("doesn't award the same badge twice", async () => {
@@ -1084,6 +1105,72 @@ describe("badges", () => {
     await user.click(within(screen.getByRole("dialog", { name: /！$/ })).getByRole("button"));
     expect(screen.getByRole("dialog", { name: "你好叻呀！" })).not.toHaveTextContent("徽章");
     expect(storedPlayers().players[0].badges).toEqual(["chinese/clothes"]);
+  });
+});
+
+describe("welcome card", () => {
+  beforeEach(() => window.localStorage.removeItem(siteKey));
+
+  it("greets a first-time visitor in English, switches to 繁體, and isn't shown again", async () => {
+    const user = userEvent.setup();
+    const { unmount } = render(<GameApp />);
+    const welcome = await screen.findByRole("dialog", { name: "Welcome to Rainbow Academy!" });
+    expect(welcome).toHaveTextContent("This app was created by a software engineer and a mother of two");
+    expect(welcome).toHaveTextContent("Learn through play, discover with confidence.");
+    expect(welcome.querySelector(".welcome-logo")).toHaveAttribute("src", "/images/logo.png");
+
+    const language = within(welcome).getByRole("switch", { name: /Language/ });
+    expect(language).toHaveAttribute("aria-checked", "false");
+    await user.click(language);
+    const chinese = screen.getByRole("dialog", { name: "歡迎來到 Rainbow Academy！" });
+    expect(chinese).toHaveTextContent("寓學習於遊戲，讓孩子自信探索世界。");
+    expect(within(chinese).getByRole("switch")).toHaveAttribute("aria-checked", "true");
+
+    await user.click(within(chinese).getByRole("button", { name: /一起玩吧！/ }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(JSON.parse(window.localStorage.getItem(siteKey))).toMatchObject({ language: "zh", welcomed: true });
+
+    unmount();
+    render(<GameApp />);
+    await screen.findByRole("heading", { level: 1 });
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+});
+
+describe("how to play", () => {
+  beforeEach(() => window.localStorage.setItem(siteKey, JSON.stringify({ language: "en", welcomed: true, howToSeen: [] })));
+
+  it("explains a game the first time it's opened, then only when asked", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    const user = userEvent.setup();
+    render(<GameApp />);
+    await user.click(screen.getByRole("button", { name: /CVC Sounds/ }));
+
+    const howTo = screen.getByRole("dialog", { name: "How to play CVC Sounds" });
+    expect(within(howTo).getAllByRole("listitem").length).toBeGreaterThanOrEqual(3);
+    expect(howTo).toHaveTextContent("Tap the letter that fills the gap.");
+    await user.click(within(howTo).getByRole("button", { name: /Got it/ }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /Middle Sound/ }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /How to play/ }));
+    expect(screen.getByRole("dialog", { name: "How to play CVC Sounds" })).toBeInTheDocument();
+  });
+
+  it("explains in Chinese when 繁 is chosen", async () => {
+    window.localStorage.setItem(siteKey, JSON.stringify({ language: "zh", welcomed: true, howToSeen: [] }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    setPathname("/chinese");
+    render(<GameApp />);
+    const howTo = await screen.findByRole("dialog", { name: "中文認字 · 入門篇：玩法" });
+    expect(howTo).toHaveTextContent("按一按正確的圖畫。");
+    expect(within(howTo).getByRole("button", { name: /明白了/ })).toBeInTheDocument();
+  });
+
+  it("has how-to-play steps for every game", async () => {
+    const { hasHowToPlay } = await import("./components/HowToPlayDialog");
+    expect(games.filter((game) => !hasHowToPlay(game.id)).map((game) => game.id)).toEqual([]);
   });
 });
 
@@ -1129,6 +1216,18 @@ describe("Tofu and Rainbow Village", () => {
     await user.click(crumb("Mochi the Rainbow Dragon"));
     await user.click(screen.getByRole("button", { name: "Visit Tofu’s House" }));
     expect(currentPathname()).toBe("/dragon/tofu");
+
+    await user.click(screen.getByRole("button", { name: /Back to Rainbow Village/ }));
+    expect(currentPathname()).toBe("/dragon");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Rainbow Village");
+  });
+
+  it("has no way back to the village before Tofu moves in", async () => {
+    seedPlayer({ coins: 5 });
+    setPathname("/dragon");
+    render(<GameApp />);
+    await screen.findByRole("heading", { level: 1 });
+    expect(screen.queryByRole("button", { name: /Back to Rainbow Village/ })).not.toBeInTheDocument();
   });
 
   it("sends Tofu's address back to the start until she's unlocked", async () => {

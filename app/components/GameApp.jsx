@@ -32,9 +32,12 @@ import { getSpellingGuides, scramble, seededRandom, shuffled, shuffledDeck, slot
 import { speakWord, stopSpeaking } from "../lib/speech";
 import { sounds } from "../lib/sounds";
 import { usePlayers } from "../lib/use-players";
+import { useSiteSettings } from "../lib/use-site-settings";
+import HowToPlayDialog, { HowToPlayButton, hasHowToPlay } from "./HowToPlayDialog";
+import WelcomeDialog from "./WelcomeDialog";
 
 const rewardMessages = ["Amazing!", "Well done!", "You did it!", "Fantastic!", "Brilliant!"];
-const chineseRewardMessages = ["好叻呀！", "做得好！", "答啱咗！", "好棒呀！", "你真係叻！"];
+const chineseRewardMessages = ["做得好！", "答對了！", "好棒呀！", "太厲害了！"];
 
 function mixAnswers(question, random) {
   return {
@@ -61,10 +64,13 @@ export default function GameApp() {
     setGameEnabled, awardBadge, saveResult, unlock,
   } = usePlayers();
   const [parentModeOpen, setParentModeOpen] = useState(false);
-  const [badgesOpen, setBadgesOpen] = useState(false);
+  const site = useSiteSettings();
+  const [howToOpen, setHowToOpen] = useState(false);
   const rainbowCoins = currentPlayer?.coins ?? 0;
 
   const routeGame = games.find((game) => game.id === gameId) ?? null;
+  // "/badges" is the current player's badge collection (with nobody playing, it goes home).
+  const onBadgesPage = gameId === "badges" && !topicId && Boolean(currentPlayer);
   // A game only opens once the saved player has loaded, the game suits their age, and a parent
   // hasn't turned it off for them.
   const allowed = Boolean(routeGame && loaded && currentPlayer?.age && isGameAvailable(routeGame, currentPlayer));
@@ -144,6 +150,7 @@ export default function GameApp() {
   // current player can't play goes back to the picker (asking who's playing if nobody is).
   useEffect(() => {
     if (!loaded || !gameId) return;
+    if (onBadgesPage) return;
     if (!routeGame) {
       router.replace("/");
       return;
@@ -159,7 +166,7 @@ export default function GameApp() {
     }
     if (topicId && !routeTopic && !(routeGame.id === "dragon" && isDragonDen(topicId))) router.replace(`/${routeGame.id}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loaded, gameId, topicId, routeGame, allowed, currentPlayer, routeTopic, router, tofuUnlocked]);
+  }, [loaded, gameId, topicId, routeGame, allowed, currentPlayer, routeTopic, router, tofuUnlocked, onBadgesPage]);
 
   // A topic without a shuffled hand of words yet gets one dealt.
   useEffect(() => {
@@ -369,15 +376,27 @@ export default function GameApp() {
   }
 
   const playing = Boolean(selectedCategory && puzzle);
+  // How to play: shown before a game is played for the first time (after the welcome card), and
+  // whenever its "How to play" button is tapped.
+  const gameHasHowTo = Boolean(selectedGame && hasHowToPlay(selectedGame.id));
+  const howToShown = gameHasHowTo && site.loaded && site.welcomed &&
+    (howToOpen || !site.howToSeen.includes(selectedGame.id));
+  function closeHowTo() {
+    site.markHowToSeen(selectedGame.id);
+    setHowToOpen(false);
+  }
   const breadcrumbs = selectedGame && (
-    <Breadcrumbs
-      items={[
-        { label: "Home", href: "/" },
-        { label: selectedGame.name, href: `/${selectedGame.id}` },
-        ...(routeTopic ? [{ label: routeTopic.name, href: `/${selectedGame.id}/${routeTopic.id}` }] : []),
-        ...(dragonPlace && topicId && dragons[topicId] ? [{ label: dragons[topicId].house, href: `/dragon/${topicId}` }] : []),
-      ]}
-    />
+    <div className="crumbs-row">
+      <Breadcrumbs
+        items={[
+          { label: "Home", href: "/" },
+          { label: selectedGame.name, href: `/${selectedGame.id}` },
+          ...(routeTopic ? [{ label: routeTopic.name, href: `/${selectedGame.id}/${routeTopic.id}` }] : []),
+          ...(dragonPlace && topicId && dragons[topicId] ? [{ label: dragons[topicId].house, href: `/dragon/${topicId}` }] : []),
+        ]}
+      />
+      {gameHasHowTo && <HowToPlayButton language={site.language} onClick={() => setHowToOpen(true)} />}
+    </div>
   );
 
   return (
@@ -387,7 +406,7 @@ export default function GameApp() {
           <PlayerMenu
             player={currentPlayer}
             onSwitch={() => setPlayerDialogOpen(true)}
-            onBadges={() => setBadgesOpen(true)}
+            onBadges={() => router.push("/badges")}
             onParentMode={() => setParentModeOpen(true)}
             onLogOut={handleLogOut}
           />
@@ -395,7 +414,12 @@ export default function GameApp() {
         <CoinLink coins={rainbowCoins} />
       </SiteHeader>
 
-      {!selectedGame ? (
+      {onBadgesPage ? (
+        <BadgeCollection
+          player={currentPlayer}
+          breadcrumbs={<Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "My badges", href: "/badges" }]} />}
+        />
+      ) : !selectedGame ? (
         // Wait for the saved player before showing games, so the right ones show and an early
         // tap doesn't ask "Who's playing?" for someone who's already playing.
         loaded && (
@@ -416,6 +440,7 @@ export default function GameApp() {
               coins={rainbowCoins}
               onSpendCoins={spendCoins}
               breadcrumbs={breadcrumbs}
+              onBackToVillage={tofuUnlocked ? () => router.push("/dragon") : null}
               banner={dragonPlace === "mochi" && !tofuUnlocked && (
                 <TofuUnlock coins={rainbowCoins} cost={dragons.tofu.unlockCost} onUnlock={unlockTofu} />
               )}
@@ -547,8 +572,11 @@ export default function GameApp() {
           onClose={closeWordMenu}
         />
       )}
-      {badgesOpen && currentPlayer && (
-        <BadgeCollection player={currentPlayer} onClose={() => setBadgesOpen(false)} />
+      {site.loaded && !site.welcomed && (
+        <WelcomeDialog language={site.language} onLanguage={site.setLanguage} onClose={site.markWelcomed} />
+      )}
+      {howToShown && (
+        <HowToPlayDialog game={selectedGame} language={site.language} onLanguage={site.setLanguage} onClose={closeHowTo} />
       )}
       {parentModeOpen && (
         <ParentMode

@@ -32,8 +32,9 @@ function ActionButton({ action, coins, busy, onUse }) {
 }
 
 // A dragon's den (Mochi's or Tofu's, from dragon-data): spend coins on treats, grooming and
-// activities, or tap her for something free. `banner` shows above the den (e.g. unlocking Tofu).
-export default function DragonDen({ dragon, coins, onSpendCoins, breadcrumbs, banner = null }) {
+// activities, or tap her for something free. `banner` shows above the den (e.g. unlocking Tofu),
+// and `onBackToVillage`, once there's a village, adds a button back to it.
+export default function DragonDen({ dragon, coins, onSpendCoins, breadcrumbs, banner = null, onBackToVillage = null }) {
   const { idleMessage, actions: dragonActions, petActions } = dragon;
   const [command, setCommand] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -90,6 +91,11 @@ export default function DragonDen({ dragon, coins, onSpendCoins, breadcrumbs, ba
       <div className="game-heading">
         <div>
           {breadcrumbs}
+          {onBackToVillage && (
+            <button className="village-back" type="button" onClick={onBackToVillage}>
+              <span aria-hidden="true">← 🌈</span> Back to Rainbow Village
+            </button>
+          )}
           <p className="eyebrow">{dragon.eyebrow}</p>
           <h1 id="game-title" className="game-title">
             {dragon.name} the <span>{dragon.title.replace(`${dragon.name} the `, "")}</span>
