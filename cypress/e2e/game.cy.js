@@ -636,6 +636,23 @@ describe("measure words", () => {
 });
 
 describe("parent mode", () => {
+  it("opens straight from its own address, /parent", () => {
+    cy.visit("/parent", {
+      onBeforeLoad(win) {
+        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+      },
+    });
+    cy.contains("h1", "Parent mode");
+    cy.get(".grown-up-question strong").invoke("text").then((text) => {
+      const [first, second] = text.split(" × ").map(Number);
+      cy.get("#grown-up-answer").type(String(first * second));
+    });
+    cy.contains("button", "Continue").click();
+    cy.contains('[role="switch"]', "Mochi");
+    cy.contains("button", "Done").click();
+    cy.location("pathname").should("eq", "/");
+  });
+
   it("opens from the player menu after a grown-up maths question", () => {
     cy.visit("/", {
       onBeforeLoad(win) {
