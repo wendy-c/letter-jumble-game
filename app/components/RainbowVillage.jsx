@@ -12,6 +12,18 @@ const places = [
 function TofuUnlockButton({ coins, cost, onUnlock }) {
   const affordable = coins >= cost;
   return (
+    <>
+    <span className="village-place-label">
+      <span>Tofu's House</span>
+      <span className="village-place-note">unlock with 100 coins</span>
+      <span className="tofu-unlock-status" aria-hidden="true">
+        <img src="/images/rainbow-coin.svg" alt="" width="18" height="18" />
+        <span aria-hidden="true">{affordable ? cost : `${coins}/${cost}`}</span>
+      </span>
+       <div className="unlock-progress" aria-hidden="true">
+          <span style={{ width: `${(coins / cost) * 100}%` }} />
+        </div>
+    </span>
     <button
       className="tofu-unlock-button"
       type="button"
@@ -19,10 +31,9 @@ function TofuUnlockButton({ coins, cost, onUnlock }) {
       aria-label={affordable ? `Unlock Tofu for ${cost} rainbow coins` : `Unlock Tofu: ${coins} of ${cost} rainbow coins`}
       onClick={onUnlock}
     >
-      <span aria-hidden="true">{affordable ? "Unlock" : "🔒"}</span>
-      <img src="/images/rainbow-coin.svg" alt="" width="18" height="18" />
-      <span aria-hidden="true">{affordable ? cost : `${coins}/${cost}`}</span>
+      <span aria-hidden="true">{affordable ? "Unlock" : "🔓"}</span>
     </button>
+      </>
   );
 }
 

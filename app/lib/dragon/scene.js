@@ -777,13 +777,19 @@ function buildBook(materials) {
   const star = part(new THREE.OctahedronGeometry(0.08), materials.toon(GOLD), materials, 0.07, 0.012);
   star.position.set(-0.23, 0.05, -0.05);
   group.add(star);
+  // The turning page hinges on the spine, just in front of where the two halves' pages meet, and
+  // swings from lying on the right-hand pages to the left-hand ones, so it never pokes through
+  // the covers. `turn` (0 to 1) sets how far over it is.
   const turning = new THREE.Group();
-  const page = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.56), new THREE.MeshBasicMaterial({ color: 0xfffaf0, side: THREE.DoubleSide }));
-  page.position.x = 0.21;
+  const page = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.54), new THREE.MeshBasicMaterial({ color: 0xfffaf0, side: THREE.DoubleSide }));
+  page.position.x = 0.2;
   turning.add(page);
-  turning.position.z = 0.08;
+  turning.position.z = 0.085;
   group.add(turning);
-  group.userData.page = turning;
+  group.userData.turn = (amount) => {
+    turning.rotation.y = -0.35 - (Math.PI - 0.7) * amount;
+  };
+  group.userData.turn(0);
   group.userData.dispose = () => page.material.dispose();
   return group;
 }
@@ -1993,7 +1999,7 @@ const actions = {
     run.book.scale.setScalar(Math.max(0.01, show));
     run.glasses.scale.setScalar(Math.max(0.01, show));
     const turnPage = (t % 1.6) / 1.6;
-    run.book.userData.page.rotation.y = t > 0.8 && t < 5.5 ? -Math.PI * easeInOut(between(turnPage, 0.5, 0.85)) : 0;
+    run.book.userData.turn(t > 0.8 && t < 5.5 ? easeInOut(between(turnPage, 0.5, 0.85)) : 0);
     const reading = between(t, 0.3, 0.6) * (1 - between(t, 5.4, 5.7));
     pose.armL = Math.max(pose.armL, 0.85 * reading);
     pose.armR = Math.max(pose.armR, 0.85 * reading);

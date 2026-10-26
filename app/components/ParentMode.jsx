@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ageGroups, games, isGameAvailable, isGameForAge } from "../games-data";
 import { isRightAnswer, makeGrownUpQuestion } from "../lib/grown-up-question";
 import { useText } from "../i18n";
+import GameFooter from "./GameFooter";
 
 function GrownUpCheck({ onPass }) {
   const text = useText();
@@ -104,34 +105,21 @@ function ChildSettings({ player, onSetGameEnabled }) {
   );
 }
 
-// Parent mode: a grown-up maths question, then each child's game settings. Closing it locks it.
-export default function ParentMode({ players, onSetGameEnabled, onClose }) {
+// The parent mode page ("/parent"): a grown-up maths question, then each child's game settings.
+// Leaving the page locks it again; "Done" locks it and goes home (`onDone`).
+export default function ParentMode({ players, breadcrumbs, onSetGameEnabled, onDone }) {
   const text = useText();
   const [unlocked, setUnlocked] = useState(false);
 
-  useEffect(() => {
-    function handleKeyDown(event) {
-      if (event.key === "Escape") onClose();
-    }
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onClose]);
-
   return (
-    <div className="player-overlay" onClick={onClose}>
-      <div
-        className="player-dialog parent-dialog"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="parent-title"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <button className="word-menu-close player-dialog-close" type="button" aria-label={text.closeParentMode} onClick={onClose}>
-          ×
-        </button>
+    <section className="game-wrap parent-page mx-auto w-full max-w-6xl" aria-labelledby="game-title">
+      <div className="menu-heading">
+        {breadcrumbs}
         <p className="eyebrow">{text.forGrownUps}</p>
-        <h2 id="parent-title">{text.parentMode}</h2>
+        <h1 id="game-title">{text.parentMode}</h1>
+      </div>
 
+      <div className="parent-card">
         {!unlocked ? (
           <GrownUpCheck onPass={() => setUnlocked(true)} />
         ) : players.length === 0 ? (
@@ -139,15 +127,19 @@ export default function ParentMode({ players, onSetGameEnabled, onClose }) {
         ) : (
           <>
             <p className="parent-intro">{text.parentIntro}</p>
-            {players.map((player) => (
-              <ChildSettings key={player.name} player={player} onSetGameEnabled={onSetGameEnabled} />
-            ))}
-            <button className="action-button check-button parent-done" type="button" onClick={onClose}>
+            <div className="parent-children">
+              {players.map((player) => (
+                <ChildSettings key={player.name} player={player} onSetGameEnabled={onSetGameEnabled} />
+              ))}
+            </div>
+            <button className="action-button check-button parent-done" type="button" onClick={onDone}>
               {text.lockParentMode} <span aria-hidden="true">🔒</span>
             </button>
           </>
         )}
       </div>
-    </div>
+
+      <GameFooter>{text.forGrownUps}</GameFooter>
+    </section>
   );
 }

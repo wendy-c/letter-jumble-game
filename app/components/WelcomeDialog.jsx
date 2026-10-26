@@ -25,28 +25,11 @@ const text = {
   },
 };
 
-// The En / 繁 switch for the site's language.
-export function LanguageSwitch({ language, onChange }) {
-  const text = useText();
-  return (
-    <button
-      className="language-switch"
-      type="button"
-      role="switch"
-      aria-checked={language === "zh"}
-      aria-label={text.languageSwitch}
-      onClick={() => onChange(language === "zh" ? "en" : "zh")}
-    >
-      <span className={language === "en" ? "language-on" : ""}>En</span>
-      <span className={language === "zh" ? "language-on" : ""} lang="zh-Hant-HK">繁</span>
-    </button>
-  );
-}
-
-// What Rainbow Academy is, in English or Chinese. A new family (no players yet) sees it on
-// arriving, with a form to create their first player: "Let's Play" creates them. Opened from the
+// What Rainbow Academy is, in the site's language (English unless it's changed in the player
+// menu). A new family (no players yet) sees it on arriving, with a form to create their first
+// player: "Let's Start" creates them. Opened from the
 // logo when there are players already, the button just closes it.
-export default function WelcomeDialog({ language, onLanguage, onCreate = null, onClose }) {
+export default function WelcomeDialog({ language, onCreate = null, onClose }) {
   const copy = text[language];
   const siteText = useText();
 
@@ -66,7 +49,6 @@ export default function WelcomeDialog({ language, onLanguage, onCreate = null, o
         </button>
         <div className="welcome-top">
           <img className="welcome-logo" src="/images/logo.png" alt="" width="84" height="84" />
-          <LanguageSwitch language={language} onChange={onLanguage} />
         </div>
         <div lang={language === "zh" ? "zh-Hant-HK" : "en"}>
           <h2 id="welcome-title">{copy.title}</h2>

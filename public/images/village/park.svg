@@ -1,11 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
 <g stroke="#4b2e22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
-<path d="M30 70q0-40 70-40t70 40" fill="none" stroke-width="10"/><path d="M30 70q0-40 70-40t70 40" fill="none" stroke="#ffb3d1" stroke-width="5"/>
-<path d="M30 70v110M170 70v110" stroke-width="8"/><path d="M30 70v110M170 70v110" stroke="#c98a55" stroke-width="3"/>
-<rect x="70" y="36" width="60" height="22" rx="6" fill="#fff6c8" stroke-width="3"/>
-<text x="100" y="53" text-anchor="middle" font-family="Fredoka,Arial Rounded MT Bold,Arial,sans-serif" font-size="15" font-weight="700" fill="#4b2e22" stroke="none">PARK</text>
-<path d="M66 170v-21.6" stroke-width="7"/><path d="M66 170v-21.6" stroke="#c98a55" stroke-width="3"/><circle cx="66" cy="130.4" r="21.6" fill="#8fe3a8" stroke-width="3.5"/><circle cx="58.8" cy="123.19999999999999" r="4.5" fill="#ffffff" stroke="none" opacity=".5"/><path d="M140 166v-19.200000000000003" stroke-width="7"/><path d="M140 166v-19.200000000000003" stroke="#c98a55" stroke-width="3"/><circle cx="140" cy="130.8" r="19.200000000000003" fill="#b5e8a8" stroke-width="3.5"/><circle cx="133.6" cy="124.4" r="4.0" fill="#ffffff" stroke="none" opacity=".5"/>
-<ellipse cx="102" cy="168" rx="26" ry="9" fill="#8cc8f2" stroke-width="3"/><path d="M102 168v-22" stroke-width="5"/><path d="M102 146q-10-8-16 2M102 146q10-8 16 2" fill="none" stroke="#8cc8f2" stroke-width="4"/>
-<path d="M20 186h160" stroke="#9fdcbf" stroke-width="8"/>
+<ellipse cx="100" cy="176" rx="84" ry="12" fill="#c8eed8" stroke="none"/>
+<path d="M30 176v-22.799999999999997" stroke-width="7"/><path d="M30 176v-22.799999999999997" stroke="#c98a55" stroke-width="3"/><circle cx="30" cy="134.2" r="22.799999999999997" fill="#8fe3a8" stroke-width="3.5"/><circle cx="22.4" cy="126.6" r="4.75" fill="#ffffff" stroke="none" opacity=".5"/><path d="M176 172v-20.4" stroke-width="7"/><path d="M176 172v-20.4" stroke="#c98a55" stroke-width="3"/><circle cx="176" cy="134.6" r="20.4" fill="#b5e8a8" stroke-width="3.5"/><circle cx="169.2" cy="127.80000000000001" r="4.25" fill="#ffffff" stroke="none" opacity=".5"/>
+<path d="M40 176L58 92M96 176L78 92M54 92h28" stroke-width="7"/><path d="M40 176L58 92M96 176L78 92M54 92h28" stroke="#ff8fa3" stroke-width="3"/>
+<path d="M62 94v50M74 94v50" stroke-width="2.5"/><rect x="58" y="142" width="20" height="7" rx="3" fill="#ffe27a" stroke-width="3"/>
+<path d="M118 176V102M134 176V102" stroke-width="4"/>
+<path d="M118 114h16" stroke-width="3"/>
+<path d="M118 128h16" stroke-width="3"/>
+<path d="M118 142h16" stroke-width="3"/>
+<path d="M118 156h16" stroke-width="3"/>
+<path d="M118 170h16" stroke-width="3"/>
+<rect x="112" y="94" width="28" height="10" rx="3" fill="#b79cf2" stroke-width="3"/>
+<path d="M138 98q24 30 34 76h-12q-10-40-26-66Z" fill="#8cc8f2" stroke-width="3.5"/>
+<ellipse cx="100" cy="182" rx="18" ry="5" fill="#8cc8f2" stroke-width="2.5"/>
+<path d="M68 22h64a5 5 0 0 1 5 5v18a5 5 0 0 1-5 5H68a5 5 0 0 1-5-5V27a5 5 0 0 1 5-5Z" fill="#e0a56a" stroke-width="3.5"/>
+<text x="100" y="42" text-anchor="middle" font-family="Fredoka,Arial Rounded MT Bold,Arial,sans-serif" font-size="16" font-weight="700" fill="#4b2e22" stroke="none">PARK</text>
+<path d="M40 44Q41.2 48.8 46 50Q41.2 51.2 40 56Q38.8 51.2 34 50Q38.8 48.8 40 44Z" fill="#fff6c8" stroke-width="2.5"/><path d="M162 34Q163.2 38.8 168 40Q163.2 41.2 162 46Q160.8 41.2 156 40Q160.8 38.8 162 34Z" fill="#ffe0ee" stroke-width="2.5"/>
+<path d="M20 190h160" stroke="#9fdcbf" stroke-width="8"/>
 </g>
 </svg>

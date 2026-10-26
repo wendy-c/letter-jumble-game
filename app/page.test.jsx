@@ -1114,29 +1114,42 @@ describe("badges", () => {
 describe("welcome card", () => {
   beforeEach(() => window.sessionStorage.clear());
 
-  it("greets a new family, in English or 繁體, and makes their first player", async () => {
+  it("greets a new family in English, with no language switch, and makes their first player", async () => {
     const user = userEvent.setup();
     render(<GameApp />);
     const welcome = await screen.findByRole("dialog", { name: "Welcome to Rainbow Academy!" });
     expect(welcome).toHaveTextContent("This app was created by a software engineer and a mother of two");
     expect(welcome).toHaveTextContent("Learn, Play, Shine!");
     expect(welcome.querySelector(".welcome-logo")).toHaveAttribute("src", "/images/logo.png");
+    expect(within(welcome).queryByRole("switch")).not.toBeInTheDocument();
+    expect(document.querySelector(".brand-logo")).toHaveAttribute("src", "/images/logo-name-beta.png");
 
-    await user.click(within(welcome).getByRole("switch", { name: /Language/ }));
-    const chinese = screen.getByRole("dialog", { name: "歡迎來到 Rainbow Academy！" });
+    // "Let's Start" creates the player from the form (and asks for what's missing first).
+    await user.click(within(welcome).getByRole("button", { name: /Let’s Start/ }));
+    expect(within(welcome).getByRole("alert")).toHaveTextContent("Please type a name.");
+    await user.type(within(welcome).getByRole("textbox"), "Ada");
+    await user.click(within(welcome).getByRole("radio", { name: "3-4 years old" }));
+    await user.click(within(welcome).getByRole("button", { name: /Let’s Start/ }));
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(storedPlayers()).toEqual({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" });
+    expect(JSON.parse(window.localStorage.getItem(siteKey))).toMatchObject({ language: "en" });
+  });
+
+  it("greets in 繁體 once the site's language has been changed in the player menu", async () => {
+    window.localStorage.setItem(siteKey, JSON.stringify({ language: "zh", howToSeen: [] }));
+    const user = userEvent.setup();
+    render(<GameApp />);
+    const chinese = await screen.findByRole("dialog", { name: "歡迎來到 Rainbow Academy！" });
     expect(chinese).toHaveTextContent("學中玩，玩中學，閃耀每一天！");
-    expect(within(chinese).getByRole("switch")).toHaveAttribute("aria-checked", "true");
+    expect(within(chinese).queryByRole("switch")).not.toBeInTheDocument();
 
-    // "一起玩吧！" creates the player from the form (and asks for what's missing first).
     await user.click(within(chinese).getByRole("button", { name: /一起玩吧！/ }));
     expect(within(chinese).getByRole("alert")).toHaveTextContent("請輸入名字。");
     await user.type(within(chinese).getByRole("textbox"), "Ada");
     await user.click(within(chinese).getByRole("radio", { name: "3-4 歲" }));
     await user.click(within(chinese).getByRole("button", { name: /一起玩吧！/ }));
-
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(storedPlayers()).toEqual({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" });
-    expect(JSON.parse(window.localStorage.getItem(siteKey))).toMatchObject({ language: "zh" });
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("一起邊玩邊學吧！");
   });
 
@@ -1406,19 +1419,20 @@ describe("parent mode", () => {
     players: [{ name: "Ada", coins: 0, age: "3-4", ...extra }, { name: "Elly", coins: 0, age: "5-6" }],
     current: "Ada",
   }));
-  const parentDialog = () => screen.getByRole("dialog", { name: "Parent mode" });
+  const parentPage = () => screen.getByRole("region", { name: "Parent mode" });
 
   async function openParentMode(user) {
     await user.click(screen.getByRole("button", { name: /Player options/ }));
     await user.click(screen.getByRole("menuitem", { name: /Parent mode/ }));
+    expect(currentPathname()).toBe("/parent");
   }
 
   // With Math.random pinned just below 1, the grown-up question is always 11 × 9.
   async function passGrownUpCheck(user) {
     await openParentMode(user);
-    expect(within(parentDialog()).getByLabelText(/What is/)).toHaveAccessibleName(/^What is 11 × 9 ?\?$/);
-    await user.type(within(parentDialog()).getByLabelText(/What is/), "99");
-    await user.click(within(parentDialog()).getByRole("button", { name: /Continue/ }));
+    expect(within(parentPage()).getByLabelText(/What is/)).toHaveAccessibleName(/^What is 11 × 9 ?\?$/);
+    await user.type(within(parentPage()).getByLabelText(/What is/), "99");
+    await user.click(within(parentPage()).getByRole("button", { name: /Continue/ }));
   }
 
   it("lists every game for each child, with only their age's games on to begin with", async () => {
@@ -1427,7 +1441,7 @@ describe("parent mode", () => {
     render(<GameApp />);
     await passGrownUpCheck(user);
 
-    const switches = (name) => within(within(parentDialog()).getByRole("region", { name })).getAllByRole("switch")
+    const switches = (name) => within(within(parentPage()).getByRole("region", { name })).getAllByRole("switch")
       .map((toggle) => [toggle.querySelector(".spelling-guide-toggle-title").textContent, toggle.getAttribute("aria-checked")]);
     expect(switches(/Ada/)).toEqual([
       ["CVC Sounds", "true"], ["Consonant Digraphs", "true"], ["Letter Jumble for Starters", "false"], ["Letter Jumble for Movers", "false"], ["中文認字 · 入門篇", "true"],
@@ -1437,7 +1451,7 @@ describe("parent mode", () => {
       ["CVC Sounds", "false"], ["Consonant Digraphs", "false"], ["Letter Jumble for Starters", "true"], ["Letter Jumble for Movers", "true"], ["中文認字 · 入門篇", "false"],
       ["中文認字 · 進階篇", "true"], ["量詞配對", "true"], ["成語", "true"], ["Mochi the Rainbow Dragon", "true"],
     ]);
-    expect(within(parentDialog()).queryByRole("button", { name: /Focus/ })).not.toBeInTheDocument();
+    expect(within(parentPage()).queryByRole("button", { name: /Focus/ })).not.toBeInTheDocument();
   });
 
   it("turning a game off hides it from that child only", async () => {
@@ -1446,10 +1460,10 @@ describe("parent mode", () => {
     render(<GameApp />);
     await passGrownUpCheck(user);
 
-    const ada = within(parentDialog()).getByRole("region", { name: /Ada/ });
+    const ada = within(parentPage()).getByRole("region", { name: /Ada/ });
     await user.click(within(ada).getByRole("switch", { name: /Mochi/ }));
     expect(within(ada).getByRole("switch", { name: /Mochi/ })).toHaveAttribute("aria-checked", "false");
-    await user.click(within(parentDialog()).getByRole("button", { name: /Done/ }));
+    await user.click(within(parentPage()).getByRole("button", { name: /Done/ }));
 
     expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "中文認字 · 入門篇"]);
     expect(storedPlayers().players.find((player) => player.name === "Elly").gameSettings).toBeUndefined();
@@ -1463,11 +1477,11 @@ describe("parent mode", () => {
     render(<GameApp />);
     await passGrownUpCheck(user);
 
-    const ada = within(parentDialog()).getByRole("region", { name: /Ada/ });
+    const ada = within(parentPage()).getByRole("region", { name: /Ada/ });
     const movers = within(ada).getByRole("switch", { name: /Letter Jumble for Movers/ });
     expect(movers).toHaveTextContent("Off · for 5-6 years old");
     await user.click(movers);
-    await user.click(within(parentDialog()).getByRole("button", { name: /Done/ }));
+    await user.click(within(parentPage()).getByRole("button", { name: /Done/ }));
 
     expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "Letter Jumble for Movers", "中文認字 · 入門篇", "Mochi the Rainbow Dragon"]);
     await user.click(screen.getByRole("button", { name: /Letter Jumble for Movers/ }));
@@ -1481,21 +1495,34 @@ describe("parent mode", () => {
     render(<GameApp />);
 
     await openParentMode(user);
-    expect(within(parentDialog()).queryByRole("switch")).not.toBeInTheDocument();
-    await user.type(within(parentDialog()).getByLabelText(/What is/), "170");
-    await user.click(within(parentDialog()).getByRole("button", { name: /Continue/ }));
-    expect(within(parentDialog()).getByRole("alert")).toHaveTextContent("That’s not right");
-    expect(within(parentDialog()).getByLabelText(/What is/)).toHaveValue("");
-    expect(within(parentDialog()).queryByRole("switch")).not.toBeInTheDocument();
+    expect(within(parentPage()).queryByRole("switch")).not.toBeInTheDocument();
+    await user.type(within(parentPage()).getByLabelText(/What is/), "170");
+    await user.click(within(parentPage()).getByRole("button", { name: /Continue/ }));
+    expect(within(parentPage()).getByRole("alert")).toHaveTextContent("That’s not right");
+    expect(within(parentPage()).getByLabelText(/What is/)).toHaveValue("");
+    expect(within(parentPage()).queryByRole("switch")).not.toBeInTheDocument();
 
-    await user.type(within(parentDialog()).getByLabelText(/What is/), "99");
-    await user.click(within(parentDialog()).getByRole("button", { name: /Continue/ }));
-    expect(within(parentDialog()).getAllByRole("region")).toHaveLength(2);
+    await user.type(within(parentPage()).getByLabelText(/What is/), "99");
+    await user.click(within(parentPage()).getByRole("button", { name: /Continue/ }));
+    expect(within(parentPage()).getAllByRole("region")).toHaveLength(2);
 
-    // Closing locks it again.
-    await user.click(within(parentDialog()).getByRole("button", { name: /Done/ }));
+    // Done locks it again and goes home.
+    await user.click(within(parentPage()).getByRole("button", { name: /Done/ }));
+    expect(currentPathname()).toBe("/");
+    expect(screen.queryByRole("region", { name: "Parent mode" })).not.toBeInTheDocument();
     await openParentMode(user);
-    expect(within(parentDialog()).queryByRole("switch")).not.toBeInTheDocument();
+    expect(within(parentPage()).queryByRole("switch")).not.toBeInTheDocument();
+  });
+
+  it("is a page of its own, with a way home", async () => {
+    seedChildren();
+    setPathname("/parent");
+    render(<GameApp />);
+    expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent("Parent mode");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(within(screen.getByRole("navigation", { name: "Breadcrumb" })).getAllByRole("listitem").map((item) => item.textContent))
+      .toEqual(["🏠 Home", "Parent mode"]);
+    expect(screen.getByLabelText(/What is/)).toBeInTheDocument();
   });
 
   it("is in the player menu, not the header", async () => {

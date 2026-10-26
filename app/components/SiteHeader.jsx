@@ -1,7 +1,7 @@
 import { useText } from "../i18n";
 
-// The top bar: the Rainbow Academy logo (which goes home and shows the welcome card) and the
-// player's tools.
+// The top bar: the Rainbow Academy logo with its name and a "beta" badge (which goes home and
+// shows the welcome card), and the player's tools.
 export default function SiteHeader({ onBrandClick, children }) {
   const text = useText();
   return (
@@ -16,8 +16,7 @@ export default function SiteHeader({ onBrandClick, children }) {
           onBrandClick();
         }}
       >
-        <img className="brand-logo" src="/images/logo.png" alt="" width="80" height="80" />
-        <span className="brand-wave">The Rainbow Academy</span>
+        <img className="brand-logo" src="/images/logo-name-beta.png" alt="" width="270" height="96" />
       </a>
       <div className="topbar-tools">
         {children}

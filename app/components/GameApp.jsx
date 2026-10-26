@@ -79,7 +79,6 @@ export default function GameApp() {
     loaded, players, currentPlayer, createPlayer, setPlayerAge, selectPlayer, logOut, addCoin, spendCoins, saveProgress, saveDeck,
     setGameEnabled, awardBadge, saveResult, unlock,
   } = usePlayers();
-  const [parentModeOpen, setParentModeOpen] = useState(false);
   const site = useSiteSettings();
   const text = textFor(site.language);
   const [howToOpen, setHowToOpen] = useState(false);
@@ -93,6 +92,8 @@ export default function GameApp() {
   const routeGame = games.find((game) => game.id === gameId) ?? null;
   // "/badges" is the current player's badge collection (with nobody playing, it goes home).
   const onBadgesPage = gameId === "badges" && !topicId && Boolean(currentPlayer);
+  // "/parent" is parent mode, for managing each child's games.
+  const onParentPage = gameId === "parent" && !topicId;
   // A game only opens once the saved player has loaded, the game suits their age, and a parent
   // hasn't turned it off for them.
   const allowed = Boolean(routeGame && loaded && currentPlayer?.age && isGameAvailable(routeGame, currentPlayer));
@@ -173,7 +174,7 @@ export default function GameApp() {
   // current player can't play goes back to the picker (asking who's playing if nobody is).
   useEffect(() => {
     if (!loaded || !gameId) return;
-    if (onBadgesPage) return;
+    if (onBadgesPage || onParentPage) return;
     if (!routeGame) {
       router.replace("/");
       return;
@@ -189,7 +190,7 @@ export default function GameApp() {
     }
     if (topicId && !routeTopic && !(routeGame.id === "dragon" && isDragonPlace(topicId))) router.replace(`/${routeGame.id}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loaded, gameId, topicId, routeGame, allowed, currentPlayer, routeTopic, router, tofuUnlocked, onBadgesPage]);
+  }, [loaded, gameId, topicId, routeGame, allowed, currentPlayer, routeTopic, router, tofuUnlocked, onBadgesPage, onParentPage]);
 
   // A topic without a shuffled hand of words yet gets one dealt.
   useEffect(() => {
@@ -278,8 +279,6 @@ export default function GameApp() {
     if (!problem) finishChoosingPlayer({ name, age });
     return problem;
   }
-
-  const closeParentMode = useCallback(() => setParentModeOpen(false), []);
 
   // Once closed, it stays closed for the rest of the visit (this browser tab's session).
   useEffect(() => {
@@ -475,7 +474,7 @@ export default function GameApp() {
             player={currentPlayer}
             onSwitch={() => setPlayerDialogOpen(true)}
             onBadges={() => router.push("/badges")}
-            onParentMode={() => setParentModeOpen(true)}
+            onParentMode={() => router.push("/parent")}
             onLanguage={site.setLanguage}
             onLogOut={handleLogOut}
           />
@@ -483,7 +482,17 @@ export default function GameApp() {
         <CoinLink coins={rainbowCoins} />
       </SiteHeader>
 
-      {onBadgesPage ? (
+      {onParentPage ? (
+        // Only in the browser, once players have loaded: its grown-up question is random.
+        loaded && (
+          <ParentMode
+            players={players}
+            breadcrumbs={<Breadcrumbs items={[{ label: text.home, href: "/" }, { label: text.parentMode, href: "/parent" }]} />}
+            onSetGameEnabled={setGameEnabled}
+            onDone={() => router.push("/")}
+          />
+        )
+      ) : onBadgesPage ? (
         <BadgeCollection
           player={currentPlayer}
           breadcrumbs={<Breadcrumbs items={[{ label: text.home, href: "/" }, { label: text.myBadges, href: "/badges" }]} />}
@@ -658,7 +667,6 @@ export default function GameApp() {
       {welcomeOpen && (
         <WelcomeDialog
           language={site.language}
-          onLanguage={site.setLanguage}
           onCreate={players.length === 0 ? createFirstPlayer : null}
           onClose={closeWelcome}
         />
@@ -668,13 +676,6 @@ export default function GameApp() {
       )}
       {aboutOpen && selectedGame && hasAbout(selectedGame.id) && (
         <AboutDialog game={selectedGame} onClose={() => setAboutOpen(false)} />
-      )}
-      {parentModeOpen && (
-        <ParentMode
-          players={players}
-          onSetGameEnabled={setGameEnabled}
-          onClose={closeParentMode}
-        />
       )}
       {playerDialogOpen && (
         <PlayerDialog
