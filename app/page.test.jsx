@@ -1331,17 +1331,31 @@ describe("shuffle questions", () => {
 describe("Tofu and Rainbow Village", () => {
   const seedPlayer = (extra) => window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4", ...extra }], current: "Ada" }));
 
-  it("shows Mochi's den with Tofu's house to save up for, until she's unlocked", async () => {
+  it("starts in Mochi's den, whose road sign leads to the village and Tofu's house to save up for", async () => {
     seedPlayer({ coins: 37 });
     setPathname("/dragon");
+    const user = userEvent.setup();
     render(<GameApp />);
     expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent("Mochi the Rainbow Dragon");
+    expect(screen.queryByRole("button", { name: /Unlock Tofu/ })).not.toBeInTheDocument();
+
+    const sign = screen.getByRole("button", { name: "Go to Rainbow Village" });
+    expect(sign.closest(".dragon-stage-wrap")).not.toBeNull();
+    await user.click(sign);
+    expect(currentPathname()).toBe("/dragon/village");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Rainbow Village");
+    expect(document.querySelector(".village-scene")).toHaveAttribute("src", "/images/village/village-start.svg");
+    expect(screen.queryByRole("button", { name: /Park/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Visit Tofu’s House" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Unlock Tofu: 37 of 100 rainbow coins" })).toBeDisabled();
+
+    await user.click(screen.getByRole("button", { name: "Visit Mochi’s House" }));
+    expect(currentPathname()).toBe("/dragon/mochi");
   });
 
-  it("spends 100 coins to unlock Tofu, then meets her in her house", async () => {
+  it("spends 100 coins in the village to unlock Tofu, then meets her in her house", async () => {
     seedPlayer({ coins: 120 });
-    setPathname("/dragon");
+    setPathname("/dragon/village");
     const user = userEvent.setup();
     render(<GameApp />);
     await user.click(await screen.findByRole("button", { name: "Unlock Tofu for 100 rainbow coins" }));
@@ -1360,6 +1374,7 @@ describe("Tofu and Rainbow Village", () => {
     render(<GameApp />);
     expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent("Rainbow Village");
     expect(screen.getByRole("button", { name: "Park, coming soon" })).toBeDisabled();
+    expect(document.querySelector(".village-scene")).toHaveAttribute("src", "/images/village/village.svg");
     expect(screen.queryByRole("button", { name: /Unlock Tofu/ })).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Visit Mochi’s House" }));
@@ -1371,17 +1386,9 @@ describe("Tofu and Rainbow Village", () => {
     await user.click(screen.getByRole("button", { name: "Visit Tofu’s House" }));
     expect(currentPathname()).toBe("/dragon/tofu");
 
-    await user.click(screen.getByRole("button", { name: /Back to Rainbow Village/ }));
-    expect(currentPathname()).toBe("/dragon");
+    await user.click(screen.getByRole("button", { name: "Go to Rainbow Village" }));
+    expect(currentPathname()).toBe("/dragon/village");
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Rainbow Village");
-  });
-
-  it("has no way back to the village before Tofu moves in", async () => {
-    seedPlayer({ coins: 5 });
-    setPathname("/dragon");
-    render(<GameApp />);
-    await screen.findByRole("heading", { level: 1 });
-    expect(screen.queryByRole("button", { name: /Back to Rainbow Village/ })).not.toBeInTheDocument();
   });
 
   it("sends Tofu's address back to the start until she's unlocked", async () => {

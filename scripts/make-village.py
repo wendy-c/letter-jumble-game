@@ -1,5 +1,6 @@
-# Draws Rainbow Village: public/images/village/village.svg (the scene) and the places on it:
-# mochi-house.svg, tofu-house.svg and park.svg. The houses sit on the scene's clearings at
+# Draws Rainbow Village: public/images/village/village-start.svg (the scene before Tofu moves in,
+# with just the two houses' clearings), village.svg (after, with the park's clearing too), and the
+# places on it: mochi-house.svg, tofu-house.svg and park.svg. The houses sit on the clearings at
 # (23%, 64%), (77%, 64%) and the park at (50%, 33%), matching RainbowVillage.jsx.
 # Run from the project root: python3 scripts/make-village.py
 import math, os
@@ -36,7 +37,7 @@ def flower(x, y, color):
     return petals + f'<circle cx="{x}" cy="{y}" r="2.6" fill="#ffd45e" stroke="none"/>'
 
 
-def village():
+def village(with_park):
     b = ['<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d7ecff"/><stop offset="1" stop-color="#fdf0ff"/></linearGradient></defs>',
          '<rect x="-10" y="-10" width="820" height="620" fill="url(#sky)" stroke="none"/>']
     # A big rainbow behind the hills.
@@ -52,9 +53,12 @@ def village():
     # Clearings for the houses and the park.
     b.append('<ellipse cx="184" cy="440" rx="130" ry="34" fill="#c8eed8" stroke="none"/>')
     b.append('<ellipse cx="616" cy="440" rx="130" ry="34" fill="#c8eed8" stroke="none"/>')
-    b.append('<ellipse cx="400" cy="250" rx="120" ry="30" fill="#c8eed8" stroke="none"/>')
-    # A winding path from the front, branching to each place.
-    path = "M400 620Q390 540 400 480Q410 420 400 360Q392 300 400 262M400 480Q300 470 214 446M400 470Q500 466 588 446"
+    if with_park:
+        b.append('<ellipse cx="400" cy="250" rx="120" ry="30" fill="#c8eed8" stroke="none"/>')
+    # A winding path from the front, branching to each house (and on up to the park).
+    path = "M400 620Q390 540 400 480M400 480Q300 470 214 446M400 470Q500 466 588 446"
+    if with_park:
+        path += "M400 480Q410 420 400 360Q392 300 400 262"
     b.append(f'<path d="{path}" fill="none" stroke-width="36"/><path d="{path}" fill="none" stroke="#ffe7b0" stroke-width="28"/>')
     b.append(f'<path d="{path}" fill="none" stroke="#f2c779" stroke-width="3" stroke-dasharray="2 22"/>')
     # Trees, flowers and a little sign.
@@ -71,21 +75,25 @@ def village():
 
 def mochi_house():
     b = []
-    # Chimney puffing rainbow smoke.
-    b.append('<rect x="134" y="34" width="22" height="40" fill="#c4b0f5"/>')
+    # Chimney puffing rainbow smoke, kept inside the picture.
+    b.append('<rect x="132" y="50" width="20" height="36" fill="#c4b0f5"/><rect x="128" y="44" width="28" height="10" rx="3" fill="#b39ef0"/>')
     for i, c in enumerate(["#ff8fa3", "#ffe27a", "#8cc8f2"]):
-        b.append(f'<circle cx="{150 + i * 12}" cy="{26 - i * 10}" r="{8 + i * 2}" fill="{c}" stroke-width="3"/>')
-    b.append('<path d="M40 104h120v80H40Z" fill="#e3d6fb"/>')
+        b.append(f'<circle cx="{146 + i * 11}" cy="{34 - i * 10}" r="{6 + i * 1.5}" fill="{c}" stroke-width="3"/>')
+    b.append('<rect x="40" y="104" width="120" height="80" fill="#e3d6fb"/>')
     # A rainbow-striped roof.
-    b.append('<path d="M24 108Q100 18 176 108Z" fill="#ffffff"/>')
+    b.append('<path d="M24 108Q100 30 176 108Z" fill="#ffffff"/>')
     for i, c in enumerate(RAINBOW[:5]):
         inset = i * 9
-        b.append(f'<path d="M{28 + inset} 106Q100 {24 + inset * 1.7:.0f} {172 - inset} 106" fill="none" stroke="{c}" stroke-width="9"/>')
-    b.append('<path d="M24 108Q100 18 176 108Z" fill="none"/>')
-    b.append('<path d="M84 184v-36a16 16 0 0 1 32 0v36Z" fill="#ff8fa3"/><circle cx="108" cy="166" r="3" fill="#ffd45e" stroke-width="2"/>')
-    b.append('<path d="M58 132q8-10 16 0 8-10 16 0-16 22-16 22t-16-22Z" fill="#ffd3e6" stroke-width="3"/>')
-    b.append('<circle cx="144" cy="134" r="12" fill="#c9e6fb" stroke-width="3"/><path d="M144 122v24M132 134h24" stroke-width="2.5"/>')
-    b.append('<path d="M100 22l3-10 3 10 10 3-10 3-3 10-3-10-10-3Z" fill="#ffd45e" stroke-width="2.5"/>')
+        b.append(f'<path d="M{28 + inset} 106Q100 {36 + inset * 1.6:.0f} {172 - inset} 106" fill="none" stroke="{c}" stroke-width="9"/>')
+    b.append('<path d="M24 108Q100 30 176 108Z" fill="none"/>')
+    b.append('<path d="M100 40l3-9 3 9 9 3-9 3-3 9-3-9-9-3Z" fill="#ffd45e" stroke-width="2.5"/>')
+    # A door in the middle, with a square window each side, level with the walls.
+    b.append('<path d="M84 184v-38a16 16 0 0 1 32 0v38Z" fill="#ff8fa3"/><circle cx="108" cy="166" r="3" fill="#ffd45e" stroke-width="2"/>')
+    for x in (50, 128):
+        b.append(f'<rect x="{x}" y="122" width="24" height="24" rx="3" fill="#c9e6fb" stroke-width="3"/>'
+                 f'<path d="M{x + 12} 122v24M{x} 134h24" stroke-width="2.5"/>'
+                 f'<rect x="{x - 3}" y="146" width="30" height="6" rx="2" fill="#ffd3e6" stroke-width="2.5"/>')
+    b.append('<path d="M88 112q6-7 12 0 6-7 12 0-12 14-12 14t-12-14Z" fill="#ffd3e6" stroke-width="2.5"/>')
     b.append('<path d="M20 186h160" stroke="#9fdcbf" stroke-width="8"/>')
     return svg("\n".join(b), "0 0 200 200")
 
@@ -125,7 +133,7 @@ def park():
 
 
 os.makedirs(OUT, exist_ok=True)
-for name, draw in [("village", village), ("mochi-house", mochi_house), ("tofu-house", tofu_house), ("park", park)]:
+for name, draw in [("village-start", lambda: village(False)), ("village", lambda: village(True)), ("mochi-house", mochi_house), ("tofu-house", tofu_house), ("park", park)]:
     with open(os.path.join(OUT, f"{name}.svg"), "w") as f:
         f.write(draw())
 print("done")

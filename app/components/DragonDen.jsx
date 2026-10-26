@@ -31,10 +31,29 @@ function ActionButton({ action, coins, busy, onUse }) {
   );
 }
 
+// A wooden road sign on a post, its plank an arrow pointing out of the room.
+function VillageSign() {
+  return (
+    <svg viewBox="0 0 160 110" aria-hidden="true">
+      <g stroke="#4b2e22" strokeWidth="4" strokeLinejoin="round" strokeLinecap="round">
+        <path d="M100 50v56" strokeWidth="14" />
+        <path d="M100 50v56" stroke="#b9794a" strokeWidth="7" />
+        <path d="M86 106h28" strokeWidth="5" />
+        <path d="M30 14h118a6 6 0 0 1 6 6v44a6 6 0 0 1-6 6H30L6 42Z" fill="#e0a56a" />
+        <path d="M34 26h108M34 58h108" stroke="#c98a55" strokeWidth="2.5" />
+        <circle cx="140" cy="20" r="2.5" fill="#4b2e22" stroke="none" />
+        <circle cx="140" cy="64" r="2.5" fill="#4b2e22" stroke="none" />
+      </g>
+      <text x="86" y="38" textAnchor="middle" fontSize="15" fontWeight="700" fill="#4b2e22">The Rainbow</text>
+      <text x="86" y="55" textAnchor="middle" fontSize="15" fontWeight="700" fill="#4b2e22">Village</text>
+    </svg>
+  );
+}
+
 // A dragon's den (Mochi's or Tofu's, from dragon-data): spend coins on treats, grooming and
-// activities, or tap her for something free. `banner` shows above the den (e.g. unlocking Tofu),
-// and `onBackToVillage`, once there's a village, adds a button back to it.
-export default function DragonDen({ dragon, coins, onSpendCoins, breadcrumbs, banner = null, onBackToVillage = null, titleAction = null }) {
+// activities, or tap her for something free. A road sign in the corner of the room goes to
+// Rainbow Village (`onGoToVillage`).
+export default function DragonDen({ dragon, coins, onSpendCoins, breadcrumbs, onGoToVillage, titleAction = null }) {
   const { idleMessage, actions: dragonActions, petActions } = dragon;
   const [command, setCommand] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -91,11 +110,6 @@ export default function DragonDen({ dragon, coins, onSpendCoins, breadcrumbs, ba
       <div className="game-heading">
         <div>
           {breadcrumbs}
-          {onBackToVillage && (
-            <button className="village-back" type="button" onClick={onBackToVillage}>
-              <span aria-hidden="true">← 🌈</span> Back to Rainbow Village
-            </button>
-          )}
           <p className="eyebrow">{dragon.eyebrow}</p>
           <div className="title-row">
             <h1 id="game-title" className="game-title">
@@ -107,18 +121,21 @@ export default function DragonDen({ dragon, coins, onSpendCoins, breadcrumbs, ba
         </div>
       </div>
 
-      {banner}
-
       <div className="game-card dragon-card">
         <div className="dragon-stage-wrap">
-          <DragonScene
-            dragon={dragon.id}
-            name={dragon.name}
-            rooms={sections.map(({ kind }) => dragon.rooms[kind])}
-            room={dragon.rooms[section]}
-            command={command}
-            onPet={pet}
-          />
+          <div className="dragon-room">
+            <DragonScene
+              dragon={dragon.id}
+              name={dragon.name}
+              rooms={sections.map(({ kind }) => dragon.rooms[kind])}
+              room={dragon.rooms[section]}
+              command={command}
+              onPet={pet}
+            />
+            <button className="village-sign" type="button" aria-label="Go to Rainbow Village" onClick={onGoToVillage}>
+              <VillageSign />
+            </button>
+          </div>
           <p className="dragon-bubble" aria-live="polite">{message}</p>
         </div>
 

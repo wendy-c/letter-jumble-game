@@ -13,7 +13,6 @@ import CoinLink from "./CoinLink";
 import CompletionDialog, { chineseCompletionText } from "./CompletionDialog";
 import DragonDen from "./DragonDen";
 import RainbowVillage from "./RainbowVillage";
-import TofuUnlock from "./TofuUnlock";
 import { dragons } from "../dragon-data";
 import GameFooter from "./GameFooter";
 import GameHeading from "./GameHeading";
@@ -100,11 +99,12 @@ export default function GameApp() {
   const selectedGame = allowed ? routeGame : null;
   const gameTopics = topicsByGame[selectedGame?.id] ?? [];
   const routeTopic = (topicId && gameTopics.find((topic) => topic.id === topicId)) || null;
-  // The dragon game: "/dragon" is Rainbow Village once Tofu has moved in (Mochi's den before), and
-  // "/dragon/mochi" or "/dragon/tofu" is a dragon's den. Tofu's house needs unlocking first.
+  // The dragon game: "/dragon" is Rainbow Village once Tofu has moved in (Mochi's den before),
+  // "/dragon/village" is always the village, and "/dragon/mochi" or "/dragon/tofu" is a dragon's
+  // den. Tofu's house needs unlocking first, from the village.
   const tofuUnlocked = Boolean(currentPlayer?.unlocks?.includes("tofu"));
   const dragonPlace = selectedGame?.id === "dragon" ? topicId ?? (tofuUnlocked ? "village" : "mochi") : null;
-  const isDragonDen = (place) => place === "mochi" || (place === "tofu" && tofuUnlocked);
+  const isDragonPlace = (place) => place === "village" || place === "mochi" || (place === "tofu" && tofuUnlocked);
   const categoryKey = routeTopic ? `${selectedGame.id}/${routeTopic.id}` : null;
   // Every topic plays its words in a shuffled order, saved per player so leaving and coming
   // back continues the same order. Topics with `wordsPerGame` (CVC, 量詞) deal only that many.
@@ -187,7 +187,7 @@ export default function GameApp() {
       }
       return;
     }
-    if (topicId && !routeTopic && !(routeGame.id === "dragon" && isDragonDen(topicId))) router.replace(`/${routeGame.id}`);
+    if (topicId && !routeTopic && !(routeGame.id === "dragon" && isDragonPlace(topicId))) router.replace(`/${routeGame.id}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loaded, gameId, topicId, routeGame, allowed, currentPlayer, routeTopic, router, tofuUnlocked, onBadgesPage]);
 
@@ -501,8 +501,16 @@ export default function GameApp() {
       ) : !routeTopic ? (
         selectedGame.id === "dragon" ? (
           dragonPlace === "village" ? (
-            <RainbowVillage breadcrumbs={breadcrumbs} titleAction={howToButton} onVisit={(place) => router.push(`/dragon/${place}`)} />
-          ) : isDragonDen(dragonPlace) && (
+            <RainbowVillage
+              breadcrumbs={breadcrumbs}
+              titleAction={howToButton}
+              tofuUnlocked={tofuUnlocked}
+              coins={rainbowCoins}
+              unlockCost={dragons.tofu.unlockCost}
+              onUnlockTofu={unlockTofu}
+              onVisit={(place) => router.push(`/dragon/${place}`)}
+            />
+          ) : isDragonPlace(dragonPlace) && (
             <DragonDen
               titleAction={howToButton}
               key={dragonPlace}
@@ -510,10 +518,7 @@ export default function GameApp() {
               coins={rainbowCoins}
               onSpendCoins={spendCoins}
               breadcrumbs={breadcrumbs}
-              onBackToVillage={tofuUnlocked ? () => router.push("/dragon") : null}
-              banner={dragonPlace === "mochi" && !tofuUnlocked && (
-                <TofuUnlock coins={rainbowCoins} cost={dragons.tofu.unlockCost} onUnlock={unlockTofu} />
-              )}
+              onGoToVillage={() => router.push("/dragon/village")}
             />
           )
         ) : (

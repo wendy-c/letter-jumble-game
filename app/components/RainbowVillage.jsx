@@ -8,9 +8,27 @@ const places = [
   { id: "tofu", label: "Tofu’s House", image: "/images/village/tofu-house.svg", left: 77, bottom: 21 },
 ];
 
-// Rainbow Village: once Tofu has moved in, the dragon game starts here. Each house opens that
-// dragon's den; the park is locked for now.
-export default function RainbowVillage({ breadcrumbs, onVisit, titleAction = null }) {
+// Under Tofu's house until she moves in: unlocks it once there are enough rainbow coins.
+function TofuUnlockButton({ coins, cost, onUnlock }) {
+  const affordable = coins >= cost;
+  return (
+    <button
+      className="tofu-unlock-button"
+      type="button"
+      disabled={!affordable}
+      aria-label={affordable ? `Unlock Tofu for ${cost} rainbow coins` : `Unlock Tofu: ${coins} of ${cost} rainbow coins`}
+      onClick={onUnlock}
+    >
+      <span aria-hidden="true">{affordable ? "Unlock" : "🔒"}</span>
+      <img src="/images/rainbow-coin.svg" alt="" width="18" height="18" />
+      <span aria-hidden="true">{affordable ? cost : `${coins}/${cost}`}</span>
+    </button>
+  );
+}
+
+// Rainbow Village: each house opens that dragon's den. Until Tofu moves in, her house has an
+// unlock button and there's no park yet; after, the park appears, locked for now.
+export default function RainbowVillage({ breadcrumbs, onVisit, tofuUnlocked, coins, unlockCost, onUnlockTofu, titleAction = null }) {
   return (
     <section className="game-wrap village-wrap mx-auto w-full max-w-6xl" aria-labelledby="game-title">
       <div className="menu-heading">
@@ -20,28 +38,37 @@ export default function RainbowVillage({ breadcrumbs, onVisit, titleAction = nul
           <h1 id="game-title">Rainbow <span>Village</span></h1>
           {titleAction}
         </div>
-        <p className="heading-note">Who shall we visit today?</p>
+        <p className="heading-note">
+          {tofuUnlocked ? "Who shall we visit today?" : `Save up ${unlockCost} rainbow coins to meet Mochi’s best friend, Tofu.`}
+        </p>
       </div>
 
       <div className="village-map">
-        <img className="village-scene" src="/images/village/village.svg" alt="" />
-        {places.map(({ id, label, image, left, bottom, locked }) => (
-          <button
-            className={`village-place${locked ? " village-place-locked" : ""}`}
-            type="button"
-            key={id}
-            style={{ left: `${left}%`, bottom: `${bottom}%` }}
-            disabled={locked}
-            aria-label={locked ? `${label}, coming soon` : `Visit ${label}`}
-            onClick={() => onVisit(id)}
-          >
-            <img src={image} alt="" />
-            <span className="village-place-label">
-              {locked && <span aria-hidden="true">🔒 </span>}
-              {label}
-              {locked && <span className="village-place-soon">Coming soon</span>}
-            </span>
-          </button>
+        <img className="village-scene" src={tofuUnlocked ? "/images/village/village.svg" : "/images/village/village-start.svg"} alt="" />
+        {places.filter(({ id }) => tofuUnlocked || id !== "park").map(({ id, label, image, left, bottom, locked }) => (
+          id === "tofu" && !tofuUnlocked ? (
+            <div className="village-place village-place-unlock" key={id} style={{ left: `${left}%`, bottom: `${bottom}%` }}>
+              <img src={image} alt="" />
+              <TofuUnlockButton coins={coins} cost={unlockCost} onUnlock={onUnlockTofu} />
+            </div>
+          ) : (
+            <button
+              className={`village-place${locked ? " village-place-locked" : ""}`}
+              type="button"
+              key={id}
+              style={{ left: `${left}%`, bottom: `${bottom}%` }}
+              disabled={locked}
+              aria-label={locked ? `${label}, coming soon` : `Visit ${label}`}
+              onClick={() => onVisit(id)}
+            >
+              <img src={image} alt="" />
+              <span className="village-place-label">
+                {locked && <span aria-hidden="true">🔒 </span>}
+                {label}
+                {locked && <span className="village-place-soon">Coming soon</span>}
+              </span>
+            </button>
+          )
         ))}
       </div>
 

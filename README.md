@@ -18,7 +18,7 @@ The front page groups the games under four headings:
 | | 中文認字 · 進階篇 | 5–6 | Two- to five-character words: jobs, home, animals, places. |
 | | 量詞配對 | 5–6 | Pick the noun that goes with a measure word (一個橙). 20 questions per round. |
 | | 成語 | 5–6 | Fill the missing character of a four-character idiom, from a picture and its meaning. |
-| Visit Mochi | Mochi the Rainbow Dragon | All | A 3D pet dragon. Spend coins on treats, grooming and activities. Save 100 coins to unlock her shy friend Tofu; then the game opens in Rainbow Village. |
+| Visit Mochi | Mochi the Rainbow Dragon | All | A 3D pet dragon. Spend coins on treats, grooming and activities. A road sign in her room leads to Rainbow Village, where 100 coins unlock her shy friend Tofu's house (and the park appears, coming soon). |
 
 ### How rounds work
 

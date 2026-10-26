@@ -2108,6 +2108,41 @@ h1 span {
   text-align: center;
 }
 
+/* The room (the 3D scene and its road sign), filling the stage. */
+.dragon-room {
+  position: absolute;
+  inset: 0;
+}
+
+/* A wooden road sign in the room's bottom-left corner, pointing out to Rainbow Village. */
+.village-sign {
+  position: absolute;
+  z-index: 2;
+  bottom: 6px;
+  left: 6px;
+  width: clamp(104px, 22%, 150px);
+  border: 0;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  filter: drop-shadow(0 4px 3px rgb(75 46 34 / 25%));
+  font-family: inherit;
+  transform-origin: 60% 100%;
+  transition: transform 160ms ease;
+}
+
+.village-sign svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: "Fredoka", "Arial Rounded MT Bold", Arial, sans-serif;
+}
+
+.village-sign:hover,
+.village-sign:focus-visible {
+  transform: rotate(-4deg) scale(1.05);
+}
+
 .dragon-bubble {
   position: absolute;
   z-index: 1;
@@ -3012,6 +3047,14 @@ a:focus-visible {
     flex-direction: column;
   }
 
+  .dragon-room {
+    position: relative;
+    display: flex;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+  }
+
   .dragon-stage {
     position: relative;
     min-height: 0;
@@ -3454,7 +3497,7 @@ a:focus-visible {
   transition: transform 160ms ease;
 }
 
-.village-place img {
+.village-place > img {
   width: 100%;
   height: auto;
   filter: drop-shadow(0 6px 6px rgb(90 60 160 / 18%));
@@ -3484,7 +3527,7 @@ a:focus-visible {
   cursor: not-allowed;
 }
 
-.village-place-locked img {
+.village-place-locked > img {
   filter: grayscale(1);
   opacity: 0.55;
 }
@@ -3495,77 +3538,10 @@ a:focus-visible {
   font-weight: 600;
 }
 
-/* In a dragon's home once Tofu has moved in: back to the village. */
-.village-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin: 0 0 12px;
-  border: 2px solid var(--line-strong);
-  border-radius: 999px;
-  background: #fff;
-  padding: 6px 14px;
-  box-shadow: 0 3px 0 var(--line-strong);
-  color: var(--magic-dark);
-  cursor: pointer;
-  font: inherit;
-  font-size: 14px;
-  font-weight: 700;
-  transition: transform 140ms ease;
-}
-
-.village-back:hover {
-  transform: translateY(-2px);
-}
-
-/* In Mochi's den until Tofu moves in. */
-.tofu-unlock {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 16px;
-  border: 3px solid #fff;
-  border-radius: 24px;
-  background: linear-gradient(120deg, #fff8df, #fff0f6);
-  padding: 10px 16px;
-  box-shadow: 0 0 0 2px #ffe39a, 0 6px 0 #ffe39a;
-}
-
-.tofu-unlock-house {
-  width: 64px;
-  height: 64px;
-  flex: none;
-}
-
-.tofu-unlock-copy {
-  display: flex;
-  min-width: 0;
-  flex: 1;
-  flex-direction: column;
-  gap: 4px;
-  color: var(--muted);
-  font-size: 14px;
-}
-
-.tofu-unlock-copy strong {
-  color: var(--ink);
-  font-size: 17px;
-}
-
-.tofu-unlock-progress {
-  display: block;
-  height: 8px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: #fff;
-  box-shadow: inset 0 0 0 2px #ffe39a;
-}
-
-.tofu-unlock-progress span {
-  display: block;
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #ffd45e, #f06aa8);
+/* Under Tofu's house in the village until she moves in, in place of its name tag. */
+.village-place-unlock {
+  gap: 2px;
+  cursor: default;
 }
 
 .tofu-unlock-button {
@@ -3592,22 +3568,15 @@ a:focus-visible {
 }
 
 @media (max-width: 700px) {
-  .tofu-unlock {
-    gap: 10px;
-    padding: 8px 10px;
+  .tofu-unlock-button {
+    gap: 4px;
+    padding: 5px 10px;
+    font-size: 13px;
   }
 
-  .tofu-unlock-house {
-    width: 48px;
-    height: 48px;
-  }
-
-  .tofu-unlock-copy {
-    font-size: 12px;
-  }
-
-  .tofu-unlock-copy strong {
-    font-size: 15px;
+  .tofu-unlock-button img {
+    width: 14px;
+    height: 14px;
   }
 
   .village-place {

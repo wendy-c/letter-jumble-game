@@ -50,7 +50,7 @@ describe("Mochi's den on phones", () => {
       cy.visit("/dragon", { onBeforeLoad: seedPlayer });
       cy.get(".dragon-canvas", { timeout: 20000 }).should("be.visible");
 
-      cy.get('.player-chip, .topbar a, nav[aria-label="Breadcrumb"] a, .how-to-open, .dragon-canvas').each(($element) => expectTappable($element[0]));
+      cy.get('.player-chip, .topbar a, nav[aria-label="Breadcrumb"] a, .how-to-open, .village-sign, .dragon-canvas').each(($element) => expectTappable($element[0]));
 
       cy.get('[role="tab"]').each(($tab) => {
         cy.wrap($tab).click({ scrollBehavior: "center" }).should("have.attr", "aria-selected", "true");
@@ -63,6 +63,21 @@ describe("Mochi's den on phones", () => {
       cy.get('[role="tabpanel"] button').last().then(($button) => scrollLikeAFinger($button[0]));
       cy.get('[role="tabpanel"] button').last().click({ scrollBehavior: false });
       cy.get('[aria-label="48 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
+    });
+  });
+});
+
+describe("Rainbow Village before Tofu moves in, on phones", () => {
+  phones.forEach(([phone, width, height]) => {
+    it(`can reach the village and Tofu's unlock on ${phone} (${width}×${height})`, () => {
+      cy.viewport(width, height);
+      cy.visit("/dragon", { onBeforeLoad: (win) => seedPlayer(win, { coins: 120 }) });
+      cy.get(".dragon-canvas", { timeout: 20000 }).should("be.visible");
+      cy.get(".village-sign").then(($sign) => expectTappable($sign[0])).click({ scrollBehavior: false });
+      cy.contains("h1", "Rainbow Village");
+      cy.get(".village-place, .tofu-unlock-button").each(($place) => expectTappable($place[0]));
+      cy.get(".tofu-unlock-button").click({ scrollBehavior: false });
+      cy.contains("h1", "Tofu the Fairy Dragon");
     });
   });
 });

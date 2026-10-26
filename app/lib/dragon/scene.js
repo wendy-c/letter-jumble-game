@@ -759,7 +759,8 @@ function buildGlasses(materials, goggles) {
   return group;
 }
 
-// An open storybook held up to read, with a page that turns.
+// An open storybook with a page that turns. It's built with its pages facing +z; the reader turns
+// it round so the pages face her and the starry front cover faces out.
 function buildBook(materials) {
   const group = new THREE.Group();
   const cover = materials.toon(0xb79cf2);
@@ -774,7 +775,7 @@ function buildBook(materials) {
     group.add(half);
   });
   const star = part(new THREE.OctahedronGeometry(0.08), materials.toon(GOLD), materials, 0.07, 0.012);
-  star.position.set(0.23, 0.05, -0.05);
+  star.position.set(-0.23, 0.05, -0.05);
   group.add(star);
   const turning = new THREE.Group();
   const page = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.56), new THREE.MeshBasicMaterial({ color: 0xfffaf0, side: THREE.DoubleSide }));
@@ -1982,8 +1983,9 @@ const actions = {
       run.glasses = buildGlasses(ctx.materials, false);
       ctx.head.add(run.glasses);
       run.book = buildBook(ctx.materials);
+      // Pages towards Tofu, tilted up to her eyes; the cover faces us.
       run.book.position.set(0, 1.3, 1.2);
-      run.book.rotation.x = -0.35;
+      run.book.rotation.set(0.35, Math.PI, 0);
       ctx.turn.add(run.book);
       run.props.push(run.glasses, run.book);
     }
