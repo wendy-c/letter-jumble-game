@@ -198,10 +198,10 @@ def cloud(x, y, w, h, fill):
 
 def cloudmobile():
     b = []
-    # Rainbow wings peek out behind, then Mochi (waving with one paw), in sunglasses and smiling.
+    # Rainbow wings peek out behind, then Mochi in sunglasses, smiling.
     face = sunglasses() + f'<ellipse cx="50" cy="128" rx="11" ry="6.5" fill="#ffb3c6" stroke="none"/><ellipse cx="150" cy="128" rx="11" ry="6.5" fill="#ffb3c6" stroke="none"/>' \
         + snout(f'<path d="M86 138Q100 158 114 138Z" fill="#ff7f9f" stroke-width="3"/>')
-    b += [wing(-1), wing(1), arm_to(62, 168, 8, 108), body(), ear(-1), ear(1), head(), mane(), horn(), face]
+    b += [wing(-1), wing(1), body(), ear(-1), ear(1), head(), mane(), horn(), face]
     # The cloud car: a big fluffy cloud with a rainbow stripe, a little puff of a headlamp at the front.
     b.append(cloud(-52, 176, 300, 84, "#ffffff"))
     for i, c in enumerate(RAINBOW[:4]):
