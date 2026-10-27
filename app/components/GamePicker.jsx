@@ -1,12 +1,12 @@
 import { gameGroups } from "../games-data";
 import { useText } from "../i18n";
-import ChoiceCard from "./ChoiceCard";
+import GameCard from "./GameCard";
 import GameFooter from "./GameFooter";
-import LetterPattern from "./LetterPattern";
+import MochiGreeting from "./MochiGreeting";
 
-// The front page: the player's games under headings (Phonics, Cambridge YLE training, 中文 and
-// Visit Mochi). A heading with none of their games isn't shown.
-export default function GamePicker({ games, onSelectGame, emptyMessage }) {
+// The front page: Mochi says hello, then the player's games under headings (Phonics, Cambridge YLE
+// training, 中文 and Visit Mochi). A heading with none of their games isn't shown.
+export default function GamePicker({ games, playerName = null, onSelectGame, emptyMessage }) {
   const text = useText();
   const shelves = gameGroups
     .map((group) => ({ group, games: games.filter((game) => game.group === group.id) }))
@@ -14,11 +14,7 @@ export default function GamePicker({ games, onSelectGame, emptyMessage }) {
 
   return (
     <section className="game-wrap category-menu mx-auto w-full max-w-6xl" aria-labelledby="game-title">
-      <div className="menu-heading">
-        <p className="eyebrow">{text.pickerEyebrow}</p>
-        <h1 id="game-title">{text.pickerTitle}</h1>
-        <p className="heading-note">{text.pickerNote}</p>
-      </div>
+      <MochiGreeting playerName={playerName} />
       {games.length === 0 && emptyMessage && <p className="game-picker-empty">{emptyMessage}</p>}
       {shelves.map(({ group, games: shelfGames }) => (
         <section className="game-group" key={group.id} aria-labelledby={`game-group-${group.id}`}>
@@ -27,19 +23,8 @@ export default function GamePicker({ games, onSelectGame, emptyMessage }) {
             {text.groups[group.id] ?? group.name}
           </h2>
           <div className="category-grid game-choice-grid">
-            {shelfGames.map((game, index) => (
-              <ChoiceCard
-                className="game-choice-card"
-                key={game.id}
-                color={game.color}
-                icon={game.icon
-                  ? <img src={game.icon} alt="" width="40" height="40" />
-                  : <LetterPattern letters={game.pattern} />}
-                number={index + 1}
-                name={game.name}
-                note={text.gameNotes[game.id] ?? game.note}
-                onClick={() => onSelectGame(game)}
-              />
+            {shelfGames.map((game) => (
+              <GameCard key={game.id} game={game} note={text.gameNotes[game.id] ?? game.note} onSelect={() => onSelectGame(game)} />
             ))}
           </div>
         </section>

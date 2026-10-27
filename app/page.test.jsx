@@ -84,9 +84,35 @@ async function earnCoin(user) {
 describe("Home", () => {
   it("starts on the game picker", () => {
     render(<GameApp />);
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Learn, Play, Shine!");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("What shall we play today?");
     const gameCards = screen.getAllByRole("button").filter((button) => button.classList.contains("game-choice-card"));
     expect(gameCards.map((card) => card.querySelector(".category-card-name").textContent)).toEqual(["CVC Sounds", "Consonant Digraphs", "Letter Jumble for Starters", "Letter Jumble for Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語", "Mochi the Rainbow Dragon"]);
+  });
+
+  it("has Mochi greet the player by name, and say it out loud when tapped", async () => {
+    const { speakWord } = jest.requireMock("./lib/speech");
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    const user = userEvent.setup();
+    render(<GameApp />);
+    expect(await screen.findByRole("heading", { level: 1, name: "Hi Ada! What shall we play today?" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Hear Mochi say hello" }));
+    expect(speakWord).toHaveBeenLastCalledWith("Hi Ada! What shall we play today?", expect.any(Function));
+  });
+
+  it("shows each game as a big picture, with a speaker that says what it is", async () => {
+    const { speakCantonese, speakWord } = jest.requireMock("./lib/speech");
+    const user = userEvent.setup();
+    render(<GameApp />);
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Hi there! What shall we play today?");
+    const cvc = screen.getByRole("button", { name: /CVC Sounds/ });
+    expect(cvc.querySelector(".game-card-picture img")).toHaveAttribute("src", "/images/game-asset/animals/cat.svg");
+    expect(cvc.querySelector(".category-card-number")).toBeNull();
+
+    await user.click(screen.getByRole("button", { name: "Hear what this game is", description: "CVC Sounds" }));
+    expect(speakWord).toHaveBeenLastCalledWith("CVC Sounds! Find the missing sound.", expect.any(Function));
+    await user.click(screen.getByRole("button", { name: "Hear what this game is", description: "成語" }));
+    expect(speakCantonese).toHaveBeenLastCalledWith("成語，一齊學成語！", expect.any(Function));
+    expect(currentPathname()).toBe("/");
   });
 
   it("plays a Letter Jumble word and earns a rainbow coin", async () => {
@@ -164,7 +190,7 @@ describe("Home", () => {
     await user.click(crumb("CVC Sounds"));
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("CVC Sounds");
     await user.click(crumb("Home"));
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Learn, Play, Shine!");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("What shall we play today?");
   });
 
   it("turns on the spelling guide from the word menu", async () => {
@@ -195,7 +221,7 @@ describe("players", () => {
 
     await user.click(within(dialog).getByRole("button", { name: "Close" }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Learn, Play, Shine!");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("What shall we play today?");
   });
 
   it("creates a new player with a name and age, and opens the chosen game", async () => {
@@ -297,7 +323,7 @@ describe("players", () => {
     await user.click(screen.getByRole("button", { name: /Player options/ }));
     await user.click(screen.getByRole("menuitem", { name: "Log out" }));
 
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Learn, Play, Shine!");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("What shall we play today?");
     expect(screen.queryByRole("button", { name: /Player options/ })).not.toBeInTheDocument();
     expect(storedPlayers()).toEqual({ players: [{ name: "Ada", coins: 0, age: "5-6", decks: animalsDeck }], current: null });
 
@@ -344,7 +370,7 @@ describe("ages", () => {
   it("lists games under Phonics, Cambridge YLE training, 中文 and Visit Mochi, hiding empty headings", () => {
     const groups = () => screen.getAllByRole("heading", { level: 2 }).map((heading) => [
       heading.textContent.replace(heading.querySelector(".game-group-icon").textContent, ""),
-      within(heading.closest("section")).getAllByRole("button").map((card) => card.querySelector(".category-card-name").textContent),
+      [...heading.closest("section").querySelectorAll(".game-choice-card .category-card-name")].map((name) => name.textContent),
     ]);
     const { unmount } = render(<GameApp />);
     expect(groups()).toEqual([
@@ -372,7 +398,7 @@ describe("ages", () => {
     await user.click(screen.getByRole("button", { name: /Letter Jumble for Movers/ }));
     await addPlayer(user, "Mia", "3-4");
 
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Learn, Play, Shine!");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("What shall we play today?");
     expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "中文認字 · 入門篇", "Mochi the Rainbow Dragon"]);
   });
 
@@ -588,7 +614,7 @@ describe("routes", () => {
     act(() => setPathname("/cvc"));
     expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent("CVC Sounds");
     act(() => setPathname("/"));
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Learn, Play, Shine!");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("What shall we play today?");
   });
 
   it("asks who's playing when a game's address is opened with nobody playing, then opens it", async () => {
@@ -1150,7 +1176,7 @@ describe("welcome card", () => {
     await user.click(within(chinese).getByRole("radio", { name: "3-4 歲" }));
     await user.click(within(chinese).getByRole("button", { name: /一起玩吧！/ }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("一起邊玩邊學吧！");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("今天玩甚麼？");
   });
 
   it("isn't shown to a family that already has players", async () => {
@@ -1198,7 +1224,7 @@ describe("site language", () => {
 
     expect(screen.getByRole("menuitemcheckbox", { name: /語言/ })).toHaveAttribute("aria-checked", "true");
     expect(screen.getByRole("menuitem", { name: /我的徽章/ })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("一起邊玩邊學吧！");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("今天玩甚麼？");
     expect(screen.getByRole("heading", { level: 2, name: /劍橋英語考試預備/ })).toBeInTheDocument();
     expect(JSON.parse(window.localStorage.getItem(siteKey))).toMatchObject({ language: "zh" });
 

@@ -504,6 +504,7 @@ export default function GameApp() {
         loaded && (
           <GamePicker
             games={gamesForPlayer(currentPlayer)}
+            playerName={currentPlayer?.name ?? null}
             onSelectGame={requestGame}
             emptyMessage={currentPlayer && text.noGames(currentPlayer.name)}
           />
