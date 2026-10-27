@@ -11,8 +11,8 @@
     "start": "next start",
     "test": "jest",
     "test:e2e": "cypress run",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "storybook": "sh scripts/storybook.sh dev -p 6006",
+    "build-storybook": "sh scripts/storybook.sh build"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
