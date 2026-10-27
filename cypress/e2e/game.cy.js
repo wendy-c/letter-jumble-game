@@ -78,7 +78,7 @@ describe("Movers spelling game", () => {
       cy.get(".letter-slot").eq(index).should("contain.text", letter);
     });
 
-    cy.contains("button", "Check word").click();
+    cy.contains("button", "Check it").click();
     cy.get(".answer-toast").should("contain.text", "Amazing!");
     cy.contains("button", "Next word").should("not.exist");
     cy.get(".player-chip-coins").should("have.text", "1");
@@ -88,7 +88,7 @@ describe("Movers spelling game", () => {
     ["d", "o", "l", "p", "h", "i", "n"].forEach((letter) => {
       cy.get(`.letter-tile[data-letter="${letter}"]`).not(".tile-used").click();
     });
-    cy.contains("button", "Check word").click();
+    cy.contains("button", "Check it").click();
     cy.get(".answer-toast").should("contain.text", "Well done!");
     cy.get(".player-chip-coins").should("have.text", "2");
     cy.contains("03 / 13");
@@ -100,7 +100,7 @@ describe("Movers spelling game", () => {
     ["b", "a", "t"].forEach((letter) => {
       cy.get(`.letter-tile[data-letter="${letter}"]`).not(".tile-used").click();
     });
-    cy.contains("button", "Check word").click();
+    cy.contains("button", "Check it").click();
     cy.get(".player-chip-coins").should("have.text", "1");
     storedPlayers().should("deep.equal", {
       players: [{ name: "Ada", coins: 1, age: "5-6", decks: { "letter-jumble/animals": [...Array(13).keys()] }, results: { "letter-jumble/animals": [true] } }],
@@ -133,7 +133,7 @@ describe("Movers spelling game", () => {
       cy.get(`.letter-tile[data-letter="${letter}"]`).not(".tile-used").click();
     });
 
-    cy.contains("button", "Check word").click();
+    cy.contains("button", "Check it").click();
     cy.contains("Not quite");
     cy.get(".player-chip-coins").should("have.text", "0");
   });
@@ -297,7 +297,7 @@ describe("Movers spelling game", () => {
   it("gives feedback when the answer is not yet complete", () => {
     visitLetterJumble();
     cy.contains("button", "Animals").click();
-    cy.contains("button", "Check word").click();
+    cy.contains("button", "Check it").click();
     cy.contains("Fill every box before you check.");
   });
 
@@ -339,7 +339,7 @@ describe("CVC sounds game", () => {
     cy.get('[role="switch"]').should("not.exist");
 
     cy.get('.letter-tile[data-letter="c"]').click();
-    cy.contains("button", "Check word").click();
+    cy.contains("button", "Check it").click();
     cy.get(".answer-toast").should("contain.text", "Amazing!");
     cy.contains("02 / 12");
   });
@@ -357,7 +357,7 @@ describe("CVC sounds game", () => {
     cy.get('.letter-tile[data-letter="a"]').click();
     cy.get(".letter-slot").should("contain.text", "a");
     cy.get('.letter-tile[data-letter="o"]').should("not.have.class", "tile-used");
-    cy.contains("button", "Check word").click();
+    cy.contains("button", "Check it").click();
     cy.get(".answer-toast").should("exist");
   });
 
@@ -366,12 +366,12 @@ describe("CVC sounds game", () => {
     cy.get(".letter-given").then(($letters) => {
       expect([...$letters].map((letter) => letter.textContent)).to.deep.equal(["c", "a"]);
     });
-    cy.contains("button", "Check word").click();
+    cy.contains("button", "Check it").click();
     cy.contains("Fill every box before you check.");
     cy.get('[role="dialog"]').should("not.exist");
 
     cy.get('.letter-tile[data-letter="x"]').click();
-    cy.contains("button", "Check word").click();
+    cy.contains("button", "Check it").click();
     cy.contains('[role="dialog"]', "The answer is…").should("contain.text", "cat").within(() => {
       cy.contains("button", "Next question").click();
     });
@@ -409,7 +409,7 @@ describe("players", () => {
     ["b", "a", "t"].forEach((letter) => {
       cy.get(`.letter-tile[data-letter="${letter}"]`).not(".tile-used").click();
     });
-    cy.contains("button", "Check word").click();
+    cy.contains("button", "Check it").click();
     cy.contains("02 / 13");
 
     cy.get('button[aria-label$="Player options"]').click();

@@ -85,7 +85,7 @@ async function earnCoin(user) {
   for (const letter of ["b", "a", "t"]) {
     await user.click(screen.getByRole("button", { name: `Letter ${letter}` }));
   }
-  await user.click(screen.getByRole("button", { name: /Check word/ }));
+  await user.click(screen.getByRole("button", { name: /Check it/ }));
   await nextQuestion();
 }
 
@@ -138,7 +138,7 @@ describe("Home", () => {
     for (const letter of ["b", "a", "t"]) {
       await user.click(screen.getByRole("button", { name: `Letter ${letter}` }));
     }
-    await user.click(screen.getByRole("button", { name: /Check word/ }));
+    await user.click(screen.getByRole("button", { name: /Check it/ }));
 
     const toast = screen.getByRole("status");
     expect(toast).toHaveTextContent("Amazing!");
@@ -162,14 +162,14 @@ describe("Home", () => {
     render(<GameApp />);
     await openGame(user, "Letter Jumble for Movers", "Animals");
 
-    await user.click(screen.getByRole("button", { name: /Check word/ }));
+    await user.click(screen.getByRole("button", { name: /Check it/ }));
     expect(screen.getByText("Fill every box before you check.")).toBeInTheDocument();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
     for (const letter of ["t", "a", "b"]) {
       await user.click(screen.getByRole("button", { name: `Letter ${letter}` }));
     }
-    await user.click(screen.getByRole("button", { name: /Check word/ }));
+    await user.click(screen.getByRole("button", { name: /Check it/ }));
 
     const reveal = screen.getByRole("dialog", { name: "The answer is…" });
     expect(reveal).toHaveTextContent("bat");
@@ -197,7 +197,7 @@ describe("Home", () => {
     expect(screen.getByRole("button", { name: "Letter 2 of 3, a" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Letter o" })).not.toHaveClass("tile-used");
 
-    await user.click(screen.getByRole("button", { name: /Check word/ }));
+    await user.click(screen.getByRole("button", { name: /Check it/ }));
     expect(screen.getByRole("status")).toHaveTextContent("Amazing!");
   });
 
@@ -469,7 +469,7 @@ describe("progress", () => {
     for (const letter of ["w", "h", "a", "l", "e"]) {
       await user.click(screen.getByRole("button", { name: `Letter ${letter}` }));
     }
-    await user.click(screen.getByRole("button", { name: /Check word/ }));
+    await user.click(screen.getByRole("button", { name: /Check it/ }));
     await nextQuestion();
 
     const praise = await screen.findByRole("dialog", { name: "You did it!" });
@@ -493,7 +493,7 @@ describe("progress", () => {
     for (const letter of ["w", "h", "a", "l", "e"]) {
       await user.click(screen.getByRole("button", { name: `Letter ${letter}` }));
     }
-    await user.click(screen.getByRole("button", { name: /Check word/ }));
+    await user.click(screen.getByRole("button", { name: /Check it/ }));
     await nextQuestion();
 
     const praise = await screen.findByRole("dialog", { name: "You did it!" });
@@ -516,7 +516,7 @@ describe("progress", () => {
     for (const letter of ["w", "h", "a", "l", "e"]) {
       await user.click(screen.getByRole("button", { name: `Letter ${letter}` }));
     }
-    await user.click(screen.getByRole("button", { name: /Check word/ }));
+    await user.click(screen.getByRole("button", { name: /Check it/ }));
     await nextQuestion();
 
     const praise = (await screen.findByRole("dialog", { name: "You did it!" }));
@@ -585,11 +585,11 @@ describe("progress", () => {
     await openGame(user, "CVC Sounds", "Beginning Sound");
 
     await user.click(screen.getByRole("button", { name: "Letter j" }));
-    await user.click(screen.getByRole("button", { name: /Check word/ }));
+    await user.click(screen.getByRole("button", { name: /Check it/ }));
     expect(sounds.correct).not.toHaveBeenCalled();
 
     await user.click(screen.getByRole("button", { name: "Letter c" }));
-    await user.click(screen.getByRole("button", { name: /Check word/ }));
+    await user.click(screen.getByRole("button", { name: /Check it/ }));
     expect(sounds.correct).toHaveBeenCalledTimes(1);
   });
 });
@@ -766,7 +766,7 @@ describe("CVC shuffling", () => {
     expect(await screen.findByLabelText("Word 12 of 12")).toBeInTheDocument();
     expect(screen.getByLabelText("Letter 2 of 3, e")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Letter b" }));
-    await user.click(screen.getByRole("button", { name: /Check word/ }));
+    await user.click(screen.getByRole("button", { name: /Check it/ }));
     await nextQuestion();
 
     const praise = (await screen.findByRole("dialog", { name: "You did it!" }));
@@ -882,7 +882,7 @@ describe("R & L Blends", () => {
     expect(gap).toHaveClass("letter-slot-wide");
     expect(within(screen.getByLabelText("Blend choices")).getAllByRole("button")).toHaveLength(4);
     await user.click(screen.getByRole("button", { name: "Letter br" }));
-    await user.click(screen.getByRole("button", { name: /Check word/ }));
+    await user.click(screen.getByRole("button", { name: /Check it/ }));
     expect(screen.getByRole("status")).toHaveTextContent("!");
     expect(storedPlayers().players[0].results).toEqual({ "blends/r-blends": [true] });
   });
@@ -919,7 +919,7 @@ describe("Consonant Digraphs", () => {
 
     await user.click(screen.getByRole("button", { name: "Letter ch" }));
     expect(screen.getByLabelText("Letter 1 of 5, ch")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: /Check word/ }));
+    await user.click(screen.getByRole("button", { name: /Check it/ }));
     expect(screen.getByRole("status")).toHaveTextContent("!");
     expect(storedPlayers().players[0].coins).toBe(1);
   });
@@ -931,7 +931,7 @@ describe("Consonant Digraphs", () => {
     await user.click(screen.getByRole("button", { name: /Consonant Digraphs/ }));
     await user.click(screen.getByRole("button", { name: /ch · sh · th/ }));
     await user.click(screen.getByRole("button", { name: "Letter sh" }));
-    await user.click(screen.getByRole("button", { name: /Check word/ }));
+    await user.click(screen.getByRole("button", { name: /Check it/ }));
     expect(screen.getByRole("dialog", { name: "The answer is…" })).toHaveTextContent("chair");
     expect(storedPlayers().players[0].coins).toBe(0);
   });
@@ -962,7 +962,7 @@ describe("Letter Jumble for Starters", () => {
     for (const letter of ["c", "a", "t"]) {
       await user.click(screen.getByRole("button", { name: `Letter ${letter}` }));
     }
-    await user.click(screen.getByRole("button", { name: /Check word/ }));
+    await user.click(screen.getByRole("button", { name: /Check it/ }));
     expect(screen.getByRole("status")).toHaveTextContent("!");
     expect(storedPlayers().players[0].coins).toBe(1);
   });
@@ -986,7 +986,7 @@ describe("Letter Jumble for Starters", () => {
     for (const letter of ["t", "s", "h", "i", "r", "t"]) {
       await user.click(screen.getAllByRole("button", { name: `Letter ${letter}` }).find((tile) => !tile.disabled && !tile.classList.contains("tile-used")));
     }
-    await user.click(screen.getByRole("button", { name: /Check word/ }));
+    await user.click(screen.getByRole("button", { name: /Check it/ }));
     expect(screen.getByRole("status")).toHaveTextContent("!");
   });
 });
@@ -1383,7 +1383,7 @@ describe("site language", () => {
     // Inside an English game, the game's words stay English; the breadcrumb is the site's.
     await user.click(screen.getByRole("button", { name: /Letter Jumble for Movers/ }));
     await user.click(screen.getByRole("button", { name: /Animals/ }));
-    expect(screen.getByRole("button", { name: /Check word/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Check it/ })).toBeInTheDocument();
     expect(within(screen.getByRole("navigation", { name: "Breadcrumb" })).getAllByRole("listitem")[0]).toHaveTextContent("主頁");
   });
 });

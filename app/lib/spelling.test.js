@@ -3,7 +3,7 @@ import { getSpellingGuides, scramble, seededRandom, shuffled, shuffledDeck, slot
 describe("getSpellingGuides", () => {
   it("marks consonant teams, vowel teams and single sounds across words", () => {
     expect(getSpellingGuides("swimming pool")).toEqual([
-      "consonant", "consonant", "other", "other", "other", "other", "other", "other",
+      "consonant", "consonant", "other", "other", "other", "other", "consonant", "consonant",
       "other", "vowel", "vowel", "other",
     ]);
   });
