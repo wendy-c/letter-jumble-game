@@ -4191,3 +4191,176 @@ a:focus-visible {
   font-weight: 700;
 }
 
+
+/* ---------- The new family's tour ---------- */
+
+/* Covers the page (so it can't be tapped mid-tour); the spotlight dims all but one part of it. */
+.tutorial-overlay {
+  position: fixed;
+  z-index: 35;
+  inset: 0;
+}
+
+.tutorial-spotlight {
+  position: fixed;
+  border-radius: 24px;
+  box-shadow: 0 0 0 4px #fff, 0 0 0 9999px rgb(61 43 99 / 55%);
+  pointer-events: none;
+  transition: top 260ms ease, left 260ms ease, width 260ms ease, height 260ms ease;
+}
+
+.tutorial-dim {
+  position: fixed;
+  inset: 0;
+  background: rgb(61 43 99 / 55%);
+}
+
+.tutorial-card {
+  position: fixed;
+  width: min(340px, calc(100vw - 32px));
+  border: 3px solid #fff;
+  border-radius: 26px;
+  background: linear-gradient(180deg, #f6f0ff, #fffdfb 55%);
+  padding: 20px 20px 16px;
+  box-shadow: 0 0 0 2px var(--line), 0 18px 40px rgb(61 43 99 / 28%);
+  animation: float-in 240ms ease-out both;
+}
+
+.tutorial-card-centred {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: none;
+}
+
+.tutorial-card-mochi {
+  position: absolute;
+  top: -46px;
+  right: 14px;
+  width: 72px;
+}
+
+.tutorial-count {
+  margin: 0;
+  color: var(--magic);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.tutorial-card h2 {
+  margin: 4px 64px 6px 0;
+  color: var(--magic-dark);
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.tutorial-card p:not(.tutorial-count) {
+  margin: 0;
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.tutorial-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.tutorial-actions button {
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.tutorial-skip {
+  margin-right: auto;
+  background: none;
+  padding: 8px 4px;
+  color: var(--muted);
+}
+
+.tutorial-back {
+  border: 2px solid var(--line-strong) !important;
+  background: #fff;
+  padding: 7px 14px;
+  color: var(--magic-dark);
+}
+
+.tutorial-next {
+  background: linear-gradient(180deg, #f77fb6, var(--pink));
+  padding: 9px 16px;
+  box-shadow: 0 3px 0 var(--pink-shadow);
+  color: #fff;
+}
+
+/* The first step: Mochi asks which language they'd like. */
+.tutorial-language {
+  width: min(100%, 440px);
+  text-align: center;
+}
+
+.tutorial-mochi {
+  width: 130px;
+  margin: 0 auto 6px;
+}
+
+.tutorial-language h2 {
+  margin: 0;
+  color: var(--magic-dark);
+  font-size: 24px;
+  line-height: 1.25;
+}
+
+.tutorial-language-zh {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.tutorial-language-choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.tutorial-language-choice {
+  border: 3px solid var(--line-strong);
+  border-radius: 20px;
+  background: #fff;
+  padding: 16px 10px;
+  box-shadow: 0 4px 0 var(--line-strong);
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  font-size: 20px;
+  font-weight: 700;
+  transition: transform 140ms ease;
+}
+
+.tutorial-language-choice:hover,
+.tutorial-language-current {
+  border-color: var(--pink);
+  box-shadow: 0 4px 0 var(--pink-shadow);
+}
+
+.tutorial-language-choice:hover {
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tutorial-spotlight {
+    transition: none;
+  }
+
+  .tutorial-card {
+    animation: none;
+  }
+}

@@ -20,6 +20,8 @@ export const Home = at("/");
 export const HomeAge5To6 = at("/", { players: [elly, ada] });
 export const WelcomeNewFamily = at("/", { players: [], welcomeClosed: false });
 export const HomeInChinese = at("/", { language: "zh" });
+// A brand-new family: make a player on the welcome card to start the tour.
+export const TourForANewFamily = at("/", { players: [], welcomeClosed: false, howToSeen: [] });
 
 export const CvcSounds = at("/cvc");
 export const CvcBeginningSound = at("/cvc/beginning-sound");

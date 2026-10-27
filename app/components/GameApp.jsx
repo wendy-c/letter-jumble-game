@@ -34,6 +34,7 @@ import { usePlayers } from "../lib/use-players";
 import { useSiteSettings } from "../lib/use-site-settings";
 import HowToPlayDialog, { AboutButton, AboutDialog, HowToPlayButton, hasAbout, hasHowToPlay, howToLanguage } from "./HowToPlayDialog";
 import { LanguageContext, textFor } from "../i18n";
+import Tutorial from "./Tutorial";
 import WelcomeDialog from "./WelcomeDialog";
 
 const rewardMessages = ["Amazing!", "Well done!", "You did it!", "Fantastic!", "Brilliant!"];
@@ -87,6 +88,8 @@ export default function GameApp() {
   // The welcome card: shown to a new family (no players yet) when they arrive, and whenever the
   // logo is tapped.
   const [welcomeOpen, setWelcomeOpen] = useState(false);
+  // The new family's tour of the app: null, or its step (0 asks which language they'd like).
+  const [tutorialStep, setTutorialStep] = useState(null);
   const welcomedRef = useRef(false);
   const rainbowCoins = currentPlayer?.coins ?? 0;
 
@@ -315,11 +318,22 @@ export default function GameApp() {
     setWelcomeOpen(true);
   }
 
-  // The welcome card's form makes a new family's first player.
+  // The welcome card's form makes a new family's first player, then (once per browser) the tour
+  // of the app starts on the front page.
   function createFirstPlayer(name, age) {
     const problem = createPlayer(name, age);
-    if (!problem) closeWelcome();
-    return problem;
+    if (problem) return problem;
+    closeWelcome();
+    if (!site.tutorialSeen) {
+      setTutorialStep(0);
+      router.push("/");
+    }
+    return null;
+  }
+
+  function finishTutorial() {
+    site.markTutorialSeen();
+    setTutorialStep(null);
   }
 
   // Spends the coins to move Tofu into Rainbow Village, then goes to meet her.
@@ -692,6 +706,9 @@ export default function GameApp() {
           language={gameLanguage}
           onClose={closeWordMenu}
         />
+      )}
+      {tutorialStep !== null && !selectedGame && !onBadgesPage && !onParentPage && (
+        <Tutorial step={tutorialStep} language={site.language} onLanguage={site.setLanguage} onStep={setTutorialStep} onDone={finishTutorial} />
       )}
       {welcomeOpen && (
         <WelcomeDialog

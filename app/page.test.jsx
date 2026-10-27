@@ -22,11 +22,11 @@ const coinsLabel = (count) => new RegExp(`, ${count} rainbow coins?\\. Player op
 const playersKey = "letter-jumble:players";
 const whoIsPlaying = /Who.s playing/;
 
-// Most tests skip the welcome and how-to-play cards, as if they'd been seen before.
+// Most tests skip the welcome card, the tour and the how-to-play cards, as if they'd been seen before.
 const siteKey = "letter-jumble:site";
 const welcomeClosedKey = "letter-jumble:welcome-closed";
 const seenEverything = () => {
-  window.localStorage.setItem(siteKey, JSON.stringify({ language: "en", howToSeen: games.map((game) => game.id) }));
+  window.localStorage.setItem(siteKey, JSON.stringify({ language: "en", howToSeen: games.map((game) => game.id), tutorialSeen: true }));
   window.sessionStorage.setItem(welcomeClosedKey, "true");
 };
 
@@ -1220,6 +1220,66 @@ describe("badges", () => {
   });
 });
 
+describe("tour for a new family", () => {
+  beforeEach(() => {
+    window.sessionStorage.clear();
+    window.localStorage.setItem(siteKey, JSON.stringify({ language: "en", howToSeen: [] }));
+  });
+
+  async function createFirstPlayer(user) {
+    const welcome = await screen.findByRole("dialog", { name: "Welcome to Rainbow Academy!" });
+    await user.type(within(welcome).getByRole("textbox"), "Ada");
+    await user.click(within(welcome).getByRole("radio", { name: "3-4 years old" }));
+    await user.click(within(welcome).getByRole("button", { name: /Let’s Start/ }));
+  }
+
+  it("asks which language they'd like, then points out the books, Mochi, the player menu and Parent mode", async () => {
+    const user = userEvent.setup();
+    render(<GameApp />);
+    await createFirstPlayer(user);
+
+    const language = screen.getByRole("dialog", { name: "Hello, what language do you prefer?" });
+    expect(language).toHaveTextContent("你好！你想用哪種語言？");
+    await user.click(within(language).getByRole("button", { name: "繁體中文" }));
+
+    // The site and the rest of the tour are in Chinese now.
+    expect(JSON.parse(window.localStorage.getItem(siteKey))).toMatchObject({ language: "zh" });
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("今天玩甚麼？");
+    expect(screen.getByRole("dialog", { name: "選一本魔法書！" })).toHaveTextContent("1 / 4");
+    await user.click(screen.getByRole("button", { name: /下一步/ }));
+    expect(screen.getByRole("dialog", { name: "探望 Mochi" })).toHaveTextContent("彩虹金幣");
+    await user.click(screen.getByRole("button", { name: /上一步/ }));
+    expect(screen.getByRole("dialog", { name: "選一本魔法書！" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /下一步/ }));
+    await user.click(screen.getByRole("button", { name: /下一步/ }));
+    expect(screen.getByRole("dialog", { name: "玩家選單" })).toHaveTextContent("轉換玩家");
+    await user.click(screen.getByRole("button", { name: /下一步/ }));
+    expect(screen.getByRole("dialog", { name: "家長模式" })).toHaveTextContent("其他年齡組別");
+    await user.click(screen.getByRole("button", { name: /開始玩吧/ }));
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(JSON.parse(window.localStorage.getItem(siteKey))).toMatchObject({ tutorialSeen: true });
+  });
+
+  it("can be skipped, in English, and isn't shown again", async () => {
+    const user = userEvent.setup();
+    const { unmount } = render(<GameApp />);
+    await createFirstPlayer(user);
+    await user.click(screen.getByRole("button", { name: "English" }));
+    expect(screen.getByRole("dialog", { name: "Pick a magic book!" })).toHaveTextContent("1 of 4");
+    await user.click(screen.getByRole("button", { name: "Skip" }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(JSON.parse(window.localStorage.getItem(siteKey))).toMatchObject({ language: "en", tutorialSeen: true });
+    unmount();
+
+    // A new visit: no welcome card or tour, now there's a player and the tour was seen.
+    window.sessionStorage.clear();
+    render(<GameApp />);
+    await screen.findByRole("heading", { level: 1, name: /What shall we play today/ });
+    expect(screen.queryByRole("dialog", { name: /what language/ })).not.toBeInTheDocument();
+  });
+});
+
 describe("welcome card", () => {
   beforeEach(() => window.sessionStorage.clear());
 
@@ -1246,7 +1306,7 @@ describe("welcome card", () => {
   });
 
   it("greets in 繁體 once the site's language has been changed in the player menu", async () => {
-    window.localStorage.setItem(siteKey, JSON.stringify({ language: "zh", howToSeen: [] }));
+    window.localStorage.setItem(siteKey, JSON.stringify({ language: "zh", howToSeen: [], tutorialSeen: true }));
     const user = userEvent.setup();
     render(<GameApp />);
     const chinese = await screen.findByRole("dialog", { name: "歡迎來到 Rainbow Academy！" });

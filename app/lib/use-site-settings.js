@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 
-// Settings for this browser (not per player): the site's language, and which games' how-to-play
-// cards have been seen.
+// Settings for this browser (not per player): the site's language, which games' how-to-play cards
+// have been seen, and whether the new family's tour of the app has been shown.
 export const siteStorageKey = "letter-jumble:site";
 export const languages = ["en", "zh"];
 
-const defaults = { language: "en", howToSeen: [] };
+const defaults = { language: "en", howToSeen: [], tutorialSeen: false };
 
 function readSettings() {
   try {
@@ -13,6 +13,7 @@ function readSettings() {
     return {
       language: languages.includes(stored?.language) ? stored.language : defaults.language,
       howToSeen: Array.isArray(stored?.howToSeen) ? stored.howToSeen.filter((id) => typeof id === "string") : [],
+      tutorialSeen: stored?.tutorialSeen === true,
     };
   } catch {
     return defaults;
@@ -45,6 +46,7 @@ export function useSiteSettings() {
     loaded,
     ...settings,
     setLanguage: (language) => setSettings((current) => ({ ...current, language })),
+    markTutorialSeen: () => setSettings((current) => ({ ...current, tutorialSeen: true })),
     markHowToSeen: (gameId) => setSettings((current) => (
       current.howToSeen.includes(gameId) ? current : { ...current, howToSeen: [...current.howToSeen, gameId] }
     )),
