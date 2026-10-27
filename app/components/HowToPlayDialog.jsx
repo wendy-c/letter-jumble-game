@@ -16,7 +16,23 @@ const pictureGame = (en, zh) => ({
   zh: [...zh, oneTry.zh],
 });
 
-// How to play each game: a few steps, each with an icon, in English and Chinese.
+// 中文認字 (both 入門篇 and 進階篇): three plain numbered steps, no icons.
+const chineseCharacters = {
+  numbered: true,
+  en: [
+    "Read it, and tap the speaker for a hint.",
+    "Tap the right picture.",
+    "A right answer earns a rainbow coin, and getting them all right earns a badge!",
+  ],
+  zh: [
+    "讀一讀，按喇叭聽聽提示。",
+    "按一按正確的圖畫。",
+    "答對可得到彩虹金幣，全部答對更可得到徽章！",
+  ],
+};
+
+// How to play each game: a few steps, each with an icon, in English and Chinese (or, with
+// `numbered`, plain numbered steps).
 const howTo = {
   digraphs: spelling(
     [["🔤", "Tap the two letters (like sh) that fill the gap."]],
@@ -30,14 +46,8 @@ const howTo = {
     [["🔤", "Tap the letters in spelling order to fill the boxes. Tap a box to take its letter back out."]],
     [["🔤", "按次序按字母，把格子填滿。按格子可以拿走字母。"]],
   ),
-  chinese: pictureGame(
-    [["👀", "Read the Chinese character."], ["🔊", "Need help? Tap the speaker to hear it in Cantonese."], ["👆", "Tap the picture that matches."]],
-    [["👀", "讀一讀這個中文字。"], ["🔊", "不會讀？按喇叭聽聽廣東話讀音。"], ["👆", "按一按正確的圖畫。"]],
-  ),
-  "chinese-advanced": pictureGame(
-    [["👀", "Read the Chinese word."], ["🔊", "Need help? Tap the speaker to hear it in Cantonese."], ["👆", "Tap the picture that matches."]],
-    [["👀", "讀一讀這個詞語。"], ["🔊", "不會讀？按喇叭聽聽廣東話讀音。"], ["👆", "按一按正確的圖畫。"]],
-  ),
+  chinese: chineseCharacters,
+  "chinese-advanced": chineseCharacters,
   "measure-words": pictureGame(
     [["👀", "Read the measure word, like 一個 or 一枝."], ["👆", "Tap the thing that goes with it."], ["🔊", "Tap the speaker to hear it in Cantonese."]],
     [["👀", "讀一讀量詞，例如「一個」、「一枝」。"], ["👆", "按一按配合這個量詞的名詞。"], ["🔊", "按喇叭聽聽廣東話讀音。"]],
@@ -181,6 +191,7 @@ const buttons = { en: "Got it, let’s go!", zh: "明白了，開始吧！" };
 // tapped. `language` is howToLanguage's choice for the game; `topicId` is the topic being played.
 export default function HowToPlayDialog({ game, topicId = null, language, onClose }) {
   const steps = howTo[game.id]?.[language] ?? [];
+  const numbered = Boolean(howTo[game.id]?.numbered);
 
   useEffect(() => {
     function handleKeyDown(event) {
@@ -195,16 +206,22 @@ export default function HowToPlayDialog({ game, topicId = null, language, onClos
       <div className="player-dialog how-to-dialog" role="dialog" aria-modal="true" aria-labelledby="how-to-title">
         {game.id === "cvc" ? <CvcHowTo topicId={topicId} onClose={onClose} /> : (
         <div lang={language === "zh" ? "zh-Hant-HK" : "en"}>
-          <p className="eyebrow">{language === "zh" ? "遊戲玩法" : "HOW TO PLAY"}</p>
+          {!numbered && <p className="eyebrow">{language === "zh" ? "遊戲玩法" : "HOW TO PLAY"}</p>}
           <h2 id="how-to-title">{titles[language](game.name)}</h2>
-          <ol className="how-to-steps">
-            {steps.map(([icon, step]) => (
-              <li key={step}>
-                <span className="how-to-icon" aria-hidden="true">{icon}</span>
-                <span>{step}</span>
-              </li>
-            ))}
-          </ol>
+          {numbered ? (
+            <ol className="how-to-numbered">
+              {steps.map((step) => <li key={step}>{step}</li>)}
+            </ol>
+          ) : (
+            <ol className="how-to-steps">
+              {steps.map(([icon, step]) => (
+                <li key={step}>
+                  <span className="how-to-icon" aria-hidden="true">{icon}</span>
+                  <span>{step}</span>
+                </li>
+              ))}
+            </ol>
+          )}
           <button className="reward-continue completion-button how-to-button" type="button" autoFocus onClick={onClose}>
             {buttons[language]} <span aria-hidden="true">→</span>
           </button>
@@ -215,7 +232,7 @@ export default function HowToPlayDialog({ game, topicId = null, language, onClos
   );
 }
 
-// A round "?" button beside a game's title that shows how to play it.
+// A round "?" button beside a module's title (and the dragons' homes) that shows how to play.
 export function HowToPlayButton({ language, onClick }) {
   return (
     <button className="how-to-open" type="button" aria-label={language === "zh" ? "玩法" : "How to play"} title={language === "zh" ? "玩法" : "How to play"} onClick={onClick}>

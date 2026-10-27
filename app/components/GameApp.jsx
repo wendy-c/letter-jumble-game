@@ -448,7 +448,8 @@ export default function GameApp() {
     (howToOpen || (startingToPlay && !site.howToSeen.includes(selectedGame.id)));
   const gameLanguage = selectedGame ? howToLanguage(selectedGame.id, site.language) : site.language;
   const howToButton = gameHasHowTo && <HowToPlayButton language={gameLanguage} onClick={() => setHowToOpen(true)} />;
-  // A game's list of topics shows "About this game" (an info button) where it has one.
+  // A game's list of topics shows "About this game" (an info button) where it has one; the "?"
+  // is only beside a module's title (and in the dragons' homes).
   const aboutButton = selectedGame && hasAbout(selectedGame.id) && <AboutButton onClick={() => setAboutOpen(true)} />;
   function closeHowTo() {
     site.markHowToSeen(selectedGame.id);
@@ -532,7 +533,7 @@ export default function GameApp() {
           )
         ) : (
           <TopicMenu
-            titleAction={aboutButton || howToButton}
+            titleAction={aboutButton || null}
             isCvc={isCvc}
             isDigraph={isDigraph}
             isChinese={isChinese}

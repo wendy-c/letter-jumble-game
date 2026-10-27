@@ -1264,6 +1264,33 @@ describe("how to play", () => {
     expect(tiles.map((tile) => tile.textContent).join("")).toBe("aeiou");
   });
 
+  it("has the ? only beside a module's title, not on a game's list of topics", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    window.localStorage.setItem(siteKey, JSON.stringify({ language: "en", howToSeen: ["chinese"] }));
+    setPathname("/chinese");
+    const user = userEvent.setup();
+    render(<GameApp />);
+    expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent("中文認字");
+    expect(screen.queryByRole("button", { name: "玩法" })).not.toBeInTheDocument();
+
+    await user.click(screen.getAllByRole("button", { name: /顏色/ })[0]);
+    expect(screen.getByRole("button", { name: "玩法" })).toBeInTheDocument();
+  });
+
+  it("explains both 中文認字 games in three numbered steps, without icons", async () => {
+    const steps = ["讀一讀，按喇叭聽聽提示。", "按一按正確的圖畫。", "答對可得到彩虹金幣，全部答對更可得到徽章！"];
+    for (const [age, path, title] of [["3-4", "/chinese/colours", "中文認字 · 入門篇：玩法"], ["5-6", "/chinese-advanced/jobs", "中文認字 · 進階篇：玩法"]]) {
+      window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age }], current: "Ada" }));
+      setPathname(path);
+      const { unmount } = render(<GameApp />);
+      const howTo = await screen.findByRole("dialog", { name: title });
+      expect(howTo.querySelector(".eyebrow")).toBeNull();
+      expect(howTo.querySelector(".how-to-icon")).toBeNull();
+      expect(within(howTo).getAllByRole("listitem").map((item) => item.textContent)).toEqual(steps);
+      unmount();
+    }
+  });
+
   it("has an About this game info button, instead of ?, beside CVC Sounds", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
     setPathname("/cvc");

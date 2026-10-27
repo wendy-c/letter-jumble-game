@@ -114,25 +114,26 @@ def mochi_house():
 
 def tofu_house():
     b = []
-    # Her telescope pokes out of the round attic window (Tofu loves science).
-    b.append('<path d="M108 70l30-22" stroke-width="13"/><path d="M108 70l30-22" stroke="#8cc8f2" stroke-width="7"/>'
-             '<path d="M136 44l6 9" stroke-width="5"/>')
+    # An upright chimney with a puff of smoke, standing on the right-hand slope of the roof.
+    b.append('<rect x="128" y="50" width="18" height="40" fill="#ffb3d1"/><rect x="124" y="44" width="26" height="9" rx="3" fill="#ff8fa3"/>')
+    b.append('<circle cx="140" cy="32" r="6" fill="#ffffff" stroke-width="3"/><circle cx="150" cy="22" r="4.5" fill="#ffffff" stroke-width="3"/>')
     b.append('<rect x="46" y="100" width="108" height="84" fill="#fff2bf"/>')
     # A pointed mint roof, the same on both sides, with scallops along the eaves.
     b.append('<path d="M28 106L100 36l72 70Z" fill="#9fdcbf"/>')
     for i in range(7):
         x = 34 + i * 19
         b.append(f'<path d="M{x} 106q9.5 13 19 0" fill="#9fdcbf" stroke-width="3"/>')
-    b.append('<circle cx="100" cy="78" r="13" fill="#c9e6fb" stroke-width="3.5"/><circle cx="104" cy="74" r="4" fill="#8cc8f2" stroke-width="2.5"/>')
-    # Square windows full of books, with flower boxes underneath.
-    for x in (56, 120):
-        b.append(f'<rect x="{x}" y="116" width="24" height="24" rx="4" fill="#c9e6fb" stroke-width="3"/>')
-        for i, c in enumerate(["#ff8fa3", "#b79cf2", "#ffe27a"]):
-            b.append(f'<rect x="{x + 4 + i * 5.5}" y="{124 - (i % 2) * 4}" width="5" height="{14 + (i % 2) * 4}" fill="{c}" stroke-width="1.5"/>')
-        b.append(flower(x + 6, 145, "#ffe27a") + flower(x + 18, 145, "#ff8fa3"))
-        b.append(f'<rect x="{x - 3}" y="147" width="30" height="9" rx="3" fill="#ffb3d1" stroke-width="2.5"/>')
+    # A little round attic window.
+    b.append('<circle cx="100" cy="78" r="11" fill="#c9e6fb" stroke-width="3.5"/><path d="M100 67v22M89 78h22" stroke-width="2.5"/>')
+    # Round windows with a cross frame, and flower boxes underneath.
+    for cx in (68, 132):
+        b.append(f'<circle cx="{cx}" cy="128" r="13" fill="#c9e6fb" stroke-width="3.5"/>'
+                 f'<path d="M{cx} 115v26M{cx - 13} 128h26" stroke-width="2.5"/>'
+                 f'<path d="M{cx - 7} 121a8 8 0 0 1 6-4" stroke="#ffffff" stroke-width="2.5" fill="none"/>')
+        b.append(flower(cx - 6, 145, "#ffe27a") + flower(cx + 6, 145, "#ff8fa3"))
+        b.append(f'<rect x="{cx - 15}" y="147" width="30" height="9" rx="3" fill="#ffb3d1" stroke-width="2.5"/>')
     b.append('<path d="M86 184v-28a14 14 0 0 1 28 0v28Z" fill="#ffb86b"/><circle cx="107" cy="170" r="3" fill="#ffd45e" stroke-width="2"/>')
-    b.append(sparkle(36, 56, 7) + sparkle(168, 70, 6, "#ffe0ee"))
+    b.append(sparkle(36, 56, 7) + sparkle(172, 70, 6, "#ffe0ee"))
     b.append('<path d="M20 186h160" stroke="#9fdcbf" stroke-width="8"/>')
     return svg("\n".join(b), "0 0 200 200")
 
@@ -152,9 +153,6 @@ def park():
     b.append('<rect x="112" y="94" width="28" height="10" rx="3" fill="#b79cf2" stroke-width="3"/>')
     b.append('<path d="M138 98q24 30 34 76h-12q-10-40-26-66Z" fill="#8cc8f2" stroke-width="3.5"/>')
     b.append('<ellipse cx="100" cy="182" rx="18" ry="5" fill="#8cc8f2" stroke-width="2.5"/>')
-    # A wooden name board on top.
-    b.append('<path d="M68 22h64a5 5 0 0 1 5 5v18a5 5 0 0 1-5 5H68a5 5 0 0 1-5-5V27a5 5 0 0 1 5-5Z" fill="#e0a56a" stroke-width="3.5"/>')
-    b.append(f'<text x="100" y="42" text-anchor="middle" font-family="Fredoka,Arial Rounded MT Bold,Arial,sans-serif" font-size="16" font-weight="700" fill="{INK}" stroke="none">PARK</text>')
     b.append(sparkle(40, 50, 6) + sparkle(162, 40, 6, "#ffe0ee"))
     b.append('<path d="M20 190h160" stroke="#9fdcbf" stroke-width="8"/>')
     return svg("\n".join(b), "0 0 200 200")

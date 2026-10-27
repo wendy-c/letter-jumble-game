@@ -13,8 +13,6 @@
 <rect x="112" y="94" width="28" height="10" rx="3" fill="#b79cf2" stroke-width="3"/>
 <path d="M138 98q24 30 34 76h-12q-10-40-26-66Z" fill="#8cc8f2" stroke-width="3.5"/>
 <ellipse cx="100" cy="182" rx="18" ry="5" fill="#8cc8f2" stroke-width="2.5"/>
-<path d="M68 22h64a5 5 0 0 1 5 5v18a5 5 0 0 1-5 5H68a5 5 0 0 1-5-5V27a5 5 0 0 1 5-5Z" fill="#e0a56a" stroke-width="3.5"/>
-<text x="100" y="42" text-anchor="middle" font-family="Fredoka,Arial Rounded MT Bold,Arial,sans-serif" font-size="16" font-weight="700" fill="#4b2e22" stroke="none">PARK</text>
 <path d="M40 44Q41.2 48.8 46 50Q41.2 51.2 40 56Q38.8 51.2 34 50Q38.8 48.8 40 44Z" fill="#fff6c8" stroke-width="2.5"/><path d="M162 34Q163.2 38.8 168 40Q163.2 41.2 162 46Q160.8 41.2 156 40Q160.8 38.8 162 34Z" fill="#ffe0ee" stroke-width="2.5"/>
 <path d="M20 190h160" stroke="#9fdcbf" stroke-width="8"/>
 </g>
