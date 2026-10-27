@@ -8,32 +8,33 @@ const places = [
   { id: "tofu", label: "Tofu’s House", image: "/images/village/tofu-house.svg", left: 77, bottom: 21 },
 ];
 
-// Under Tofu's house until she moves in: unlocks it once there are enough rainbow coins.
+// Under Tofu's house until she moves in: her name, how many coins it takes and how close we
+// are, then a round padlock button that unlocks her house once there are enough coins.
 function TofuUnlockButton({ coins, cost, onUnlock }) {
   const affordable = coins >= cost;
   return (
     <>
-    <span className="village-place-label">
-      <span>Tofu's House</span>
-      <span className="village-place-note">unlock with 100 coins</span>
-      <span className="tofu-unlock-status" aria-hidden="true">
-        <img src="/images/rainbow-coin.svg" alt="" width="18" height="18" />
-        <span aria-hidden="true">{affordable ? cost : `${coins}/${cost}`}</span>
+      <span className="village-place-label tofu-unlock-card">
+        <span>Tofu’s House</span>
+        <span className="village-place-note">unlock with {cost} coins</span>
+        <span className="tofu-unlock-status" aria-hidden="true">
+          <img src="/images/rainbow-coin.svg" alt="" width="18" height="18" />
+          <span>{affordable ? cost : `${coins}/${cost}`}</span>
+        </span>
+        <span className="unlock-progress" aria-hidden="true">
+          <span style={{ width: `${Math.min(100, (coins / cost) * 100)}%` }} />
+        </span>
       </span>
-       <div className="unlock-progress" aria-hidden="true">
-          <span style={{ width: `${(coins / cost) * 100}%` }} />
-        </div>
-    </span>
-    <button
-      className="tofu-unlock-button"
-      type="button"
-      disabled={!affordable}
-      aria-label={affordable ? `Unlock Tofu for ${cost} rainbow coins` : `Unlock Tofu: ${coins} of ${cost} rainbow coins`}
-      onClick={onUnlock}
-    >
-      <span aria-hidden="true">{affordable ? "Unlock" : "🔓"}</span>
-    </button>
-      </>
+      <button
+        className="tofu-unlock-button"
+        type="button"
+        disabled={!affordable}
+        aria-label={affordable ? `Unlock Tofu for ${cost} rainbow coins` : `Unlock Tofu: ${coins} of ${cost} rainbow coins`}
+        onClick={onUnlock}
+      >
+        <span aria-hidden="true">🔓</span>
+      </button>
+    </>
   );
 }
 
