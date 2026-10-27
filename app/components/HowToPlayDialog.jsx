@@ -37,6 +37,10 @@ const howTo = {
     [["🔤", "Tap the two letters (like sh) that fill the gap."]],
     [["🔤", "按兩個字母（例如 sh）填入空格。"]],
   ),
+  blends: spelling(
+    [["🔤", "Tap the blend (like br or str) that fills the gap."]],
+    [["🔤", "按一按正確的混合音（例如 br 或 str），填入空格。"]],
+  ),
   starters: spelling(
     [["🔤", "Tap the letters in spelling order to fill the boxes. Tap a box to take its letter back out."]],
     [["🔤", "按次序按字母，把格子填滿。按格子可以拿走字母。"]],

@@ -40,6 +40,17 @@ export const games = [
     ages: ["3-4"],
   },
   {
+    id: "blends",
+    group: "phonics",
+    name: "R & L Blends",
+    color: "blue",
+    picture: "/images/icons/blends-mixed.svg",
+    note: "For age 3-4 - br, cr, str, bl, cl, fl and more",
+    say: "R and L blends! Say the sounds together.",
+    badge: "BLENDS",
+    ages: ["3-4"],
+  },
+  {
     id: "starters",
     group: "cambridge",
     name: "Letter Jumble for Starters",

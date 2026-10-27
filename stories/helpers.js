@@ -5,7 +5,7 @@ import { siteStorageKey } from "../app/lib/use-site-settings";
 export const ada = { name: "Ada", coins: 37, age: "3-4" };
 export const elly = { name: "Elly", coins: 120, age: "5-6" };
 
-const allGames = ["cvc", "digraphs", "starters", "letter-jumble", "chinese", "chinese-advanced", "measure-words", "idioms", "dragon"];
+const allGames = ["cvc", "digraphs", "blends", "starters", "letter-jumble", "chinese", "chinese-advanced", "measure-words", "idioms", "dragon"];
 
 // Sets the players, the site's settings and whether the welcome card was closed, as a story's
 // `beforeEach`; everything is put back afterwards. `howToSeen: true` skips every how-to card.

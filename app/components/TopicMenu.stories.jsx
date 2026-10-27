@@ -16,6 +16,7 @@ export const CvcSounds = {
   args: { isCvc: true, topics: topicsByGame.cvc, breadcrumbs: crumbs("CVC Sounds", "/cvc"), titleAction: <AboutButton onClick={fn()} /> },
 };
 export const ConsonantDigraphs = { args: { isCvc: true, isDigraph: true, topics: topicsByGame.digraphs, breadcrumbs: crumbs("Consonant Digraphs", "/digraphs") } };
+export const Blends = { args: { isCvc: true, isBlend: true, topics: topicsByGame.blends, breadcrumbs: crumbs("R & L Blends", "/blends") } };
 export const LetterJumbleMovers = {
   args: { topics: topicsByGame["letter-jumble"], progressFor: (topic) => (topic.id === "animals" ? 4 : 0), breadcrumbs: crumbs("Letter Jumble for Movers", "/letter-jumble"), titleAction: <HowToPlayButton language="en" onClick={fn()} /> },
 };

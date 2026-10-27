@@ -145,8 +145,10 @@ export default function GameApp() {
   const [completedTopic, setCompletedTopic] = useState(null);
 
   const isDigraph = selectedGame?.id === "digraphs";
-  // Phonics games fill a gap in a shown word (one letter for CVC, two for a digraph).
-  const isCvc = selectedGame?.id === "cvc" || isDigraph;
+  const isBlend = selectedGame?.id === "blends";
+  // Phonics games fill a gap in a shown word (one letter for CVC, two for a digraph, two or three
+  // for a blend).
+  const isCvc = selectedGame?.id === "cvc" || isDigraph || isBlend;
   const isChinese = Boolean(selectedGame?.id.startsWith("chinese"));
   const isMeasure = selectedGame?.id === "measure-words";
   const isIdiom = selectedGame?.id === "idioms";
@@ -560,6 +562,7 @@ export default function GameApp() {
             titleAction={aboutButton || null}
             isCvc={isCvc}
             isDigraph={isDigraph}
+            isBlend={isBlend}
             isChinese={isChinese}
             isMeasure={isMeasure}
             isIdiom={isIdiom}
@@ -653,6 +656,7 @@ export default function GameApp() {
             <AnswerPanel
               isCvc={isCvc}
               isDigraph={isDigraph}
+              isBlend={isBlend}
               answer={answer}
               round={round}
               blanks={blanks}

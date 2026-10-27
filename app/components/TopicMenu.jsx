@@ -8,7 +8,7 @@ function cardNote(isChinese, isMeasure, done, total) {
   return done > 0 ? `${done} of ${total} words learned` : `${total} words to learn`;
 }
 
-export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false, isChinese = false, isMeasure = false, isIdiom = false, topics, progressFor = () => 0, breadcrumbs, onSelectTopic }) {
+export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false, isBlend = false, isChinese = false, isMeasure = false, isIdiom = false, topics, progressFor = () => 0, breadcrumbs, onSelectTopic }) {
   return (
     <section className="game-wrap category-menu mx-auto w-full max-w-6xl" aria-labelledby="game-title">
       <div className="menu-heading">
@@ -38,6 +38,14 @@ export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false
             </div>
             <p className="heading-note" lang="zh-Hant-HK">選一個主題，齊玩認字遊戲！</p>
           </>
+        ) : isBlend ? (
+          <>
+            <div className="title-row">
+              <h1 id="game-title">R &amp; L <span>Blends</span></h1>
+              {titleAction}
+            </div>
+            <p className="heading-note">Say the sounds together. Find the blend that’s missing!</p>
+          </>
         ) : isDigraph ? (
           <>
             <div className="title-row">
@@ -64,7 +72,7 @@ export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false
           </>
         )}
       </div>
-      <div className={`category-grid${isCvc && !isDigraph ? " mode-grid" : ""}`}>
+      <div className={`category-grid${isCvc && !isDigraph && !isBlend ? " mode-grid" : ""}`}>
         {topics.map((topic, index) => (
           <ChoiceCard
             key={topic.id}

@@ -25,6 +25,7 @@ export const CvcSounds = at("/cvc");
 export const CvcBeginningSound = at("/cvc/beginning-sound");
 export const CvcHowToPlay = at("/cvc/beginning-sound", { howToSeen: [] });
 export const ConsonantDigraphs = at("/digraphs/ch-sh-th");
+export const RAndLBlends = at("/blends/r-blends");
 export const ChineseColours = at("/chinese/colours");
 
 export const LetterJumbleMovers = at("/letter-jumble", { players: [elly] });

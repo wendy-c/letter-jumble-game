@@ -261,6 +261,7 @@ pictures["game-asset/jobs/reporter"] = svg(
                        '<circle cx="110" cy="64" r="9" fill="#5b5b6e"/><path d="M104 62h12M106 58h8M106 66h8" stroke="#8a8fa8" stroke-width="2"/>'))
 
 # ---------- 地點 (places) ----------
+# (Bank, cinema and library use Letter Jumble for Movers' drawings, so they aren't drawn here.)
 P = "game-asset/places/"
 
 def flag(x, y, color):
@@ -312,12 +313,6 @@ pictures[P + "school-hall"] = svg(
     '<rect x="36" y="22" width="56" height="14" rx="3" fill="#fff6c8" stroke-width="3"/>'
     + "".join(f'<path d="M{x} {y}h14v-10q0-4 4-4h0" fill="none" stroke-width="3"/><rect x="{x}" y="{y - 14}" width="14" height="10" rx="3" fill="#b79cf2" stroke-width="3"/>'
               for y in (100, 120) for x in (14, 40, 66, 92)))
-
-pictures[P + "library"] = svg(
-    building("#eaf4ff", "#8cc8f2",
-             '<path d="M64 34q-6-4-12-2v12q6-2 12 2 6-4 12-2V32q-6-2-12 2Zv12" fill="#ffffff" stroke-width="2.5"/>',
-             extra='<path d="M30 112h68" stroke="#b79cf2" stroke-width="4"/>'
-                   + "".join(f'<rect x="{x}" y="102" width="5" height="10" fill="{c}" stroke-width="1.5"/>' for x, c in [(84, "#ff8fa3"), (90, "#ffe27a"), (96, "#8fe3a8")])))
 
 pictures[P + "supermarket"] = svg(
     '<path d="M8 22h88l-10 44H22Z" fill="none"/>'
@@ -380,14 +375,6 @@ pictures[P + "theatre"] = svg(
     '<path d="M84 46q-6-10-14-4-2 14 6 20 10-2 8-16Z" fill="#8cc8f2" stroke-width="3"/><path d="M74 50l2 2M80 50l-2 2M74 60q3 3 6 0" fill="none" stroke-width="2"/>'
     '<path d="M16 92h96v10H16Z" fill="#c98a55" stroke-width="3"/>')
 
-pictures[P + "cinema"] = svg(
-    '<rect x="4" y="10" width="120" height="108" rx="6" fill="#3d2b63"/>'
-    '<rect x="16" y="20" width="96" height="54" rx="4" fill="#ffffff"/>'
-    '<path d="M50 34l26 13-26 13Z" fill="#ff8fa3" stroke-width="3"/>'
-    + "".join(f'<rect x="{x}" y="{y}" width="16" height="14" rx="5" fill="#b79cf2" stroke-width="3"/>' for x in (12, 32, 52, 72, 92) for y in (82, 100))
-    + '<path d="M104 70h16l-4 34h-8Z" fill="#ffffff" stroke-width="3"/><path d="M108 70l2 34M116 70l-2 34" stroke="#ff8fa3" stroke-width="3"/>'
-    '<g fill="#fff6c8" stroke-width="2.5"><circle cx="106" cy="66" r="5"/><circle cx="114" cy="64" r="5"/><circle cx="111" cy="58" r="5"/></g>')
-
 pictures[P + "restaurant"] = svg(
     building("#fff6e0", "#ffb86b",
              '<path d="M59 31v14M56 31v5q0 3 3 3t3-3v-5M69 31q4 4 0 10v4" fill="none" stroke-width="2.5"/>',
@@ -413,14 +400,6 @@ pictures[P + "fire-station"] = svg(
     '<circle cx="64" cy="18" r="9" fill="#ffd45e" stroke-width="3"/><path d="M64 9v-4" stroke-width="3"/>'
     + ground())
 
-pictures[P + "bank"] = svg(
-    '<path d="M10 40L64 12l54 28Z" fill="#fff6e0"/>'
-    '<path d="M16 40h96v8H16Z" fill="#fff6e0"/>'
-    + "".join(f'<path d="M{x} 48v52" stroke-width="10"/><path d="M{x} 48v52" stroke="#fff6e0" stroke-width="5"/>' for x in (28, 48, 80, 100))
-    + '<path d="M12 100h104v8H12Z" fill="#fff6e0"/><path d="M6 108h116v8H6Z" fill="#e3d6fb"/>'
-    '<circle cx="64" cy="74" r="14" fill="#ffd45e"/><path d="M64 64v20M69 68q-4-3-8 0t0 6 8 5-4 5-9 0" fill="none" stroke-width="2.5"/>'
-    '<circle cx="64" cy="30" r="5" fill="#ffd45e" stroke-width="2.5"/>')
-
 pictures[P + "wet-market"] = svg(
     '<path d="M10 20h108v16H10Z" fill="#ffffff"/>'
     + "".join(f'<path d="M{x} 20h12v16h-12Z" fill="#8fe3a8" stroke="none"/>' for x in (10, 34, 58, 82, 106))
@@ -440,6 +419,22 @@ pictures["icons/chinese-places"] = svg(
     '<path d="M18 92h92v8H18Z" fill="#9fdcbf" stroke-width="3"/>'
     '<path d="M26 92V70l12-10 12 10v22Z" fill="#fff2bf" stroke-width="3"/><path d="M78 92V64h24v28Z" fill="#e3d6fb" stroke-width="3"/>'
     '<path d="M64 74q-22-24-22-38a22 22 0 0 1 44 0q0 14-22 38Z" fill="#ff8fa3"/><circle cx="64" cy="36" r="8" fill="#ffffff" stroke-width="3"/>')
+
+
+# R and L Blends' topic icons: the blends in coloured bubbles, like Consonant Digraphs' icons.
+def blend_bubbles(items):
+    out = ""
+    for x, y, fill, text in items:
+        size = 26 if len(text) == 2 else 21
+        out += (f'<circle cx="{x}" cy="{y}" r="24" fill="{fill}"/>'
+                f'<text x="{x}" y="{y + size * 0.34:.0f}" text-anchor="middle" font-family="Fredoka,Arial Rounded MT Bold,Arial,sans-serif" '
+                f'font-size="{size}" font-weight="700" fill="{INK}" stroke="none">{text}</text>')
+    return svg(out)
+
+
+pictures["icons/blends-r"] = blend_bubbles([(40, 40, "#ffb3d1", "br"), (88, 40, "#ffe27a", "cr"), (64, 88, "#8cc8f2", "tr")])
+pictures["icons/blends-l"] = blend_bubbles([(40, 40, "#8cc8f2", "bl"), (88, 40, "#8fe3a8", "cl"), (64, 88, "#ffb3d1", "fl")])
+pictures["icons/blends-mixed"] = blend_bubbles([(40, 40, "#ffb3d1", "br"), (88, 40, "#c9b6f5", "fl"), (64, 88, "#ffe27a", "str")])
 
 
 for name, body in pictures.items():

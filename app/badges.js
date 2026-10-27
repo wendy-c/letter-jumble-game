@@ -2,6 +2,7 @@ import { categories } from "./game-data";
 import { starterCategories } from "./starters-data";
 import { cvcModes } from "./cvc-data";
 import { digraphTopics } from "./digraphs-data";
+import { blendTopics } from "./blends-data";
 import { chineseAdvancedTopics, chineseTopics } from "./chinese-data";
 import { measureWordTopics } from "./measure-words-data";
 import { idiomTopics } from "./idioms-data";
@@ -12,6 +13,7 @@ import { gamesForPlayer } from "./games-data";
 export const topicsByGame = {
   cvc: cvcModes,
   digraphs: digraphTopics,
+  blends: blendTopics,
   chinese: chineseTopics,
   "chinese-advanced": chineseAdvancedTopics,
   "measure-words": measureWordTopics,

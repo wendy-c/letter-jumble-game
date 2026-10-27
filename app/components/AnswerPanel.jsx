@@ -21,6 +21,7 @@ function feedbackMessage({ checked, complete, allPlaced }) {
 export default function AnswerPanel({
   isCvc,
   isDigraph = false,
+  isBlend = false,
   answer,
   round,
   blanks,
@@ -42,7 +43,7 @@ export default function AnswerPanel({
       <div className="answer-intro">
         <div>
           <h2>{isCvc ? "Click to play the sound" : "Spell it out"}</h2>
-          <p>{isDigraph ? "Which two letters fill the gap?" : isCvc ? "Which letter fills the gap?" : "Tap letters to fill the boxes"}</p>
+          <p>{isBlend ? "Which blend fills the gap?" : isDigraph ? "Which two letters fill the gap?" : isCvc ? "Which letter fills the gap?" : "Tap letters to fill the boxes"}</p>
         </div>
         <button className="voice-button" type="button" onClick={onSpeak} aria-label="Hear the word" title="Hear the word">
           <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
@@ -70,12 +71,12 @@ export default function AnswerPanel({
       {guides && <SpellingGuideLegend />}
 
       <div className="tile-instructions">
-        <span>{isDigraph ? "Tap the missing letters" : isCvc ? "Tap the missing letter" : "Tap letters in spelling order"}</span>
+        <span>{isBlend ? "Tap the missing blend" : isDigraph ? "Tap the missing letters" : isCvc ? "Tap the missing letter" : "Tap letters in spelling order"}</span>
         <span className="instruction-line" />
       </div>
 
       <LetterBank
-        label={isDigraph ? "Digraph choices" : isCvc ? "Letter choices" : "Scrambled letters"}
+        label={isBlend ? "Blend choices" : isDigraph ? "Digraph choices" : isCvc ? "Letter choices" : "Scrambled letters"}
         round={round}
         tiles={tiles}
         placed={placed}
