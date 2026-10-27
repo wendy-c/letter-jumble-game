@@ -3875,7 +3875,7 @@ a:focus-visible {
   margin-top: 16px;
 }
 
-/* CVC's how-to card: numbered steps, then letter tiles to hear each sound. */
+/* Numbered how-to steps (CVC Sounds and 中文認字). */
 .how-to-numbered {
   margin: 0;
   list-style: decimal;
@@ -3888,26 +3888,5 @@ a:focus-visible {
 .how-to-numbered li::marker {
   color: var(--magic);
   font-weight: 700;
-}
-
-.how-to-revision-title {
-  margin: 20px 0 4px;
-  color: var(--magic-dark);
-  font-size: 20px;
-}
-
-.how-to-revision-note {
-  margin: 0 0 12px;
-}
-
-.how-to-letters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.how-to-letter {
-  width: 40px;
-  height: 44px;
 }
 

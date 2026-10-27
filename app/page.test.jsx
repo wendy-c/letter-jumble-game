@@ -1233,11 +1233,9 @@ describe("how to play", () => {
     expect(screen.getByRole("dialog", { name: "How to play Letter Jumble for Movers" })).toBeInTheDocument();
   });
 
-  it("shows CVC Sounds' three steps and consonant tiles that say their sound", async () => {
-    const { speakWord } = jest.requireMock("./lib/speech");
+  it("shows CVC Sounds' three numbered steps", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
     setPathname("/cvc/beginning-sound");
-    const user = userEvent.setup();
     render(<GameApp />);
     const howTo = await screen.findByRole("dialog", { name: "How to play" });
     expect(howTo.querySelector(".eyebrow")).toBeNull();
@@ -1246,22 +1244,7 @@ describe("how to play", () => {
       "Tap the letter that fills the gap.",
       "Tap “Check word” when you’re done.",
     ]);
-    expect(within(howTo).getByRole("heading", { name: "Need a revision?" })).toBeInTheDocument();
-    expect(howTo).toHaveTextContent("Tap the letters to hear the letter sound.");
-    const tiles = within(within(howTo).getByRole("group", { name: "Letter sounds" })).getAllByRole("button");
-    expect(tiles.map((tile) => tile.textContent).join("")).toBe("bcdfghjklmnprstvwxyz");
-
-    await user.click(within(howTo).getByRole("button", { name: "Hear the b sound" }));
-    expect(speakWord).toHaveBeenLastCalledWith("buh", expect.any(Function));
-  });
-
-  it("revises the vowels for the middle sound", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
-    setPathname("/cvc/middle-sound");
-    render(<GameApp />);
-    const howTo = await screen.findByRole("dialog", { name: "How to play" });
-    const tiles = within(within(howTo).getByRole("group", { name: "Letter sounds" })).getAllByRole("button");
-    expect(tiles.map((tile) => tile.textContent).join("")).toBe("aeiou");
+    expect(within(howTo).queryByRole("heading", { name: "Need a revision?" })).not.toBeInTheDocument();
   });
 
   it("has the ? only beside a module's title, not on a game's list of topics", async () => {

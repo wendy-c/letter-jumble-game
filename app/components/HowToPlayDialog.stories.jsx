@@ -10,8 +10,7 @@ export default {
   args: { onClose: fn() },
 };
 
-export const CvcBeginningSound = { args: { game: game("cvc"), topicId: "beginning-sound", language: "en" } };
-export const CvcMiddleSound = { args: { game: game("cvc"), topicId: "middle-sound", language: "en" } };
+export const CvcSounds = { args: { game: game("cvc"), language: "en" } };
 export const LetterJumble = { args: { game: game("letter-jumble"), language: "en" } };
 export const ChineseGame = { args: { game: game("chinese"), language: howToLanguage("chinese", "en") } };
 export const Dragon = { args: { game: game("dragon"), language: "en" } };

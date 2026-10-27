@@ -673,7 +673,7 @@ export default function GameApp() {
         />
       )}
       {howToShown && (
-        <HowToPlayDialog game={selectedGame} topicId={topicId} language={gameLanguage} onClose={closeHowTo} />
+        <HowToPlayDialog game={selectedGame} language={gameLanguage} onClose={closeHowTo} />
       )}
       {aboutOpen && selectedGame && hasAbout(selectedGame.id) && (
         <AboutDialog game={selectedGame} onClose={() => setAboutOpen(false)} />

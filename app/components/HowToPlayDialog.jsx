@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { speakWord } from "../lib/speech";
+import { useEffect } from "react";
 
 const oneTry = {
   en: ["🌈", "Each question has one try. A right answer earns a rainbow coin, and getting a whole topic right earns its badge!"],
@@ -76,51 +75,20 @@ const howTo = {
 
 export const hasHowToPlay = (gameId) => gameId === "cvc" || Boolean(howTo[gameId]);
 
-// CVC Sounds has its own simpler card: three numbered steps, then letter tiles that say their
-// sound, for a quick revision.
+// CVC Sounds has its own simpler card: three numbered steps.
 const cvcSteps = [
   "Look at the picture and tap the speaker icon for a hint.",
   "Tap the letter that fills the gap.",
   "Tap “Check word” when you’re done.",
 ];
-const consonants = "bcdfghjklmnprstvwxyz".split("");
-const vowels = "aeiou".split("");
 
-// How each letter sounds, spelled so the browser's voice says the sound rather than the letter's
-// name (b says "buh", not "bee").
-const letterSounds = {
-  a: "ah", e: "eh", i: "ih", o: "awe", u: "uh",
-  b: "buh", c: "kuh", d: "duh", f: "fuh", g: "guh", h: "huh", j: "juh", k: "kuh", l: "luh", m: "muh",
-  n: "nuh", p: "puh", r: "ruh", s: "suh", t: "tuh", v: "vuh", w: "wuh", x: "ks", y: "yuh", z: "zuh",
-};
-
-// The middle sound's revision is the vowels; every other CVC mode revises the consonants.
-const revisionLetters = (topicId) => (topicId === "middle-sound" ? vowels : consonants);
-
-function CvcHowTo({ topicId, onClose }) {
-  const [voiceMessage, setVoiceMessage] = useState("");
+function CvcHowTo({ onClose }) {
   return (
     <div lang="en">
       <h2 id="how-to-title">How to play</h2>
       <ol className="how-to-numbered">
         {cvcSteps.map((step) => <li key={step}>{step}</li>)}
       </ol>
-      <h3 className="how-to-revision-title">Need a revision?</h3>
-      <p className="heading-note how-to-revision-note">Tap the letters to hear the letter sound.</p>
-      <div className="how-to-letters" role="group" aria-label="Letter sounds">
-        {revisionLetters(topicId).map((letter) => (
-          <button
-            className="letter-tile how-to-letter"
-            type="button"
-            key={letter}
-            aria-label={`Hear the ${letter} sound`}
-            onClick={() => speakWord(letterSounds[letter], setVoiceMessage)}
-          >
-            {letter}
-          </button>
-        ))}
-      </div>
-      <p className={`voice-status${voiceMessage ? " voice-status-visible" : ""}`} aria-live="polite">{voiceMessage}</p>
       <button className="reward-continue completion-button how-to-button" type="button" autoFocus onClick={onClose}>
         {buttons.en} <span aria-hidden="true">→</span>
       </button>
@@ -188,8 +156,8 @@ const titles = { en: (name) => `How to play ${name}`, zh: (name) => `${name}：�
 const buttons = { en: "Got it, let’s go!", zh: "明白了，開始吧！" };
 
 // Explains a game's controls before the first time it's played, and whenever its "?" button is
-// tapped. `language` is howToLanguage's choice for the game; `topicId` is the topic being played.
-export default function HowToPlayDialog({ game, topicId = null, language, onClose }) {
+// tapped. `language` is howToLanguage's choice for the game.
+export default function HowToPlayDialog({ game, language, onClose }) {
   const steps = howTo[game.id]?.[language] ?? [];
   const numbered = Boolean(howTo[game.id]?.numbered);
 
@@ -204,7 +172,7 @@ export default function HowToPlayDialog({ game, topicId = null, language, onClos
   return (
     <div className="player-overlay">
       <div className="player-dialog how-to-dialog" role="dialog" aria-modal="true" aria-labelledby="how-to-title">
-        {game.id === "cvc" ? <CvcHowTo topicId={topicId} onClose={onClose} /> : (
+        {game.id === "cvc" ? <CvcHowTo onClose={onClose} /> : (
         <div lang={language === "zh" ? "zh-Hant-HK" : "en"}>
           {!numbered && <p className="eyebrow">{language === "zh" ? "遊戲玩法" : "HOW TO PLAY"}</p>}
           <h2 id="how-to-title">{titles[language](game.name)}</h2>
