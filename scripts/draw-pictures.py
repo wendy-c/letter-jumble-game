@@ -475,6 +475,39 @@ pictures["icons/group-mochi"] = svg(
     + sparkle(104, 28, 8, "#b79cf2"))
 
 
+# The player menu's items (Switch player, My badges, Parent mode, Language, Log out): small, so the
+# outlines are thicker.
+def menu_icon(body):
+    return svg(f'<g stroke-width="7">{body}</g>')
+
+
+pictures["icons/menu-switch"] = menu_icon(
+    '<circle cx="40" cy="58" r="22" fill="#ffb3d1"/><circle cx="88" cy="70" r="22" fill="#8cc8f2"/>'
+    '<path d="M30 22q34-16 58 6" fill="none"/><path d="M80 14l10 14-16 4" fill="none"/>'
+    '<path d="M98 108q-34 16-58-6" fill="none"/><path d="M48 116l-10-14 16-4" fill="none"/>')
+
+pictures["icons/menu-badges"] = menu_icon(
+    '<path d="M42 10l14 40h16l14-40" fill="none"/><path d="M44 10h40" fill="none"/>'
+    '<path d="M44 12l14 36M84 12l-14 36" stroke="#8cc8f2" stroke-width="5"/>'
+    '<circle cx="64" cy="80" r="32" fill="#ffd45e"/><circle cx="64" cy="80" r="18" fill="#fff2b8" stroke-width="5"/>')
+
+pictures["icons/menu-parent"] = menu_icon(
+    '<path d="M38 56V40a26 26 0 0 1 52 0v16" fill="none"/>'
+    '<rect x="22" y="54" width="84" height="62" rx="14" fill="#c9b6f5"/>'
+    '<path d="M64 98c-12-8-18-14-18-21 0-10 12-12 18-4 6-8 18-6 18 4 0 7-6 13-18 21Z" fill="#ff8fae" stroke-width="5"/>')
+
+pictures["icons/menu-language"] = menu_icon(
+    '<path d="M12 22h62v44H40l-16 14V66H12Z" fill="#8cc8f2"/>'
+    f'<text x="43" y="57" text-anchor="middle" font-family="Fredoka,Arial Rounded MT Bold,Arial,sans-serif" font-size="38" font-weight="700" fill="{INK}" stroke="none">A</text>'
+    '<path d="M54 56h62v44h-12v14L88 100H54Z" fill="#ffb3d1"/>'
+    f'<text x="85" y="91" text-anchor="middle" font-family="PingFang TC,Heiti TC,Noto Sans TC,Microsoft JhengHei,sans-serif" font-size="32" font-weight="700" fill="{INK}" stroke="none">文</text>')
+
+pictures["icons/menu-logout"] = menu_icon(
+    '<path d="M70 14H24v100h46" fill="none"/><path d="M24 14l30 12v100L24 114Z" fill="#ffd3a0"/>'
+    '<circle cx="44" cy="70" r="3" fill="#4b2e22" stroke="none"/>'
+    '<path d="M72 64h42M98 46l18 18-18 18" fill="none"/>')
+
+
 for name, body in pictures.items():
     path = os.path.join(IMAGES, name + ".svg")
     os.makedirs(os.path.dirname(path), exist_ok=True)

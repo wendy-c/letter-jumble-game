@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useLanguage, useText } from "../i18n";
 
+// A menu item's little picture (drawn by scripts/draw-pictures.py).
+function MenuIcon({ name }) {
+  return <img className="player-menu-icon" src={`/images/icons/menu-${name}.svg`} alt="" width="22" height="22" />;
+}
+
 // The player chip, with their rainbow coins, and its menu: switch player, badges, Parent mode, the
 // site's language, log out.
 export default function PlayerMenu({ player, coins = player.coins ?? 0, onSwitch, onBadges, onParentMode, onLanguage, onLogOut }) {
@@ -55,7 +60,7 @@ export default function PlayerMenu({ player, coins = player.coins ?? 0, onSwitch
               onSwitch();
             }}
           >
-            {text.switchPlayer}
+            <MenuIcon name="switch" />{text.switchPlayer}
           </button>
           <button
             type="button"
@@ -65,7 +70,7 @@ export default function PlayerMenu({ player, coins = player.coins ?? 0, onSwitch
               onBadges();
             }}
           >
-            <span aria-hidden="true">🏅</span> {text.myBadges}
+            <MenuIcon name="badges" />{text.myBadges}
           </button>
           <button
             type="button"
@@ -75,7 +80,7 @@ export default function PlayerMenu({ player, coins = player.coins ?? 0, onSwitch
               onParentMode();
             }}
           >
-            <span aria-hidden="true">🔒</span> {text.parentMode}
+            <MenuIcon name="parent" />{text.parentMode}
           </button>
           {/* Switches the site's language; the menu stays open to show the change. */}
           <button
@@ -86,7 +91,7 @@ export default function PlayerMenu({ player, coins = player.coins ?? 0, onSwitch
             aria-label={text.languageSwitch}
             onClick={() => onLanguage(language === "zh" ? "en" : "zh")}
           >
-            <span><span aria-hidden="true">🌐</span> {text.language}</span>
+            <span className="player-menu-item"><MenuIcon name="language" />{text.language}</span>
             <span className="language-switch language-switch-small" aria-hidden="true">
               <span className={language === "en" ? "language-on" : ""}>En</span>
               <span className={language === "zh" ? "language-on" : ""}>繁</span>
@@ -100,7 +105,7 @@ export default function PlayerMenu({ player, coins = player.coins ?? 0, onSwitch
               onLogOut();
             }}
           >
-            {text.logOut}
+            <MenuIcon name="logout" />{text.logOut}
           </button>
         </div>
       )}

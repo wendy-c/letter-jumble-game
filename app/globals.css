@@ -2085,7 +2085,7 @@ h1 span {
   top: calc(100% + 8px);
   right: 0;
   display: flex;
-  min-width: 200px;
+  min-width: 236px;
   flex-direction: column;
   overflow: hidden;
   border: 2px solid var(--line);
@@ -2095,14 +2095,29 @@ h1 span {
 }
 
 .player-menu-list button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   border: 0;
   background: transparent;
-  padding: 11px 16px;
+  padding: 10px 16px;
   color: var(--ink);
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
   text-align: left;
+}
+
+.player-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.player-menu-icon {
+  width: 22px;
+  height: 22px;
+  flex: none;
 }
 
 .player-menu-list button:hover {
