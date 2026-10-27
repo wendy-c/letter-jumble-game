@@ -4,6 +4,8 @@
 # cloud car (the front page's way to the dragon game).
 # She's a head-and-shoulders sticker, matching the 3D Mochi: lilac, pink snout, unicorn horn,
 # fluffy ears with rainbow tips, a rainbow mane and rainbow wings peeking out.
+# Also the feelings for 中文認字's 感受 topic (public/images/game-asset/feelings/), each shown by
+# Mochi or by Tofu (yellow, with floppy ears and fairy wings), plus that topic's icon.
 import os, sys
 
 ROOT = sys.argv[1] if len(sys.argv) > 1 else "."
@@ -83,6 +85,37 @@ def head():
 def sparkle(x, y, s, fill="#ffd45e"):
     return (f'<path d="M{x} {y - s}Q{x + s * .2} {y - s * .2} {x + s} {y}Q{x + s * .2} {y + s * .2} {x} {y + s}'
             f'Q{x - s * .2} {y + s * .2} {x - s} {y}Q{x - s * .2} {y - s * .2} {x} {y - s}Z" fill="{fill}" stroke-width="2"/>')
+
+
+# ---------- Tofu: Mochi's best friend ----------
+TOFU, TOFU_EAR = "#fff0a8", "#ffd3e6"
+
+
+def tofu_ear(side):
+    # Floppy ears hanging down beside her face, pink inside, with a blue tip.
+    cx = 100 + side * 70
+    return (f'<g transform="rotate({side * -18} {100 + side * 52} 66)">'
+            f'<ellipse cx="{cx}" cy="100" rx="16" ry="34" fill="{TOFU}"/>'
+            f'<ellipse cx="{cx}" cy="102" rx="8" ry="22" fill="{TOFU_EAR}" stroke="none"/>'
+            f'<circle cx="{cx}" cy="134" r="6" fill="#8cc8f2" stroke-width="2.5"/></g>')
+
+
+def fairy_wing(side):
+    # Two see-through fairy wings each side.
+    x, y = 100 + side * 44, 150
+    return "".join(f'<ellipse cx="{x + side * dx}" cy="{y + dy}" rx="{rx}" ry="{ry}" fill="#cfe9ff" fill-opacity=".75" stroke="#9db9f2" stroke-width="3" transform="rotate({side * angle} {x} {y})"/>'
+                   for dx, dy, rx, ry, angle in [(34, -22, 36, 20, -30), (26, 14, 26, 14, 20)])
+
+
+def tofu(face, extras_front="", tilt=0):
+    parts = [fairy_wing(-1), fairy_wing(1),
+             f'<path d="M48 196 Q50 152 100 150 Q150 152 152 196Z" fill="{TOFU}"/>',
+             f'<ellipse cx="100" cy="186" rx="22" ry="12" fill="#fffcf0" stroke-width="2.5"/>',
+             f'<g transform="rotate({tilt} 100 120)">', tofu_ear(-1), tofu_ear(1),
+             f'<ellipse cx="100" cy="106" rx="64" ry="57" fill="{TOFU}"/>', horn(), face, "</g>"]
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="-16 -48 236 246">\n'
+            f'<g stroke="{INK}" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">\n'
+            + "\n".join(parts) + extras_front + "\n</g>\n</svg>\n")
 
 
 def mochi(face, extras_behind="", extras_front="", tilt=0, arms=""):
@@ -221,8 +254,107 @@ def cloudmobile():
             + "\n".join(b) + "\n</g>\n</svg>\n")
 
 
+# ---------- Feelings (感受) ----------
+# Face parts, in the head's coordinates: eyes at x 72 and 128, about y 104; the mouth in the snout.
+def closed_eyes(up=True):
+    return '<path d="M62 106q10-12 20 0M118 106q10-12 20 0" fill="none" stroke-width="4.5"/>' if up else \
+        '<path d="M62 102q10 10 20 0M118 102q10 10 20 0" fill="none" stroke-width="4.5"/>'
+
+
+def wide_eyes():
+    return "".join(f'<circle cx="{x}" cy="102" r="12" fill="#fff" stroke-width="3"/><circle cx="{x}" cy="104" r="6" fill="{INK}" stroke="none"/>'
+                   f'<circle cx="{x - 2}" cy="101" r="2" fill="#fff" stroke="none"/>' for x in (72, 128))
+
+
+def sleepy_eyes():
+    return '<path d="M62 104h20M118 104h20" stroke-width="4.5"/><path d="M64 104q8 6 16 0M120 104q8 6 16 0" fill="none" stroke-width="3"/>'
+
+
+def brows(kind):
+    return {
+        "sad": '<path d="M60 90l22-8M118 82l22 8" fill="none" stroke-width="3.5"/>',
+        "angry": '<path d="M60 82l22 10M118 92l22-10" fill="none" stroke-width="4.5"/>',
+        "worried": '<path d="M60 88q10-8 22-4M118 84q12-4 22 4" fill="none" stroke-width="3.5"/>',
+    }[kind]
+
+
+def mouth(kind):
+    return {
+        "smile": '<path d="M92 140q8 8 16 0" fill="none" stroke-width="3"/>',
+        "grin": '<path d="M86 137Q100 158 114 137Z" fill="#ff7f9f" stroke-width="3"/>',
+        "smirk": '<path d="M92 142q10 6 18-4" fill="none" stroke-width="3"/>',
+        "frown": '<path d="M92 147q8-8 16 0" fill="none" stroke-width="3"/>',
+        "o": '<ellipse cx="100" cy="143" rx="6" ry="7" fill="#ff7f9f" stroke-width="3"/>',
+        "wavy": '<path d="M88 143q4-5 8 0t8 0 8 0" fill="none" stroke-width="3"/>',
+        "flat": '<path d="M93 143h14" stroke-width="3"/>',
+        "tiny": '<path d="M96 141q4 4 8 0" fill="none" stroke-width="3"/>',
+    }[kind]
+
+
+def tear(x, y):
+    return f'<path d="M{x} {y}q-7 10 0 14 7-4 0-14Z" fill="#a8dcff" stroke-width="2.5"/>'
+
+
+def sweat(x, y):
+    return f'<path d="M{x} {y}q8 12 0 18-8-6 0-18Z" fill="#a8dcff" stroke-width="2.5"/>'
+
+
+def big_blush():
+    return ('<ellipse cx="54" cy="124" rx="15" ry="9" fill="#ff9bb5" stroke="none"/><ellipse cx="146" cy="124" rx="15" ry="9" fill="#ff9bb5" stroke="none"/>'
+            '<path d="M46 122l6-4M54 124l6-4M138 122l6-4M146 124l6-4" stroke="#ff6f8f" stroke-width="2"/>')
+
+
+def note(x, y, fill):
+    return f'<ellipse cx="{x}" cy="{y}" rx="6" ry="5" fill="{fill}" stroke-width="2.5"/><path d="M{x + 5} {y}v-20l10 4" fill="none" stroke-width="2.5"/>'
+
+
+def puff(x, y):
+    return f'<path d="M{x} {y}q-8-2-6-10 4-8 12-4 6-6 12 0 6 4 2 12Z" fill="#ffffff" stroke-width="2.5"/>'
+
+
+def zzz():
+    return ''.join(f'<text x="{x}" y="{y}" font-family="Arial Rounded MT Bold,Fredoka,Arial,sans-serif" font-size="{size}" font-weight="700" '
+                   f'fill="#8cc8f2" stroke="{INK}" stroke-width="2" paint-order="stroke">z</text>' for x, y, size in [(168, 40, 22), (184, 18, 28), (200, -6, 34)])
+
+
+def feelings():
+    face = lambda eyes, mouthkind, extra="", dy=0: eyes + cheeks(dy) + snout(mouth(mouthkind)) + extra
+    return {
+        # Mochi
+        "confident": mochi(face(open_eyes(), "smirk", brows("angry").replace('stroke-width="4.5"', 'stroke-width="3"')),
+                           extras_front=sparkle(16, 30, 9) + sparkle(190, 50, 7), tilt=-5),
+        "sad": mochi(face(open_eyes(ey=106) + brows("sad"), "frown", tear(66, 116) + tear(134, 116))),
+        "cheerful": mochi(face(closed_eyes(), "grin"), extras_front=note(14, 40, "#ff8fa3") + note(186, 20, "#8cc8f2")),
+        "surprised": mochi(face(wide_eyes(), "o"), extras_front=sparkle(14, 26, 10) + sparkle(190, 40, 9, "#ffb3d9") + sparkle(196, 110, 7, "#8cc8f2")),
+        "upset": mochi(face(open_eyes(ey=108) + brows("worried"), "frown", tear(134, 118)), tilt=8),
+        "proud": mochi(face(closed_eyes(), "grin"), extras_front=sparkle(14, 30, 10) + sparkle(186, 14, 12) + sparkle(196, 80, 7, "#ffb3d9"), tilt=-10),
+        "angry": mochi(face(open_eyes(ey=108) + brows("angry"), "frown", '<ellipse cx="54" cy="124" rx="13" ry="8" fill="#ff8f8f" stroke="none"/><ellipse cx="146" cy="124" rx="13" ry="8" fill="#ff8f8f" stroke="none"/>'),
+                       extras_front=puff(10, 40) + puff(190, 30)),
+        # Tofu
+        "satisfied": tofu(face(closed_eyes(), "smile", big_blush())),
+        "scared": tofu(face(wide_eyes(), "wavy", sweat(160, 80) + brows("worried")),
+                       extras_front='<path d="M2 90q-6 10 0 20M-8 86q-8 14 0 28M198 90q6 10 0 20M208 86q8 14 0 28" fill="none" stroke-width="3"/>'),
+        "hopeful": tofu(face(open_eyes(ey=98), "smile"), extras_front=sparkle(160, -10, 14) + sparkle(190, 30, 8, "#ffb3d9") + sparkle(30, 0, 8)),
+        "panicked": tofu(face(wide_eyes() + brows("worried"), "o", sweat(156, 78) + sweat(40, 80)),
+                         extras_front='<text x="176" y="20" font-family="Arial Rounded MT Bold,Fredoka,Arial,sans-serif" font-size="44" font-weight="700" fill="#ff7f9f" stroke="#4b2e22" stroke-width="2.5" paint-order="stroke">!</text>', tilt=-6),
+        "tired": tofu(face(sleepy_eyes(), "flat"), extras_front=zzz(), tilt=10),
+        "nervous": tofu(face(open_eyes() + brows("worried"), "wavy", sweat(158, 84))),
+        "shy": tofu(face(closed_eyes(up=False), "tiny", big_blush()), tilt=-8),
+        "relaxed": tofu(face(closed_eyes(), "smile"), extras_front=note(186, 30, "#8fe3a8")),
+    }
+
+
 os.makedirs(OUT, exist_ok=True)
 for name, draw in [("happy", happy), ("confused", confused), ("idea", idea), ("welcome", welcome), ("wrong", wrong), ("cloudmobile", cloudmobile)]:
     with open(os.path.join(OUT, f"{name}.svg"), "w") as f:
         f.write(draw())
+FEELINGS = os.path.join(ROOT, "public/images/game-asset/feelings")
+os.makedirs(FEELINGS, exist_ok=True)
+drawn = feelings()
+for name, picture in drawn.items():
+    with open(os.path.join(FEELINGS, f"{name}.svg"), "w") as f:
+        f.write(picture)
+# The 感受 topic's icon: Mochi, cheerful.
+with open(os.path.join(ROOT, "public/images/icons/chinese-feelings.svg"), "w") as f:
+    f.write(drawn["cheerful"])
 print("done")

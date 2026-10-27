@@ -108,6 +108,30 @@ const topics = [
       { character: "衣", jyutping: "ji1", english: "top", picture: "top", phrases: ["上衣"], group: "tops" },
     ],
   },
+  {
+    id: "nature",
+    name: "大自然",
+    english: "Nature",
+    icon: "/images/icons/chinese-nature.svg",
+    color: "green",
+    // The weather pictures are Letter Jumble's; the rest are drawn for this topic.
+    words: [
+      { character: "日", jyutping: "jat6", english: "sun", picture: "/images/game-asset/weather-and-seasons/sunny", phrases: ["日出", "生日"] },
+      { character: "月", jyutping: "jyut6", english: "moon", picture: "moon", phrases: ["月亮", "月餅"] },
+      { character: "星", jyutping: "sing1", english: "star", picture: "star", phrases: ["星星", "星期"] },
+      { character: "雲", jyutping: "wan4", english: "cloud", picture: "/images/game-asset/weather-and-seasons/cloudy", phrases: ["白雲", "雲朵"] },
+      { character: "雨", jyutping: "jyu5", english: "rain", picture: "/images/game-asset/weather-and-seasons/rainy", phrases: ["下雨", "雨傘"], group: "rain" },
+      { character: "雪", jyutping: "syut3", english: "snow", picture: "/images/game-asset/weather-and-seasons/snowy", phrases: ["雪人", "下雪"] },
+      { character: "風", jyutping: "fung1", english: "wind", picture: "/images/game-asset/weather-and-seasons/windy", phrases: ["大風", "風車"] },
+      { character: "雷", jyutping: "leoi4", english: "thunder", picture: "/images/game-asset/weather-and-seasons/stormy", phrases: ["打雷", "雷聲"], groups: ["storm", "rain"] },
+      { character: "電", jyutping: "din6", english: "lightning", picture: "lightning", phrases: ["閃電", "電話"], group: "storm" },
+      { character: "水", jyutping: "seoi2", english: "water", picture: "water", phrases: ["喝水", "水果"] },
+      { character: "火", jyutping: "fo2", english: "fire", picture: "fire", phrases: ["火車", "火山"] },
+      { character: "木", jyutping: "muk6", english: "wood", picture: "wood", phrases: ["木頭", "樹木"] },
+      { character: "土", jyutping: "tou2", english: "soil", picture: "soil", phrases: ["泥土", "土地"], group: "ground" },
+      { character: "地", jyutping: "dei6", english: "ground", picture: "ground", phrases: ["地上", "地方"], group: "ground" },
+    ],
+  },
 ];
 
 // The 5-6 year old game recognises whole words. Some pictures are close cousins (a police
@@ -255,6 +279,35 @@ const advancedTopics = [
       { character: "街市", jyutping: "gaai1 si5", english: "wet market", picture: "wet-market" },
     ],
   },
+  {
+    id: "feelings",
+    name: "感受",
+    english: "Feelings",
+    icon: "/images/icons/chinese-feelings.svg",
+    color: "pink",
+    // Fill in the blank: each sentence has a feeling word missing, and the choices are feelings,
+    // each with Mochi or Tofu showing it. Feelings that could both fit a sentence share a group,
+    // so they're never offered together.
+    kind: "sentence",
+    words: [
+      { character: "自信", jyutping: "zi6 seon3", english: "confident", picture: "confident", sentence: "小明每天努力練習鋼琴，所以在表演時非常自信。", groups: ["proud", "happy"] },
+      { character: "滿足", jyutping: "mun5 zuk1", english: "satisfied", picture: "satisfied", sentence: "吃完媽媽準備的晚餐後，我感到十分滿足。", groups: ["happy"] },
+      { character: "高興", jyutping: "gou1 hing3", english: "happy", picture: "/images/mochi/happy", sentence: "聽到自己考試進步了，我非常高興。", groups: ["happy"] },
+      { character: "傷心", jyutping: "soeng1 sam1", english: "sad", picture: "sad", sentence: "心愛的玩具弄丟了，小美感到很傷心。", groups: ["sad"] },
+      { character: "害怕", jyutping: "hoi6 paa3", english: "scared", picture: "scared", sentence: "半夜聽到奇怪的聲音時，我有點害怕。", groups: ["scared"] },
+      { character: "愉快", jyutping: "jyu4 faai3", english: "cheerful", picture: "cheerful", sentence: "我們一家人去郊遊，度過了一個愉快的下午。", groups: ["happy"] },
+      { character: "希望", jyutping: "hei1 mong6", english: "hope", picture: "hopeful", sentence: "我希望明天的天氣晴朗，可以去公園玩。", groups: ["hope"] },
+      { character: "驚喜", jyutping: "ging1 hei2", english: "surprised", picture: "surprised", sentence: "收到朋友送的生日禮物，我感到十分驚喜。", groups: ["happy"] },
+      { character: "驚慌", jyutping: "ging1 fong1", english: "panicked", picture: "panicked", sentence: "發現忘記帶功課時，小華頓時驚慌起來。", groups: ["scared"] },
+      { character: "疲倦", jyutping: "pei4 gyun6", english: "tired", picture: "tired", sentence: "跑完長跑比賽後，大家都感到十分疲倦。", groups: ["tired"] },
+      { character: "難過", jyutping: "naan4 gwo3", english: "upset", picture: "upset", sentence: "看到受傷的小鳥，我心裡很難過。", groups: ["sad"] },
+      { character: "緊張", jyutping: "gan2 zoeng1", english: "nervous", picture: "nervous", sentence: "第一次上台演講時，我感到非常緊張。", groups: ["scared"] },
+      { character: "害羞", jyutping: "hoi6 sau1", english: "shy", picture: "shy", sentence: "老師請她自我介紹時，她有點害羞。", groups: ["scared"] },
+      { character: "驕傲", jyutping: "giu1 ngou6", english: "proud", picture: "proud", sentence: "妹妹在繪畫比賽中得獎，爸爸媽媽都很驕傲。", groups: ["proud", "happy"] },
+      { character: "輕鬆", jyutping: "hing1 sung1", english: "relaxed", picture: "relaxed", sentence: "完成所有作業後，我終於可以輕鬆地休息了。", groups: ["happy"] },
+      { character: "生氣", jyutping: "saang1 hei3", english: "angry", picture: "angry", sentence: "弟弟故意把玩具弄壞了，哥哥非常生氣。", groups: ["angry", "sad"] },
+    ],
+  },
 ];
 
 const optionCount = 4;
@@ -291,6 +344,8 @@ function pictureOptions(words, wordIndex) {
 // A topic's pictures are in /images/game-asset/<topic id>, or in `pictures` when it shares a folder
 // (both animal topics use game-asset/animals, and fruit is in game-asset/food).
 const pictureFolder = (topic) => topic.pictures ?? `/images/game-asset/${topic.id}`;
+// A word's picture: a name in the topic's folder, or a full path to reuse one from elsewhere.
+const pictureFile = (topic, picture) => (picture.startsWith("/") ? `${picture}.svg` : `${pictureFolder(topic)}/${picture}.svg`);
 
 function buildTopics(list) {
   return list.map((topic) => ({
@@ -299,12 +354,12 @@ function buildTopics(list) {
       ...word,
       // `answers` lets the shared word menu and progress code treat characters like spelling words.
       answers: [word.character],
-      picture: `${pictureFolder(topic)}/${word.picture}.svg`,
+      picture: pictureFile(topic, word.picture),
       category: topic.name,
       color: topic.color,
       options: pictureOptions(words, wordIndex).map((option) => ({
         ...option,
-        picture: `${pictureFolder(topic)}/${option.picture}.svg`,
+        picture: pictureFile(topic, option.picture),
       })),
     })),
   }));

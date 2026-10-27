@@ -91,7 +91,7 @@ describe("food", () => {
 
 describe("every topic", () => {
   it("has the topics in order: colours, food, fruit, animals, clothes", () => {
-    expect(chineseTopics.map((topic) => topic.name)).toEqual(["顏色", "食物", "水果", "動物", "衣物"]);
+    expect(chineseTopics.map((topic) => topic.name)).toEqual(["顏色", "食物", "水果", "動物", "衣物", "大自然"]);
   });
 
   it.each([
@@ -166,7 +166,7 @@ describe("home (5-6 year olds)", () => {
   const byCharacter = Object.fromEntries(home.words.map((word) => [word.character, word]));
 
   it("comes after jobs, with the 20 home words in order", () => {
-    expect(chineseAdvancedTopics.map((topic) => topic.name)).toEqual(["職業", "家", "動物", "地點"]);
+    expect(chineseAdvancedTopics.map((topic) => topic.name)).toEqual(["職業", "家", "動物", "地點", "感受"]);
     expect(home.words.map((word) => word.character)).toEqual([
       "客廳", "廚房", "浴室", "睡房", "書房", "窗戶", "床褥", "椅子", "桌子",
       "衣櫃", "杯子", "碗碟", "電燈", "時鐘", "沙發", "電視", "電腦", "空氣淨化機", "露台", "游泳池",
@@ -244,3 +244,46 @@ describe("places (5-6 year olds)", () => {
     });
   });
 });
+
+describe("大自然 (nature)", () => {
+  const nature = chineseTopics.find((topic) => topic.id === "nature");
+
+  it("has the 14 nature characters, reusing the weather pictures where there's one", () => {
+    expect(nature.words.map((word) => word.character).sort()).toEqual(["土", "地", "日", "星", "月", "木", "水", "火", "雨", "雪", "雲", "雷", "電", "風"].sort());
+    const picture = (character) => nature.words.find((word) => word.character === character).picture;
+    expect(picture("雨")).toBe("/images/game-asset/weather-and-seasons/rainy.svg");
+    expect(picture("火")).toBe("/images/game-asset/nature/fire.svg");
+  });
+
+  it("never offers thunder and lightning, or soil and ground, against each other", () => {
+    const options = (character) => nature.words.find((word) => word.character === character).options.map((option) => option.character);
+    expect(options("雷")).not.toContain("電");
+    expect(options("電")).not.toContain("雷");
+    expect(options("土")).not.toContain("地");
+    expect(options("雨")).not.toContain("雷");
+  });
+});
+
+describe("感受 (feelings, 5-6 year olds)", () => {
+  const feelings = chineseAdvancedTopics.find((topic) => topic.id === "feelings");
+
+  it("is a fill-in-the-blank topic of 16 feelings, each in its sentence", () => {
+    expect(feelings.kind).toBe("sentence");
+    expect(feelings.words).toHaveLength(16);
+    feelings.words.forEach((word) => expect(word.sentence).toContain(word.character));
+    expect(feelings.words.find((word) => word.character === "高興").picture).toBe("/images/mochi/happy.svg");
+  });
+
+  it("offers four feelings, never two that could both fit the sentence", () => {
+    feelings.words.forEach((word) => {
+      expect(word.options).toHaveLength(4);
+      expect(word.options.map((option) => option.character)).toContain(word.character);
+    });
+    const options = (character) => feelings.words.find((word) => word.character === character).options.map((option) => option.character);
+    expect(options("高興")).not.toContain("愉快");
+    expect(options("傷心")).not.toContain("難過");
+    expect(options("害怕")).not.toContain("緊張");
+    expect(options("驕傲")).not.toContain("高興");
+  });
+});
+

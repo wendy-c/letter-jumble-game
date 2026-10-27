@@ -437,6 +437,54 @@ pictures["icons/blends-l"] = blend_bubbles([(40, 40, "#8cc8f2", "bl"), (88, 40, 
 pictures["icons/blends-mixed"] = blend_bubbles([(40, 40, "#ffb3d1", "br"), (88, 40, "#c9b6f5", "fl"), (64, 88, "#ffe27a", "str")])
 
 
+# ---------- 大自然 (nature) ----------
+# Things, so no faces. 日, 雨, 雪, 雲, 雷 and 風 reuse the weather-and-seasons pictures.
+N = "game-asset/nature/"
+pictures[N + "fire"] = svg(
+    '<path d="M64 116c-26 0-40-18-36-40 3-16 14-24 16-40 10 8 14 18 14 26 6-10 6-24 2-38 22 12 38 34 38 58 0 22-14 34-34 34Z" fill="#ff8f5e"/>'
+    '<path d="M64 116c-14 0-22-10-20-22 2-10 10-14 12-24 8 8 20 18 20 30 0 10-4 16-12 16Z" fill="#ffd45e"/>'
+    '<path d="M30 116h68" stroke-width="5"/><path d="M36 122l56-12M36 110l56 12" stroke="#a46a3c" stroke-width="7"/>')
+pictures[N + "soil"] = svg(
+    '<path d="M14 112q8-34 50-38 42 4 50 38Z" fill="#b9814f"/>'
+    '<circle cx="44" cy="98" r="3" fill="#7a4e2b" stroke="none"/><circle cx="66" cy="90" r="3" fill="#7a4e2b" stroke="none"/><circle cx="86" cy="102" r="3" fill="#7a4e2b" stroke="none"/>'
+    '<path d="M64 76V52" stroke-width="4"/><path d="M64 60q-16-4-20-18 16 0 20 12M64 56q14-6 18-20-16 2-18 14" fill="#8fe3a8" stroke-width="3"/>'
+    '<path d="M8 112h112" stroke-width="4"/>')
+pictures[N + "wood"] = svg(
+    '<path d="M24 78h70v32H24Z" fill="#c98a55"/><path d="M30 86h50M36 98h52" stroke="#a46a3c" stroke-width="3"/>'
+    '<ellipse cx="94" cy="94" rx="12" ry="16" fill="#f3d38c"/><ellipse cx="94" cy="94" rx="6" ry="9" fill="none" stroke="#c98a55" stroke-width="2.5"/>'
+    '<path d="M24 46h60v28H24Z" fill="#d9a066"/><path d="M30 54h46M34 66h44" stroke="#a46a3c" stroke-width="3"/>'
+    '<ellipse cx="84" cy="60" rx="10" ry="14" fill="#f3d38c"/><ellipse cx="84" cy="60" rx="5" ry="8" fill="none" stroke="#c98a55" stroke-width="2.5"/>'
+    '<path d="M40 46q0-14 10-20M40 34q-8-4-10-12 10 0 12 8" fill="#8fe3a8" stroke-width="3"/>')
+pictures[N + "water"] = svg(
+    '<path d="M64 14C64 14 32 54 32 78a32 32 0 0 0 64 0C96 54 64 14 64 14Z" fill="#8cc8f2"/>'
+    '<path d="M48 76q0 14 12 20" fill="none" stroke="#ffffff" stroke-width="5"/>'
+    '<path d="M8 118q14-10 28 0t28 0 28 0 28 0" fill="none" stroke="#5aa8e0" stroke-width="5"/>')
+pictures[N + "ground"] = svg(
+    '<path d="M6 80q28-18 58-6t58-4V122H6Z" fill="#9fdcbf"/>'
+    '<path d="M6 96q30-8 60 0t56 0V122H6Z" fill="#c98a55"/><path d="M6 110q30-6 60 0t56 0V122H6Z" fill="#a46a3c"/>'
+    '<circle cx="30" cy="104" r="3" fill="#7a4e2b" stroke="none"/><circle cx="74" cy="112" r="3" fill="#5e3a1e" stroke="none"/><circle cx="100" cy="102" r="3" fill="#7a4e2b" stroke="none"/>'
+    '<path d="M24 80q2-10 0-14M30 80q0-12 4-16M36 80q-2-8 2-12M90 74q2-10 0-14M96 74q0-12 4-16M102 74q-2-8 2-12" fill="none" stroke="#4fb893" stroke-width="3"/>')
+pictures[N + "moon"] = svg(
+    '<path d="M76 16a48 48 0 1 0 36 70A40 40 0 1 1 76 16Z" fill="#ffe27a"/>'
+    '<circle cx="54" cy="84" r="5" fill="#f2c94c" stroke="none"/><circle cx="68" cy="100" r="3.5" fill="#f2c94c" stroke="none"/>'
+    + sparkle(100, 30, 8) + sparkle(110, 60, 5, "#fff6c8"))
+pictures[N + "star"] = svg(
+    '<path d="M64 14l14 30 32 4-24 22 6 32-28-16-28 16 6-32-24-22 32-4Z" fill="#ffd45e"/>'
+    '<path d="M52 50l6-12" stroke="#ffffff" stroke-width="5"/>'
+    + sparkle(18, 22, 7, "#fff6c8") + sparkle(110, 104, 8) + sparkle(20, 100, 6, "#ffe0ee"))
+pictures[N + "lightning"] = svg(
+    '<path d="M74 8 30 70h28l-12 50 50-68H68Z" fill="#ffe27a"/>'
+    '<path d="M64 26 46 56" stroke="#ffffff" stroke-width="4"/>'
+    + sparkle(22, 30, 8, "#fff6c8") + sparkle(104, 96, 9))
+# The topic's icon: the sun over a little tree.
+pictures["icons/chinese-nature"] = svg(
+    '<circle cx="64" cy="68" r="52" fill="#d8f0ff"/>'
+    '<circle cx="86" cy="42" r="16" fill="#ffe27a"/>'
+    '<path d="M16 96q48-14 96 0v8H16Z" fill="#9fdcbf" stroke-width="3"/>'
+    '<path d="M46 98V72" stroke-width="7"/><path d="M46 98V72" stroke="#c98a55" stroke-width="3"/>'
+    '<circle cx="46" cy="60" r="18" fill="#8fe3a8"/>')
+
+
 # The front page's group headings: Phonics, Cambridge YLE training, 中文 and Visit Mochi.
 def letter_block(x, y, w, fill, letter):
     return (f'<rect x="{x}" y="{y}" width="{w}" height="{w}" rx="7" fill="{fill}"/>'

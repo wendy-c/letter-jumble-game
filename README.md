@@ -16,7 +16,7 @@ The front page groups the games under four headings:
 | Cambridge YLE training | Letter Jumble for Starters | 5–6 | Spell Cambridge Starters words from jumbled letters (8 topics, from Pets and Farm to Home). |
 | | Letter Jumble for Movers | 5–6 | The same game with Cambridge Movers words (8 topics). |
 | 中文 | 中文認字 · 入門篇 | 3–4 | Read a character, pick its picture. |
-| | 中文認字 · 進階篇 | 5–6 | Two- to five-character words: jobs, home, animals, places. |
+| | 中文認字 · 進階篇 | 5–6 | Two- to five-character words: jobs, home, animals, places; and 感受, filling a feeling into a sentence (Mochi and Tofu show each feeling). |
 | | 量詞配對 | 5–6 | Pick the noun that goes with a measure word (一個橙). 20 questions per round. |
 | | 成語 | 5–6 | Fill the missing character of a four-character idiom, from a picture and its meaning. |
 | Visit Mochi | Mochi the Rainbow Dragon | All | A 3D pet dragon. Spend coins on treats, grooming and activities. A road sign in her room leads to Rainbow Village, where 100 coins unlock her shy friend Tofu's house, then another 100 open the park, where Mochi and Tofu have picnics, play hide and seek, blow bubbles and ride scooters together. |

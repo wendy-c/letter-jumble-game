@@ -631,7 +631,7 @@ describe("chinese characters", () => {
 
     await user.click(screen.getByRole("button", { name: /中文認字/ }));
     expect(screen.getAllByRole("button").filter((button) => button.classList.contains("category-card")).map((card) => card.querySelector(".category-card-name").textContent))
-      .toEqual(["顏色", "食物", "水果", "動物", "衣物"]);
+      .toEqual(["顏色", "食物", "水果", "動物", "衣物", "大自然"]);
     await user.click(screen.getByRole("button", { name: /食物/ }));
 
     expect(screen.getByText("餅", { selector: ".chinese-character" })).toBeInTheDocument();
@@ -988,6 +988,25 @@ describe("Letter Jumble for Starters", () => {
   });
 });
 
+describe("感受 (feelings)", () => {
+  it("fills the gap in a sentence with a feeling, each choice showing Mochi or Tofu", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
+    setPathname("/chinese-advanced/feelings");
+    const user = userEvent.setup();
+    render(<GameApp />);
+    // With the order pinned, the first sentence is 自信's.
+    const sentence = await screen.findByLabelText("小明每天努力練習鋼琴，所以在表演時非常空格。");
+    expect(sentence).toBeInTheDocument();
+    const choices = within(screen.getByRole("group", { name: "感受的選擇" })).getAllByRole("button");
+    expect(choices).toHaveLength(4);
+    choices.forEach((choice) => expect(choice.querySelector("img")).toHaveAttribute("src", expect.stringMatching(/^\/images\/(game-asset\/feelings|mochi)\//)));
+
+    await user.click(screen.getByRole("button", { name: /自信/ }));
+    expect(screen.getByRole("status")).toHaveTextContent("！");
+    expect(storedPlayers().players[0].results).toEqual({ "chinese-advanced/feelings": [true] });
+  });
+});
+
 describe("measure words", () => {
   it("deals 20 random questions for 5-6 year olds and plays one", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
@@ -1179,7 +1198,7 @@ describe("badges", () => {
 
     expect(within(collection).getAllByRole("heading", { level: 2 }).map((heading) => heading.textContent))
       .toEqual(["Consonant Digraphs", "R & L Blends", "Letter Jumble for Starters", "Letter Jumble for Movers", "中文認字 · 進階篇", "量詞配對", "成語"]);
-    expect(collection).toHaveTextContent("2 of 28 badges");
+    expect(collection).toHaveTextContent("2 of 29 badges");
     expect(within(collection).getByRole("listitem", { name: "Animals: earned" })).toBeInTheDocument();
     expect(within(collection).getByRole("listitem", { name: "成語: earned" })).toBeInTheDocument();
     const movers = within(collection).getByRole("region", { name: "Letter Jumble for Movers" });
@@ -1204,7 +1223,7 @@ describe("badges", () => {
     const user = userEvent.setup();
     render(<GameApp />);
     const collection = await openBadges(user);
-    expect(collection).toHaveTextContent("0 of 15 badges");
+    expect(collection).toHaveTextContent("0 of 16 badges");
     expect(collection).toHaveTextContent("Get every answer in a topic right to earn its badge!");
   });
 

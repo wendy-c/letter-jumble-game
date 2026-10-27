@@ -17,6 +17,7 @@ import GameFooter from "./GameFooter";
 import GameHeading from "./GameHeading";
 import GamePicker from "./GamePicker";
 import IdiomGame from "./IdiomGame";
+import SentenceGame from "./SentenceGame";
 import MeasureWordGame from "./MeasureWordGame";
 import PictureClue from "./PictureClue";
 import ParentMode from "./ParentMode";
@@ -419,6 +420,7 @@ export default function GameApp() {
   function revealFor(question) {
     if (isMeasure) return { text: question.answers[0], picture: question.icon };
     if (isIdiom) return { text: question.idiom, picture: question.picture, note: question.meaning };
+    if (question.sentence) return { text: question.character, picture: question.picture, note: question.sentence };
     if (inChinese) return { text: question.character, picture: question.picture };
     return { text: answer, picture: question.picture };
   }
@@ -656,15 +658,25 @@ export default function GameApp() {
             breadcrumbs={breadcrumbs}
             onOpenWordMenu={() => setWordMenuOpen(true)}
             eyebrow="今日魔法堂"
-            note="讀一讀，選擇正確的圖象！"
+            note={selectedCategory.kind === "sentence" ? "讀一讀句子，選出正確的感受！" : "讀一讀，選擇正確的圖象！"}
           />
-          <ChineseGame
-            key={`${selectedCategory.id}-${round}`}
-            topic={selectedCategory}
-            round={round}
-            word={puzzle}
-            onAnswer={answerQuestion}
-          />
+          {selectedCategory.kind === "sentence" ? (
+            <SentenceGame
+              key={`${selectedCategory.id}-${round}`}
+              topic={selectedCategory}
+              round={round}
+              question={puzzle}
+              onAnswer={answerQuestion}
+            />
+          ) : (
+            <ChineseGame
+              key={`${selectedCategory.id}-${round}`}
+              topic={selectedCategory}
+              round={round}
+              word={puzzle}
+              onAnswer={answerQuestion}
+            />
+          )}
           <GameFooter>一字一字慢慢學</GameFooter>
         </section>
       ) : (
