@@ -69,6 +69,7 @@ const topics = [
   },
   {
     id: "animals",
+    pictures: "/images/game-asset/animals",
     name: "動物",
     english: "Animals",
     icon: "/images/icons/chinese-animals.svg",
@@ -187,6 +188,7 @@ const advancedTopics = [
   },
   {
     id: "animals-advanced",
+    pictures: "/images/game-asset/animals",
     name: "動物",
     english: "Animals",
     icon: "/images/icons/chinese-animals-advanced.svg",
@@ -285,6 +287,10 @@ function pictureOptions(words, wordIndex) {
   return options.map((option) => ({ character: option.character, picture: option.picture, english: option.english }));
 }
 
+// A topic's pictures are in /images/chinese/<topic id>, or in `pictures` when it shares a folder
+// (both animal topics use the game's animal pictures in /images/game-asset/animals).
+const pictureFolder = (topic) => topic.pictures ?? `/images/chinese/${topic.id}`;
+
 function buildTopics(list) {
   return list.map((topic) => ({
     ...topic,
@@ -292,12 +298,12 @@ function buildTopics(list) {
       ...word,
       // `answers` lets the shared word menu and progress code treat characters like spelling words.
       answers: [word.character],
-      picture: `/images/chinese/${topic.id}/${word.picture}.svg`,
+      picture: `${pictureFolder(topic)}/${word.picture}.svg`,
       category: topic.name,
       color: topic.color,
       options: pictureOptions(words, wordIndex).map((option) => ({
         ...option,
-        picture: `/images/chinese/${topic.id}/${option.picture}.svg`,
+        picture: `${pictureFolder(topic)}/${option.picture}.svg`,
       })),
     })),
   }));

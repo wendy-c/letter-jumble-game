@@ -165,7 +165,7 @@ pictures["rainbow-coin"] = (
 
 # ---------- Animals: faces stay ----------
 
-pictures["chinese/animals/cat"] = svg(
+pictures["game-asset/animals/cat"] = svg(
     '<defs><clipPath id="cat-head"><circle cx="64" cy="70" r="40"/></clipPath></defs>'
     '<path d="M28 52 30 14l28 26Z" fill="#ffffff"/><path d="M100 52 98 14 70 40Z" fill="#ffa552"/>'
     '<path d="M34 44l1-20 14 13Z" fill="#ffc2dc" stroke="none"/>'
@@ -176,7 +176,7 @@ pictures["chinese/animals/cat"] = svg(
     '<path d="M60 77h8l-4 5Z" fill="#ff8fae" stroke-width="2.5"/><path d="M58 85q3 4 6 0 3 4 6 0" fill="none" stroke-width="2.6"/>'
     '<g stroke-width="2.2"><path d="M34 80l-18-2M34 86l-18 4M94 80l18-2M94 86l18 4"/></g>')
 
-pictures["chinese/animals/swan"] = svg(
+pictures["game-asset/animals/swan"] = svg(
     '<path d="M4 108q15-8 30 0t30 0 30 0 30 0v18H4Z" fill="#8cc8f2"/>'
     '<path d="M44 74q-14-18 0-36t30-4" fill="none" stroke-width="16"/><path d="M44 74q-14-18 0-36t30-4" fill="none" stroke="#ffffff" stroke-width="9"/>'
     '<circle cx="72" cy="34" r="12" fill="#ffffff"/>'
@@ -186,7 +186,7 @@ pictures["chinese/animals/swan"] = svg(
     '<path d="M26 92q-2-22 26-22h26q22 0 36-14 6 30-14 42-12 8-40 8-30 0-34-14Z" fill="#ffffff"/>'
     '<path d="M54 80q20-6 34 4-16 12-34 4" fill="#f4ebff" stroke-width="3"/>')
 
-pictures["chinese/animals-advanced/dolphin"] = svg(
+pictures["game-asset/animals/dolphin"] = svg(
     '<path d="M4 110q15-8 30 0t30 0 30 0 30 0v16H4Z" fill="#8cc8f2"/>'
     '<path d="M20 92Q28 52 70 42Q96 36 108 50L120 54L108 58Q100 66 86 64Q56 64 36 92L40 106L28 98L14 104Z" fill="#8cc8f2"/>'
     '<path d="M62 44Q66 26 80 22Q74 34 76 42Z" fill="#8cc8f2"/>'
@@ -196,7 +196,7 @@ pictures["chinese/animals-advanced/dolphin"] = svg(
     '<ellipse cx="88" cy="56" rx="4" ry="2.4" fill="#ffb3c6" stroke="none"/>'
     '<path d="M104 58q4 3 8 1" fill="none" stroke-width="2.5"/>')
 
-pictures["chinese/animals-advanced/dragonfly"] = svg(
+pictures["game-asset/animals/dragonfly"] = svg(
     '<g fill="#e6f4fc" stroke-width="3"><ellipse cx="38" cy="40" rx="28" ry="10" transform="rotate(-12 38 40)"/><ellipse cx="90" cy="40" rx="28" ry="10" transform="rotate(12 90 40)"/>'
     '<ellipse cx="40" cy="58" rx="24" ry="8" transform="rotate(10 40 58)"/><ellipse cx="88" cy="58" rx="24" ry="8" transform="rotate(-10 88 58)"/></g>'
     '<path d="M64 52v62" stroke-width="12"/><path d="M64 52v62" stroke="#6cc28a" stroke-width="6"/>'
@@ -205,7 +205,7 @@ pictures["chinese/animals-advanced/dragonfly"] = svg(
     '<circle cx="64" cy="30" r="13" fill="#8fe3a8"/>'
     + face(64, 28, 0.8))
 
-pictures["chinese/animals-advanced/mole"] = svg(
+pictures["game-asset/animals/mole"] = svg(
     '<path d="M6 122q4-30 58-30t58 30Z" fill="#c98a55"/>'
     '<path d="M30 100q0-58 34-58t34 58Z" fill="#6e5a6e"/>'
     '<ellipse cx="64" cy="78" rx="12" ry="8" fill="#9a8496" stroke="none"/>'

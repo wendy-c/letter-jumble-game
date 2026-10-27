@@ -1,11 +1,11 @@
 // Consonant Digraphs: two letters that make one sound. Each word shows with its digraph missing
 // (e.g. "_ _ip" for ship); the learner picks the digraph that fills the gap.
-const drawn = "/images/words/digraphs";
+const drawn = "/images/game-asset/digraphs";
 
 const words = {
   ch: [
     ["chair", "/images/chinese/home/chair.svg"], ["chin", `${drawn}/chin.svg`], ["cheese", "🧀"], ["cherry", "🍒"],
-    ["chicken", "/images/chinese/animals/chicken.svg"], ["beach", "🏖️"], ["lunch", "🍱"], ["peach", "🍑"],
+    ["chicken", "/images/game-asset/animals/chicken.svg"], ["beach", "🏖️"], ["lunch", "🍱"], ["peach", "🍑"],
     ["bench", `${drawn}/bench.svg`], ["match", `${drawn}/match.svg`],
   ],
   sh: [
@@ -13,14 +13,14 @@ const words = {
     ["shirt", "/images/chinese/clothes/shirt.svg"], ["fish", "🐟"], ["wish", "🌠"], ["brush", "🪥"], ["wash", "🧼"], ["dish", "🍽️"],
   ],
   th: [
-    ["thin", "/images/words/body-and-face/thin.svg"], ["thick", `${drawn}/thick.svg`], ["thumb", "👍"], ["three", "3️⃣"],
-    ["think", "🤔"], ["bath", "🛁"], ["moth", "/images/chinese/animals-advanced/moth.svg"], ["path", `${drawn}/path.svg`],
-    ["tooth", "/images/words/body-and-face/tooth.svg"], ["both", "🙌"],
+    ["thin", "/images/game-asset/body-and-face/thin.svg"], ["thick", `${drawn}/thick.svg`], ["thumb", "👍"], ["three", "3️⃣"],
+    ["think", "🤔"], ["bath", "🛁"], ["moth", "/images/game-asset/animals/moth.svg"], ["path", `${drawn}/path.svg`],
+    ["tooth", "/images/game-asset/body-and-face/tooth.svg"], ["both", "🙌"],
   ],
   ph: [["graph", "📊"], ["phone", "📱"], ["photo", "📸"], ["phase", "🌓"], ["phantom", "👻"]],
   wh: [
     ["wheel", `${drawn}/wheel.svg`], ["white", "/images/chinese/colours/white.svg"],
-    ["whale", "/images/chinese/animals-advanced/whale.svg"], ["where", "🔍❓"], ["whisper", "🤫"],
+    ["whale", "/images/game-asset/animals/whale.svg"], ["where", "🔍❓"], ["whisper", "🤫"],
   ],
   ck: [["duck", "🦆"], ["lock", "🔒"], ["pack", "🎒"], ["black", "/images/chinese/colours/black.svg"], ["kick", "🦵⚽"]],
   ng: [["king", "🤴"], ["ring", "💍"], ["song", "🎵"], ["long", "📏"], ["bring", "🎁"]],

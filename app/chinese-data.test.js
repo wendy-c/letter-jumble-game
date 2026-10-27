@@ -38,6 +38,19 @@ describe("chineseTopics", () => {
     expect(images.filter((image) => !fs.existsSync(path.join(publicDir, image)))).toEqual([]);
   });
 
+  it("has a picture file for every word and option in every topic, beginner and advanced", () => {
+    const images = [...chineseTopics, ...chineseAdvancedTopics].flatMap((topic) => [
+      topic.icon,
+      ...topic.words.flatMap((word) => [word.picture, ...word.options.map((option) => option.picture)]),
+    ]);
+    expect(images.filter((image) => !fs.existsSync(path.join(publicDir, image)))).toEqual([]);
+  });
+
+  it("shares one folder of animal pictures between both animal topics", () => {
+    const animals = [chineseTopics.find((topic) => topic.id === "animals"), chineseAdvancedTopics.find((topic) => topic.id === "animals-advanced")];
+    animals.forEach((topic) => topic.words.forEach((word) => expect(word.picture).toMatch(/^\/images\/game-asset\/animals\/[a-z-]+\.svg$/)));
+  });
+
   it("lets the shared word menu and progress code use the character as the answer", () => {
     colours.words.forEach((word) => expect(word.answers).toEqual([word.character]));
   });

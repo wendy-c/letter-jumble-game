@@ -1,15 +1,14 @@
 import { wordCategory } from "./game-data";
 
 // Letter Jumble for Starters: Cambridge Starters (YLE) vocabulary, played like Letter Jumble for
-// Movers. Pictures reuse the Chinese game's animal drawings where there is one, or an emoji.
-const chineseAnimals = "/images/chinese/animals";
-const moreAnimals = "/images/chinese/animals-advanced";
+// Movers. Pictures reuse the games' animal drawings where there is one, or an emoji.
+const animalPictures = "/images/game-asset/animals";
 const fruit = "/images/chinese/fruit";
 const food = "/images/chinese/food";
 const clothes = "/images/chinese/clothes";
 const home = "/images/chinese/home";
-const words = "/images/words";
-const drawn = "/images/words/starters";
+const words = "/images/game-asset";
+const drawn = "/images/game-asset/starters";
 
 // Words with two right spellings (e.g. candy or sweet): each round asks for one of them.
 const either = (answers, picture) => ({ answers, picture });
@@ -21,21 +20,21 @@ export const starterCategories = [
     icon: "/images/icons/starters-pets-and-farm.svg",
     color: "green",
     words: [
-      ["Cat", `${chineseAnimals}/cat.svg`],
-      ["Dog", `${chineseAnimals}/dog.svg`],
+      ["Cat", `${animalPictures}/cat.svg`],
+      ["Dog", `${animalPictures}/dog.svg`],
       ["Bird", "🐦"],
       ["Duck", "🦆"],
-      ["Chicken", `${chineseAnimals}/chicken.svg`],
-      ["Cow", `${chineseAnimals}/cow.svg`],
-      ["Sheep", `${chineseAnimals}/sheep.svg`],
+      ["Chicken", `${animalPictures}/chicken.svg`],
+      ["Cow", `${animalPictures}/cow.svg`],
+      ["Sheep", `${animalPictures}/sheep.svg`],
       ["Goat", "🐐"],
-      ["Horse", `${chineseAnimals}/horse.svg`],
-      ["Pig", `${chineseAnimals}/pig.svg`],
-      ["Donkey", `${moreAnimals}/donkey.svg`],
+      ["Horse", `${animalPictures}/horse.svg`],
+      ["Pig", `${animalPictures}/pig.svg`],
+      ["Donkey", `${animalPictures}/donkey.svg`],
       ["Frog", "🐸"],
       ["Fish", "🐟"],
       ["Lizard", "🦎"],
-      ["Mouse", `${chineseAnimals}/mouse.svg`],
+      ["Mouse", `${animalPictures}/mouse.svg`],
       ["Mice", "🐁🐁🐁"],
       ["Pet", "🐾"],
     ],
@@ -46,26 +45,26 @@ export const starterCategories = [
     icon: "/images/icons/starters-wild-animals.svg",
     color: "peach",
     words: [
-      ["Bear", `${chineseAnimals}/bear.svg`],
-      ["Elephant", `${chineseAnimals}/elephant.svg`],
+      ["Bear", `${animalPictures}/bear.svg`],
+      ["Elephant", `${animalPictures}/elephant.svg`],
       ["Giraffe", "🦒"],
       ["Hippo", "🦛"],
-      ["Bat", `${moreAnimals}/bat.svg`],
-      ["Kangaroo", `${moreAnimals}/kangaroo.svg`],
-      ["Monkey", `${moreAnimals}/monkey.svg`],
-      ["Panda", `${moreAnimals}/panda.svg`],
-      ["Parrot", `${moreAnimals}/parrot.svg`],
+      ["Bat", `${animalPictures}/bat.svg`],
+      ["Kangaroo", `${animalPictures}/kangaroo.svg`],
+      ["Monkey", `${animalPictures}/monkey.svg`],
+      ["Panda", `${animalPictures}/panda.svg`],
+      ["Parrot", `${animalPictures}/parrot.svg`],
       ["Penguin", "🐧"],
-      ["Polar bear", `${moreAnimals}/polar-bear.svg`],
+      ["Polar bear", `${animalPictures}/polar-bear.svg`],
       ["Snake", "🐍"],
-      ["Spider", `${moreAnimals}/spider.svg`],
-      ["Tiger", `${chineseAnimals}/tiger.svg`],
-      ["Zebra", `${moreAnimals}/zebra.svg`],
+      ["Spider", `${animalPictures}/spider.svg`],
+      ["Tiger", `${animalPictures}/tiger.svg`],
+      ["Zebra", `${animalPictures}/zebra.svg`],
       ["Crocodile", "🐊"],
-      ["Dolphin", `${moreAnimals}/dolphin.svg`],
-      ["Jellyfish", "/images/words/starters/jellyfish.svg"],
+      ["Dolphin", `${animalPictures}/dolphin.svg`],
+      ["Jellyfish", "/images/game-asset/starters/jellyfish.svg"],
       ["Shark", "🦈"],
-      ["Whale", `${moreAnimals}/whale.svg`],
+      ["Whale", `${animalPictures}/whale.svg`],
     ],
   },
   {

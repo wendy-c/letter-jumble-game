@@ -8,7 +8,7 @@ export default {
 };
 
 export const Emoji = { args: { reveal: { text: "dolphin", picture: "🐬" } } };
-export const Drawing = { args: { reveal: { text: "beard", picture: "/images/words/body-and-face/beard.svg" } } };
+export const Drawing = { args: { reveal: { text: "beard", picture: "/images/game-asset/body-and-face/beard.svg" } } };
 export const Chinese = {
   args: { reveal: { text: "紅色", picture: "🔴", note: "紅色的紅" }, labels: chineseRevealLabels, lang: "zh-Hant-HK" },
 };
