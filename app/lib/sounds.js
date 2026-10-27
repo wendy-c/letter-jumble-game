@@ -204,6 +204,14 @@ export const sounds = {
     tone(ac, { freq: 900, slide: 420, duration: 0.5, type: "triangle", volume: 0.16, vibrato: { rate: 26, depth: 45 } });
   }),
 
+  // Beep beep! Mochi's car horn.
+  honk: play((ac) => {
+    [0, 0.2].forEach((at) => {
+      tone(ac, { freq: 466, at, duration: 0.13, type: "square", volume: 0.06, attack: 0.005 });
+      tone(ac, { freq: 587, at, duration: 0.13, type: "square", volume: 0.05, attack: 0.005 });
+    });
+  }),
+
   // A soft singing-bowl chime.
   bell: play((ac) => {
     [notes.C5, notes.G5, notes.C6].forEach((freq) => tone(ac, { freq, duration: 2.6, volume: 0.07, attack: 0.02 }));

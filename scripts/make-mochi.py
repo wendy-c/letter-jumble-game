@@ -1,6 +1,7 @@
 # Draws Mochi the mascot in five moods: public/images/mochi/happy.svg, confused.svg, idea.svg,
 # welcome.svg (a big smile and open arms, for the front page's greeting) and wrong.svg (holding up a
-# sign with a red cross, after a wrong answer).
+# sign with a red cross, after a wrong answer); and cloudmobile.svg, Mochi in sunglasses driving her
+# cloud car (the front page's way to the dragon game).
 # She's a head-and-shoulders sticker, matching the 3D Mochi: lilac, pink snout, unicorn horn,
 # fluffy ears with rainbow tips, a rainbow mane and rainbow wings peeking out.
 import os, sys
@@ -168,8 +169,60 @@ def wrong():
     return mochi(face, extras_front=sign + paws + sparkle(16, 26, 7, "#b79cf2"))
 
 
+def arm_to(sx, sy, hx, hy):
+    # An outlined lilac arm from the shoulder (sx, sy) to a round paw at (hx, hy).
+    return (f'<path d="M{sx} {sy}L{hx} {hy}" stroke-width="27"/>'
+            f'<path d="M{sx} {sy}L{hx} {hy}" stroke="{LILAC}" stroke-width="20"/>'
+            f'<circle cx="{hx}" cy="{hy}" r="13" fill="{LILAC}"/>'
+            f'<circle cx="{hx}" cy="{hy + 2}" r="5" fill="{PINK}" stroke="none"/>')
+
+
+def sunglasses():
+    # Heart-shaped lenses with pink rims and a shine, over her eyes.
+    lens = lambda x: (f'<path d="M{x} 118C{x - 24} 106 {x - 22} 86 {x - 10} 88 {x - 4} 88 {x} 94 {x} 94'
+                      f'C{x} 94 {x + 4} 88 {x + 10} 88 {x + 22} 86 {x + 24} 106 {x} 118Z" fill="#3d2b63" stroke="#ff7fae" stroke-width="4"/>'
+                      f'<path d="M{x - 12} 96q3-4 8-4" fill="none" stroke="#ffffff" stroke-width="3" opacity=".8"/>')
+    return (lens(72) + lens(128) + '<path d="M90 98q10-6 20 0" fill="none" stroke="#ff7fae" stroke-width="4"/>'
+            '<path d="M50 96l-12-4M150 96l12-4" stroke="#ff7fae" stroke-width="4"/>')
+
+
+def cloud(x, y, w, h, fill):
+    # A fluffy cloud with one outline round the outside: puffs along the top of a rounded base, wide
+    # w and tall h, its top-left at (x, y). Drawn once thick in ink, then filled on top.
+    shapes = lambda paint, extra: "".join(
+        f'<circle cx="{x + w * f:.0f}" cy="{y + h * 0.42:.0f}" r="{h * r:.0f}" {paint}{extra}/>'
+        for f, r in [(0.12, 0.42), (0.3, 0.55), (0.5, 0.62), (0.7, 0.52), (0.88, 0.4)]) \
+        + f'<rect x="{x}" y="{y + h * 0.35:.0f}" width="{w}" height="{h * 0.65:.0f}" rx="{h * 0.32:.0f}" {paint}{extra}/>'
+    return shapes(f'fill="{INK}"', ' stroke-width="8"') + shapes(f'fill="{fill}"', ' stroke="none"')
+
+
+def cloudmobile():
+    b = []
+    # Rainbow wings peek out behind, then Mochi (waving with one paw), in sunglasses and smiling.
+    face = sunglasses() + f'<ellipse cx="50" cy="128" rx="11" ry="6.5" fill="#ffb3c6" stroke="none"/><ellipse cx="150" cy="128" rx="11" ry="6.5" fill="#ffb3c6" stroke="none"/>' \
+        + snout(f'<path d="M86 138Q100 158 114 138Z" fill="#ff7f9f" stroke-width="3"/>')
+    b += [wing(-1), wing(1), arm_to(62, 168, 8, 108), body(), ear(-1), ear(1), head(), mane(), horn(), face]
+    # The cloud car: a big fluffy cloud with a rainbow stripe, a little puff of a headlamp at the front.
+    b.append(cloud(-52, 176, 300, 84, "#ffffff"))
+    for i, c in enumerate(RAINBOW[:4]):
+        b.append(f'<path d="M-30 {228 + i * 6}H226" stroke="{c}" stroke-width="6" stroke-linecap="butt"/>')
+    b.append('<circle cx="246" cy="232" r="9" fill="#ffe27a" stroke-width="3"/>')
+    b.append(sparkle(270, 230, 9) + sparkle(-66, 212, 7, "#ffb3d9"))
+    # The steering wheel on its column, with her paw on top.
+    b.append('<path d="M184 210l-10-30" stroke-width="7"/><path d="M184 210l-10-30" stroke="#b39ef0" stroke-width="3"/>')
+    b.append('<ellipse cx="172" cy="174" rx="22" ry="26" fill="none" stroke-width="11" transform="rotate(-20 172 174)"/>'
+             '<ellipse cx="172" cy="174" rx="22" ry="26" fill="none" stroke="#ff8fb7" stroke-width="6" transform="rotate(-20 172 174)"/>'
+             '<circle cx="172" cy="174" r="6" fill="#ffd45e" stroke-width="3"/>')
+    b.append(arm_to(136, 170, 158, 152))
+    # Sparkles under the car, where it floats.
+    b.append(sparkle(30, 278, 7) + sparkle(120, 282, 6, "#8cc8f2") + sparkle(200, 276, 7, "#ffb3d9"))
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="-80 -48 370 340">\n'
+            f'<g stroke="{INK}" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">\n'
+            + "\n".join(b) + "\n</g>\n</svg>\n")
+
+
 os.makedirs(OUT, exist_ok=True)
-for name, draw in [("happy", happy), ("confused", confused), ("idea", idea), ("welcome", welcome), ("wrong", wrong)]:
+for name, draw in [("happy", happy), ("confused", confused), ("idea", idea), ("welcome", welcome), ("wrong", wrong), ("cloudmobile", cloudmobile)]:
     with open(os.path.join(OUT, f"{name}.svg"), "w") as f:
         f.write(draw())
 print("done")

@@ -34,10 +34,9 @@ const strings = {
     welcomeEyebrow: "WELCOME",
     greetingHi: (name) => (name ? `Hi ${name}!` : "Hi there!"),
     greetingQuestion: "What shall we play today?",
-    hearGame: "Hear what this game is",
     pickAGame: "PICK A GAME",
     noGames: (name) => `No games are turned on for ${name} yet. Ask a grown-up to choose some in Parent mode.`,
-    groups: { phonics: "Phonics", cambridge: "Cambridge YLE training", chinese: "中文", mochi: "Visit Mochi" },
+    groups: { phonics: "Phonics", cambridge: "Cambridge YLE training", chinese: "中文", mochi: "Visit Mochi and the Rainbow Village" },
     gameNotes: {},
 
     badgesTitle: (name) => `${name}’s badges`,
@@ -92,10 +91,9 @@ const strings = {
     welcomeEyebrow: "歡迎",
     greetingHi: (name) => (name ? `你好 ${name}！` : "你好！"),
     greetingQuestion: "今天玩甚麼？",
-    hearGame: "聽聽這個遊戲",
     pickAGame: "選一個遊戲",
     noGames: (name) => `${name} 還沒有可以玩的遊戲。請家長在「家長模式」選擇遊戲。`,
-    groups: { phonics: "自然拼讀", cambridge: "劍橋英語考試預備", chinese: "中文", mochi: "探望 Mochi" },
+    groups: { phonics: "自然拼讀", cambridge: "劍橋英語考試預備", chinese: "中文", mochi: "探望 Mochi 和彩虹村" },
     gameNotes: {
       cvc: "3-4 歲 · 開頭、中間和結尾的音",
       digraphs: "3-6 歲 · ch、sh、th、ph、wh、ck 和 ng",

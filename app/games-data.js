@@ -9,13 +9,12 @@ export const gameGroups = [
   { id: "phonics", name: "Phonics", icon: "/images/icons/group-phonics.svg" },
   { id: "cambridge", name: "Cambridge YLE training", icon: "/images/icons/group-cambridge.svg" },
   { id: "chinese", name: "中文", icon: "/images/icons/group-chinese.svg", lang: "zh-Hant-HK" },
-  { id: "mochi", name: "Visit Mochi", icon: "/images/icons/group-mochi.svg" },
+  { id: "mochi", name: "Visit Mochi and the Rainbow Village", icon: "/images/icons/group-mochi.svg" },
 ];
 
 // `ages` limits a game to those age groups; games without it are for everyone. `group` is the
 // front-page heading it's listed under. On the front page each game shows its `picture` (with
-// `pattern` letters as a little chip, where it has them), and its speaker button says `say` —
-// in Cantonese for the Chinese games.
+// `pattern` letters as a little chip, where it has them).
 export const games = [
   {
     id: "cvc",
@@ -25,7 +24,6 @@ export const games = [
     picture: "/images/game-asset/animals/cat.svg",
     pattern: ["c", null, "t"],
     note: "For age 3-4 - Beginning, middle and ending sounds",
-    say: "CVC Sounds! Find the missing sound.",
     badge: "CVC SOUNDS",
     ages: ["3-4"],
   },
@@ -36,7 +34,6 @@ export const games = [
     color: "pink",
     picture: "/images/icons/digraphs-ch-sh-th.svg",
     note: "For age 3-6 - ch, sh, th, ph, wh, ck and ng",
-    say: "Consonant digraphs! Two letters, one sound.",
     badge: "DIGRAPHS",
     ages: ["3-4", "5-6"],
   },
@@ -47,7 +44,6 @@ export const games = [
     color: "blue",
     picture: "/images/icons/blends-mixed.svg",
     note: "For age 3-6 - br, cr, str, bl, cl, fl and more",
-    say: "R and L blends! Say the sounds together.",
     badge: "BLENDS",
     ages: ["3-4", "5-6"],
   },
@@ -58,7 +54,6 @@ export const games = [
     color: "green",
     picture: "/images/icons/starters-pets-and-farm.svg",
     note: "For age 5-6 - Cambridge Starters · 8 topics",
-    say: "Letter Jumble for Starters! Put the letters in order.",
     badge: "CAMBRIDGE STARTERS",
     ages: ["5-6"],
   },
@@ -69,7 +64,6 @@ export const games = [
     color: "lilac",
     picture: "/images/icons/starters-wild-animals.svg",
     note: "For age 5-6 - Cambridge Movers · 8 topics",
-    say: "Letter Jumble for Movers! Put the letters in order.",
     badge: "CAMBRIDGE MOVERS",
     ages: ["5-6"],
   },
@@ -81,7 +75,6 @@ export const games = [
     picture: "/images/icons/chinese-animals-advanced.svg",
     pattern: ["單", "字"],
     note: "For age 3-4 - Chinese characters · Cantonese",
-    say: "中文認字入門篇，一齊認識中文字！",
     badge: "中文認字",
     ages: ["3-4"],
   },
@@ -93,7 +86,6 @@ export const games = [
     picture: "/images/icons/chinese-jobs.svg",
     pattern: ["詞", "語"],
     note: "For age 5-6 - Chinese words · Cantonese",
-    say: "中文認字進階篇，一齊認識詞語！",
     badge: "中文認字",
     ages: ["5-6"],
   },
@@ -105,7 +97,6 @@ export const games = [
     picture: "/images/game-asset/food/apple.svg",
     pattern: ["一", "個"],
     note: "For age 5-6 - Chinese measure words · Cantonese",
-    say: "量詞配對，一個蘋果，一隻貓！",
     badge: "量詞配對",
     ages: ["5-6"],
   },
@@ -116,7 +107,6 @@ export const games = [
     color: "peach",
     picture: "/images/icons/idioms.svg",
     note: "For age 5-6 - Chinese idioms · Cantonese",
-    say: "成語，一齊學成語！",
     badge: "成語",
     ages: ["5-6"],
   },
@@ -127,7 +117,6 @@ export const games = [
     color: "pink",
     picture: "/images/icons/dragon.svg",
     note: "Spend coins on treats and cuddles",
-    say: "Visit Mochi the Rainbow Dragon!",
     badge: "RAINBOW DRAGON",
   },
 ];

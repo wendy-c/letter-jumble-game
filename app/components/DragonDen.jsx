@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { sounds } from "../lib/sounds";
 import DragonScene from "./DragonScene";
 import GameFooter from "./GameFooter";
+import RoadSign from "./RoadSign";
 
 // Each tab is one of the dragon's rooms (see `rooms` in dragon-data). A place can have just some
 // of them (`sections` in dragon-data): the park only has activities.
@@ -29,25 +30,6 @@ function ActionButton({ action, coins, busy, onUse }) {
         {action.cost}
       </span>
     </button>
-  );
-}
-
-// A wooden road sign on a post, its plank an arrow pointing out of the room.
-function VillageSign() {
-  return (
-    <svg viewBox="0 0 160 110" aria-hidden="true">
-      <g stroke="#4b2e22" strokeWidth="4" strokeLinejoin="round" strokeLinecap="round">
-        <path d="M100 50v56" strokeWidth="14" />
-        <path d="M100 50v56" stroke="#b9794a" strokeWidth="7" />
-        <path d="M86 106h28" strokeWidth="5" />
-        <path d="M30 14h118a6 6 0 0 1 6 6v44a6 6 0 0 1-6 6H30L6 42Z" fill="#e0a56a" />
-        <path d="M34 26h108M34 58h108" stroke="#c98a55" strokeWidth="2.5" />
-        <circle cx="140" cy="20" r="2.5" fill="#4b2e22" stroke="none" />
-        <circle cx="140" cy="64" r="2.5" fill="#4b2e22" stroke="none" />
-      </g>
-      <text x="86" y="38" textAnchor="middle" fontSize="15" fontWeight="700" fill="#4b2e22">The Rainbow</text>
-      <text x="86" y="55" textAnchor="middle" fontSize="15" fontWeight="700" fill="#4b2e22">Village</text>
-    </svg>
   );
 }
 
@@ -137,7 +119,7 @@ export default function DragonDen({ dragon, coins, onSpendCoins, breadcrumbs, on
               onPet={pet}
             />
             <button className="village-sign" type="button" aria-label="Go to Rainbow Village" onClick={onGoToVillage}>
-              <VillageSign />
+              <RoadSign lines={["The Rainbow", "Village"]} />
             </button>
           </div>
           <p className="dragon-bubble" aria-live="polite">{message}</p>

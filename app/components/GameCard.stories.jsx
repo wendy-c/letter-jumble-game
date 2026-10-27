@@ -4,7 +4,7 @@ import GameCard from "./GameCard";
 
 const game = (id) => games.find((candidate) => candidate.id === id);
 
-// A front-page game card: tap the speaker to hear what the game is.
+// A front-page game card, as a little book.
 export default {
   title: "Components/Menus/GameCard",
   component: GameCard,

@@ -9,7 +9,7 @@ jest.mock("./lib/sounds", () => ({ sounds: { correct: jest.fn(), oops: jest.fn()
 jest.mock("./lib/speech", () => ({ speakWord: jest.fn(), speakCantonese: jest.fn(), stopSpeaking: jest.fn() }));
 // After a right answer, the next question comes straight away (no 1-second wait in tests), and the
 // toast stays up so tests can see it.
-jest.mock("./lib/timing", () => ({ answerToastTime: 60000, nextQuestionPause: 0 }));
+jest.mock("./lib/timing", () => ({ answerToastTime: 60000, nextQuestionPause: 0, mochiDriveTime: 0 }));
 
 // The real dragon scene needs WebGL, which jsdom doesn't have.
 jest.mock("./components/DragonScene", () => function MockDragonScene() {
@@ -73,8 +73,9 @@ function crumb(name) {
   return within(screen.getByRole("navigation", { name: "Breadcrumb" })).getByRole("link", { name: new RegExp(name) });
 }
 
+// The front page's games, by name: the book cards and Mochi's car.
 function shownGames() {
-  return [...document.querySelectorAll(".game-choice-card .category-card-name")].map((name) => name.textContent);
+  return [...document.querySelectorAll("[data-game-name]")].map((card) => card.dataset.gameName);
 }
 
 // Lets the next question come up after a right answer (its pause is 0 in tests).
@@ -92,8 +93,7 @@ describe("Home", () => {
   it("starts on the game picker", () => {
     render(<GameApp />);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("What shall we play today?");
-    const gameCards = screen.getAllByRole("button").filter((button) => button.classList.contains("game-choice-card"));
-    expect(gameCards.map((card) => card.querySelector(".category-card-name").textContent)).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Letter Jumble for Starters", "Letter Jumble for Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Letter Jumble for Starters", "Letter Jumble for Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語", "Mochi the Rainbow Dragon"]);
   });
 
   it("has Mochi, arms open, greet the player by name", async () => {
@@ -104,20 +104,29 @@ describe("Home", () => {
     expect(screen.queryByRole("button", { name: /Mochi say hello/ })).not.toBeInTheDocument();
   });
 
-  it("shows each game as a big picture, with a speaker that says what it is", async () => {
-    const { speakCantonese, speakWord } = jest.requireMock("./lib/speech");
-    const user = userEvent.setup();
+  it("shows each game as a big picture, with no speaker buttons", async () => {
     render(<GameApp />);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Hi there! What shall we play today?");
     const cvc = screen.getByRole("button", { name: /CVC Sounds/ });
     expect(cvc.querySelector(".game-card-picture img")).toHaveAttribute("src", "/images/game-asset/animals/cat.svg");
     expect(cvc.querySelector(".category-card-number")).toBeNull();
+    expect(document.querySelector(".game-card-speaker")).toBeNull();
+    expect(document.querySelector(".mochi-drive-mochi")).toHaveAttribute("src", "/images/mochi/cloudmobile.svg");
+  });
 
-    await user.click(screen.getByRole("button", { name: "Hear what this game is", description: "CVC Sounds" }));
-    expect(speakWord).toHaveBeenLastCalledWith("CVC Sounds! Find the missing sound.", expect.any(Function));
-    await user.click(screen.getByRole("button", { name: "Hear what this game is", description: "成語" }));
-    expect(speakCantonese).toHaveBeenLastCalledWith("成語，一齊學成語！", expect.any(Function));
-    expect(currentPathname()).toBe("/");
+  it("shows Mochi in her convertible by the road to the Rainbow Village; either opens the dragon game", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    const user = userEvent.setup();
+    const { unmount } = render(<GameApp />);
+    expect(await screen.findByRole("heading", { level: 2, name: /Visit Mochi and the Rainbow Village/ })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Go to Rainbow Village" }));
+    expect(currentPathname()).toBe("/dragon");
+    unmount();
+
+    setPathname("/");
+    render(<GameApp />);
+    await user.click(await screen.findByRole("button", { name: "Mochi the Rainbow Dragon" }));
+    expect(currentPathname()).toBe("/dragon");
   });
 
   it("plays a Letter Jumble word and earns a rainbow coin", async () => {
@@ -380,20 +389,20 @@ describe("ages", () => {
   it("lists games under Phonics, Cambridge YLE training, 中文 and Visit Mochi, hiding empty headings", () => {
     const groups = () => screen.getAllByRole("heading", { level: 2 }).map((heading) => [
       heading.textContent.replace(heading.querySelector(".game-group-icon").textContent, ""),
-      [...heading.closest("section").querySelectorAll(".game-choice-card .category-card-name")].map((name) => name.textContent),
+      [...heading.closest("section").querySelectorAll("[data-game-name]")].map((card) => card.dataset.gameName),
     ]);
     const { unmount } = render(<GameApp />);
     expect(groups()).toEqual([
       ["Phonics", ["CVC Sounds", "Consonant Digraphs", "R & L Blends"]],
       ["Cambridge YLE training", ["Letter Jumble for Starters", "Letter Jumble for Movers"]],
       ["中文", ["中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語"]],
-      ["Visit Mochi", ["Mochi the Rainbow Dragon"]],
+      ["Visit Mochi and the Rainbow Village", ["Mochi the Rainbow Dragon"]],
     ]);
     unmount();
 
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
     render(<GameApp />);
-    expect(groups().map(([name]) => name)).toEqual(["Phonics", "中文", "Visit Mochi"]);
+    expect(groups().map(([name]) => name)).toEqual(["Phonics", "中文", "Visit Mochi and the Rainbow Village"]);
   });
 
   it("shows every game to visitors before anyone is playing", () => {
@@ -1411,7 +1420,7 @@ describe("how to play", () => {
     expect(within(howTo).getAllByRole("listitem").map((item) => item.textContent)).toEqual([
       "Look at the picture and tap the speaker icon for a hint.",
       "Tap the letter that fills the gap.",
-      "Tap “Check word” when you’re done.",
+      "Tap “Check it” when you’re done.",
     ]);
     expect(within(howTo).queryByRole("heading", { name: "Need a revision?" })).not.toBeInTheDocument();
   });

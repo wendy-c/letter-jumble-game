@@ -315,7 +315,7 @@ describe("CVC sounds game", () => {
   it("offers the games and the four CVC modes", () => {
     cy.visit("/");
     cy.contains("h1", "What shall we play today?");
-    cy.get(".game-choice-card").should("have.length", 10);
+    cy.get("[data-game-name]").should("have.length", 10);
     cy.contains("button", "CVC Sounds").click();
     addPlayer("Ada", "3-4");
     cy.contains("h1", "CVC Sounds");
@@ -447,11 +447,11 @@ describe("ages", () => {
     cy.contains("button", "CVC Sounds").click();
     addPlayer("Mia", "3-4");
     crumb("Home");
-    cy.get(".game-choice-card").should("have.length", 5);
-    cy.contains(".game-choice-card", "CVC Sounds");
-    cy.contains(".game-choice-card", "中文認字 · 入門篇");
-    cy.contains(".game-choice-card", "Rainbow Dragon");
-    cy.contains(".game-choice-card", "Letter Jumble").should("not.exist");
+    cy.get("[data-game-name]").should("have.length", 5);
+    cy.get('[data-game-name*="CVC Sounds"]');
+    cy.get('[data-game-name*="中文認字 · 入門篇"]');
+    cy.get('[data-game-name*="Rainbow Dragon"]');
+    cy.get('[data-game-name*="Letter Jumble"]').should("not.exist");
   });
 });
 
@@ -462,7 +462,7 @@ describe("rainbow dragon", () => {
         win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 3, age: "3-4" }], current: "Ada" }));
       },
     });
-    cy.contains("button", "Rainbow Dragon").click();
+    cy.get('button[aria-label="Mochi the Rainbow Dragon"]').click();
     cy.contains("h1", "Mochi the Rainbow Dragon");
     cy.get(".dragon-canvas", { timeout: 20000 }).should("be.visible");
 
@@ -655,7 +655,7 @@ describe("parent mode", () => {
         win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
       },
     });
-    cy.get(".game-choice-card").should("have.length", 5);
+    cy.get("[data-game-name]").should("have.length", 5);
     cy.get('button[aria-label$="Player options"]').click();
     cy.contains('[role="menuitem"]', "Parent mode").click();
 
@@ -668,8 +668,8 @@ describe("parent mode", () => {
     cy.contains('[role="switch"]', "Letter Jumble").click();
     cy.contains("button", "Done").click();
 
-    cy.get(".game-choice-card").should("have.length", 5);
-    cy.contains(".game-choice-card", "Letter Jumble");
-    cy.contains(".game-choice-card", "Mochi").should("not.exist");
+    cy.get("[data-game-name]").should("have.length", 5);
+    cy.get('[data-game-name*="Letter Jumble"]');
+    cy.get('[data-game-name*="Mochi"]').should("not.exist");
   });
 });

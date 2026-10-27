@@ -2,6 +2,7 @@ import { gameGroups } from "../games-data";
 import { useText } from "../i18n";
 import GameCard from "./GameCard";
 import GameFooter from "./GameFooter";
+import MochiDriveCard from "./MochiDriveCard";
 import MochiGreeting from "./MochiGreeting";
 
 // The front page: Mochi says hello, then the player's games under headings (Phonics, Cambridge YLE
@@ -24,7 +25,9 @@ export default function GamePicker({ games, playerName = null, onSelectGame, emp
           </h2>
           <div className="category-grid game-choice-grid">
             {shelfGames.map((game) => (
-              <GameCard key={game.id} game={game} note={text.gameNotes[game.id] ?? game.note} onSelect={() => onSelectGame(game)} />
+              game.id === "dragon"
+                ? <MochiDriveCard key={game.id} game={game} note={text.gameNotes[game.id] ?? game.note} onSelect={() => onSelectGame(game)} />
+                : <GameCard key={game.id} game={game} note={text.gameNotes[game.id] ?? game.note} onSelect={() => onSelectGame(game)} />
             ))}
           </div>
         </section>
