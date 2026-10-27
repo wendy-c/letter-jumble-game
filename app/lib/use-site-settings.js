@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 // Settings for this browser (not per player): the site's language, which games' how-to-play cards
 // have been seen, and whether the new family's tour of the app has been shown.
 export const siteStorageKey = "letter-jumble:site";
-export const languages = ["en", "zh"];
+const languages = ["en", "zh"];
 
 const defaults = { language: "en", howToSeen: [], tutorialSeen: false };
 

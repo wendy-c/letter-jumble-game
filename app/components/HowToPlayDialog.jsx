@@ -1,92 +1,54 @@
 import { useEffect } from "react";
 
-const oneTry = {
-  en: ["🌈", "Each question has one try. A right answer earns a rainbow coin, and getting a whole topic right earns its badge!"],
-  zh: ["🌈", "每題只有一次機會。答對可得到彩虹金幣，全部答對更可得到徽章！"],
+const reward = {
+  en: "A right answer earns a rainbow coin, and getting a whole topic right earns its badge!",
+  zh: "答對可得到彩虹金幣，全部答對更可得到徽章！",
 };
 
-const spelling = (en, zh) => ({
-  en: [["🖼️", "Look at the picture."], ["🔊", "Tap the speaker to hear the word."], ...en, ["🪄", "Tap “Check word” when you’re done."], oneTry.en],
-  zh: [["🖼️", "看看圖畫。"], ["🔊", "按喇叭，聽聽這個英文字。"], ...zh, ["🪄", "完成後按「Check word」。"], oneTry.zh],
+// The phonics games that fill a gap in a word (Consonant Digraphs, R & L Blends).
+const fillTheGap = (en, zh) => ({
+  en: ["Look at the picture, tap the speaker if you need a hint.", en, "Tap “Check it”.", reward.en],
+  zh: ["看看圖畫，需要提示就按喇叭。", zh, "按「Check it」。", reward.zh],
 });
 
-const pictureGame = (en, zh) => ({
-  en: [...en, oneTry.en],
-  zh: [...zh, oneTry.zh],
-});
-
-// Letter Jumble (for Starters and for Movers): four plain numbered steps, no icons.
-const letterJumble = {
-  numbered: true,
-  en: [
-    "Look at the picture, tap the speaker if you need a hint.",
-    "Tap the letters in spelling order to fill the boxes.",
-    "Tap “Check it”.",
-    "A right answer earns a rainbow coin, and getting a whole topic right earns its badge!",
-  ],
-  zh: [
-    "看看圖畫，需要提示就按喇叭。",
-    "按次序按字母，把格子填滿。",
-    "按「Check it」。",
-    "答對可得到彩虹金幣，全部答對更可得到徽章！",
-  ],
-};
-
-// 中文認字 (both 入門篇 and 進階篇): three plain numbered steps, no icons.
-const chineseCharacters = {
-  numbered: true,
-  en: [
-    "Read it, and tap the speaker for a hint.",
-    "Tap the right picture.",
-    "A right answer earns a rainbow coin, and getting them all right earns a badge!",
-  ],
-  zh: [
-    "讀一讀，按喇叭聽聽提示。",
-    "按一按正確的圖畫。",
-    "答對可得到彩虹金幣，全部答對更可得到徽章！",
-  ],
-};
-
-// How to play each game: a few steps, each with an icon, in English and Chinese (or, with
-// `numbered`, plain numbered steps).
+// How to play each game, as plain numbered steps in English and Chinese. (CVC Sounds has its own
+// card, CvcHowTo.)
 const howTo = {
-  digraphs: spelling(
-    [["🔤", "Tap the two letters (like sh) that fill the gap."]],
-    [["🔤", "按兩個字母（例如 sh）填入空格。"]],
-  ),
-  blends: spelling(
-    [["🔤", "Tap the blend (like br or str) that fills the gap."]],
-    [["🔤", "按一按正確的混合音（例如 br 或 str），填入空格。"]],
-  ),
-  starters: letterJumble,
-  "letter-jumble": letterJumble,
-  chinese: chineseCharacters,
-  "chinese-advanced": chineseCharacters,
-  "measure-words": pictureGame(
-    [["👀", "Read the measure word, like 一個 or 一枝."], ["👆", "Tap the thing that goes with it."], ["🔊", "Tap the speaker to hear it in Cantonese."]],
-    [["👀", "讀一讀量詞，例如「一個」、「一枝」。"], ["👆", "按一按配合這個量詞的名詞。"], ["🔊", "按喇叭聽聽廣東話讀音。"]],
-  ),
-  idioms: pictureGame(
-    [["🖼️", "Look at the picture and read what the idiom means."], ["❓", "One character of the idiom is missing."], ["👆", "Tap the character that fills the gap."]],
-    [["🖼️", "看看圖畫，讀讀成語的意思。"], ["❓", "成語缺少了一個字。"], ["👆", "按一按正確的字，把成語填上。"]],
-  ),
+  digraphs: fillTheGap("Tap the two letters (like sh) that fill the gap.", "按兩個字母（例如 sh）填入空格。"),
+  blends: fillTheGap("Tap the blend (like br or str) that fills the gap.", "按一按正確的混合音（例如 br 或 str），填入空格。"),
+  starters: {
+    en: ["Look at the picture, tap the speaker if you need a hint.", "Tap the letters in spelling order to fill the boxes.", "Tap “Check it”.", reward.en],
+    zh: ["看看圖畫，需要提示就按喇叭。", "按次序按字母，把格子填滿。", "按「Check it」。", reward.zh],
+  },
+  chinese: {
+    en: ["Read it, and tap the speaker for a hint.", "Tap the right picture.", "A right answer earns a rainbow coin, and getting them all right earns a badge!"],
+    zh: ["讀一讀，按喇叭聽聽提示。", "按一按正確的圖畫。", reward.zh],
+  },
+  "measure-words": {
+    en: ["Read the measure word, like 一個 or 一枝, and tap the speaker for a hint.", "Tap the thing that goes with it.", reward.en],
+    zh: ["讀一讀量詞，例如「一個」、「一枝」，按喇叭聽聽提示。", "按一按配合這個量詞的名詞。", reward.zh],
+  },
+  idioms: {
+    en: ["Look at the picture and read what the idiom means.", "Tap the character that fills the gap.", reward.en],
+    zh: ["看看圖畫，讀讀成語的意思。", "按一按正確的字，把成語填上。", reward.zh],
+  },
   dragon: {
     en: [
-      ["🌈", "Spend rainbow coins on treats, grooming and activities."],
-      ["👆", "Tap the dragon for free cuddles and tricks."],
-      ["🔄", "Drag sideways to turn her around."],
-      ["🏡", "Switch tabs to walk to another room."],
-      ["💛", "Save up 100 coins to meet Mochi’s best friend, Tofu!"],
+      "Spend rainbow coins on treats, grooming and activities.",
+      "Tap the dragon for free cuddles and tricks, and drag sideways to turn her around.",
+      "Switch tabs to walk to another room.",
+      "Save up 100 coins to meet Mochi’s best friend, Tofu!",
     ],
     zh: [
-      ["🌈", "用彩虹金幣買小食、梳洗和玩遊戲。"],
-      ["👆", "按一按Mochi，她會跟你玩，不用金幣。"],
-      ["🔄", "左右拖動可以讓Mochi轉身。"],
-      ["🏡", "換分頁，Mochi會走到另一個房間。"],
-      ["💛", "儲夠 100 個金幣，就可以認識 Mochi 的好朋友 Tofu！"],
+      "用彩虹金幣買小食、梳洗和玩遊戲。",
+      "按一按 Mochi，她會跟你玩，不用金幣；左右拖動可以讓她轉身。",
+      "換分頁，Mochi 會走到另一個房間。",
+      "儲夠 100 個金幣，就可以認識 Mochi 的好朋友 Tofu！",
     ],
   },
 };
+howTo["letter-jumble"] = howTo.starters;
+howTo["chinese-advanced"] = howTo.chinese;
 
 export const hasHowToPlay = (gameId) => gameId === "cvc" || Boolean(howTo[gameId]);
 
@@ -94,7 +56,7 @@ export const hasHowToPlay = (gameId) => gameId === "cvc" || Boolean(howTo[gameId
 const cvcSteps = [
   "Look at the picture and tap the speaker icon for a hint.",
   "Tap the letter that fills the gap.",
-  "Tap “Check word” when you’re done.",
+  "Tap “Check it” when you’re done.",
 ];
 
 function CvcHowTo({ onClose }) {
@@ -174,7 +136,6 @@ const buttons = { en: "Got it, let’s go!", zh: "明白了，開始吧！" };
 // tapped. `language` is howToLanguage's choice for the game.
 export default function HowToPlayDialog({ game, language, onClose }) {
   const steps = howTo[game.id]?.[language] ?? [];
-  const numbered = Boolean(howTo[game.id]?.numbered);
 
   useEffect(() => {
     function handleKeyDown(event) {
@@ -189,22 +150,10 @@ export default function HowToPlayDialog({ game, language, onClose }) {
       <div className="player-dialog how-to-dialog" role="dialog" aria-modal="true" aria-labelledby="how-to-title">
         {game.id === "cvc" ? <CvcHowTo onClose={onClose} /> : (
         <div lang={language === "zh" ? "zh-Hant-HK" : "en"}>
-          {!numbered && <p className="eyebrow">{language === "zh" ? "遊戲玩法" : "HOW TO PLAY"}</p>}
           <h2 id="how-to-title">{titles[language](game.name)}</h2>
-          {numbered ? (
-            <ol className="how-to-numbered">
-              {steps.map((step) => <li key={step}>{step}</li>)}
-            </ol>
-          ) : (
-            <ol className="how-to-steps">
-              {steps.map(([icon, step]) => (
-                <li key={step}>
-                  <span className="how-to-icon" aria-hidden="true">{icon}</span>
-                  <span>{step}</span>
-                </li>
-              ))}
-            </ol>
-          )}
+          <ol className="how-to-numbered">
+            {steps.map((step) => <li key={step}>{step}</li>)}
+          </ol>
           <button className="reward-continue completion-button how-to-button" type="button" autoFocus onClick={onClose}>
             {buttons[language]} <span aria-hidden="true">→</span>
           </button>

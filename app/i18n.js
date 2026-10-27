@@ -31,7 +31,6 @@ const strings = {
     close: "Close",
     ageGroup: { "3-4": "3-4 years old", "5-6": "5-6 years old" },
 
-    welcomeEyebrow: "WELCOME",
     greetingHi: (name) => (name ? `Hi ${name}!` : "Hi there!"),
     greetingQuestion: "What shall we play today?",
     pickAGame: "PICK A GAME",
@@ -51,7 +50,6 @@ const strings = {
     whatIs: "What is",
     notRight: "That’s not right — here’s another one.",
     continue: "Continue",
-    closeParentMode: "Close parent mode",
     noChildren: "No user yet. Add a player then come back to choose their games.",
     parentIntro: "Turn games on or off for each child. Games for their age are on to begin with; you can also turn on games for other ages.",
     allGamesOff: (name) => `All games are off — ${name} can’t play anything yet.`,
@@ -59,8 +57,6 @@ const strings = {
     off: "Off",
     forAges: (ages) => ` · for ${ages}`,
     lockParentMode: "Done — lock parent mode",
-
-    howToPlay: "How to play",
   },
   zh: {
     home: "主頁",
@@ -88,7 +84,6 @@ const strings = {
     close: "關閉",
     ageGroup: { "3-4": "3-4 歲", "5-6": "5-6 歲" },
 
-    welcomeEyebrow: "歡迎",
     greetingHi: (name) => (name ? `你好 ${name}！` : "你好！"),
     greetingQuestion: "今天玩甚麼？",
     pickAGame: "選一個遊戲",
@@ -119,7 +114,6 @@ const strings = {
     whatIs: "請問",
     notRight: "答錯了，再試另一題。",
     continue: "繼續",
-    closeParentMode: "關閉家長模式",
     noChildren: "還沒有帳戶。請先加入玩家，再回來選擇遊戲。",
     parentIntro: "為每位孩子開啟或關閉遊戲。適合他們年齡的遊戲會先開啟，你也可以開啟其他年齡的遊戲。",
     allGamesOff: (name) => `所有遊戲都已關閉，${name} 暫時不能玩。`,
@@ -127,8 +121,6 @@ const strings = {
     off: "關閉",
     forAges: (ages) => ` · 適合 ${ages}`,
     lockParentMode: "完成，鎖上家長模式",
-
-    howToPlay: "玩法",
   },
 };
 

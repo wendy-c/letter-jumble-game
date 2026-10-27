@@ -3801,21 +3801,6 @@ a:focus-visible {
   font-weight: 600;
 }
 
-.village-place-locked {
-  cursor: not-allowed;
-}
-
-.village-place-locked > img {
-  filter: grayscale(1);
-  opacity: 0.55;
-}
-
-.village-place-soon {
-  color: var(--muted);
-  font-size: 0.8em;
-  font-weight: 600;
-}
-
 /* Under Tofu's house in the village until she moves in, in place of its name tag. */
 .village-place-unlock {
   gap: 2px;
@@ -3913,10 +3898,6 @@ a:focus-visible {
     box-shadow: 0 2px 0 var(--line-strong);
   }
 
-  /* The padlock says it on small screens. */
-  .village-place-soon {
-    display: none;
-  }
 }
 
 /* ---------- Welcome and how-to-play cards ---------- */
@@ -4000,36 +3981,6 @@ a:focus-visible {
   margin: 20px auto 0;
 }
 
-.how-to-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.how-to-steps li {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 0px 14px;
-  color: var(--ink);
-  font-size: 15px;
-  line-height: 1.45;
-}
-
-.how-to-icon {
-  display: grid;
-  width: 42px;
-  height: 42px;
-  flex: none;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--magic-soft);
-  font-size: 22px;
-}
-
 @media (max-width: 700px) {
   .welcome-logo {
     width: 64px;
@@ -4041,8 +3992,7 @@ a:focus-visible {
     font-size: 22px;
   }
 
-  .welcome-text,
-  .how-to-steps li {
+  .welcome-text {
     font-size: 14px;
   }
 }

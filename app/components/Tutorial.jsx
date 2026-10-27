@@ -34,7 +34,7 @@ const copy = {
 };
 
 // The tour after the language question, and what each step points at on the front page.
-export const tutorialSteps = [
+const tutorialSteps = [
   { id: "books", target: '.game-group:not([data-tour="mochi"])' },
   { id: "mochi", target: '[data-tour="mochi"]' },
   { id: "menu", target: ".player-chip" },
