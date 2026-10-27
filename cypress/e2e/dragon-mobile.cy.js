@@ -62,7 +62,7 @@ describe("Mochi's den on phones", () => {
       cy.contains('[role="tab"]', "Treats").click({ scrollBehavior: "center" });
       cy.get('[role="tabpanel"] button').last().then(($button) => scrollLikeAFinger($button[0]));
       cy.get('[role="tabpanel"] button').last().click({ scrollBehavior: false });
-      cy.get('[aria-label="48 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
+      cy.get(".player-chip-coins").should("have.text", "48");
     });
   });
 });

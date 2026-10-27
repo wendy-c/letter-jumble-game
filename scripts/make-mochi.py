@@ -1,5 +1,6 @@
-# Draws Mochi the mascot in four moods: public/images/mochi/happy.svg, confused.svg, idea.svg and
-# welcome.svg (a big smile and open arms, for the front page's greeting).
+# Draws Mochi the mascot in five moods: public/images/mochi/happy.svg, confused.svg, idea.svg,
+# welcome.svg (a big smile and open arms, for the front page's greeting) and wrong.svg (holding up a
+# sign with a red cross, after a wrong answer).
 # She's a head-and-shoulders sticker, matching the 3D Mochi: lilac, pink snout, unicorn horn,
 # fluffy ears with rainbow tips, a rainbow mane and rainbow wings peeking out.
 import os, sys
@@ -154,8 +155,21 @@ def welcome():
                  extras_front=heart(-2, 84, 8) + heart(202, 84, 7, "#b79cf2") + sparkle(16, 20, 8) + sparkle(186, 22, 7, "#ffb3d9"))
 
 
+def wrong():
+    # A kind "not quite" face (worried brows, a small frown) and a sign with a big red cross held up
+    # under her chin, a paw on each side.
+    face = (open_eyes(ey=106) +
+            f'<path d="M60 88q10-6 20 0M120 88q10-6 20 0" fill="none" stroke-width="3.5"/>'
+            + cheeks(2) + snout(f'<path d="M92 144q8-7 16 0" fill="none" stroke-width="3"/>'))
+    sign = (f'<rect x="54" y="155" width="92" height="42" rx="9" fill="#fff"/>'
+            f'<path d="M87 164l26 26M113 164l-26 26" stroke-width="15"/>'
+            f'<path d="M87 164l26 26M113 164l-26 26" stroke="#f0506e" stroke-width="9.5"/>')
+    paws = "".join(f'<circle cx="{x}" cy="164" r="10" fill="{LILAC}"/>' for x in (53, 147))
+    return mochi(face, extras_front=sign + paws + sparkle(16, 26, 7, "#b79cf2"))
+
+
 os.makedirs(OUT, exist_ok=True)
-for name, draw in [("happy", happy), ("confused", confused), ("idea", idea), ("welcome", welcome)]:
+for name, draw in [("happy", happy), ("confused", confused), ("idea", idea), ("welcome", welcome), ("wrong", wrong)]:
     with open(os.path.join(OUT, f"{name}.svg"), "w") as f:
         f.write(draw())
 print("done")

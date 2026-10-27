@@ -71,7 +71,7 @@ describe("Movers spelling game", () => {
     cy.contains("button", "Animals").click();
     cy.contains("h1", "Animals");
     cy.get(".letter-bank .letter-tile").should("have.length", 3);
-    cy.get('[aria-label="0 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
+    cy.get(".player-chip-coins").should("have.text", "0");
 
     ["b", "a", "t"].forEach((letter, index) => {
       cy.get(`.letter-tile[data-letter="${letter}"]`).not(".tile-used").click();
@@ -79,10 +79,9 @@ describe("Movers spelling game", () => {
     });
 
     cy.contains("button", "Check word").click();
-    cy.get(".reward-card").should("contain.text", "Amazing!");
+    cy.get(".answer-toast").should("contain.text", "Amazing!");
     cy.contains("button", "Next word").should("not.exist");
-    cy.get('[aria-label="1 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
-    cy.get(".reward-card").click();
+    cy.get(".player-chip-coins").should("have.text", "1");
     cy.contains("02 / 13");
     cy.get(".letter-bank .letter-tile").should("have.length", 7);
 
@@ -90,9 +89,8 @@ describe("Movers spelling game", () => {
       cy.get(`.letter-tile[data-letter="${letter}"]`).not(".tile-used").click();
     });
     cy.contains("button", "Check word").click();
-    cy.get(".reward-card").should("contain.text", "Well done!");
-    cy.get('[aria-label="2 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
-    cy.get(".reward-card").click();
+    cy.get(".answer-toast").should("contain.text", "Well done!");
+    cy.get(".player-chip-coins").should("have.text", "2");
     cy.contains("03 / 13");
   });
 
@@ -103,7 +101,7 @@ describe("Movers spelling game", () => {
       cy.get(`.letter-tile[data-letter="${letter}"]`).not(".tile-used").click();
     });
     cy.contains("button", "Check word").click();
-    cy.get('[aria-label="1 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
+    cy.get(".player-chip-coins").should("have.text", "1");
     storedPlayers().should("deep.equal", {
       players: [{ name: "Ada", coins: 1, age: "5-6", decks: { "letter-jumble/animals": [...Array(13).keys()] }, results: { "letter-jumble/animals": [true] } }],
       current: "Ada",
@@ -114,7 +112,7 @@ describe("Movers spelling game", () => {
     cy.location("pathname").should("eq", "/letter-jumble/animals");
     cy.get('[role="dialog"]').should("not.exist");
     cy.contains("h1", "Animals");
-    cy.get('[aria-label="1 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
+    cy.get(".player-chip-coins").should("have.text", "1");
   });
 
   it("starts from a previously saved rainbow coin count", () => {
@@ -124,7 +122,7 @@ describe("Movers spelling game", () => {
       },
     }, null);
     cy.contains("button", "Animals").click();
-    cy.get('[aria-label="7 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
+    cy.get(".player-chip-coins").should("have.text", "7");
   });
 
   it("does not reward an incorrect answer", () => {
@@ -137,7 +135,7 @@ describe("Movers spelling game", () => {
 
     cy.contains("button", "Check word").click();
     cy.contains("Not quite");
-    cy.get('[aria-label="0 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
+    cy.get(".player-chip-coins").should("have.text", "0");
   });
 
   it("opens the word menu and starts a selected word with an empty answer", () => {
@@ -342,8 +340,7 @@ describe("CVC sounds game", () => {
 
     cy.get('.letter-tile[data-letter="c"]').click();
     cy.contains("button", "Check word").click();
-    cy.get(".reward-card").should("contain.text", "Amazing!");
-    cy.get(".reward-card").click();
+    cy.get(".answer-toast").should("contain.text", "Amazing!");
     cy.contains("02 / 12");
   });
 
@@ -361,7 +358,7 @@ describe("CVC sounds game", () => {
     cy.get(".letter-slot").should("contain.text", "a");
     cy.get('.letter-tile[data-letter="o"]').should("not.have.class", "tile-used");
     cy.contains("button", "Check word").click();
-    cy.get(".reward-card").should("exist");
+    cy.get(".answer-toast").should("exist");
   });
 
   it("asks to fill the gap, then shows the right word after a wrong ending sound and moves on", () => {
@@ -380,7 +377,7 @@ describe("CVC sounds game", () => {
     });
     cy.get('[role="dialog"]').should("not.exist");
     cy.contains("02 / 12");
-    cy.get('[aria-label="0 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
+    cy.get(".player-chip-coins").should("have.text", "0");
   });
 
   it("mixes beginning, middle and ending sounds", () => {
@@ -413,13 +410,13 @@ describe("players", () => {
       cy.get(`.letter-tile[data-letter="${letter}"]`).not(".tile-used").click();
     });
     cy.contains("button", "Check word").click();
-    cy.get(".reward-card").click();
+    cy.contains("02 / 13");
 
     cy.get('button[aria-label$="Player options"]').click();
     cy.contains('[role="menuitem"]', "Switch player").click();
     cy.get('[role="dialog"] .player-option').should("have.length", 1).and("contain.text", "Mia");
     addPlayer("Theo");
-    cy.get('[aria-label="0 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
+    cy.get(".player-chip-coins").should("have.text", "0");
 
     cy.reload();
     cy.location("pathname").should("eq", "/letter-jumble/animals");
@@ -428,7 +425,7 @@ describe("players", () => {
     cy.get('[role="dialog"] .player-option').contains("Mia").click();
     crumb("Letter Jumble for Movers");
     cy.contains("button", "Animals").should("contain.text", "1 of 13 words learned").click();
-    cy.get('[aria-label="1 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
+    cy.get(".player-chip-coins").should("have.text", "1");
     cy.contains("02 / 13");
 
     cy.get('button[aria-label$="Player options"]').click();
@@ -470,12 +467,12 @@ describe("rainbow dragon", () => {
     cy.get(".dragon-canvas", { timeout: 20000 }).should("be.visible");
 
     cy.get('button[aria-label="Ice cream, 2 rainbow coins"]').click();
-    cy.get('[aria-label="1 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
+    cy.get(".player-chip-coins").should("have.text", "1");
     cy.get(".dragon-bubble").should("contain.text", "brrr");
     cy.get('button[aria-label="Apple, 1 rainbow coin"]').should("be.disabled");
 
     cy.get('button[aria-label="Apple, 1 rainbow coin"]', { timeout: 8000 }).should("be.enabled").click();
-    cy.get('[aria-label="0 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
+    cy.get(".player-chip-coins").should("have.text", "0");
     cy.contains("out of rainbow coins");
     storedPlayers().should("deep.equal", { players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" });
   });
@@ -497,9 +494,8 @@ describe("chinese characters", () => {
     });
 
     cy.get('.chinese-option[data-character="紅"]').click();
-    cy.get(".reward-card").should("contain.text", "做得好！");
-    cy.get('[aria-label="1 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
-    cy.get(".reward-card").click();
+    cy.get(".answer-toast").should("contain.text", "做得好！");
+    cy.get(".player-chip-coins").should("have.text", "1");
     cy.contains(".chinese-character", "橙");
     cy.contains("02 / 13");
 
@@ -510,7 +506,7 @@ describe("chinese characters", () => {
     });
     cy.get(".chinese-option").should("not.be.disabled");
     cy.contains("03 / 13");
-    cy.get('[aria-label="1 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
+    cy.get(".player-chip-coins").should("have.text", "1");
   });
 
   it("shows everyday phrases for the food topic", () => {
@@ -528,7 +524,7 @@ describe("chinese characters", () => {
       [...$imgs].forEach((img) => expect(img.naturalWidth, img.getAttribute("src")).to.be.greaterThan(0));
     });
     cy.get('.chinese-option[data-character="餅"]').click();
-    cy.get(".reward-card").should("exist");
+    cy.get(".answer-toast").should("exist");
   });
 });
 
@@ -588,8 +584,8 @@ describe("chinese words for 5-6 year olds", () => {
       [...$imgs].forEach((img) => expect(img.naturalWidth, img.getAttribute("src")).to.be.greaterThan(0));
     });
     cy.get('.chinese-option[data-character="警察"]').click();
-    cy.get(".reward-card").should("exist");
-    cy.get('[aria-label="1 rainbow coins. Visit Mochi the Rainbow Dragon"]').should("exist");
+    cy.get(".answer-toast").should("exist");
+    cy.get(".player-chip-coins").should("have.text", "1");
   });
 });
 
@@ -607,7 +603,7 @@ describe("chinese home topic", () => {
       [...$imgs].forEach((img) => expect(img.naturalWidth, img.getAttribute("src")).to.be.greaterThan(0));
     });
     cy.get('.chinese-option[data-character="客廳"]').click();
-    cy.get(".reward-card").should("exist");
+    cy.get(".answer-toast").should("exist");
   });
 });
 
@@ -628,9 +624,9 @@ describe("measure words", () => {
     // One try: a right noun earns a coin, a wrong one shows the right answer.
     cy.get(".measure-option").first().click();
     cy.get(".measure-option").each(($option) => expect($option).to.be.disabled);
-    cy.get('[role="dialog"]').then(($dialog) => {
-      const right = $dialog.text().includes("好叻呀") || $dialog.text().includes("做得好") || $dialog.text().includes("金幣");
-      cy.get(`[aria-label="${right ? 1 : 0} rainbow coins. Visit Mochi the Rainbow Dragon"]`).should("exist");
+    cy.get('.answer-toast, [role="dialog"]').then(($shown) => {
+      const right = $shown.hasClass("answer-toast");
+      cy.get(".player-chip-coins").should("have.text", right ? "1" : "0");
     });
   });
 });

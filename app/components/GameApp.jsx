@@ -9,7 +9,6 @@ import AnswerRevealDialog, { chineseRevealLabels } from "./AnswerRevealDialog";
 import BadgeCollection from "./BadgeCollection";
 import ChineseGame from "./ChineseGame";
 import Breadcrumbs from "./Breadcrumbs";
-import CoinLink from "./CoinLink";
 import CompletionDialog, { chineseCompletionText } from "./CompletionDialog";
 import DragonDen from "./DragonDen";
 import RainbowVillage from "./RainbowVillage";
@@ -23,12 +22,13 @@ import PictureClue from "./PictureClue";
 import ParentMode from "./ParentMode";
 import PlayerDialog from "./PlayerDialog";
 import PlayerMenu from "./PlayerMenu";
-import RewardDialog, { chineseRewardLabels } from "./RewardDialog";
+import AnswerToast from "./AnswerToast";
 import SiteHeader from "./SiteHeader";
 import TopicMenu from "./TopicMenu";
 import WordMenu from "./WordMenu";
 import { getSpellingGuides, scramble, seededRandom, shuffled, shuffledDeck, slotCount } from "../lib/spelling";
 import { speakWord, stopSpeaking } from "../lib/speech";
+import { answerToastTime, nextQuestionPause } from "../lib/timing";
 import { sounds } from "../lib/sounds";
 import { usePlayers } from "../lib/use-players";
 import { useSiteSettings } from "../lib/use-site-settings";
@@ -38,6 +38,7 @@ import WelcomeDialog from "./WelcomeDialog";
 
 const rewardMessages = ["Amazing!", "Well done!", "You did it!", "Fantastic!", "Brilliant!"];
 const chineseRewardMessages = ["做得好！", "答對了！", "好棒呀！", "太厲害了！"];
+const coinEarned = { en: "You collected a rainbow coin!", zh: "你得到一個彩虹金幣！" };
 
 const welcomeClosedKey = "letter-jumble:welcome-closed";
 const readSession = (key) => {
@@ -134,7 +135,8 @@ export default function GameApp() {
   const [askAgeFor, setAskAgeFor] = useState(null);
   // The game chosen before anyone was playing; it opens once a player is picked.
   const [pendingGame, setPendingGame] = useState(null);
-  const [rewardMessage, setRewardMessage] = useState("");
+  // A right answer's toast ("Amazing! +1"): { message, id }, cleared after answerToastTime.
+  const [toast, setToast] = useState(null);
   const [wordMenuOpen, setWordMenuOpen] = useState(false);
   const [showSpellingGuide, setShowSpellingGuide] = useState(false);
   // How the current question was answered: null, "right" or "wrong". Each question gets one try.
@@ -211,12 +213,26 @@ export default function GameApp() {
     setVoiceMessage("");
     setAnswered(null);
     setChecked(false);
-    setRewardMessage("");
     setWordMenuOpen(false);
     setCompletedTopic(null);
     // Only when the topic, player or dealt words change, not on every progress save.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryKey, currentPlayer?.name, validDeck]);
+
+  // After a right answer, on to the next question by itself. Leaving the topic (or picking another
+  // word) first cancels it.
+  useEffect(() => {
+    if (answered !== "right" || completedTopic) return undefined;
+    const timer = setTimeout(nextWord, nextQuestionPause);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [answered, round, categoryKey, completedTopic]);
+
+  useEffect(() => {
+    if (!toast) return undefined;
+    const timer = setTimeout(() => setToast(null), answerToastTime);
+    return () => clearTimeout(timer);
+  }, [toast]);
 
   const closeWordMenu = useCallback(() => setWordMenuOpen(false), []);
   const closePlayerDialog = useCallback(() => {
@@ -228,7 +244,6 @@ export default function GameApp() {
   function resetAnswer() {
     setAnswered(null);
     setChecked(false);
-    setRewardMessage("");
   }
 
   function selectGame(game) {
@@ -356,8 +371,9 @@ export default function GameApp() {
     if (allPlaced) answerQuestion(complete);
   }
 
-  // A right answer earns a coin; a wrong one shows the right answer. Either way, it's on to the
-  // next question, and only the first answer counts towards the topic's score.
+  // A right answer earns a coin, cheers with a toast and moves on by itself (after
+  // nextQuestionPause); a wrong one shows the right answer, to move on from. Only the first answer
+  // counts towards the topic's score.
   function answerQuestion(correct) {
     if (answered) return;
     setAnswered(correct ? "right" : "wrong");
@@ -365,7 +381,7 @@ export default function GameApp() {
     if (correct) {
       sounds.correct();
       const messages = inChinese ? chineseRewardMessages : rewardMessages;
-      setRewardMessage(messages[rainbowCoins % messages.length]);
+      setToast({ message: messages[rainbowCoins % messages.length], id: Date.now() });
       addCoin();
     } else {
       sounds.oops?.();
@@ -392,7 +408,6 @@ export default function GameApp() {
   // every question right earns the topic's badge (once).
   function finishTopic() {
     saveProgress(categoryKey, 0);
-    setRewardMessage("");
     setAnswered(null);
     const results = currentPlayer?.results?.[categoryKey] ?? [];
     const count = selectedCategory.words.length;
@@ -478,9 +493,9 @@ export default function GameApp() {
             onParentMode={() => router.push("/parent")}
             onLanguage={site.setLanguage}
             onLogOut={handleLogOut}
+            coins={rainbowCoins}
           />
         )}
-        <CoinLink coins={rainbowCoins} />
       </SiteHeader>
 
       {onParentPage ? (
@@ -709,8 +724,13 @@ export default function GameApp() {
           onContinue={nextWord}
         />
       )}
-      {playing && rewardMessage && answered === "right" && !completedTopic && (
-        <RewardDialog message={rewardMessage} onContinue={nextWord} labels={inChinese ? chineseRewardLabels : undefined} />
+      {toast && (
+        <AnswerToast
+          key={toast.id}
+          message={toast.message}
+          earnedLabel={coinEarned[inChinese ? "zh" : "en"]}
+          lang={inChinese ? "zh-Hant-HK" : undefined}
+        />
       )}
     </main>
     </LanguageContext.Provider>

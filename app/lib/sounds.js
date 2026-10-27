@@ -191,10 +191,12 @@ export const sounds = {
     noise(ac, { duration: 0.3, volume: 0.14, freq: 1800, sweepTo: 900, q: 2, attack: 0.05 });
   }),
 
-  // A soft "uh-oh" for a wrong answer: two gentle falling notes, never harsh.
+  // A low "uh-uh" buzz for a wrong answer: two falling, buzzy notes, so it clearly means "not
+  // right" without being scary.
   oops: play((ac) => {
-    tone(ac, { freq: notes.E5, duration: 0.18, type: "triangle", volume: 0.12 });
-    tone(ac, { freq: notes.C5, slide: notes.A4, at: 0.16, duration: 0.32, type: "triangle", volume: 0.12 });
+    tone(ac, { freq: 233, duration: 0.17, type: "square", volume: 0.07, attack: 0.005 });
+    tone(ac, { freq: 175, slide: 131, at: 0.21, duration: 0.42, type: "square", volume: 0.07, attack: 0.005 });
+    tone(ac, { freq: 117, slide: 87, at: 0.21, duration: 0.42, type: "triangle", volume: 0.16, attack: 0.005 });
   }),
 
   // A wobbly "eek" for something sour.

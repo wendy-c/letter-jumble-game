@@ -7,6 +7,9 @@ import { sounds } from "./lib/sounds";
 
 jest.mock("./lib/sounds", () => ({ sounds: { correct: jest.fn(), oops: jest.fn(), coin: jest.fn(), sparkle: jest.fn() } }));
 jest.mock("./lib/speech", () => ({ speakWord: jest.fn(), speakCantonese: jest.fn(), stopSpeaking: jest.fn() }));
+// After a right answer, the next question comes straight away (no 1-second wait in tests), and the
+// toast stays up so tests can see it.
+jest.mock("./lib/timing", () => ({ answerToastTime: 60000, nextQuestionPause: 0 }));
 
 // The real dragon scene needs WebGL, which jsdom doesn't have.
 jest.mock("./components/DragonScene", () => function MockDragonScene() {
@@ -14,7 +17,8 @@ jest.mock("./components/DragonScene", () => function MockDragonScene() {
 });
 
 // The coin count lives in the header, as a link to Mochi.
-const coinsLabel = (count) => `${count} rainbow coins. Visit Mochi the Rainbow Dragon`;
+// The player chip says how many coins they have, e.g. "Playing as Ada, 1 rainbow coin. Player options".
+const coinsLabel = (count) => new RegExp(`, ${count} rainbow coins?\\. Player options$`);
 const playersKey = "letter-jumble:players";
 const whoIsPlaying = /Who.s playing/;
 
@@ -73,12 +77,15 @@ function shownGames() {
   return [...document.querySelectorAll(".game-choice-card .category-card-name")].map((name) => name.textContent);
 }
 
+// Lets the next question come up after a right answer (its pause is 0 in tests).
+const nextQuestion = () => act(() => new Promise((resolve) => setTimeout(resolve, 0)));
+
 async function earnCoin(user) {
   for (const letter of ["b", "a", "t"]) {
     await user.click(screen.getByRole("button", { name: `Letter ${letter}` }));
   }
   await user.click(screen.getByRole("button", { name: /Check word/ }));
-  await user.click(within(screen.getByRole("dialog", { name: /!$/ })).getByRole("button"));
+  await nextQuestion();
 }
 
 describe("Home", () => {
@@ -124,8 +131,11 @@ describe("Home", () => {
     }
     await user.click(screen.getByRole("button", { name: /Check word/ }));
 
-    const reward = screen.getByRole("dialog", { name: "Amazing!" });
-    expect(within(reward).getByText("You collected a rainbow coin!")).toBeInTheDocument();
+    const toast = screen.getByRole("status");
+    expect(toast).toHaveTextContent("Amazing!");
+    expect(toast).toHaveTextContent("+1");
+    expect(toast).toHaveTextContent("You collected a rainbow coin!");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(screen.getByLabelText(coinsLabel(1))).toBeInTheDocument();
     expect(storedPlayers()).toEqual({
       players: [{ name: "Ada", coins: 1, age: "5-6", decks: animalsDeck, results: { "letter-jumble/animals": [true] } }],
@@ -133,7 +143,8 @@ describe("Home", () => {
     });
     expect(sounds.correct).toHaveBeenCalledTimes(1);
 
-    await user.click(within(reward).getByRole("button"));
+    // On to the next word by itself, with no button to press.
+    await nextQuestion();
     expect(screen.getByLabelText("Word 2 of 13")).toBeInTheDocument();
   });
 
@@ -153,6 +164,7 @@ describe("Home", () => {
 
     const reveal = screen.getByRole("dialog", { name: "The answer is…" });
     expect(reveal).toHaveTextContent("bat");
+    expect(reveal.querySelector(".reveal-mascot img")).toHaveAttribute("src", "/images/mochi/wrong.svg");
     expect(sounds.oops).toHaveBeenCalledTimes(1);
     expect(sounds.correct).not.toHaveBeenCalled();
     expect(screen.getByLabelText(coinsLabel(0))).toBeInTheDocument();
@@ -177,7 +189,7 @@ describe("Home", () => {
     expect(screen.getByRole("button", { name: "Letter o" })).not.toHaveClass("tile-used");
 
     await user.click(screen.getByRole("button", { name: /Check word/ }));
-    expect(screen.getByRole("dialog", { name: "Amazing!" })).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("Amazing!");
   });
 
   it("moves back through the menus", async () => {
@@ -232,7 +244,7 @@ describe("players", () => {
     await addPlayer(user, "Mia", "3-4");
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("CVC Sounds");
-    expect(screen.getByRole("button", { name: "Playing as Mia. Player options" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Playing as Mia, 0 rainbow coins. Player options" })).toBeInTheDocument();
     expect(storedPlayers()).toEqual({ players: [{ name: "Mia", coins: 0, age: "3-4" }], current: "Mia" });
   });
 
@@ -451,9 +463,9 @@ describe("progress", () => {
       await user.click(screen.getByRole("button", { name: `Letter ${letter}` }));
     }
     await user.click(screen.getByRole("button", { name: /Check word/ }));
-    await user.click(within(screen.getByRole("dialog", { name: /!$/ })).getByRole("button"));
+    await nextQuestion();
 
-    const praise = screen.getByRole("dialog", { name: "You did it!" });
+    const praise = (await screen.findByRole("dialog", { name: "You did it!" }));
     expect(praise).toHaveTextContent("13 / 13 right");
     expect(praise).toHaveTextContent("You got every Animals word right.");
     expect(praise).toHaveTextContent("New badge! Animals is in your badge collection.");
@@ -483,9 +495,9 @@ describe("progress", () => {
     render(<GameApp />);
 
     await user.click(await screen.findByRole("button", { name: "top" }));
-    await user.click(within(screen.getByRole("dialog", { name: /！$/ })).getByRole("button"));
+    await nextQuestion();
 
-    const praise = screen.getByRole("dialog", { name: "你好叻呀！" });
+    const praise = (await screen.findByRole("dialog", { name: "你好叻呀！" }));
     expect(praise).toHaveTextContent("7 / 7 答對");
     expect(praise).toHaveTextContent("「衣物」全部答對");
     expect(praise).toHaveTextContent("你得到「衣物」徽章！");
@@ -541,12 +553,13 @@ describe("chinese characters", () => {
 
     expect(screen.getByText("紅")).toHaveClass("chinese-character");
     await user.click(screen.getByRole("button", { name: "red" }));
-    const reward = screen.getByRole("dialog", { name: "做得好！" });
-    expect(within(reward).getByText("你得到一個彩虹金幣！")).toBeInTheDocument();
+    const toast = screen.getByRole("status");
+    expect(toast).toHaveTextContent("做得好！");
+    expect(toast).toHaveTextContent("你得到一個彩虹金幣！");
     expect(sounds.correct).toHaveBeenCalledTimes(1);
     expect(screen.getByLabelText(coinsLabel(1))).toBeInTheDocument();
 
-    await user.click(within(reward).getByRole("button"));
+    await nextQuestion();
     expect(screen.getByText("橙")).toHaveClass("chinese-character");
     expect(storedPlayers().players[0].progress).toEqual({ "chinese/colours": 1 });
 
@@ -573,7 +586,7 @@ describe("chinese characters", () => {
     expect(screen.getByText("餅", { selector: ".chinese-character" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "聽「餅乾」" })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "biscuit" }));
-    expect(screen.getByRole("dialog", { name: /！$/ })).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("！");
     expect(sounds.correct).toHaveBeenCalledTimes(1);
   });
 });
@@ -643,25 +656,18 @@ describe("routes", () => {
   });
 });
 
-describe("coins on the home page", () => {
-  it("shows the player's coins and links them to Mochi", async () => {
+describe("coins in the player chip", () => {
+  it("shows the player's coins in their chip, with no link to anywhere", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 12, age: "3-4" }], current: "Ada" }));
-    const user = userEvent.setup();
     render(<GameApp />);
-
-    const link = await screen.findByRole("link", { name: "12 rainbow coins. Visit Mochi the Rainbow Dragon" });
-    expect(link).toHaveAttribute("href", "/dragon");
-    await user.click(link);
-
-    expect(currentPathname()).toBe("/dragon");
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Mochi the Rainbow Dragon");
-    // It stays in the header on every page.
-    expect(screen.getByRole("link", { name: coinsLabel(12) })).toBeInTheDocument();
+    const chip = await screen.findByRole("button", { name: "Playing as Ada, 12 rainbow coins. Player options" });
+    expect(chip.querySelector(".player-chip-coins")).toHaveTextContent("12");
+    expect(screen.queryByRole("link", { name: /rainbow coins/ })).not.toBeInTheDocument();
   });
 
-  it("shows 0 when nobody is playing", () => {
+  it("shows no coins when nobody is playing", () => {
     render(<GameApp />);
-    expect(screen.getByRole("link", { name: coinsLabel(0) })).toBeInTheDocument();
+    expect(screen.queryByLabelText(/rainbow coin/)).not.toBeInTheDocument();
   });
 });
 
@@ -707,9 +713,9 @@ describe("CVC shuffling", () => {
     expect(screen.getByLabelText("Letter 2 of 3, e")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Letter b" }));
     await user.click(screen.getByRole("button", { name: /Check word/ }));
-    await user.click(within(screen.getByRole("dialog", { name: /!$/ })).getByRole("button"));
+    await nextQuestion();
 
-    const praise = screen.getByRole("dialog", { name: "You did it!" });
+    const praise = (await screen.findByRole("dialog", { name: "You did it!" }));
     expect(praise).toHaveTextContent("12 / 12 right");
     await user.click(within(praise).getByRole("button", { name: /Back to all topics/ }));
     expect(currentPathname()).toBe("/cvc");
@@ -733,7 +739,7 @@ describe("chinese words for 5-6 year olds", () => {
 
     expect(screen.getByText("警察", { selector: ".chinese-character" })).toHaveClass("chinese-character-pair");
     await user.click(screen.getByRole("button", { name: "police officer" }));
-    expect(screen.getByRole("dialog", { name: /！$/ })).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("！");
     expect(storedPlayers().players[0].coins).toBe(1);
   });
 
@@ -761,7 +767,7 @@ describe("chinese words for 5-6 year olds", () => {
 
     expect(await screen.findByText("客廳", { selector: ".chinese-character" })).toHaveClass("chinese-character-pair");
     await user.click(screen.getByRole("button", { name: "living room" }));
-    expect(screen.getByRole("dialog", { name: /！$/ })).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("！");
   });
 });
 
@@ -826,7 +832,7 @@ describe("Consonant Digraphs", () => {
     await user.click(screen.getByRole("button", { name: "Letter ch" }));
     expect(screen.getByLabelText("Letter 1 of 5, ch")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /Check word/ }));
-    expect(screen.getByRole("dialog", { name: /!$/ })).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("!");
     expect(storedPlayers().players[0].coins).toBe(1);
   });
 
@@ -869,7 +875,7 @@ describe("Letter Jumble for Starters", () => {
       await user.click(screen.getByRole("button", { name: `Letter ${letter}` }));
     }
     await user.click(screen.getByRole("button", { name: /Check word/ }));
-    expect(screen.getByRole("dialog", { name: /!$/ })).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("!");
     expect(storedPlayers().players[0].coins).toBe(1);
   });
 
@@ -893,7 +899,7 @@ describe("Letter Jumble for Starters", () => {
       await user.click(screen.getAllByRole("button", { name: `Letter ${letter}` }).find((tile) => !tile.disabled && !tile.classList.contains("tile-used")));
     }
     await user.click(screen.getByRole("button", { name: /Check word/ }));
-    expect(screen.getByRole("dialog", { name: /!$/ })).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("!");
   });
 });
 
@@ -915,7 +921,7 @@ describe("measure words", () => {
     // With the order pinned, the first question is 一個橙.
     expect(screen.getByLabelText("一個，空格")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /橙/ }));
-    expect(screen.getByRole("dialog", { name: /！$/ })).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("！");
     expect(storedPlayers().players[0].coins).toBe(1);
   });
 
@@ -943,7 +949,7 @@ describe("成語", () => {
     expect(screen.getByText("比喻做事不機密，使對方起了警覺。")).toBeInTheDocument();
     expect(screen.getByLabelText("打草驚空格")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "蛇" }));
-    expect(screen.getByRole("dialog", { name: /！$/ })).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("！");
     expect(storedPlayers().players[0].coins).toBe(1);
   });
 
@@ -1016,9 +1022,9 @@ describe("one try per question", () => {
     render(<GameApp />);
 
     await user.click(await screen.findByRole("button", { name: "top" }));
-    await user.click(within(screen.getByRole("dialog", { name: /！$/ })).getByRole("button"));
+    await nextQuestion();
 
-    const done = screen.getByRole("dialog", { name: "繼續加油！" });
+    const done = (await screen.findByRole("dialog", { name: "繼續加油！" }));
     expect(within(done).getByLabelText("5 / 7 答對")).toBeInTheDocument();
     expect(done).toHaveTextContent("全部答對就可以得到「衣物」徽章，再試一次吧！");
     expect(storedPlayers().players[0].badges).toBeUndefined();
@@ -1035,8 +1041,8 @@ describe("one try per question", () => {
     render(<GameApp />);
 
     await user.click(await screen.findByRole("button", { name: "top" }));
-    await user.click(within(screen.getByRole("dialog", { name: /！$/ })).getByRole("button"));
-    expect(within(screen.getByRole("dialog", { name: "繼續加油！" })).getByLabelText("6 / 7 答對")).toBeInTheDocument();
+    await nextQuestion();
+    expect(within((await screen.findByRole("dialog", { name: "繼續加油！" }))).getByLabelText("6 / 7 答對")).toBeInTheDocument();
   });
 
   it("awards the badge for a perfect score, even after a wrong last answer the first time round", async () => {
@@ -1048,7 +1054,7 @@ describe("one try per question", () => {
     const wrong = (await screen.findAllByRole("button")).find((button) => button.classList.contains("chinese-option") && button.getAttribute("aria-label") !== "top");
     await user.click(wrong);
     await user.click(within(screen.getByRole("dialog", { name: "正確答案是……" })).getByRole("button", { name: /下一題/ }));
-    expect(within(screen.getByRole("dialog", { name: "繼續加油！" })).getByLabelText("6 / 7 答對")).toBeInTheDocument();
+    expect(within((await screen.findByRole("dialog", { name: "繼續加油！" }))).getByLabelText("6 / 7 答對")).toBeInTheDocument();
     expect(storedPlayers().players[0].badges).toBeUndefined();
   });
 
@@ -1129,8 +1135,8 @@ describe("badges", () => {
     const user = userEvent.setup();
     render(<GameApp />);
     await user.click(await screen.findByRole("button", { name: "top" }));
-    await user.click(within(screen.getByRole("dialog", { name: /！$/ })).getByRole("button"));
-    expect(screen.getByRole("dialog", { name: "你好叻呀！" })).not.toHaveTextContent("徽章");
+    await nextQuestion();
+    expect((await screen.findByRole("dialog", { name: "你好叻呀！" }))).not.toHaveTextContent("徽章");
     expect(storedPlayers().players[0].badges).toEqual(["chinese/clothes"]);
   });
 });

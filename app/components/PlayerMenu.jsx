@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useLanguage, useText } from "../i18n";
 
-// The player chip and its menu: switch player, badges, Parent mode, the site's language, log out.
-export default function PlayerMenu({ player, onSwitch, onBadges, onParentMode, onLanguage, onLogOut }) {
+// The player chip, with their rainbow coins, and its menu: switch player, badges, Parent mode, the
+// site's language, log out.
+export default function PlayerMenu({ player, coins = player.coins ?? 0, onSwitch, onBadges, onParentMode, onLanguage, onLogOut }) {
   const text = useText();
   const language = useLanguage();
   const [open, setOpen] = useState(false);
@@ -31,13 +32,17 @@ export default function PlayerMenu({ player, onSwitch, onBadges, onParentMode, o
       <button
         className="player-chip"
         type="button"
-        aria-label={text.playerOptions(player.name)}
+        aria-label={text.playerOptions(player.name, coins)}
         aria-expanded={open}
         aria-haspopup="menu"
         onClick={() => setOpen((current) => !current)}
       >
         <span className="player-avatar" aria-hidden="true">{player.name.charAt(0).toLocaleUpperCase()}</span>
         <span className="player-chip-name">{player.name}</span>
+        <span className="player-chip-coins" aria-hidden="true">
+          <img src="/images/rainbow-coin.svg" alt="" width="20" height="20" />
+          {coins}
+        </span>
         <span className="player-chip-caret" aria-hidden="true">▾</span>
       </button>
       {open && (

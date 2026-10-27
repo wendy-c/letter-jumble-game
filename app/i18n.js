@@ -9,9 +9,8 @@ const strings = {
     home: "Home",
     homeLink: "Rainbow Academy home",
     footer: "Every word is a little bit of magic!",
-    coins: (count) => `${count} rainbow coins. Visit Mochi the Rainbow Dragon`,
 
-    playerOptions: (name) => `Playing as ${name}. Player options`,
+    playerOptions: (name, coins) => `Playing as ${name}, ${coins} rainbow ${coins === 1 ? "coin" : "coins"}. Player options`,
     switchPlayer: "Switch player",
     myBadges: "My badges",
     parentMode: "Parent mode",
@@ -68,9 +67,8 @@ const strings = {
     home: "主頁",
     homeLink: "Rainbow Academy 主頁",
     footer: "每個字都是小小的魔法！",
-    coins: (count) => `${count} 個彩虹金幣。去探望彩虹小龍 Mochi`,
 
-    playerOptions: (name) => `${name} 正在玩。玩家選項`,
+    playerOptions: (name, coins) => `${name} 正在玩，有 ${coins} 個彩虹金幣。玩家選項`,
     switchPlayer: "轉換玩家",
     myBadges: "我的徽章",
     parentMode: "家長模式",

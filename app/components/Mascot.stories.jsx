@@ -3,7 +3,7 @@ import Mascot from "./Mascot";
 export default {
   title: "Components/Mochi/Mascot",
   component: Mascot,
-  argTypes: { mood: { control: "inline-radio", options: ["happy", "confused", "idea", "welcome"] } },
+  argTypes: { mood: { control: "inline-radio", options: ["happy", "confused", "idea", "welcome", "wrong"] } },
   decorators: [(Story) => <div style={{ width: 160 }}><Story /></div>],
 };
 
@@ -11,3 +11,4 @@ export const Happy = { args: { mood: "happy" } };
 export const Confused = { args: { mood: "confused" } };
 export const Idea = { args: { mood: "idea" } };
 export const Welcome = { args: { mood: "welcome" } };
+export const Wrong = { args: { mood: "wrong" } };
