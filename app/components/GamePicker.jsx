@@ -19,7 +19,7 @@ export default function GamePicker({ games, playerName = null, onSelectGame, emp
       {shelves.map(({ group, games: shelfGames }) => (
         <section className="game-group" key={group.id} aria-labelledby={`game-group-${group.id}`}>
           <h2 className="game-group-title" id={`game-group-${group.id}`} lang={group.lang}>
-            <span className="game-group-icon" aria-hidden="true">{group.icon}</span>
+            <span className="game-group-icon" aria-hidden="true"><img src={group.icon} alt="" width="28" height="28" /></span>
             {text.groups[group.id] ?? group.name}
           </h2>
           <div className="category-grid game-choice-grid">

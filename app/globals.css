@@ -369,7 +369,11 @@ button {
   border-radius: 50%;
   background: #fff;
   box-shadow: 0 3px 0 var(--line-strong);
-  font-size: 21px;
+}
+
+.game-group-icon img {
+  width: 30px;
+  height: 30px;
 }
 
 /* Front-page game cards, drawn as books: a coloured cover with a spine down the left and page

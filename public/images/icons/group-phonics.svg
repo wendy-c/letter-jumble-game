@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+<g stroke="#4b2e22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<rect x="14" y="62" width="46" height="46" rx="7" fill="#8cc8f2"/><rect x="19" y="67" width="36" height="36" rx="4" fill="#ffffff" stroke-width="2.5" opacity=".9"/><text x="37.0" y="93" text-anchor="middle" font-family="Fredoka,Arial Rounded MT Bold,Arial,sans-serif" font-size="23" font-weight="700" fill="#4b2e22" stroke="none">a</text><rect x="66" y="62" width="46" height="46" rx="7" fill="#ffb3d1"/><rect x="71" y="67" width="36" height="36" rx="4" fill="#ffffff" stroke-width="2.5" opacity=".9"/><text x="89.0" y="93" text-anchor="middle" font-family="Fredoka,Arial Rounded MT Bold,Arial,sans-serif" font-size="23" font-weight="700" fill="#4b2e22" stroke="none">b</text><rect x="40" y="14" width="46" height="46" rx="7" fill="#ffe27a"/><rect x="45" y="19" width="36" height="36" rx="4" fill="#ffffff" stroke-width="2.5" opacity=".9"/><text x="63.0" y="45" text-anchor="middle" font-family="Fredoka,Arial Rounded MT Bold,Arial,sans-serif" font-size="23" font-weight="700" fill="#4b2e22" stroke="none">c</text>
+</g>
+</svg>

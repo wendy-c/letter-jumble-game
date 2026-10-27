@@ -3,12 +3,13 @@ export const ageGroups = [
   { id: "5-6", label: "5-6 years old" },
 ];
 
-// The front page shows games under these headings, in this order.
+// The front page shows games under these headings, in this order, each with its icon (drawn by
+// scripts/draw-pictures.py).
 export const gameGroups = [
-  { id: "phonics", name: "Phonics", icon: "🔤" },
-  { id: "cambridge", name: "Cambridge YLE training", icon: "🎓" },
-  { id: "chinese", name: "中文", icon: "🪭", lang: "zh-Hant-HK" },
-  { id: "mochi", name: "Visit Mochi", icon: "❤️" },
+  { id: "phonics", name: "Phonics", icon: "/images/icons/group-phonics.svg" },
+  { id: "cambridge", name: "Cambridge YLE training", icon: "/images/icons/group-cambridge.svg" },
+  { id: "chinese", name: "中文", icon: "/images/icons/group-chinese.svg", lang: "zh-Hant-HK" },
+  { id: "mochi", name: "Visit Mochi", icon: "/images/icons/group-mochi.svg" },
 ];
 
 // `ages` limits a game to those age groups; games without it are for everyone. `group` is the

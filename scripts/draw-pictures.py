@@ -437,6 +437,44 @@ pictures["icons/blends-l"] = blend_bubbles([(40, 40, "#8cc8f2", "bl"), (88, 40, 
 pictures["icons/blends-mixed"] = blend_bubbles([(40, 40, "#ffb3d1", "br"), (88, 40, "#c9b6f5", "fl"), (64, 88, "#ffe27a", "str")])
 
 
+# The front page's group headings: Phonics, Cambridge YLE training, 中文 and Visit Mochi.
+def letter_block(x, y, w, fill, letter):
+    return (f'<rect x="{x}" y="{y}" width="{w}" height="{w}" rx="7" fill="{fill}"/>'
+            f'<rect x="{x + 5}" y="{y + 5}" width="{w - 10}" height="{w - 10}" rx="4" fill="#ffffff" stroke-width="2.5" opacity=".9"/>'
+            f'<text x="{x + w / 2}" y="{y + w * 0.68:.0f}" text-anchor="middle" font-family="Fredoka,Arial Rounded MT Bold,Arial,sans-serif" '
+            f'font-size="{w * 0.5:.0f}" font-weight="700" fill="{INK}" stroke="none">{letter}</text>')
+
+
+pictures["icons/group-phonics"] = svg(
+    letter_block(14, 62, 46, "#8cc8f2", "a") + letter_block(66, 62, 46, "#ffb3d1", "b") + letter_block(40, 14, 46, "#ffe27a", "c"))
+
+pictures["icons/group-cambridge"] = svg(
+    '<path d="M34 62v26q30 18 60 0V62" fill="#8f7ae6"/>'
+    '<path d="M64 26 116 50 64 74 12 50Z" fill="#b6a6f5"/>'
+    '<path d="M64 50l32 8v28" fill="none" stroke-width="3.5"/>'
+    '<circle cx="64" cy="50" r="5" fill="#ffd45e" stroke-width="3"/>'
+    '<path d="M90 86l6 18 6-18Z" fill="#ffd45e" stroke-width="3"/>'
+    + sparkle(106, 22, 9))
+
+pictures["icons/group-chinese"] = svg(
+    '<path d="M64 8v12" stroke-width="5"/>'
+    '<rect x="44" y="18" width="40" height="10" rx="4" fill="#ffd45e" stroke-width="3.5"/>'
+    '<ellipse cx="64" cy="62" rx="40" ry="34" fill="#ff7a7a"/>'
+    '<path d="M64 28q-22 34 0 68M64 28q22 34 0 68M64 28v68" fill="none" stroke="#c94a4a" stroke-width="3"/>'
+    '<ellipse cx="64" cy="62" rx="40" ry="34" fill="none"/>'
+    '<rect x="44" y="94" width="40" height="10" rx="4" fill="#ffd45e" stroke-width="3.5"/>'
+    '<path d="M64 104v8M56 112h16" stroke-width="3.5"/>'
+    '<path d="M58 112l-3 10M64 112v11M70 112l3 10" stroke="#ffd45e" stroke-width="3"/>'
+    '<path d="M46 50q4-10 12-12" fill="none" stroke="#ffffff" stroke-width="4" opacity=".7"/>')
+
+pictures["icons/group-mochi"] = svg(
+    '<path d="M64 112C34 92 12 74 14 50 16 30 40 22 56 38l8 8 8-8c16-16 40-8 42 12 2 24-20 42-50 62Z" fill="#ff9fc3"/>'
+    '<path d="M54 30 64 4 74 30Z" fill="#fff6e0"/>'
+    '<path d="M57 22l12-3M59 14l9-2" stroke="#ff8fa3" stroke-width="3"/>'
+    '<path d="M32 50q2-12 14-14" fill="none" stroke="#ffffff" stroke-width="4" opacity=".75"/>'
+    + sparkle(104, 28, 8, "#b79cf2"))
+
+
 for name, body in pictures.items():
     path = os.path.join(IMAGES, name + ".svg")
     os.makedirs(os.path.dirname(path), exist_ok=True)
