@@ -15,6 +15,23 @@ const pictureGame = (en, zh) => ({
   zh: [...zh, oneTry.zh],
 });
 
+// Letter Jumble (for Starters and for Movers): four plain numbered steps, no icons.
+const letterJumble = {
+  numbered: true,
+  en: [
+    "Look at the picture, tap the speaker if you need a hint.",
+    "Tap the letters in spelling order to fill the boxes.",
+    "Tap “Check it”.",
+    "A right answer earns a rainbow coin, and getting a whole topic right earns its badge!",
+  ],
+  zh: [
+    "看看圖畫，需要提示就按喇叭。",
+    "按次序按字母，把格子填滿。",
+    "按「Check it」。",
+    "答對可得到彩虹金幣，全部答對更可得到徽章！",
+  ],
+};
+
 // 中文認字 (both 入門篇 and 進階篇): three plain numbered steps, no icons.
 const chineseCharacters = {
   numbered: true,
@@ -41,14 +58,8 @@ const howTo = {
     [["🔤", "Tap the blend (like br or str) that fills the gap."]],
     [["🔤", "按一按正確的混合音（例如 br 或 str），填入空格。"]],
   ),
-  starters: spelling(
-    [["🔤", "Tap the letters in spelling order to fill the boxes. Tap a box to take its letter back out."]],
-    [["🔤", "按次序按字母，把格子填滿。按格子可以拿走字母。"]],
-  ),
-  "letter-jumble": spelling(
-    [["🔤", "Tap the letters in spelling order to fill the boxes. Tap a box to take its letter back out."]],
-    [["🔤", "按次序按字母，把格子填滿。按格子可以拿走字母。"]],
-  ),
+  starters: letterJumble,
+  "letter-jumble": letterJumble,
   chinese: chineseCharacters,
   "chinese-advanced": chineseCharacters,
   "measure-words": pictureGame(

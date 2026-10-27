@@ -1400,7 +1400,13 @@ describe("how to play", () => {
 
     await user.click(screen.getByRole("button", { name: /Animals/ }));
     const howTo = screen.getByRole("dialog", { name: "How to play Letter Jumble for Movers" });
-    expect(howTo).toHaveTextContent("Tap the letters in spelling order");
+    expect(howTo.querySelector(".how-to-icon")).toBeNull();
+    expect(within(howTo).getAllByRole("listitem").map((item) => item.textContent)).toEqual([
+      "Look at the picture, tap the speaker if you need a hint.",
+      "Tap the letters in spelling order to fill the boxes.",
+      "Tap “Check it”.",
+      "A right answer earns a rainbow coin, and getting a whole topic right earns its badge!",
+    ]);
     await user.click(within(howTo).getByRole("button", { name: /Got it/ }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
