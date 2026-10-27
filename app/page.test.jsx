@@ -976,7 +976,7 @@ describe("one try per question", () => {
     await user.click(await screen.findByRole("button", { name: "orange" }));
     const reveal = screen.getByRole("dialog", { name: "正確答案是……" });
     expect(reveal).toHaveTextContent("紅");
-    expect(reveal.querySelector(".reveal-picture")).toHaveAttribute("src", "/images/chinese/colours/red.svg");
+    expect(reveal.querySelector(".reveal-picture")).toHaveAttribute("src", "/images/game-asset/colours/red.svg");
     expect(screen.getByRole("button", { name: "red" })).toBeDisabled();
     expect(screen.getByLabelText(coinsLabel(0))).toBeInTheDocument();
 

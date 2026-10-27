@@ -37,7 +37,7 @@ const topics = [
       { character: "飯", jyutping: "faan6", english: "rice", picture: "rice", phrases: ["白飯", "飯碗"] },
       { character: "糖", jyutping: "tong4", english: "sweet", picture: "sweet", phrases: ["糖果", "蜜糖"] },
       { character: "肉", jyutping: "juk6", english: "meat", picture: "meat", phrases: ["牛肉", "肌肉"] },
-      { character: "菜", jyutping: "coi3", english: "vegetable", picture: "vegetable", phrases: ["蔬菜", "菠菜"] },
+      { character: "菜", jyutping: "coi3", english: "vegetable", picture: "bok-choy", phrases: ["蔬菜", "菠菜"] },
       { character: "蛋", jyutping: "daan2", english: "egg", picture: "egg", phrases: ["雞蛋", "復活蛋"] },
       { character: "糕", jyutping: "gou1", english: "cake", picture: "cake", phrases: ["蛋糕", "年糕"] },
       { character: "麵", jyutping: "min6", english: "noodles", picture: "noodles", phrases: ["拉麵", "麵粉"], group: "noodles" },
@@ -50,6 +50,7 @@ const topics = [
   },
   {
     id: "fruit",
+    pictures: "/images/game-asset/food",
     name: "水果",
     english: "Fruit",
     icon: "/images/icons/chinese-fruit.svg",
@@ -183,7 +184,7 @@ const advancedTopics = [
       { character: "電腦", jyutping: "din6 nou5", english: "computer", picture: "computer", groups: ["study"] },
       { character: "空氣淨化機", jyutping: "hung1 hei3 zing6 faa3 gei1", english: "air purifier", picture: "air-purifier" },
       { character: "露台", jyutping: "lou6 toi4", english: "balcony", picture: "balcony", groups: ["window"] },
-      { character: "游泳池", jyutping: "jau4 wing6 ci4", english: "swimming pool", picture: "swimming-pool" },
+      { character: "游泳池", jyutping: "jau4 wing6 ci4", english: "swimming pool", picture: "pool" },
     ],
   },
   {
@@ -287,9 +288,9 @@ function pictureOptions(words, wordIndex) {
   return options.map((option) => ({ character: option.character, picture: option.picture, english: option.english }));
 }
 
-// A topic's pictures are in /images/chinese/<topic id>, or in `pictures` when it shares a folder
-// (both animal topics use the game's animal pictures in /images/game-asset/animals).
-const pictureFolder = (topic) => topic.pictures ?? `/images/chinese/${topic.id}`;
+// A topic's pictures are in /images/game-asset/<topic id>, or in `pictures` when it shares a folder
+// (both animal topics use game-asset/animals, and fruit is in game-asset/food).
+const pictureFolder = (topic) => topic.pictures ?? `/images/game-asset/${topic.id}`;
 
 function buildTopics(list) {
   return list.map((topic) => ({

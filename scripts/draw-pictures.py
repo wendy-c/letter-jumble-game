@@ -76,7 +76,7 @@ def drips(x0, x1, y, lengths):
     return d + "Z"
 
 
-pictures["chinese/food/cake"] = svg(
+pictures["game-asset/food/cake"] = svg(
     '<ellipse cx="64" cy="104" rx="52" ry="9" fill="#ffffff"/>'
     '<path d="M24 58v38q0 10 40 10t40-10V58Z" fill="#ffe7b0"/>'
     '<path d="M24 82q40 10 80 0" fill="none" stroke="#ffffff" stroke-width="6"/>'
@@ -86,7 +86,7 @@ pictures["chinese/food/cake"] = svg(
               for x in (46, 64, 82))
     + '<g fill="#fff6c8" stroke="none"><circle cx="40" cy="96" r="2"/><circle cx="58" cy="100" r="2"/><circle cx="88" cy="96" r="2"/></g>')
 
-pictures["chinese/food/milk"] = svg(
+pictures["game-asset/food/milk"] = svg(
     '<path d="M38 40h44l8 12v62H30V52Z" fill="#ffffff"/>'
     '<path d="M38 40l8-18h28l8 18Z" fill="#8cc8f2"/>'
     '<rect x="52" y="8" width="16" height="12" rx="3" fill="#8cc8f2" stroke-width="3"/>'
@@ -95,14 +95,14 @@ pictures["chinese/food/milk"] = svg(
     '<path d="M60 92q-12 14 0 18 12-4 0-18Z" fill="#c9e6fb" stroke-width="3"/>'
     '<path d="M38 58l6 0" stroke="#fff" stroke-width="3"/>')
 
-pictures["chinese/fruit/banana"] = svg(
+pictures["game-asset/food/banana"] = svg(
     '<path d="M18 30q-2 52 46 72 34 12 52-6-30 4-52-14-26-22-34-58Z" fill="#ffe27a"/>'
     '<path d="M30 46q8 34 40 50" fill="none" stroke="#f2c14e" stroke-width="4"/>'
     '<path d="M16 22l4 10" stroke-width="7"/><path d="M16 22l4 10" stroke="#8b5a3c" stroke-width="3"/>'
     '<circle cx="114" cy="96" r="4" fill="#8b5a3c" stroke-width="2.5"/>'
     '<path d="M28 40q2 12 8 20" fill="none" stroke="#fff6c8" stroke-width="4"/>')
 
-pictures["chinese/home/chair"] = svg(
+pictures["game-asset/home/chair"] = svg(
     '<rect x="38" y="14" width="52" height="46" rx="8" fill="#f5b971"/>'
     '<path d="M48 24v26M64 24v26M80 24v26" stroke="#d98f43" stroke-width="4"/>'
     '<path d="M30 64h68v12H30Z" fill="#e8846a"/>'
@@ -110,14 +110,14 @@ pictures["chinese/home/chair"] = svg(
     '<path d="M38 76l-4 40M90 76l4 40" stroke="#d98f43" stroke-width="2"/>'
     '<path d="M38 60v4M90 60v4" stroke-width="6"/>')
 
-pictures["chinese/home/dishes"] = svg(
+pictures["game-asset/home/dishes"] = svg(
     '<ellipse cx="64" cy="100" rx="52" ry="14" fill="#ffffff"/><ellipse cx="64" cy="98" rx="34" ry="8" fill="#eaf4ff" stroke="#b7dcf6" stroke-width="3"/>'
     '<ellipse cx="64" cy="84" rx="44" ry="12" fill="#ffffff"/><ellipse cx="64" cy="82" rx="28" ry="6" fill="#eaf4ff" stroke="#b7dcf6" stroke-width="3"/>'
     '<path d="M30 46h68q-2 32-34 32T30 46Z" fill="#8cc8f2"/><ellipse cx="64" cy="46" rx="34" ry="8" fill="#eaf4ff"/>'
     '<path d="M40 58q24 10 48 0" fill="none" stroke="#ffffff" stroke-width="4"/>'
     '<path d="M52 30q-6-8 0-14M64 30q-6-8 0-14M76 30q-6-8 0-14" fill="none" stroke="#c9b2f7" stroke-width="3"/>')
 
-pictures["chinese/home/light"] = svg(
+pictures["game-asset/home/light"] = svg(
     '<path d="M64 4v24" stroke-width="4"/>'
     '<path d="M28 64q0-36 36-36t36 36Z" fill="#b79cf2"/>'
     '<path d="M28 64h72" stroke-width="5"/>'
@@ -127,7 +127,7 @@ pictures["chinese/home/light"] = svg(
               for a in [math.radians(d) for d in (20, 55, 90, 125, 160)])
     + '<path d="M40 50q8-12 22-14" fill="none" stroke="#fff" stroke-width="4" opacity=".7"/>')
 
-pictures["chinese/home/mattress"] = svg(
+pictures["game-asset/home/mattress"] = svg(
     '<path d="M16 58l24-20h72l-24 20Z" fill="#ffffff"/>'
     '<path d="M16 58h72v36H16Z" fill="#f4ebff"/><path d="M88 58l24-20v36L88 94Z" fill="#e3d6fb"/>'
     '<path d="M16 76h72" stroke="#c9b2f7" stroke-width="3"/>'
@@ -135,7 +135,7 @@ pictures["chinese/home/mattress"] = svg(
     + "".join(f'<circle cx="{x}" cy="{y}" r="2.2" fill="#c9b2f7" stroke="none"/>' for x, y in [(40, 48), (60, 48), (80, 48), (96, 44)])
     + '<path d="M16 94v10M88 94v10M112 74v10" stroke-width="5"/>')
 
-pictures["chinese/home/sofa"] = svg(
+pictures["game-asset/home/sofa"] = svg(
     '<path d="M24 46q0-14 14-14h52q14 0 14 14v18H24Z" fill="#f7a8c8"/>'
     '<rect x="10" y="56" width="22" height="42" rx="10" fill="#f48fb8"/><rect x="96" y="56" width="22" height="42" rx="10" fill="#f48fb8"/>'
     '<path d="M30 64h68v34H30Z" fill="#f7a8c8"/>'
@@ -143,7 +143,7 @@ pictures["chinese/home/sofa"] = svg(
     '<rect x="70" y="40" width="20" height="18" rx="6" fill="#fff6c8" stroke-width="3" transform="rotate(10 80 49)"/>'
     '<path d="M22 98v12M106 98v12" stroke-width="6"/>')
 
-pictures["chinese/home/wardrobe"] = svg(
+pictures["game-asset/home/wardrobe"] = svg(
     '<rect x="26" y="10" width="76" height="98" rx="6" fill="#c98a55"/>'
     '<path d="M64 10v98" stroke-width="4"/>'
     '<rect x="34" y="20" width="22" height="78" rx="3" fill="#dba371" stroke-width="3"/><rect x="72" y="20" width="22" height="78" rx="3" fill="#dba371" stroke-width="3"/>'
@@ -218,14 +218,14 @@ pictures["game-asset/animals/mole"] = svg(
 
 # ---------- Jobs: people ----------
 
-pictures["chinese/jobs/airport-police"] = svg(
+pictures["game-asset/jobs/airport-police"] = svg(
     '<path d="M90 16l18 6 10-8 4 2-6 10 10 4-2 3-12-2-6 8-4-1 2-10-16-6Z" fill="#c9e6fb" stroke-width="2.5"/>'
     + person("#2c3e70", hair="#3d2b63",
              hat='<path d="M40 34q24-22 48 0v7H40Z" fill="#2c3e70"/><path d="M36 41h56q-4 8-28 8t-28-8Z" fill="#1b2748"/><circle cx="64" cy="31" r="4.5" fill="#ffd45e" stroke-width="2.5"/>',
              extra_front='<rect x="46" y="94" width="36" height="12" rx="3" fill="#ffd45e" stroke-width="3"/>'
                          '<path d="M78 84l2 4 4 1-3 3 1 4-4-2-4 2 1-4-3-3 4-1Z" fill="#ffc94a" stroke-width="1.6"/>'))
 
-pictures["chinese/jobs/fashion-designer"] = svg(
+pictures["game-asset/jobs/fashion-designer"] = svg(
     '<rect x="88" y="34" width="34" height="50" rx="4" fill="#ffffff" stroke-width="3"/>'
     '<path d="M98 44h14l4 12-6 2 4 18h-18l4-18-6-2Z" fill="#ffb3d1" stroke-width="2.5"/>'
     + person("#b79cf2", hair="#3d2b63",
@@ -234,7 +234,7 @@ pictures["chinese/jobs/fashion-designer"] = svg(
                          + arm([(88, 100), (98, 84)], "#b79cf2") +
                          '<path d="M98 84l6-12" stroke-width="5"/><path d="M98 84l6-12" stroke="#ffd45e" stroke-width="2"/>'))
 
-pictures["chinese/jobs/fashion-model"] = svg(
+pictures["game-asset/jobs/fashion-model"] = svg(
     '<path d="M24 126l14-28h52l14 28Z" fill="#f4ebff" stroke-width="3"/>'
     '<path d="M20 4l20 60M108 4l-20 60" stroke="#fff6c8" stroke-width="10" opacity=".9"/>'
     + person("#f06aa8", hair="#e0a050", long_hair=True,
@@ -243,7 +243,7 @@ pictures["chinese/jobs/fashion-model"] = svg(
                          + arm([(40, 104), (34, 90), (44, 84)], "#ffe2c4", 9) + arm([(88, 104), (94, 90), (84, 84)], "#ffe2c4", 9)
                          + sparkle(22, 30, 6) + sparkle(106, 34, 6, "#ffb3d9")))
 
-pictures["chinese/jobs/garment-worker"] = svg(
+pictures["game-asset/jobs/garment-worker"] = svg(
     person("#8cc8f2", hair="#8b5a3c",
            extra_front='<path d="M10 104h108v22H10Z" fill="#dba371"/>'
                        '<path d="M30 104V82q0-8 8-8h36q8 0 8 8v8H62v14Z" fill="#ffffff"/>'
@@ -252,7 +252,7 @@ pictures["chinese/jobs/garment-worker"] = svg(
                        '<path d="M40 104h44l6-8H46Z" fill="#ffb3d1" stroke-width="3"/>'
                        '<circle cx="36" cy="88" r="4" fill="#ffd45e" stroke-width="2.5"/>'))
 
-pictures["chinese/jobs/reporter"] = svg(
+pictures["game-asset/jobs/reporter"] = svg(
     person("#ffe27a", hair="#6e432c",
            extra_front='<rect x="46" y="96" width="22" height="16" rx="3" fill="#ffffff" stroke-width="3"/>'
                        '<path d="M50 102h14M50 107h10" stroke-width="2"/>'
@@ -261,7 +261,7 @@ pictures["chinese/jobs/reporter"] = svg(
                        '<circle cx="110" cy="64" r="9" fill="#5b5b6e"/><path d="M104 62h12M106 58h8M106 66h8" stroke="#8a8fa8" stroke-width="2"/>'))
 
 # ---------- 地點 (places) ----------
-P = "chinese/places/"
+P = "game-asset/places/"
 
 def flag(x, y, color):
     return f'<path d="M{x} {y}v-15" stroke-width="3"/><path d="M{x} {y - 15}h14l-4 4 4 4h-14Z" fill="{color}" stroke-width="2.5"/>'

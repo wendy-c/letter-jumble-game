@@ -3,10 +3,10 @@ import { wordCategory } from "./game-data";
 // Letter Jumble for Starters: Cambridge Starters (YLE) vocabulary, played like Letter Jumble for
 // Movers. Pictures reuse the games' animal drawings where there is one, or an emoji.
 const animalPictures = "/images/game-asset/animals";
-const fruit = "/images/chinese/fruit";
-const food = "/images/chinese/food";
-const clothes = "/images/chinese/clothes";
-const home = "/images/chinese/home";
+const fruit = "/images/game-asset/food";
+const food = "/images/game-asset/food";
+const clothes = "/images/game-asset/clothes";
+const home = "/images/game-asset/home";
 const words = "/images/game-asset";
 const drawn = "/images/game-asset/starters";
 
@@ -109,17 +109,17 @@ export const starterCategories = [
       either(["fries", "chips"], "🍟"),
       ["Ice cream", "🍦"],
       ["Meat", `${food}/meat.svg`],
-      ["Pasta", `${words}/food-and-drink/pasta.svg`],
+      ["Pasta", `${words}/food/pasta.svg`],
       ["Pie", "🥧"],
       ["Rice", `${food}/rice.svg`],
       ["Sausage", `${drawn}/sausage.svg`],
-      ["Soup", `${words}/food-and-drink/soup.svg`],
+      ["Soup", `${words}/food/soup.svg`],
       ["Drink", "🥤"],
       ["Fruit juice", "🧃"],
       ["Milk", `${food}/milk.svg`],
-      ["Milkshake", `${words}/food-and-drink/milkshake.svg`],
+      ["Milkshake", `${words}/food/milkshake.svg`],
       ["Lemonade", "🍋🥤"],
-      ["Water", `${words}/food-and-drink/glass.svg`],
+      ["Water", `${words}/food/glass.svg`],
     ],
   },
   {
@@ -200,7 +200,7 @@ export const starterCategories = [
       ["Women", "👩👩"],
       ["Person", "🧑"],
       ["People", "🧑🧑🧑"],
-      ["Teacher", "/images/chinese/jobs/teacher.svg"],
+      ["Teacher", "/images/game-asset/jobs/teacher.svg"],
     ],
   },
   {
@@ -219,7 +219,7 @@ export const starterCategories = [
       ["Living room", `${home}/living-room.svg`],
       ["Hall", `${drawn}/hall.svg`],
       ["Garden", "🌷🌻"],
-      ["Balcony", `${words}/home-and-environment/balcony.svg`],
+      ["Balcony", `${words}/home/balcony.svg`],
       ["Bed", "🛏️"],
       ["Bookcase", "📚"],
       ["Chair", `${home}/chair.svg`],
@@ -227,7 +227,7 @@ export const starterCategories = [
       ["Desk", `${home}/study.svg`],
       ["Door", `${drawn}/door.svg`],
       ["Window", `${home}/window.svg`],
-      ["Floor", `${words}/home-and-environment/floor.svg`],
+      ["Floor", `${words}/home/floor.svg`],
       ["Wall", "🧱"],
       ["Picture", "🖼️"],
       ["Clock", `${home}/clock.svg`],

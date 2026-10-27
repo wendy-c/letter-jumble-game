@@ -50,7 +50,6 @@ export const Mochi = { args: { prefix: "/images/mochi" } };
 export const RainbowCoin = { args: { prefix: "/images/rainbow-coin" } };
 export const Badges = { args: { prefix: "/images/badges" } };
 export const GameAssets = { args: { prefix: "/images/game-asset" } };
-export const ChinesePictures = { args: { prefix: "/images/chinese" } };
 export const IdiomPictures = { args: { prefix: "/images/idioms", wide: true } };
 export const DragonRooms = { args: { prefix: "/images/dragon", wide: true } };
 export const RainbowVillage = { args: { prefix: "/images/village", wide: true } };

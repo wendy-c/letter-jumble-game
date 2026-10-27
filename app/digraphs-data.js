@@ -4,13 +4,13 @@ const drawn = "/images/game-asset/digraphs";
 
 const words = {
   ch: [
-    ["chair", "/images/chinese/home/chair.svg"], ["chin", `${drawn}/chin.svg`], ["cheese", "🧀"], ["cherry", "🍒"],
+    ["chair", "/images/game-asset/home/chair.svg"], ["chin", `${drawn}/chin.svg`], ["cheese", "🧀"], ["cherry", "🍒"],
     ["chicken", "/images/game-asset/animals/chicken.svg"], ["beach", "🏖️"], ["lunch", "🍱"], ["peach", "🍑"],
     ["bench", `${drawn}/bench.svg`], ["match", `${drawn}/match.svg`],
   ],
   sh: [
-    ["ship", "🚢"], ["shop", "🏪"], ["shell", "🐚"], ["shoe", "/images/chinese/clothes/shoes.svg"],
-    ["shirt", "/images/chinese/clothes/shirt.svg"], ["fish", "🐟"], ["wish", "🌠"], ["brush", "🪥"], ["wash", "🧼"], ["dish", "🍽️"],
+    ["ship", "🚢"], ["shop", "🏪"], ["shell", "🐚"], ["shoe", "/images/game-asset/clothes/shoes.svg"],
+    ["shirt", "/images/game-asset/clothes/shirt.svg"], ["fish", "🐟"], ["wish", "🌠"], ["brush", "🪥"], ["wash", "🧼"], ["dish", "🍽️"],
   ],
   th: [
     ["thin", "/images/game-asset/body-and-face/thin.svg"], ["thick", `${drawn}/thick.svg`], ["thumb", "👍"], ["three", "3️⃣"],
@@ -19,10 +19,10 @@ const words = {
   ],
   ph: [["graph", "📊"], ["phone", "📱"], ["photo", "📸"], ["phase", "🌓"], ["phantom", "👻"]],
   wh: [
-    ["wheel", `${drawn}/wheel.svg`], ["white", "/images/chinese/colours/white.svg"],
+    ["wheel", `${drawn}/wheel.svg`], ["white", "/images/game-asset/colours/white.svg"],
     ["whale", "/images/game-asset/animals/whale.svg"], ["where", "🔍❓"], ["whisper", "🤫"],
   ],
-  ck: [["duck", "🦆"], ["lock", "🔒"], ["pack", "🎒"], ["black", "/images/chinese/colours/black.svg"], ["kick", "🦵⚽"]],
+  ck: [["duck", "🦆"], ["lock", "🔒"], ["pack", "🎒"], ["black", "/images/game-asset/colours/black.svg"], ["kick", "🦵⚽"]],
   ng: [["king", "🤴"], ["ring", "💍"], ["song", "🎵"], ["long", "📏"], ["bring", "🎁"]],
 };
 

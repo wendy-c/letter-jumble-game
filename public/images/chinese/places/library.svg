@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
-<g stroke="#4b2e22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
-<path d="M24 50h80v66H24Z" fill="#eaf4ff"/><path d="M14 52L64 18l50 34Z" fill="#8cc8f2"/><rect x="34" y="62" width="14" height="12" rx="2" fill="#c9e6fb" stroke-width="3"/><rect x="80" y="62" width="14" height="12" rx="2" fill="#c9e6fb" stroke-width="3"/><rect x="34" y="84" width="14" height="12" rx="2" fill="#c9e6fb" stroke-width="3"/><rect x="80" y="84" width="14" height="12" rx="2" fill="#c9e6fb" stroke-width="3"/><path d="M54 116V98a10 10 0 0 1 20 0v18Z" fill="#c9e6fb" stroke-width="3"/><circle cx="64" cy="38" r="11" fill="#fff" stroke-width="3"/><path d="M64 34q-6-4-12-2v12q6-2 12 2 6-4 12-2V32q-6-2-12 2Zv12" fill="#ffffff" stroke-width="2.5"/><path d="M30 112h68" stroke="#b79cf2" stroke-width="4"/><rect x="84" y="102" width="5" height="10" fill="#ff8fa3" stroke-width="1.5"/><rect x="90" y="102" width="5" height="10" fill="#ffe27a" stroke-width="1.5"/><rect x="96" y="102" width="5" height="10" fill="#8fe3a8" stroke-width="1.5"/><path d="M4 116h120" stroke="#9fdcbf" stroke-width="8"/>
-</g>
-</svg>
