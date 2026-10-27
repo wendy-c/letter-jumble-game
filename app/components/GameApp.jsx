@@ -419,6 +419,14 @@ export default function GameApp() {
     sounds.sparkle?.();
   }
 
+  // From the end-of-topic card, straight to Mochi to spend the coins (a fresh hand next time,
+  // as when going back to the topics).
+  function visitMochiAfterTopic() {
+    saveDeck(categoryKey, null);
+    setCompletedTopic(null);
+    router.push("/dragon");
+  }
+
   function leaveCompletedTopic() {
     // Next time deals a freshly shuffled hand of words. (Not before leaving: dealing straight
     // away would reset the screen under the pop-up.)
@@ -714,6 +722,7 @@ export default function GameApp() {
           badge={completedTopic.badge}
           text={inChinese ? chineseCompletionText : undefined}
           onDone={leaveCompletedTopic}
+          onVisitMochi={currentPlayer && isGameAvailable(games.find((game) => game.id === "dragon"), currentPlayer) ? visitMochiAfterTopic : null}
         />
       )}
       {playing && answered === "wrong" && !completedTopic && (

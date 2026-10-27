@@ -446,6 +446,51 @@ describe("progress", () => {
     expect(screen.getByLabelText("Word 2 of 13")).toBeInTheDocument();
   });
 
+  it("offers a visit to Mochi when a topic is finished, without the confetti", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({
+      players: [{
+        name: "Ada", coins: 0, age: "5-6", progress: { "letter-jumble/animals": 12 }, decks: animalsDeck,
+        results: { "letter-jumble/animals": Array(12).fill(true) },
+      }],
+      current: "Ada",
+    }));
+    const user = userEvent.setup();
+    render(<GameApp />);
+    await openGame(user, "Letter Jumble for Movers", "Animals");
+    for (const letter of ["w", "h", "a", "l", "e"]) {
+      await user.click(screen.getByRole("button", { name: `Letter ${letter}` }));
+    }
+    await user.click(screen.getByRole("button", { name: /Check word/ }));
+    await nextQuestion();
+
+    const praise = await screen.findByRole("dialog", { name: "You did it!" });
+    expect(praise.querySelector(".completion-confetti")).toBeNull();
+    await user.click(within(praise).getByRole("button", { name: "Visit Mochi" }));
+    expect(currentPathname()).toBe("/dragon");
+    expect(screen.queryByRole("dialog", { name: "You did it!" })).not.toBeInTheDocument();
+  });
+
+  it("doesn't offer Mochi at the end of a topic when a grown-up has turned her off", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({
+      players: [{
+        name: "Ada", coins: 0, age: "5-6", progress: { "letter-jumble/animals": 12 }, decks: animalsDeck,
+        results: { "letter-jumble/animals": Array(12).fill(true) }, gameSettings: { dragon: false },
+      }],
+      current: "Ada",
+    }));
+    const user = userEvent.setup();
+    render(<GameApp />);
+    await openGame(user, "Letter Jumble for Movers", "Animals");
+    for (const letter of ["w", "h", "a", "l", "e"]) {
+      await user.click(screen.getByRole("button", { name: `Letter ${letter}` }));
+    }
+    await user.click(screen.getByRole("button", { name: /Check word/ }));
+    await nextQuestion();
+
+    const praise = await screen.findByRole("dialog", { name: "You did it!" });
+    expect(within(praise).queryByRole("button", { name: "Visit Mochi" })).not.toBeInTheDocument();
+  });
+
   it("celebrates finishing a topic, then goes back to the topic list and starts it again next time", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({
       players: [{

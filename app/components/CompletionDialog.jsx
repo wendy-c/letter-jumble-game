@@ -10,6 +10,7 @@ const englishCompletionText = {
   tryMessage: (topicName) => `Get every ${topicName} word right to earn its badge. Try again!`,
   practiseMessage: () => "Keep practising to get them all right!",
   button: "Back to all topics",
+  visitMochi: "Visit Mochi",
   badge: (topicName) => `New badge! ${topicName} is in your badge collection.`,
 };
 
@@ -22,13 +23,15 @@ export const chineseCompletionText = {
   tryMessage: (topicName) => `全部答對就可以得到「${topicName}」徽章，再試一次吧！`,
   practiseMessage: () => "多練習，下次全部答對！",
   button: "返回所有主題",
+  visitMochi: "探望 Mochi",
   badge: (topicName) => `你得到「${topicName}」徽章！`,
 };
 
 // The end of a topic: how many answers were right (e.g. 8 / 10). Only a perfect score earns the
 // topic's badge; `badge` is { name, image } when it just did, and `hasBadge` says it was earned before.
-// Continuing goes back to the topic list.
-export default function CompletionDialog({ topicName, count, correct = count, badge = null, hasBadge = false, text = englishCompletionText, onDone }) {
+// Continuing goes back to the topic list; `onVisitMochi` (when the player can visit her) adds a
+// button to go and spend the coins on Mochi.
+export default function CompletionDialog({ topicName, count, correct = count, badge = null, hasBadge = false, text = englishCompletionText, onDone, onVisitMochi = null }) {
   const perfect = correct === count;
   return (
     <div className="reward-overlay">
@@ -36,7 +39,6 @@ export default function CompletionDialog({ topicName, count, correct = count, ba
         <div className="reward-card completion-card">
           <span className="reward-sparkle reward-sparkle-one" aria-hidden="true">✦</span>
           <span className="reward-sparkle reward-sparkle-two" aria-hidden="true">✧</span>
-          <span className="completion-confetti" aria-hidden="true">🎉</span>
           <span className="completion-mascots" aria-hidden="true">
             <Mascot mood="idea" className="completion-mascot" />
           </span>
@@ -54,9 +56,17 @@ export default function CompletionDialog({ topicName, count, correct = count, ba
               <p>{text.badge(badge.name)}</p>
             </div>
           )}
-          <button className="reward-continue completion-button" type="button" autoFocus onClick={onDone}>
-            {text.button} <span aria-hidden="true">→</span>
-          </button>
+          <div className="completion-actions">
+            <button className="reward-continue completion-button" type="button" autoFocus onClick={onDone}>
+              {text.button} <span aria-hidden="true">→</span>
+            </button>
+            {onVisitMochi && (
+              <button className="completion-button completion-mochi" type="button" onClick={onVisitMochi}>
+                <img src="/images/icons/dragon.svg" alt="" width="26" height="26" />
+                {text.visitMochi}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

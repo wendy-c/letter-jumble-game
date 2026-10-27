@@ -332,8 +332,10 @@ button {
   border-radius: 4px;
 }
 
+/* The front page's games: small books, side by side, that don't stretch to fill the row. */
 .game-choice-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(168px, 192px));
+  gap: 26px 24px;
 }
 
 /* Front-page headings: Phonics, Cambridge YLE training, 中文 and Visit Mochi. */
@@ -370,8 +372,9 @@ button {
   font-size: 21px;
 }
 
-/* Front-page game cards: a big picture first, then the name, then a small note for grown-ups.
-   The speaker button sits in the corner, beside (not inside) the card's button. */
+/* Front-page game cards, drawn as books: a coloured cover with a spine down the left and page
+   edges at the right and bottom; a picture, then the name on a title label, then a small note for
+   grown-ups. The speaker button sits in the corner, beside (not inside) the card's button. */
 .game-card-wrap {
   position: relative;
 }
@@ -379,18 +382,53 @@ button {
 .game-choice-card {
   width: 100%;
   height: 100%;
-  min-height: 250px;
+  min-height: 0;
+  aspect-ratio: 3 / 4;
   align-items: center;
   justify-content: flex-start;
-  padding: 22px 18px 18px;
+  overflow: visible;
+  border: 0;
+  border-radius: 6px 16px 16px 6px;
+  padding: 18px 12px 14px 28px;
+  box-shadow:
+    inset 0 0 0 2px rgb(255 255 255 / 70%),
+    4px 4px 0 -1px #fffdf7,
+    5px 5px 0 0 var(--card-shadow, var(--line)),
+    8px 8px 0 -1px #fffdf7,
+    9px 9px 0 0 var(--card-shadow, var(--line)),
+    0 16px 24px rgb(90 60 160 / 12%);
   text-align: center;
+}
+
+.game-choice-card:hover {
+  transform: translateY(-5px) rotate(-1.5deg);
+  box-shadow:
+    inset 0 0 0 2px rgb(255 255 255 / 70%),
+    4px 4px 0 -1px #fffdf7,
+    5px 5px 0 0 var(--card-shadow, var(--line)),
+    8px 8px 0 -1px #fffdf7,
+    9px 9px 0 0 var(--card-shadow, var(--line)),
+    0 22px 30px rgb(90 60 160 / 16%);
+}
+
+/* The book's spine, with two bands across it. */
+.game-choice-card::before {
+  width: 16px;
+  border-radius: 6px 0 0 6px;
+  background:
+    linear-gradient(180deg, transparent 11%, rgb(255 255 255 / 60%) 11%, rgb(255 255 255 / 60%) 14%, transparent 14%,
+      transparent 86%, rgb(255 255 255 / 60%) 86%, rgb(255 255 255 / 60%) 89%, transparent 89%),
+    linear-gradient(90deg, rgb(0 0 0 / 6%), transparent 70%),
+    var(--card-shadow, var(--line));
+  box-shadow: inset -2px 0 0 rgb(255 255 255 / 55%);
+  opacity: 1;
 }
 
 .game-card-picture {
   position: relative;
   display: grid;
-  width: 132px;
-  height: 132px;
+  width: 92px;
+  height: 92px;
   flex: none;
   place-items: center;
   border-radius: 50%;
@@ -422,19 +460,24 @@ button {
 }
 
 .game-card-chip .letter-pattern {
-  font-size: 18px;
+  font-size: 15px;
 }
 
+/* The title, on a white label like a book cover's. */
 .game-choice-card .category-card-name {
-  margin-top: 18px;
-  font-size: 24px;
+  margin-top: 16px;
+  border-radius: 10px;
+  background: rgb(255 255 255 / 82%);
+  padding: 5px 9px;
+  box-shadow: 0 2px 0 var(--card-shadow, var(--line));
+  font-size: 17px;
   line-height: 1.15;
 }
 
 .game-card-note {
-  margin-top: 6px;
+  margin-top: 8px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
   line-height: 1.35;
 }
@@ -442,11 +485,11 @@ button {
 .game-card-speaker {
   position: absolute;
   z-index: 1;
-  top: 12px;
-  right: 12px;
+  top: 8px;
+  right: 8px;
   display: grid;
-  width: 44px;
-  height: 44px;
+  width: 34px;
+  height: 34px;
   place-items: center;
   border: 2px solid rgb(255 255 255 / 95%);
   border-radius: 50%;
@@ -462,8 +505,8 @@ button {
 }
 
 .game-card-speaker svg {
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   stroke: currentColor;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -1465,6 +1508,11 @@ h1 span {
   width: min(100%, 400px);
 }
 
+/* Wide enough for "Back to all topics" and "Visit Mochi" side by side. */
+.completion-dialog {
+  width: min(100%, 460px);
+}
+
 .reward-card {
   position: relative;
   display: flex;
@@ -1579,14 +1627,6 @@ h1 span {
   transform: none;
 }
 
-.completion-confetti {
-  position: absolute;
-  top: 16px;
-  right: 22px;
-  font-size: 34px;
-  animation: coin-pop 600ms cubic-bezier(0.2, 0.8, 0.3, 1.3) both;
-}
-
 .completion-mascots {
   display: flex;
   gap: 10px;
@@ -1618,6 +1658,37 @@ h1 span {
   font: inherit;
   font-size: 15px;
   font-weight: 700;
+}
+
+/* "Back to all topics" and "Visit Mochi", side by side (stacked when there isn't room). */
+.completion-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.completion-actions .reward-continue {
+  margin-top: 0;
+}
+
+.completion-mochi {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 2px solid var(--line-strong);
+  border-radius: 999px;
+  background: #fff;
+  padding: 9px 18px 9px 12px;
+  box-shadow: 0 4px 0 var(--line-strong);
+  color: var(--magic-dark);
+  transition: transform 140ms ease;
+}
+
+.completion-mochi:hover {
+  transform: translateY(-2px);
 }
 
 /* ---------- Not quite: the right answer ---------- */
@@ -3103,9 +3174,10 @@ a:focus-visible {
     gap: 11px;
   }
 
-  /* Two picture cards side by side on phones. */
+  /* Two small books side by side on phones. */
   .game-choice-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 18px;
   }
 
   .chinese-character-stage {
@@ -3274,13 +3346,16 @@ a:focus-visible {
   }
 
   .game-choice-card {
-    min-height: 0;
-    padding: 16px 10px 14px 14px;
+    padding: 14px 8px 12px 22px;
+  }
+
+  .game-choice-card::before {
+    width: 13px;
   }
 
   .game-card-picture {
-    width: 92px;
-    height: 92px;
+    width: 72px;
+    height: 72px;
   }
 
   .game-card-chip {
@@ -3292,24 +3367,25 @@ a:focus-visible {
   }
 
   .game-choice-card .category-card-name {
-    margin-top: 14px;
-    font-size: 17px;
+    margin-top: 12px;
+    padding: 4px 7px;
+    font-size: 14.5px;
   }
 
   .game-card-note {
-    font-size: 10.5px;
+    font-size: 10px;
   }
 
   .game-card-speaker {
-    top: 8px;
-    right: 8px;
-    width: 36px;
-    height: 36px;
+    top: 6px;
+    right: 6px;
+    width: 30px;
+    height: 30px;
   }
 
   .game-card-speaker svg {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
   }
 
   .mochi-greeting {
