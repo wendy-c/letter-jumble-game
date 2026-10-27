@@ -1,11 +1,11 @@
 const vowelTeams = [
   "igh", "air", "are", "ear", "ure", "ire", "ay", "ee", "ow", "oo", "ar", "or",
-  "ir", "ou", "oy", "ea", "oi", "aw", "ur", "er", "ai", "oa", "ew",
+  "ir", "ou", "oy", "ea", "oi", "aw", "ur", "er", "ai", "oa", "ew", "ey", "au",
 ].sort((first, second) => second.length - first.length);
 const consonantTeams = [
   "shr", "spl", "spr", "squ", "str", "thr", "scr", "br", "cr", "dr", "fr", "gr",
   "pr", "tr", "bl", "cl", "fl", "gl", "pl", "sl", "sc", "sk", "sm", "sn", "sp", "ph",
-  "st", "sw", "tw", "sh", "th",
+  "st", "sw", "tw", "sh", "th", "ck", "ng", "wh", "ch", "qu", "wr", "kn", "gn",
 ].sort((first, second) => second.length - first.length);
 
 function classifyTeams(word, teams, type) {
