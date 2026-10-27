@@ -1,0 +1,33 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Introduction" />
+
+# The Rainbow Academy
+
+Every part of the app, one at a time.
+
+- **Components** — each component in `app/components`, with its story file next to it
+  (e.g. `LetterSlots.jsx` and `LetterSlots.stories.jsx`). Stories use the app's real topics,
+  words and games, so they change when the data does.
+- **Pages** — the whole app at an address (`/`, `/cvc/beginning-sound`, `/dragon/village`…), with
+  saved players and settings set up for each one in `stories/helpers.js`.
+- **Assets** — every picture in `public/images`, found automatically. Click one to copy its path.
+
+Use **Language** in the toolbar to see the site's words in English or 繁體中文 (games keep their own
+language). Buttons report what they'd do in the **Actions** panel.
+
+## Adding a story
+
+Put `MyComponent.stories.jsx` next to `MyComponent.jsx`:
+
+```jsx
+import MyComponent from "./MyComponent";
+
+export default { title: "Components/Group/MyComponent", component: MyComponent };
+
+export const Default = { args: { /* props */ } };
+```
+
+Run it with `npm run storybook` (http://localhost:6006), or build a static copy with
+`npm run build-storybook`. Storybook needs Node 20.19+ or 22.12+: run `nvm use` first (the
+project's `.nvmrc` picks Node 22.12).
