@@ -33,7 +33,7 @@ function UnlockCard({ name, unlockName, coins, cost, onUnlock }) {
         aria-label={affordable ? `Unlock ${unlockName} for ${cost} rainbow coins` : `Unlock ${unlockName}: ${coins} of ${cost} rainbow coins`}
         onClick={onUnlock}
       >
-        <span aria-hidden="true">🔓</span>
+        <img src="/images/icons/menu-parent.svg" alt="" width="28" height="28" />
       </button>
     </>
   );

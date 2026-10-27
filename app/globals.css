@@ -3930,6 +3930,11 @@ a:focus-visible {
   transition: transform 140ms ease;
 }
 
+.tofu-unlock-button img {
+  width: 58%;
+  height: 58%;
+}
+
 .tofu-unlock-button:hover:not(:disabled) {
   transform: translateY(-2px) scale(1.05);
 }
