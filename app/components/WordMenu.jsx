@@ -1,25 +1,5 @@
 import { useEffect } from "react";
 
-function SpellingGuideToggle({ checked, onToggle }) {
-  return (
-    <div className="word-menu-settings">
-      <button
-        className="spelling-guide-toggle"
-        type="button"
-        role="switch"
-        aria-checked={checked}
-        onClick={onToggle}
-      >
-        <span className="spelling-guide-toggle-copy">
-          <span className="spelling-guide-toggle-title">Spelling guide</span>
-          <span className="spelling-guide-toggle-note">Show vowel and consonant teams</span>
-        </span>
-        <span className="toggle-track" aria-hidden="true"><span className="toggle-thumb" /></span>
-      </button>
-    </div>
-  );
-}
-
 const shuffleText = {
   en: { button: "Shuffle questions", note: (count, total) => (count < total ? `A new ${count} from all ${total}, in a new order` : "Start again in a new order") },
   zh: { button: "打亂題目次序", note: (count, total) => (count < total ? `從全部 ${total} 題中重新抽出 ${count} 題` : "用新的次序重新開始") },
@@ -27,7 +7,7 @@ const shuffleText = {
 
 // The topic's words, to jump to any one. `onShuffle` deals a fresh shuffled hand (from the whole
 // list when a round only plays some of its words); `language` is the game's.
-export default function WordMenu({ topic, round, totalWords, language = "en", showGuideToggle, showSpellingGuide, onToggleSpellingGuide, onSelectWord, onShuffle, onClose }) {
+export default function WordMenu({ topic, round, totalWords, language = "en", onSelectWord, onShuffle, onClose }) {
   const shuffle = shuffleText[language];
   useEffect(() => {
     function handleKeyDown(event) {
@@ -62,7 +42,6 @@ export default function WordMenu({ topic, round, totalWords, language = "en", sh
             ×
           </button>
         </div>
-        {showGuideToggle && <SpellingGuideToggle checked={showSpellingGuide} onToggle={onToggleSpellingGuide} />}
         <button className="word-menu-shuffle" type="button" lang={language === "zh" ? "zh-Hant-HK" : undefined} onClick={onShuffle}>
           <span className="word-menu-shuffle-icon" aria-hidden="true">🔀</span>
           <span>

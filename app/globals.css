@@ -1184,9 +1184,11 @@ h1 span {
   margin-top: 25px;
 }
 
-.word-menu-settings {
-  padding: 14px 15px 12px;
-  border-bottom: 2px dashed var(--line);
+/* The spelling guide's switch in Parent mode, under each child's games. */
+.parent-option {
+  margin-top: 12px;
+  border-top: 2px dashed var(--line);
+  padding-top: 12px;
 }
 
 .spelling-guide-toggle {

@@ -73,7 +73,7 @@ function GameSwitch({ game, enabled, suitsAge, onToggle }) {
   );
 }
 
-function ChildSettings({ player, onSetGameEnabled }) {
+function ChildSettings({ player, onSetGameEnabled, onSetSpellingGuide }) {
   const text = useText();
   const ageLabel = player.age && (text.ageGroup[player.age] ?? ageGroups.find((group) => group.id === player.age)?.label);
   const onCount = games.filter((game) => isGameAvailable(game, player)).length;
@@ -101,13 +101,29 @@ function ChildSettings({ player, onSetGameEnabled }) {
           );
         })}
       </ul>
+      <div className="parent-option">
+        <button
+          className="spelling-guide-toggle parent-game-toggle"
+          type="button"
+          role="switch"
+          aria-checked={Boolean(player.spellingGuide)}
+          onClick={() => onSetSpellingGuide(player.name, !player.spellingGuide)}
+        >
+          <span className="spelling-guide-toggle-copy">
+            <span className="spelling-guide-toggle-title">{text.spellingGuide}</span>
+            <span className="spelling-guide-toggle-note">{text.spellingGuideNote}</span>
+          </span>
+          <span className="toggle-track" aria-hidden="true"><span className="toggle-thumb" /></span>
+        </button>
+      </div>
     </section>
   );
 }
 
-// The parent mode page ("/parent"): a grown-up maths question, then each child's game settings.
+// The parent mode page ("/parent"): a grown-up maths question, then each child's settings: which
+// games they can play, and whether their spelling games show the spelling guide.
 // Leaving the page locks it again; "Done" locks it and goes home (`onDone`).
-export default function ParentMode({ players, breadcrumbs, onSetGameEnabled, onDone }) {
+export default function ParentMode({ players, breadcrumbs, onSetGameEnabled, onSetSpellingGuide, onDone }) {
   const text = useText();
   const [unlocked, setUnlocked] = useState(false);
 
@@ -129,7 +145,7 @@ export default function ParentMode({ players, breadcrumbs, onSetGameEnabled, onD
             <p className="parent-intro">{text.parentIntro}</p>
             <div className="parent-children">
               {players.map((player) => (
-                <ChildSettings key={player.name} player={player} onSetGameEnabled={onSetGameEnabled} />
+                <ChildSettings key={player.name} player={player} onSetGameEnabled={onSetGameEnabled} onSetSpellingGuide={onSetSpellingGuide} />
               ))}
             </div>
             <button className="action-button check-button parent-done" type="button" onClick={onDone}>

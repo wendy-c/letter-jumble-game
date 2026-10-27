@@ -79,7 +79,7 @@ export default function GameApp() {
 
   const {
     loaded, players, currentPlayer, createPlayer, setPlayerAge, selectPlayer, logOut, addCoin, spendCoins, saveProgress, saveDeck,
-    setGameEnabled, awardBadge, saveResult, unlock,
+    setGameEnabled, setSpellingGuide, awardBadge, saveResult, unlock,
   } = usePlayers();
   const site = useSiteSettings();
   const text = textFor(site.language);
@@ -143,7 +143,6 @@ export default function GameApp() {
   // A right answer's toast ("Amazing! +1"): { message, id }, cleared after answerToastTime.
   const [toast, setToast] = useState(null);
   const [wordMenuOpen, setWordMenuOpen] = useState(false);
-  const [showSpellingGuide, setShowSpellingGuide] = useState(false);
   // How the current question was answered: null, "right" or "wrong". Each question gets one try.
   const [answered, setAnswered] = useState(null);
   // Set once the last word of a topic is done, to show the "you finished" pop-up.
@@ -173,6 +172,8 @@ export default function GameApp() {
   const complete = Boolean(puzzle) && placed.length === blanks.length &&
     placed.every((tile, slotIndex) => tile !== null && tiles[tile] === answerLetters.slice(blanks[slotIndex], blanks[slotIndex] + gapLength));
   const allPlaced = placed.every((tile) => tile !== null);
+  // The spelling guide is a parent setting for each child (in Parent mode).
+  const showSpellingGuide = Boolean(currentPlayer?.spellingGuide);
   const guides = showSpellingGuide && !isCvc && !inChinese ? getSpellingGuides(answer) : null;
 
   useEffect(() => () => {
@@ -539,6 +540,7 @@ export default function GameApp() {
             players={players}
             breadcrumbs={<Breadcrumbs items={[{ label: text.home, href: "/" }, { label: text.parentMode, href: "/parent" }]} />}
             onSetGameEnabled={setGameEnabled}
+            onSetSpellingGuide={setSpellingGuide}
             onDone={() => router.push("/")}
           />
         )
@@ -710,9 +712,6 @@ export default function GameApp() {
         <WordMenu
           topic={selectedCategory}
           round={round}
-          showGuideToggle={!isCvc && !inChinese}
-          showSpellingGuide={showSpellingGuide}
-          onToggleSpellingGuide={() => setShowSpellingGuide((current) => !current)}
           onSelectWord={selectWord}
           onShuffle={shuffleQuestions}
           totalWords={routeTopic.words.length}

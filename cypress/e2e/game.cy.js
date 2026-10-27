@@ -36,6 +36,15 @@ function addPlayer(name, age = "5-6") {
 
 // Opens Letter Jumble. With a new player name, fills in the "Who's playing?" pop-up;
 // pass null when a player is already selected (e.g. seeded in localStorage).
+// With the spelling guide turned on for the player (it's a Parent mode setting).
+function visitWithSpellingGuide() {
+  visitLetterJumble({
+    onBeforeLoad(win) {
+      win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "5-6", spellingGuide: true }], current: "Ada" }));
+    },
+  }, null);
+}
+
 function visitLetterJumble(options, newPlayer = "Ada") {
   cy.visit("/", options);
   cy.contains("button", "Letter Jumble for Movers").click();
@@ -157,10 +166,9 @@ describe("Movers spelling game", () => {
   });
 
   it("marks vowel and consonant teams and other sounds in the spelling guide", () => {
-    visitLetterJumble();
+    visitWithSpellingGuide();
     cy.contains("button", "Places and Travel").click();
     cy.get('button[aria-label="Browse Places and Travel words"]').click();
-    cy.get('button[role="switch"]').contains("Spelling guide").click();
     cy.get(".word-menu-item").contains("Swimming pool").click();
 
     cy.get(".letter-slot").should("have.length", 12);
@@ -168,6 +176,7 @@ describe("Movers spelling game", () => {
     cy.get(".letter-slot").eq(1).should("have.class", "letter-slot-guide-consonant");
     cy.get(".letter-slot").eq(2).should("have.class", "letter-slot-guide-other");
     cy.get(".letter-slot").eq(3).should("have.class", "letter-slot-guide-other");
+    cy.get(".letter-slot").eq(6).should("have.class", "letter-slot-guide-consonant");
     cy.get(".letter-slot").eq(9).should("have.class", "letter-slot-guide-vowel");
     cy.get(".letter-slot").eq(10).should("have.class", "letter-slot-guide-vowel");
     cy.contains(".spelling-guide", "Vowel team");
@@ -175,33 +184,20 @@ describe("Movers spelling game", () => {
     cy.contains(".spelling-guide", "Other");
   });
 
-  it("hides the spelling guide by default and toggles it on and off", () => {
+  it("hides the spelling guide by default, with no switch for it in the word menu", () => {
     visitLetterJumble();
     cy.contains("button", "Animals").click();
-    cy.get('button[role="switch"]').should("not.exist");
     cy.get('.letter-slot[class*="letter-slot-guide-"]').should("not.exist");
     cy.get(".spelling-guide").should("not.exist");
-
     cy.get('button[aria-label="Browse Animals words"]').click();
-    cy.get('[role="dialog"] button[role="switch"]').should("have.attr", "aria-checked", "false").click();
-    cy.get('button[role="switch"]').should("have.attr", "aria-checked", "true");
     cy.get('[role="dialog"]').should("be.visible");
-    cy.get("body").type("{esc}");
-    cy.get(".letter-slot").eq(0).should("have.class", "letter-slot-guide-other");
-    cy.contains(".spelling-guide", "Vowel team");
-
-    cy.get('button[aria-label="Browse Animals words"]').click();
-    cy.get('button[role="switch"]').click();
-    cy.get("body").type("{esc}");
-    cy.get('.letter-slot[class*="letter-slot-guide-"]').should("not.exist");
-    cy.get(".spelling-guide").should("not.exist");
+    cy.get('[role="dialog"] button[role="switch"]').should("not.exist");
   });
 
   it("marks ph as a consonant team in dolphin", () => {
-    visitLetterJumble();
+    visitWithSpellingGuide();
     cy.contains("button", "Animals").click();
     cy.get('button[aria-label="Browse Animals words"]').click();
-    cy.get('button[role="switch"]').contains("Spelling guide").click();
     cy.get(".word-menu-item").contains("Dolphin").click();
 
     cy.get(".letter-slot").should("have.length", 7);
@@ -214,10 +210,9 @@ describe("Movers spelling game", () => {
   });
 
   it("marks sh and th as consonant teams", () => {
-    visitLetterJumble();
+    visitWithSpellingGuide();
     cy.contains("button", "Animals").click();
     cy.get('button[aria-label="Browse Animals words"]').click();
-    cy.get('button[role="switch"]').contains("Spelling guide").click();
     cy.get(".word-menu-item").contains("Shark").click();
     cy.get(".letter-slot").eq(0).should("have.class", "letter-slot-guide-consonant");
     cy.get(".letter-slot").eq(1).should("have.class", "letter-slot-guide-consonant");

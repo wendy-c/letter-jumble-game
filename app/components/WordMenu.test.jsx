@@ -10,7 +10,6 @@ const topic = {
 
 function renderMenu(props) {
   const handlers = {
-    onToggleSpellingGuide: jest.fn(),
     onSelectWord: jest.fn(),
     onClose: jest.fn(),
   };
@@ -18,8 +17,6 @@ function renderMenu(props) {
     <WordMenu
       topic={topic}
       round={1}
-      showGuideToggle
-      showSpellingGuide={false}
       {...handlers}
       {...props}
     />,
@@ -48,16 +45,8 @@ describe("WordMenu", () => {
     expect(onSelectWord).toHaveBeenCalledWith(0);
   });
 
-  it("toggles the spelling guide", async () => {
-    const { onToggleSpellingGuide } = renderMenu();
-    const toggle = screen.getByRole("switch", { name: /Spelling guide/ });
-    expect(toggle).toHaveAttribute("aria-checked", "false");
-    await userEvent.click(toggle);
-    expect(onToggleSpellingGuide).toHaveBeenCalled();
-  });
-
-  it("hides the spelling guide switch when it doesn't apply", () => {
-    renderMenu({ showGuideToggle: false });
+  it("has no spelling guide switch (it's in Parent mode)", () => {
+    renderMenu();
     expect(screen.queryByRole("switch")).not.toBeInTheDocument();
   });
 

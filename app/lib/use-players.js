@@ -23,6 +23,7 @@ function cleanPlayer(player) {
     const progress = Object.fromEntries(Object.entries(player.progress).filter(([, index]) => isCount(index)));
     if (Object.keys(progress).length > 0) cleaned.progress = progress;
   }
+  if (player.spellingGuide === true) cleaned.spellingGuide = true;
   if (player.gameSettings && typeof player.gameSettings === "object") {
     const gameSettings = Object.fromEntries(Object.entries(player.gameSettings).filter(([, on]) => typeof on === "boolean"));
     if (Object.keys(gameSettings).length > 0) cleaned.gameSettings = gameSettings;
@@ -144,6 +145,14 @@ export function usePlayers() {
     });
   }
 
+  // Parent settings: show the spelling guide (vowel and consonant teams) in a child's spelling games.
+  function setSpellingGuide(name, on) {
+    updatePlayer(name, (player) => {
+      const { spellingGuide, ...rest } = player;
+      return on ? { ...rest, spellingGuide: true } : rest;
+    });
+  }
+
   function selectPlayer(name) {
     setState((current) => ({ ...current, current: name }));
   }
@@ -238,5 +247,6 @@ export function usePlayers() {
     spendCoins,
     saveProgress,
     setGameEnabled,
+    setSpellingGuide,
   };
 }

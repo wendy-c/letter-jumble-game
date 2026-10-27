@@ -212,19 +212,16 @@ describe("Home", () => {
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("What shall we play today?");
   });
 
-  it("turns on the spelling guide from the word menu", async () => {
+  it("shows the spelling guide when a grown-up has turned it on in Parent mode, not in the word menu", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "5-6", spellingGuide: true }], current: "Ada" }));
     const user = userEvent.setup();
     render(<GameApp />);
     await openGame(user, "Letter Jumble for Movers", "Animals");
-    expect(screen.queryByLabelText("Spelling guide")).not.toBeInTheDocument();
-
-    await user.click(screen.getByRole("button", { name: "Browse Animals words" }));
-    await user.click(screen.getByRole("switch", { name: /Spelling guide/ }));
-    await user.keyboard("{Escape}");
-
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(screen.getByLabelText("Spelling guide")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Letter 1 of 3, empty, single sound" })).toHaveClass("letter-slot-guide-other");
+
+    await user.click(screen.getByRole("button", { name: "Browse Animals words" }));
+    expect(within(screen.getByRole("dialog")).queryByRole("switch")).not.toBeInTheDocument();
   });
 });
 
@@ -1680,13 +1677,25 @@ describe("parent mode", () => {
       .map((toggle) => [toggle.querySelector(".spelling-guide-toggle-title").textContent, toggle.getAttribute("aria-checked")]);
     expect(switches(/Ada/)).toEqual([
       ["CVC Sounds", "true"], ["Consonant Digraphs", "true"], ["R & L Blends", "true"], ["Letter Jumble for Starters", "false"], ["Letter Jumble for Movers", "false"], ["中文認字 · 入門篇", "true"],
-      ["中文認字 · 進階篇", "false"], ["量詞配對", "false"], ["成語", "false"], ["Mochi the Rainbow Dragon", "true"],
+      ["中文認字 · 進階篇", "false"], ["量詞配對", "false"], ["成語", "false"], ["Mochi the Rainbow Dragon", "true"], ["Spelling guide", "false"],
     ]);
     expect(switches(/Elly/)).toEqual([
       ["CVC Sounds", "false"], ["Consonant Digraphs", "true"], ["R & L Blends", "true"], ["Letter Jumble for Starters", "true"], ["Letter Jumble for Movers", "true"], ["中文認字 · 入門篇", "false"],
-      ["中文認字 · 進階篇", "true"], ["量詞配對", "true"], ["成語", "true"], ["Mochi the Rainbow Dragon", "true"],
+      ["中文認字 · 進階篇", "true"], ["量詞配對", "true"], ["成語", "true"], ["Mochi the Rainbow Dragon", "true"], ["Spelling guide", "false"],
     ]);
     expect(within(parentPage()).queryByRole("button", { name: /Focus/ })).not.toBeInTheDocument();
+  });
+
+  it("turns the spelling guide on for one child", async () => {
+    seedChildren();
+    const user = userEvent.setup();
+    render(<GameApp />);
+    await passGrownUpCheck(user);
+    const elly = within(parentPage()).getByRole("region", { name: /Elly/ });
+    await user.click(within(elly).getByRole("switch", { name: /Spelling guide/ }));
+    expect(within(elly).getByRole("switch", { name: /Spelling guide/ })).toHaveAttribute("aria-checked", "true");
+    expect(storedPlayers().players.find((player) => player.name === "Elly").spellingGuide).toBe(true);
+    expect(storedPlayers().players.find((player) => player.name === "Ada").spellingGuide).toBeUndefined();
   });
 
   it("turning a game off hides it from that child only", async () => {

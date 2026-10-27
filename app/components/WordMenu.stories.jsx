@@ -9,10 +9,10 @@ export default {
   title: "Components/Menus/WordMenu",
   component: WordMenu,
   args: {
-    topic: animals, round: 2, totalWords: animals.words.length, showGuideToggle: true, showSpellingGuide: false,
-    onToggleSpellingGuide: fn(), onSelectWord: fn(), onShuffle: fn(), onClose: fn(),
+    topic: animals, round: 2, totalWords: animals.words.length,
+    onSelectWord: fn(), onShuffle: fn(), onClose: fn(),
   },
 };
 
 export const Spelling = {};
-export const Chinese = { args: { topic: chineseTopics[0], totalWords: chineseTopics[0].words.length, showGuideToggle: false, language: "zh" } };
+export const Chinese = { args: { topic: chineseTopics[0], totalWords: chineseTopics[0].words.length, language: "zh" } };
