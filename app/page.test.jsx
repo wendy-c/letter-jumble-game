@@ -89,14 +89,12 @@ describe("Home", () => {
     expect(gameCards.map((card) => card.querySelector(".category-card-name").textContent)).toEqual(["CVC Sounds", "Consonant Digraphs", "Letter Jumble for Starters", "Letter Jumble for Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語", "Mochi the Rainbow Dragon"]);
   });
 
-  it("has Mochi greet the player by name, and say it out loud when tapped", async () => {
-    const { speakWord } = jest.requireMock("./lib/speech");
+  it("has Mochi, arms open, greet the player by name", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
-    const user = userEvent.setup();
     render(<GameApp />);
     expect(await screen.findByRole("heading", { level: 1, name: "Hi Ada! What shall we play today?" })).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Hear Mochi say hello" }));
-    expect(speakWord).toHaveBeenLastCalledWith("Hi Ada! What shall we play today?", expect.any(Function));
+    expect(document.querySelector(".mochi-greeting img")).toHaveAttribute("src", "/images/mochi/welcome.svg");
+    expect(screen.queryByRole("button", { name: /Mochi say hello/ })).not.toBeInTheDocument();
   });
 
   it("shows each game as a big picture, with a speaker that says what it is", async () => {

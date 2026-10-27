@@ -1,6 +1,6 @@
 import MochiGreeting from "./MochiGreeting";
 
-// Switch the toolbar's Language to see the greeting in 繁體中文. Tap Mochi to hear it.
+// Switch the toolbar's Language to see the greeting in 繁體中文.
 export default {
   title: "Components/Menus/MochiGreeting",
   component: MochiGreeting,

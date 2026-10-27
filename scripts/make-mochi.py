@@ -1,4 +1,5 @@
-# Draws Mochi the mascot in three moods: public/images/mochi/happy.svg, confused.svg and idea.svg.
+# Draws Mochi the mascot in four moods: public/images/mochi/happy.svg, confused.svg, idea.svg and
+# welcome.svg (a big smile and open arms, for the front page's greeting).
 # She's a head-and-shoulders sticker, matching the 3D Mochi: lilac, pink snout, unicorn horn,
 # fluffy ears with rainbow tips, a rainbow mane and rainbow wings peeking out.
 import os, sys
@@ -82,12 +83,12 @@ def sparkle(x, y, s, fill="#ffd45e"):
             f'Q{x - s * .2} {y + s * .2} {x - s} {y}Q{x - s * .2} {y - s * .2} {x} {y - s}Z" fill="{fill}" stroke-width="2"/>')
 
 
-def mochi(face, extras_behind="", extras_front="", tilt=0):
-    parts = [wing(-1), wing(1), body(), f'<g transform="rotate({tilt} 100 120)">', ear(-1), ear(1), head(), mane(), horn(),
+def mochi(face, extras_behind="", extras_front="", tilt=0, arms=""):
+    parts = [wing(-1), wing(1), arms, body(), f'<g transform="rotate({tilt} 100 120)">', ear(-1), ear(1), head(), mane(), horn(),
              face, "</g>"]
     return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="-16 -48 236 246">\n'
             f'<g stroke="{INK}" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">\n'
-            + extras_behind + "\n".join(parts) + extras_front + "\n</g>\n</svg>\n")
+            + extras_behind + "\n".join(part for part in parts if part) + extras_front + "\n</g>\n</svg>\n")
 
 
 def happy():
@@ -122,8 +123,39 @@ def idea():
     return mochi(face, extras_front=bulb + sparkle(14, 30, 9) + sparkle(36, 150, 6, "#ffb3d9") + sparkle(182, 118, 7, "#8cc8f2"))
 
 
+def arm(side):
+    # An outlined lilac arm reaching out and up from the shoulder, with a round paw.
+    sx, sy = 100 + side * 40, 170
+    hx, hy = 100 + side * 86, 116
+    return (f'<path d="M{sx} {sy}L{hx} {hy}" stroke-width="27"/>'
+            f'<path d="M{sx} {sy}L{hx} {hy}" stroke="{LILAC}" stroke-width="20"/>'
+            f'<circle cx="{hx}" cy="{hy}" r="14" fill="{LILAC}"/>'
+            f'<circle cx="{hx}" cy="{hy + 2}" r="5.5" fill="{PINK}" stroke="none"/>'
+            + "".join(f'<circle cx="{hx + dx}" cy="{hy + dy}" r="2.6" fill="{PINK}" stroke="none"/>' for dx, dy in [(-7, -6), (0, -9), (7, -6)]))
+
+
+def heart(x, y, s, fill="#ff8fae"):
+    return (f'<path d="M{x} {y + s}C{x - s * 1.6} {y - s * .2} {x - s * .9} {y - s * 1.3} {x} {y - s * .4}'
+            f'C{x + s * .9} {y - s * 1.3} {x + s * 1.6} {y - s * .2} {x} {y + s}Z" fill="{fill}" stroke-width="2.2"/>')
+
+
+def welcome():
+    # Sparkly open eyes, a big open smile with a tongue, rosy cheeks and arms open wide for a hug.
+    eyes = ""
+    for x in (72, 128):
+        eyes += (f'<ellipse cx="{x}" cy="102" rx="10" ry="12" fill="{INK}" stroke="none"/>'
+                 f'<circle cx="{x - 3.5}" cy="97" r="4.2" fill="#fff" stroke="none"/>'
+                 f'<circle cx="{x + 3.5}" cy="107" r="2" fill="#fff" stroke="none"/>')
+    smile = (f'<path d="M82 137Q100 168 118 137Z" fill="#ff7f9f" stroke-width="3"/>'
+             f'<path d="M91 152q9-8 18 0q-9 7-18 0Z" fill="#ffc2d4" stroke="none"/>')
+    face = (eyes + f'<ellipse cx="52" cy="124" rx="13" ry="8" fill="#ffb3c6" stroke="none"/>'
+            f'<ellipse cx="148" cy="124" rx="13" ry="8" fill="#ffb3c6" stroke="none"/>' + snout(smile))
+    return mochi(face, arms=arm(-1) + arm(1),
+                 extras_front=heart(-2, 84, 8) + heart(202, 84, 7, "#b79cf2") + sparkle(16, 20, 8) + sparkle(186, 22, 7, "#ffb3d9"))
+
+
 os.makedirs(OUT, exist_ok=True)
-for name, draw in [("happy", happy), ("confused", confused), ("idea", idea)]:
+for name, draw in [("happy", happy), ("confused", confused), ("idea", idea), ("welcome", welcome)]:
     with open(os.path.join(OUT, f"{name}.svg"), "w") as f:
         f.write(draw())
 print("done")

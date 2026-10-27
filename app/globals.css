@@ -470,7 +470,7 @@ button {
   stroke-width: 2;
 }
 
-/* Front-page greeting: Mochi waves hello in a speech bubble. Tap her to hear it. */
+/* Front-page greeting: Mochi, arms open, says hello in a speech bubble. */
 .mochi-greeting {
   display: flex;
   align-items: center;
@@ -479,32 +479,7 @@ button {
 }
 
 .mochi-greeting-mochi {
-  position: relative;
-  width: 132px;
-  flex: none;
-  border: 0;
-  background: none;
-  padding: 0;
-  cursor: pointer;
-  animation: mochi-bob 3.2s ease-in-out infinite;
-}
-
-.mochi-greeting-mochi .mascot {
-  width: 100%;
-}
-
-.mochi-greeting-speaker {
-  position: absolute;
-  right: 0;
-  bottom: 4px;
-  display: grid;
-  width: 34px;
-  height: 34px;
-  place-items: center;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 3px 0 var(--line-strong);
-  font-size: 16px;
+  width: 150px;
 }
 
 .mochi-greeting-bubble {
@@ -548,20 +523,6 @@ button {
   color: var(--ink);
 }
 
-@keyframes mochi-bob {
-  0%, 100% {
-    transform: translateY(0) rotate(-2deg);
-  }
-  50% {
-    transform: translateY(-8px) rotate(2deg);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .mochi-greeting-mochi {
-    animation: none;
-  }
-}
 
 .mode-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -3343,13 +3304,7 @@ a:focus-visible {
   }
 
   .mochi-greeting-mochi {
-    width: 88px;
-  }
-
-  .mochi-greeting-speaker {
-    width: 28px;
-    height: 28px;
-    font-size: 13px;
+    width: 100px;
   }
 
   .mochi-greeting-bubble {
