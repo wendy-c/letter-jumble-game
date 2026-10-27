@@ -9,7 +9,7 @@ export const gameGroups = [
   { id: "phonics", name: "Phonics", icon: "/images/icons/group-phonics.svg" },
   { id: "cambridge", name: "Cambridge YLE training", icon: "/images/icons/group-cambridge.svg" },
   { id: "chinese", name: "中文", icon: "/images/icons/group-chinese.svg", lang: "zh-Hant-HK" },
-  { id: "mochi", name: "Visit Mochi and the Rainbow Village", icon: "/images/icons/group-mochi.svg" },
+  { id: "mochi", name: "Visit Mochi", icon: "/images/icons/group-mochi.svg" },
 ];
 
 // `ages` limits a game to those age groups; games without it are for everyone. `group` is the

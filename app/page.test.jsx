@@ -118,7 +118,7 @@ describe("Home", () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
     const user = userEvent.setup();
     const { unmount } = render(<GameApp />);
-    expect(await screen.findByRole("heading", { level: 2, name: /Visit Mochi and the Rainbow Village/ })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { level: 2, name: /Visit Mochi/ })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Go to Rainbow Village" }));
     expect(currentPathname()).toBe("/dragon");
     unmount();
@@ -396,13 +396,13 @@ describe("ages", () => {
       ["Phonics", ["CVC Sounds", "Consonant Digraphs", "R & L Blends"]],
       ["Cambridge YLE training", ["Letter Jumble for Starters", "Letter Jumble for Movers"]],
       ["中文", ["中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語"]],
-      ["Visit Mochi and the Rainbow Village", ["Mochi the Rainbow Dragon"]],
+      ["Visit Mochi", ["Mochi the Rainbow Dragon"]],
     ]);
     unmount();
 
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
     render(<GameApp />);
-    expect(groups().map(([name]) => name)).toEqual(["Phonics", "中文", "Visit Mochi and the Rainbow Village"]);
+    expect(groups().map(([name]) => name)).toEqual(["Phonics", "中文", "Visit Mochi"]);
   });
 
   it("shows every game to visitors before anyone is playing", () => {

@@ -35,7 +35,7 @@ const strings = {
     greetingQuestion: "What shall we play today?",
     pickAGame: "PICK A GAME",
     noGames: (name) => `No games are turned on for ${name} yet. Ask a grown-up to choose some in Parent mode.`,
-    groups: { phonics: "Phonics", cambridge: "Cambridge YLE training", chinese: "中文", mochi: "Visit Mochi and the Rainbow Village" },
+    groups: { phonics: "Phonics", cambridge: "Cambridge YLE training", chinese: "中文", mochi: "Visit Mochi" },
     gameNotes: {},
 
     badgesTitle: (name) => `${name}’s badges`,

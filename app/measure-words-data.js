@@ -25,7 +25,7 @@ const measureWords = [
   { word: "枝", jyutping: "zi1", nouns: ["鉛筆", "筆"] },
   { word: "張", jyutping: "zoeng1", nouns: ["椅子", "桌子", "紙", "照片"] },
   { word: "本", jyutping: "bun2", nouns: ["書"] },
-  { word: "把", jyutping: "baa2", nouns: ["椅子", "雨傘", "頭髮"] },
+  { word: "把", jyutping: "baa2", nouns: ["雨傘", "頭髮"] },
   { word: "雙", jyutping: "soeng1", nouns: ["筷子", "鞋子", "手"] },
   { word: "件", jyutping: "gin6", nouns: ["衣服"] },
   { word: "頂", jyutping: "ding2", nouns: ["帽子"] },
@@ -42,20 +42,18 @@ const measureWords = [
 // (一個老師, 一張圖畫, 一間學校, 一盆花...). These nouns are never offered as a *wrong*
 // answer for that measure word, so a child is never marked wrong for a sensible answer.
 const alsoFits = {
-  個: ["老師", "同學", "生日禮物", "糖果", "房子", "屋", "學校"],
+  個: ["老師", "同學"],
   張: ["圖畫"],
   幅: ["照片"],
   間: ["房子", "學校"],
-  所: ["屋", "飯店"],
+  所: ["飯店"],
   朵: ["鮮花"],
   束: ["花", "頭髮"],
   盆: ["花", "鮮花"],
   棵: ["植物"],
-  座: ["房子", "學校", "屋"],
+  座: ["房子", "學校"],
   道: ["大橋"],
-  件: ["生日禮物"],
   片: ["白雲"],
-  把: ["筷子"],
 };
 
 const optionCount = 4;

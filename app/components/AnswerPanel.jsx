@@ -89,7 +89,7 @@ export default function AnswerPanel({
           {feedbackMessage({ checked, complete, allPlaced })}
         </p>
         <button className="action-button check-button" type="button" onClick={onCheck}>
-          Check word <span aria-hidden="true">🪄</span>
+          Check it<span aria-hidden="true"></span>
         </button>
       </div>
     </section>
