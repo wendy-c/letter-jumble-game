@@ -1,4 +1,5 @@
-# Draws Mochi's rooms: public/images/dragon/home.svg, bathroom.svg and beach.svg.
+# Draws the dragons' rooms in public/images/dragon/: Mochi's (home, bathroom, beach), Tofu's (tofu-home,
+# tofu-bathroom, kitchen) and the park where they play together.
 # Each is 600×400 with the floor from y=260, so Mochi stands on it; the middle (x 200-400) is
 # kept clear for her, and the main pieces sit within x 130-470, which still shows on phones.
 import math, os, sys
@@ -335,8 +336,45 @@ def kitchen():
     return svg("\n".join(b))
 
 
+# ---------- The park, where Mochi and Tofu play together ----------
+
+def park_tree(x, y, s, fill):
+    return (f'<path d="M{x} {y}v{-70 * s}" stroke-width="{16 * s:.0f}"/><path d="M{x} {y}v{-70 * s}" stroke="#c98a55" stroke-width="{10 * s:.0f}"/>'
+            f'<circle cx="{x - 30 * s}" cy="{y - 80 * s}" r="{34 * s}" fill="{fill}"/><circle cx="{x + 30 * s}" cy="{y - 84 * s}" r="{36 * s}" fill="{fill}"/>'
+            f'<circle cx="{x}" cy="{y - 116 * s}" r="{40 * s}" fill="{fill}"/>'
+            f'<circle cx="{x - 14 * s}" cy="{y - 128 * s}" r="{8 * s}" fill="#ffffff" stroke="none" opacity=".45"/>')
+
+
+def park():
+    b = []
+    b.append('<defs><linearGradient id="parksky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe6ff"/><stop offset="1" stop-color="#f3fbff"/></linearGradient></defs>')
+    b.append(f'<rect x="-10" y="-10" width="620" height="{FLOOR + 20}" fill="url(#parksky)" stroke="none"/>')
+    # The sun and clouds.
+    for i in range(12):
+        a = 2 * math.pi * i / 12
+        b.append(f'<path d="M{486 + math.cos(a) * 34:.1f} {58 + math.sin(a) * 34:.1f}L{486 + math.cos(a) * 44:.1f} {58 + math.sin(a) * 44:.1f}" stroke="#f2b632" stroke-width="4"/>')
+    b.append('<circle cx="486" cy="58" r="26" fill="#ffe27a"/>')
+    for cx, cy, s in [(110, 58, 0.9), (300, 34, 0.7)]:
+        b.append(f'<path d="M{cx - 44 * s} {cy + 14 * s}q-16 0-14-14t20-10q4-20 26-18 18 2 22 16 18-6 26 8 8 18-10 18Z" fill="#ffffff"/>')
+    # Rolling hills behind, then the lawn.
+    b.append(f'<path d="M-10 214q110-56 220-16t200-6 200 8V{FLOOR + 10}H-10Z" fill="#b5e8cf"/>')
+    b.append(f'<path d="M-10 {FLOOR - 6}q150-24 310 0t310 0V410H-10Z" fill="#9fdcbf"/>')
+    # Trees at both sides, a bench on the right and a little pond on the left.
+    b.append(park_tree(70, 300, 1.0, "#8fe3a8") + park_tree(540, 296, 0.95, "#b5e8a8"))
+    b.append('<path d="M404 300v-26M492 300v-26" stroke-width="7"/><path d="M404 300v-26M492 300v-26" stroke="#8b5a3c" stroke-width="3"/>')
+    b.append('<rect x="392" y="262" width="112" height="14" rx="4" fill="#e0a56a"/><rect x="392" y="236" width="112" height="12" rx="4" fill="#e0a56a"/>'
+             '<path d="M402 248v14M494 248v14" stroke-width="4"/>')
+    b.append('<ellipse cx="160" cy="352" rx="58" ry="16" fill="#8cc8f2"/><path d="M128 350q10-5 20 0M168 356q10-5 20 0" fill="none" stroke="#ffffff" stroke-width="2.5"/>')
+    # Flowers across the lawn, kept out of the middle where the dragons play.
+    for x, y, c in [(30, 330, "#ff8fa3"), (110, 312, "#ffe27a"), (236, 380, "#b79cf2"), (380, 384, "#ff8fa3"), (452, 328, "#ffe27a"), (566, 352, "#8cc8f2"), (586, 312, "#ff8fa3"), (14, 386, "#b79cf2")]:
+        b.append("".join(f'<circle cx="{x + 5 * math.cos(a):.1f}" cy="{y + 5 * math.sin(a):.1f}" r="4" fill="{c}" stroke="none"/>' for a in [i * math.pi * 2 / 5 for i in range(5)])
+                 + f'<circle cx="{x}" cy="{y}" r="2.6" fill="#ffd45e" stroke="none"/>')
+    b.append(sparkle(250, 92, 7) + sparkle(380, 120, 6, "#ffe0ee"))
+    return svg("\n".join(b))
+
+
 os.makedirs(OUT, exist_ok=True)
-for name, draw in [("home", home), ("bathroom", bathroom), ("beach", beach), ("tofu-home", tofu_home), ("tofu-bathroom", tofu_bathroom), ("kitchen", kitchen)]:
+for name, draw in [("home", home), ("bathroom", bathroom), ("beach", beach), ("tofu-home", tofu_home), ("tofu-bathroom", tofu_bathroom), ("kitchen", kitchen), ("park", park)]:
     with open(os.path.join(OUT, f"{name}.svg"), "w") as f:
         f.write(draw())
 print("done")

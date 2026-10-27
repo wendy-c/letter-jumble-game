@@ -823,7 +823,12 @@ function textTexture(text, color) {
   canvas.width = 256;
   canvas.height = 128;
   const context = canvas.getContext("2d");
-  context.font = "700 64px Fredoka, 'Arial Rounded MT Bold', sans-serif";
+  // Smaller letters for longer words, so they all fit ("ready or not!").
+  let size = 64;
+  do {
+    context.font = `700 ${size}px Fredoka, 'Arial Rounded MT Bold', sans-serif`;
+    size -= 4;
+  } while (context.measureText(text).width > 232 && size >= 28);
   context.textAlign = "center";
   context.textBaseline = "middle";
   context.lineWidth = 12;
@@ -951,6 +956,105 @@ class Effects {
   }
 }
 
+/* ---------- The park's props ---------- */
+
+// A pink and white checked picnic blanket with a basket on it.
+function buildPicnic(materials) {
+  const group = new THREE.Group();
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = 128;
+  const paint = canvas.getContext("2d");
+  for (let row = 0; row < 8; row += 1) {
+    for (let col = 0; col < 8; col += 1) {
+      paint.fillStyle = (row + col) % 2 ? "#ffffff" : "#ff9fc3";
+      paint.fillRect(col * 16, row * 16, 16, 16);
+    }
+  }
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  const cloth = new THREE.MeshBasicMaterial({ map: texture });
+  const blanket = new THREE.Mesh(new THREE.PlaneGeometry(3.8, 1.8), cloth);
+  blanket.rotation.x = -Math.PI / 2;
+  blanket.position.y = 0.015;
+  group.add(blanket);
+
+  const basket = new THREE.Group();
+  const wicker = materials.toon(0xd9a066);
+  basket.add(part(new THREE.CylinderGeometry(0.34, 0.27, 0.38, 20), wicker, materials, 0.3, 0.02));
+  const handle = new THREE.Mesh(new THREE.TorusGeometry(0.24, 0.035, 8, 24, Math.PI), wicker);
+  handle.position.y = 0.18;
+  basket.add(handle);
+  basket.position.set(0, 0.2, 0.25);
+  group.add(basket);
+  group.userData.basket = basket;
+  group.userData.dispose = () => {
+    texture.dispose();
+    cloth.dispose();
+  };
+  return group;
+}
+
+// A round, leafy bush to hide behind.
+function buildBush(materials) {
+  const group = new THREE.Group();
+  [[0, 0.62, 0, 0.62, 0x6fcf8f], [-0.62, 0.42, 0.1, 0.48, 0x8fe3a8], [0.6, 0.45, 0.08, 0.5, 0x8fe3a8], [0.1, 1.1, -0.05, 0.42, 0x8fe3a8]].forEach(([x, y, z, r, color]) => {
+    const leaf = part(sphere(r, 0.6), materials.toon(color), materials, r, 0.03);
+    leaf.position.set(x, y, z);
+    group.add(leaf);
+  });
+  [[-0.3, 0.9, 0.5], [0.42, 0.7, 0.5], [0.05, 1.35, 0.32]].forEach(([x, y, z]) => {
+    const berry = new THREE.Mesh(sphere(0.07, 0.5), materials.toon(0xff8fae));
+    berry.position.set(x, y, z);
+    group.add(berry);
+  });
+  return group;
+}
+
+// A bubble wand: a stick with a ring on top.
+function buildBubbleWand(materials) {
+  const group = new THREE.Group();
+  const stick = part(new THREE.CylinderGeometry(0.03, 0.03, 0.7, 10), materials.toon(0xff8fae), materials, 0.03, 0.012);
+  stick.position.y = 0.35;
+  const ring = part(new THREE.TorusGeometry(0.16, 0.03, 10, 28), materials.toon(0xb79cf2), materials, 0.16, 0.012);
+  ring.position.y = 0.86;
+  group.add(stick, ring);
+  group.userData.ring = ring;
+  return group;
+}
+
+// A kick scooter, pointing the way its rider faces (+z in her turn group).
+function buildScooter(materials, color) {
+  const group = new THREE.Group();
+  const paint = materials.toon(color);
+  const deck = part(new THREE.BoxGeometry(0.5, 0.08, 1.3), paint, materials, 0.06, 0.015);
+  deck.position.set(0, 0.2, 0.1);
+  group.add(deck);
+  const wheels = [-0.45, 0.62].map((z) => {
+    const axle = new THREE.Group();
+    axle.position.set(0, 0.12, z);
+    axle.rotation.z = Math.PI / 2;
+    const wheel = part(new THREE.CylinderGeometry(0.12, 0.12, 0.08, 18), materials.toon(0x6b5a8e), materials, 0.12, 0.015);
+    axle.add(wheel);
+    group.add(axle);
+    return wheel;
+  });
+  const stem = part(new THREE.CylinderGeometry(0.035, 0.035, 1.35, 10), materials.toon(0xd6d0e0), materials, 0.035, 0.012);
+  stem.position.set(0, 0.85, 0.95);
+  stem.rotation.x = -0.18;
+  const bar = part(new THREE.CylinderGeometry(0.035, 0.035, 0.75, 10), materials.toon(0xd6d0e0), materials, 0.035, 0.012);
+  bar.rotation.z = Math.PI / 2;
+  bar.position.set(0, 1.5, 1.07);
+  group.add(stem, bar);
+  [-0.38, 0.38].forEach((x) => {
+    const grip = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.14, 10), paint);
+    grip.rotation.z = Math.PI / 2;
+    grip.position.set(x, 1.5, 1.07);
+    group.add(grip);
+  });
+  group.userData.wheels = wheels;
+  return group;
+}
+
 /* ---------- Animation ---------- */
 
 function restPose() {
@@ -959,7 +1063,7 @@ function restPose() {
     headNod: 0, headTurn: 0, headTilt: 0,
     mouthOpen: 0, happyEyes: false, eyeOpen: 1, eyeScale: 1,
     wingFlap: 0, armL: 0, armR: 0, armHug: 0, tailSway: 0, tailLift: 0,
-    blush: 0, chill: 0, heat: 0, fire: 0, foam: 0, fluff: 0, earWiggle: 0, step: 0, x: 0, earFlap: 0,
+    blush: 0, chill: 0, heat: 0, fire: 0, foam: 0, fluff: 0, earWiggle: 0, step: 0, x: 0, z: 0, earFlap: 0,
   };
 }
 
@@ -1017,6 +1121,13 @@ const soundCues = {
   singing: [[0.2, "song"], [5.8, "coo", 1.35]],
   reading: [[1.4, "page"], [3.0, "page"], [4.6, "page"], [5.7, "sparkle"], [6.0, "coo", 1.35]],
   friend: [[0.1, "coo"], [0.9, "whee"], [2.5, "giggle"], [3.1, "danceTune"], [5.8, "purr"], [6.1, "sparkle"], [7.0, "coo"], [7.7, "whee"]],
+  // The park, with both dragons.
+  picnic: [[0.2, "swish"], [1.0, "sparkle"], [1.9, "chomp"], [2.0, "nibble"], [2.6, "chomp"], [2.7, "nibble"], [3.3, "chomp"], [3.4, "nibble"], [4.0, "giggle"], [5.3, "coo"]],
+  hideSeek: [[0.6, "squeak"], [1.2, "squeak"], [1.8, "squeak"], [2.4, "coo", 1.35], [3.1, "gasp"], [5.8, "giggle"], [6.2, "sparkle"]],
+  parkBubbles: [[0.9, "bubbles"], [2.0, "bubbles"], [3.1, "bubbles"], [1.8, "squeak"], [2.9, "squeak"], [4.0, "squeak"], [5.6, "giggle"]],
+  scooters: [[0.8, "whee"], [3.0, "giggle"], [3.6, "whee"], [6.0, "sparkle"], [6.2, "coo"]],
+  parkHello: [[0.2, "coo"], [0.6, "coo", 1.35]],
+  parkHug: [[0.3, "purr"], [0.9, "sparkle"], [1.2, "coo"]],
 };
 
 function playSoundCues(run, sfx) {
@@ -1728,6 +1839,262 @@ const actions = {
     run.friendShadow.material.opacity = Math.max(0, 1 - position.y * 0.25);
   },
 
+  /* ----- The park: Mochi (pose) and Tofu (ctx.partnerPose) together ----- */
+
+  // A picnic on a checked blanket: a cupcake each from the basket, then happy hearts.
+  picnic(run, pose, dt, ctx) {
+    const t = run.t;
+    const tofu = ctx.partner;
+    const tofuPose = ctx.partnerPose;
+    if (!run.picnic) {
+      run.picnic = buildPicnic(ctx.materials);
+      run.picnic.position.set(0, 0, 1.2);
+      ctx.scene.add(run.picnic);
+      run.cakes = [buildTreat("cupcake", ctx.materials), buildTreat("cupcake", ctx.materials)];
+      run.cakes.forEach((cake) => ctx.scene.add(cake));
+      run.props.push(run.picnic, ...run.cakes);
+    }
+    const show = easeInOut(between(t, 0, 0.6)) * (1 - easeInOut(between(t, 6.6, 7.3)));
+    run.picnic.scale.setScalar(Math.max(0.01, show));
+
+    // Sitting down together, turned towards the blanket.
+    const sitting = between(t, 0.3, 0.8) * (1 - between(t, 6.4, 7.0));
+    pose.squash -= 0.07 * sitting;
+    tofuPose.squash -= 0.07 * sitting;
+    pose.turn += 0.35 * sitting;
+    tofuPose.turn -= 0.45 * sitting;
+
+    // A cupcake each pops out of the basket and flies up to each mouth, then three bites.
+    const basket = run.picnic.userData.basket.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, 0.35, 0));
+    const mouths = [ctx.mouthWorld().add(new THREE.Vector3(0, -0.15, 0.35)), tofu.mouth.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, -0.15, 0.3))];
+    run.cakes.forEach((cake, index) => {
+      const fly = easeInOut(between(t, 0.9 + index * 0.15, 1.6 + index * 0.15));
+      cake.position.lerpVectors(basket, mouths[index], fly);
+      cake.position.y += Math.sin(fly * Math.PI) * 0.8;
+      const bites = [1.9, 2.6, 3.3].filter((at) => t > at + index * 0.1).length;
+      cake.scale.setScalar(t < 0.9 ? 0.01 : [0.85, 0.6, 0.35, 0.01][bites]);
+      cake.visible = bites < 3 && t > 0.9;
+    });
+    [pose, tofuPose].forEach((who, index) => {
+      if (t > 1.8 && t < 3.6) {
+        who.mouthOpen = Math.max(0, Math.sin((t - 1.8 - index * 0.1) * 9)) * 0.7;
+        who.armL = who.armR = 0.7;
+        who.armHug = 0.6;
+      }
+      if (t > 3.6 && t < 6.2) {
+        who.happyEyes = true;
+        who.blush = 0.8;
+        who.hop += Math.max(0, Math.sin((t - 3.6) * 7 + index * 1.5)) * 0.12;
+      }
+    });
+    if (t > 3.7) once(run, "yum", () => {
+      ctx.fx.hearts(new THREE.Vector3(0.1, 3.2, 0.6), 6);
+      ctx.fx.spawn(ctx.fx.text("yum!", "#f06aa8", new THREE.Vector3(0, 3.8, 1), 1.0), { velocity: new THREE.Vector3(0, 0.3, 0), life: 1.5 });
+    });
+  },
+
+  // Tofu counts with her eyes covered while Mochi tiptoes behind a bush; then Tofu finds her.
+  hideSeek(run, pose, dt, ctx) {
+    const t = run.t;
+    const tofu = ctx.partner;
+    const tofuPose = ctx.partnerPose;
+    const bushAt = new THREE.Vector3(-2.5, 0, 0.9);
+    if (!run.bush) {
+      run.bush = buildBush(ctx.materials);
+      run.bush.position.copy(bushAt);
+      ctx.scene.add(run.bush);
+      run.props.push(run.bush);
+    }
+    // A big bush: Mochi only just fits behind it.
+    run.bush.scale.setScalar(Math.max(0.01, 1.75 * easeInOut(between(t, 0, 0.5)) * (1 - easeInOut(between(t, 7.6, 8.2)))));
+
+    // Tofu covers her eyes and counts to three.
+    const covering = between(t, 0.3, 0.6) * (1 - between(t, 2.4, 2.7));
+    tofuPose.armL = tofuPose.armR = Math.max(tofuPose.armL, 2.1 * covering);
+    tofuPose.armHug = Math.max(tofuPose.armHug, 0.95 * covering);
+    tofuPose.headNod += 0.25 * covering;
+    if (covering > 0.5) tofuPose.happyEyes = true;
+    const tofuHead = () => tofu.head.getWorldPosition(new THREE.Vector3());
+    [[0.6, "1"], [1.2, "2"], [1.8, "3"]].forEach(([at, count]) => {
+      if (t > at) once(run, `count${count}`, () => ctx.fx.spawn(ctx.fx.text(count, "#8a6ae6", tofuHead().add(new THREE.Vector3(0.5, 1.0, 0.4)), 0.9), { velocity: new THREE.Vector3(0, 0.4, 0), life: 0.9 }));
+    });
+    if (t > 2.4) once(run, "ready", () => ctx.fx.spawn(ctx.fx.text("ready or not!", "#f06aa8", tofuHead().add(new THREE.Vector3(0, 1.1, 0.4)), 1.3), { velocity: new THREE.Vector3(0, 0.3, 0), life: 1.4 }));
+
+    // Mochi tiptoes behind the bush, crouches, then pops up when she's found.
+    const hiding = easeInOut(between(t, 0.6, 2.2)) * (1 - easeInOut(between(t, 6.6, 7.8)));
+    pose.x += (bushAt.x + 0.2 - pose.x) * hiding;
+    pose.z = -1.1 * hiding;
+    const tiptoe = (between(t, 0.6, 0.8) * (1 - between(t, 2.0, 2.2))) + (between(t, 6.6, 6.8) * (1 - between(t, 7.6, 7.8)));
+    if (tiptoe > 0) {
+      const stride = Math.sin(t * 13);
+      pose.step = stride * tiptoe;
+      pose.hop += Math.abs(stride) * 0.06 * tiptoe;
+      pose.turn -= 1.2 * tiptoe * (t < 4 ? 1 : -1);
+    }
+    const crouch = between(t, 2.1, 2.4) * (1 - between(t, 5.6, 5.8));
+    pose.squash -= 0.2 * crouch;
+    pose.hop -= 0.85 * crouch;
+    pose.earWiggle += 0.15 * Math.sin(t * 10) * crouch;
+
+    // Tofu looks around, wondering where Mochi is…
+    const looking = between(t, 2.7, 3.0) * (1 - between(t, 4.4, 4.7));
+    tofuPose.headTurn += 0.6 * Math.sin((t - 2.7) * 3) * looking;
+    tofuPose.turn += 0.5 * Math.sin((t - 2.7) * 2) * looking;
+    if (t > 3.1) once(run, "where", () => ctx.fx.spawn(ctx.fx.text("?", "#8a6ae6", tofuHead().add(new THREE.Vector3(0.4, 1.0, 0.4)), 0.9), { velocity: new THREE.Vector3(0, 0.3, 0), life: 1.2 }));
+    // …then tiptoes over to the bush, and back to her spot at the end.
+    const toBush = easeInOut(between(t, 4.6, 5.6)) * (1 - easeInOut(between(t, 6.8, 7.8)));
+    tofuPose.x += (-1.0 - tofuPose.x) * toBush;
+    const walking = (between(t, 4.6, 4.8) * (1 - between(t, 5.4, 5.6))) + (between(t, 6.8, 7.0) * (1 - between(t, 7.6, 7.8)));
+    if (walking > 0) {
+      const stride = Math.sin(t * 12);
+      tofuPose.step = stride * walking;
+      tofuPose.hop += Math.abs(stride) * 0.08 * walking;
+      tofuPose.turn -= 1.1 * walking * (t < 6 ? 1 : -1);
+    }
+
+    // Found you! Mochi springs up and they both giggle.
+    if (t > 5.7 && t < 6.7) {
+      pose.hop += pulse(t, 5.7, 6.2) * 0.6;
+      pose.armL = pose.armR = 1.6 * pulse(t, 5.7, 6.6);
+      pose.happyEyes = tofuPose.happyEyes = true;
+      pose.blush = tofuPose.blush = 0.8;
+      tofuPose.hop += pulse(t, 5.9, 6.4) * 0.3;
+      once(run, "found", () => {
+        ctx.fx.spawn(ctx.fx.text("found you!", "#f06aa8", tofuHead().add(new THREE.Vector3(0.2, 1.1, 0.4)), 1.2), { velocity: new THREE.Vector3(0, 0.35, 0), life: 1.5 });
+        ctx.fx.hearts(new THREE.Vector3(-1.9, 2.8, 0.6), 5);
+      });
+    }
+  },
+
+  // Mochi blows bubbles from a wand; Tofu hops up to pop them.
+  parkBubbles(run, pose, dt, ctx) {
+    const t = run.t;
+    const tofu = ctx.partner;
+    const tofuPose = ctx.partnerPose;
+    if (!run.wand) {
+      run.wand = buildBubbleWand(ctx.materials);
+      run.wand.position.set(0.75, 1.25, 0.85);
+      run.wand.rotation.z = -0.25;
+      ctx.turn.add(run.wand);
+      run.props.push(run.wand);
+    }
+    run.wand.scale.setScalar(Math.max(0.01, easeInOut(between(t, 0, 0.4)) * (1 - easeInOut(between(t, 6.0, 6.6)))));
+    const holding = between(t, 0.2, 0.6) * (1 - between(t, 5.8, 6.2));
+    pose.armR = Math.max(pose.armR, 1.25 * holding);
+    pose.turn += 0.25 * holding;
+
+    // Three big blows, each a stream of bubbles drifting over to Tofu.
+    [0.9, 2.0, 3.1].forEach((at) => {
+      const blowing = pulse(t, at, at + 0.7);
+      if (blowing > 0) {
+        pose.mouthOpen = Math.max(pose.mouthOpen, 0.45 * blowing);
+        pose.squash += 0.04 * blowing;
+        emit(run, `blow${at}`, 5, dt, () => {
+          const bubble = ctx.fx.mesh("bubble", run.wand.userData.ring.getWorldPosition(new THREE.Vector3()), rand(0.14, 0.28));
+          ctx.fx.spawn(bubble, { velocity: new THREE.Vector3(rand(0.9, 1.8), rand(0.3, 1.0), rand(0, 0.6)), life: rand(2.0, 2.8), wobble: 0.8, opacity: 0.45 });
+        });
+      }
+    });
+
+    // Tofu bounces about, reaching up to pop them.
+    if (t > 1.3 && t < 5.4) {
+      const bounce = Math.max(0, Math.sin((t - 1.3) * 5.5));
+      tofuPose.hop += bounce * 0.4;
+      tofuPose.armL = 1.2 + 0.6 * Math.sin(t * 5.5);
+      tofuPose.armR = 1.2 - 0.6 * Math.sin(t * 5.5);
+      tofuPose.happyEyes = bounce > 0.5;
+      tofuPose.wingFlap += 0.4 * Math.sin(t * 20) * bounce;
+    }
+    [1.8, 2.9, 4.0].forEach((at) => {
+      if (t > at) once(run, `pop${at}`, () => {
+        const spot = tofu.head.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(rand(-0.3, 0.3), 0.9, 0.4));
+        ctx.fx.sparkles(spot, 8, 1.2);
+        ctx.fx.spawn(ctx.fx.text("pop!", "#8cc8f2", spot.clone().add(new THREE.Vector3(0, 0.3, 0)), 0.8), { velocity: new THREE.Vector3(0, 0.4, 0), life: 0.9 });
+      });
+    });
+    if (t > 5.4) {
+      pose.happyEyes = tofuPose.happyEyes = true;
+      pose.blush = tofuPose.blush = 0.7;
+      once(run, "end", () => ctx.fx.hearts(new THREE.Vector3(0.1, 3.0, 0.6), 4));
+    }
+  },
+
+  // Both hop on scooters, ride off to the right, turn round and ride back.
+  scooters(run, pose, dt, ctx) {
+    const t = run.t;
+    const tofu = ctx.partner;
+    const tofuPose = ctx.partnerPose;
+    if (!run.scooters) {
+      run.scooters = [buildScooter(ctx.materials, 0xff8fae), buildScooter(ctx.materials, 0x8cc8f2)];
+      ctx.turn.add(run.scooters[0]);
+      tofu.turn.add(run.scooters[1]);
+      run.props.push(...run.scooters);
+    }
+    const show = easeInOut(between(t, 0, 0.5)) * (1 - easeInOut(between(t, 6.5, 7.1)));
+    run.scooters.forEach((scooter) => scooter.scale.setScalar(Math.max(0.01, show)));
+
+    const riding = between(t, 0.5, 0.8) * (1 - between(t, 6.0, 6.3));
+    // Out to the right, turn round, and back again.
+    const out = easeInOut(between(t, 0.8, 3.0));
+    const back = easeInOut(between(t, 3.6, 5.9));
+    const travel = 3.4 * (out - back);
+    // Facing right on the way out, left on the way back (whatever way the player had turned them).
+    const direction = 1 - 2 * easeInOut(between(t, 3.0, 3.6));
+    const facing = direction * Math.PI / 2 - ctx.userTurn;
+    const speed = Math.abs(out - back) > 0 && t > 0.8 && t < 5.9 ? 1 : 0;
+    [[pose, 0], [tofuPose, 0.25]].forEach(([who, lag]) => {
+      who.x += travel * (1 - lag * 0.2);
+      who.turn = who.turn * (1 - riding) + facing * riding;
+      who.hop += 0.2 * riding;
+      who.armL = who.armR = Math.max(who.armL, 1.0 * riding);
+      who.armHug = Math.max(who.armHug, 0.55 * riding);
+      if (riding > 0.5) {
+        who.happyEyes = true;
+        who.earFlap += 0.25 * Math.sin(t * 14);
+      }
+    });
+    run.scooters.forEach((scooter) => scooter.userData.wheels.forEach((wheel) => {
+      wheel.rotation.y += dt * 14 * speed;
+    }));
+    if (t > 1.2) once(run, "whee", () => ctx.fx.spawn(ctx.fx.text("wheee!", "#f06aa8", ctx.headWorld().add(new THREE.Vector3(0.4, 1.0, 0.4)), 1.1), { velocity: new THREE.Vector3(0.6, 0.3, 0), life: 1.4 }));
+    if (t > 6.0) {
+      pose.happyEyes = tofuPose.happyEyes = true;
+      pose.armL = pose.armR = Math.max(pose.armL, 1.5 * pulse(t, 6.0, 6.9));
+      tofuPose.armL = tofuPose.armR = Math.max(tofuPose.armL, 1.5 * pulse(t, 6.0, 6.9));
+      once(run, "done", () => ctx.fx.sparkles(new THREE.Vector3(0.1, 2.4, 0.6), 16, 1.6));
+    }
+  },
+
+  // A tap in the park: both wave hello.
+  parkHello(run, pose, dt, ctx) {
+    const t = run.t;
+    const tofuPose = ctx.partnerPose;
+    const waving = pulse(t, 0, 2.2);
+    pose.armR = tofuPose.armR = 1.9 * waving;
+    ctx.arms[1].userData.forward = -0.25 * waving;
+    ctx.arms[1].userData.wave = Math.sin(t * 12) * 0.5 * waving;
+    ctx.partner.arms[1].userData.forward = -0.25 * waving;
+    ctx.partner.arms[1].userData.wave = Math.sin(t * 12 + 1) * 0.5 * waving;
+    pose.happyEyes = tofuPose.happyEyes = waving > 0.3;
+    once(run, "hi", () => ctx.fx.spawn(ctx.fx.text("hi!", "#f2b632", new THREE.Vector3(0.1, 3.7, 0.8), 1.0), { velocity: new THREE.Vector3(0, 0.4, 0), life: 1.3 }));
+  },
+
+  // Another tap: a best friends' hug.
+  parkHug(run, pose, dt, ctx) {
+    const t = run.t;
+    const tofuPose = ctx.partnerPose;
+    const hug = pulse(t, 0, 2.4);
+    pose.x += 0.55 * hug;
+    tofuPose.x -= 0.55 * hug;
+    pose.turn += 0.6 * hug;
+    tofuPose.turn -= 0.6 * hug;
+    pose.armHug = tofuPose.armHug = hug;
+    pose.armL = pose.armR = tofuPose.armL = tofuPose.armR = 0.6 * hug;
+    pose.happyEyes = tofuPose.happyEyes = hug > 0.3;
+    pose.blush = tofuPose.blush = hug;
+    if (t > 0.8) once(run, "hearts", () => ctx.fx.hearts(new THREE.Vector3(0.1, 3.0, 0.6), 6));
+  },
+
   /* ----- Tofu: shy treats ----- */
 
   shyApple(run, pose, dt, ctx) {
@@ -2030,7 +2397,7 @@ const actions = {
 };
 
 function applyPose(dragon, pose, userTurn) {
-  dragon.root.position.set(pose.x, pose.hop, 0);
+  dragon.root.position.set(pose.x, pose.hop, pose.z);
   dragon.root.rotation.z = pose.lean;
   dragon.turn.rotation.y = pose.turn + userTurn;
   dragon.bodyGroup.position.x = pose.shakeX;
@@ -2127,6 +2494,15 @@ export function createDragonScene(container, { onPet, sfx = sounds, dragon: who 
   const materials = createMaterials();
   const dragon = who === "tofu" ? buildDragon(materials, TOFU) : buildDragon(materials);
   scene.add(dragon.root);
+  // In the park, Mochi plays with Tofu: Mochi on the left, Tofu (a little smaller) on the right.
+  const inPark = who === "park";
+  const homeX = inPark ? -1.15 : 0;
+  const partnerHomeX = 1.3;
+  const partner = inPark ? buildDragon(materials, TOFU) : null;
+  if (partner) {
+    partner.root.scale.setScalar(0.85);
+    scene.add(partner.root);
+  }
 
   const shadowMap = shadowTexture();
   const shadow = new THREE.Mesh(new THREE.CircleGeometry(1.5, 32), new THREE.MeshBasicMaterial({ map: shadowMap, transparent: true, depthWrite: false }));
@@ -2134,8 +2510,20 @@ export function createDragonScene(container, { onPet, sfx = sounds, dragon: who 
   shadow.position.y = 0.005;
   scene.add(shadow);
 
+  const partnerShadow = partner ? new THREE.Mesh(new THREE.CircleGeometry(1.5, 32), new THREE.MeshBasicMaterial({ map: shadowMap, transparent: true, depthWrite: false })) : null;
+  if (partnerShadow) {
+    partnerShadow.rotation.x = -Math.PI / 2;
+    partnerShadow.position.y = 0.005;
+    scene.add(partnerShadow);
+  }
+
   const fx = new Effects(scene, materials);
   const ctx = {
+    // In the park: Tofu and her pose for this frame (park activities move both dragons), and how
+    // far the player has turned them.
+    partner,
+    partnerPose: null,
+    userTurn: 0,
     // Tofu, built fresh for each visit and removed when it ends.
     makeFriend() {
       const friend = buildDragon(materials, TOFU);
@@ -2194,6 +2582,7 @@ export function createDragonScene(container, { onPet, sfx = sounds, dragon: who 
     elapsed += dt;
 
     const pose = restPose();
+    pose.x = homeX;
     pose.squash = 1 + 0.022 * Math.sin(elapsed * 2.2) * idleAmount;
     pose.headNod = 0.045 * Math.sin(elapsed * 1.1) * idleAmount;
     pose.headTilt = 0.06 * Math.sin(elapsed * 0.7) * idleAmount;
@@ -2212,6 +2601,21 @@ export function createDragonScene(container, { onPet, sfx = sounds, dragon: who 
     }
     if (blinkStart >= 0) pose.eyeOpen = Math.max(0.08, Math.abs(Math.cos(between(elapsed, blinkStart, blinkStart + 0.18) * Math.PI)));
 
+    // Tofu's idle sway in the park (a little out of step with Mochi's).
+    if (partner) {
+      const partnerPose = restPose();
+      partnerPose.x = partnerHomeX;
+      partnerPose.squash = 1 + 0.022 * Math.sin(elapsed * 2.4 + 1) * idleAmount;
+      partnerPose.headTilt = -0.06 * Math.sin(elapsed * 0.8) * idleAmount;
+      partnerPose.tailSway = 0.45 * Math.sin(elapsed * 1.7) * idleAmount;
+      partnerPose.wingFlap = 0.08 * Math.sin(elapsed * 7) * idleAmount;
+      partnerPose.earFlap = 0.1 * Math.sin(elapsed * 1.7) * idleAmount;
+      partnerPose.eyeOpen = pose.eyeOpen;
+      partnerPose.turn = -0.3;
+      ctx.partnerPose = partnerPose;
+    }
+    ctx.userTurn = userTurn;
+
     if (run) {
       run.t += dt;
       actions[run.id](run, pose, dt, ctx);
@@ -2228,8 +2632,15 @@ export function createDragonScene(container, { onPet, sfx = sounds, dragon: who 
 
     userTurn += (targetTurn - userTurn) * Math.min(1, dt * 8);
     applyPose(dragon, pose, userTurn);
-    shadow.scale.setScalar(1 - Math.min(0.4, pose.hop * 0.4));
-    shadow.position.x = pose.x;
+    shadow.scale.setScalar(1 - Math.min(0.4, Math.max(0, pose.hop) * 0.4));
+    shadow.position.set(pose.x, 0.005, pose.z);
+    if (partner) {
+      const partnerPose = ctx.partnerPose;
+      if (partnerPose.happyEyes) partnerPose.earWiggle += 0.12 * Math.sin(elapsed * 14);
+      applyPose(partner, partnerPose, userTurn);
+      partnerShadow.scale.setScalar(0.85 * (1 - Math.min(0.4, Math.max(0, partnerPose.hop) * 0.4)));
+      partnerShadow.position.set(partnerPose.x, 0.005, partnerPose.z);
+    }
 
     fireLight.intensity = pose.fire * (6 + Math.random() * 3);
     fireLight.position.copy(ctx.mouthWorld()).addScaledVector(ctx.headForward(), 0.8);
@@ -2271,7 +2682,7 @@ export function createDragonScene(container, { onPet, sfx = sounds, dragon: who 
     const rect = canvas.getBoundingClientRect();
     const point = new THREE.Vector2(((event.clientX - rect.left) / rect.width) * 2 - 1, -((event.clientY - rect.top) / rect.height) * 2 + 1);
     raycaster.setFromCamera(point, camera);
-    if (raycaster.intersectObject(dragon.root, true).length > 0) onPet?.();
+    if (raycaster.intersectObject(dragon.root, true).length > 0 || (partner && raycaster.intersectObject(partner.root, true).length > 0)) onPet?.();
   }
   canvas.addEventListener("pointerdown", onPointerDown);
   canvas.addEventListener("pointermove", onPointerMove);
@@ -2306,6 +2717,8 @@ export function createDragonScene(container, { onPet, sfx = sounds, dragon: who 
         if (object.geometry) object.geometry.dispose();
       });
       dragon.dispose();
+      partner?.dispose();
+      partnerShadow?.material.dispose();
       shadow.material.dispose();
       shadowMap.dispose();
       materials.dispose();

@@ -42,3 +42,4 @@ export const MochisDen = at("/dragon");
 export const RainbowVillage = at("/dragon/village");
 export const RainbowVillageWithTofu = at("/dragon/village", { players: [{ ...elly, unlocks: ["tofu"] }] });
 export const TofusDen = at("/dragon/tofu", { players: [{ ...elly, unlocks: ["tofu"] }] });
+export const ThePark = at("/dragon/park", { players: [{ ...elly, unlocks: ["tofu", "park"] }] });

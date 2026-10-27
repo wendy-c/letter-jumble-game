@@ -16,4 +16,7 @@ export const Mochi = {
 export const Tofu = {
   args: { dragon: dragons.tofu, breadcrumbs: <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Tofu’s House", href: "/dragon/tofu" }]} /> },
 };
+export const ThePark = {
+  args: { dragon: dragons.park, breadcrumbs: <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "The Park", href: "/dragon/park" }]} /> },
+};
 export const OutOfCoins = { args: { ...Mochi.args, coins: 0 } };

@@ -108,8 +108,10 @@ export default function GameApp() {
   // "/dragon/village" is always the village, and "/dragon/mochi" or "/dragon/tofu" is a dragon's
   // den. Tofu's house needs unlocking first, from the village.
   const tofuUnlocked = Boolean(currentPlayer?.unlocks?.includes("tofu"));
+  // The park (where Mochi and Tofu play together) can be unlocked once Tofu has moved in.
+  const parkUnlocked = tofuUnlocked && Boolean(currentPlayer?.unlocks?.includes("park"));
   const dragonPlace = selectedGame?.id === "dragon" ? topicId ?? (tofuUnlocked ? "village" : "mochi") : null;
-  const isDragonPlace = (place) => place === "village" || place === "mochi" || (place === "tofu" && tofuUnlocked);
+  const isDragonPlace = (place) => place === "village" || place === "mochi" || (place === "tofu" && tofuUnlocked) || (place === "park" && parkUnlocked);
   const categoryKey = routeTopic ? `${selectedGame.id}/${routeTopic.id}` : null;
   // Every topic plays its words in a shuffled order, saved per player so leaving and coming
   // back continues the same order. Topics with `wordsPerGame` (CVC, 量詞) deal only that many.
@@ -197,7 +199,7 @@ export default function GameApp() {
     }
     if (topicId && !routeTopic && !(routeGame.id === "dragon" && isDragonPlace(topicId))) router.replace(`/${routeGame.id}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loaded, gameId, topicId, routeGame, allowed, currentPlayer, routeTopic, router, tofuUnlocked, onBadgesPage, onParentPage]);
+  }, [loaded, gameId, topicId, routeGame, allowed, currentPlayer, routeTopic, router, tofuUnlocked, parkUnlocked, onBadgesPage, onParentPage]);
 
   // A topic without a shuffled hand of words yet gets one dealt.
   useEffect(() => {
@@ -342,6 +344,14 @@ export default function GameApp() {
     unlock("tofu");
     sounds.sparkle?.();
     router.push("/dragon/tofu");
+  }
+
+  // Spends the coins to open the park, then goes there to play with Mochi and Tofu.
+  function unlockPark() {
+    if (!tofuUnlocked || !spendCoins(dragons.park.unlockCost)) return;
+    unlock("park");
+    sounds.sparkle?.();
+    router.push("/dragon/park");
   }
 
   function handleLogOut() {
@@ -558,6 +568,9 @@ export default function GameApp() {
               coins={rainbowCoins}
               unlockCost={dragons.tofu.unlockCost}
               onUnlockTofu={unlockTofu}
+              parkUnlocked={parkUnlocked}
+              parkUnlockCost={dragons.park.unlockCost}
+              onUnlockPark={unlockPark}
               onVisit={(place) => router.push(`/dragon/${place}`)}
             />
           ) : isDragonPlace(dragonPlace) && (

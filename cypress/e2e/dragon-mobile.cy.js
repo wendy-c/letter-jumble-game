@@ -99,3 +99,15 @@ describe("Tofu's den and Rainbow Village on phones", () => {
     });
   });
 });
+
+describe("The park on phones", () => {
+  phones.forEach(([phone, width, height]) => {
+    it(`can tap every control on ${phone} (${width}×${height})`, () => {
+      cy.viewport(width, height);
+      cy.visit("/dragon/park", { onBeforeLoad: (win) => seedPlayer(win, { unlocks: ["tofu", "park"] }) });
+      cy.contains("h1", "The Rainbow Park");
+      cy.get(".dragon-canvas", { timeout: 20000 }).should("be.visible");
+      cy.get('.village-sign, .dragon-action').each(($control) => expectTappable($control[0]));
+    });
+  });
+});

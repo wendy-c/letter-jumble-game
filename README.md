@@ -19,7 +19,7 @@ The front page groups the games under four headings:
 | | 中文認字 · 進階篇 | 5–6 | Two- to five-character words: jobs, home, animals, places. |
 | | 量詞配對 | 5–6 | Pick the noun that goes with a measure word (一個橙). 20 questions per round. |
 | | 成語 | 5–6 | Fill the missing character of a four-character idiom, from a picture and its meaning. |
-| Visit Mochi | Mochi the Rainbow Dragon | All | A 3D pet dragon. Spend coins on treats, grooming and activities. A road sign in her room leads to Rainbow Village, where 100 coins unlock her shy friend Tofu's house (and the park appears, coming soon). |
+| Visit Mochi | Mochi the Rainbow Dragon | All | A 3D pet dragon. Spend coins on treats, grooming and activities. A road sign in her room leads to Rainbow Village, where 100 coins unlock her shy friend Tofu's house, then another 100 open the park, where Mochi and Tofu have picnics, play hide and seek, blow bubbles and ride scooters together. |
 
 ### How rounds work
 
@@ -154,7 +154,7 @@ cypress/e2e/                           End-to-end tests
   2. Add its topics to `topicsByGame` in `badges.js`.
   3. Add a branch for how it plays in `GameApp.jsx`.
 - **The dragons' rooms:** `python3 scripts/make-rooms.py .` redraws `public/images/dragon/`: Mochi's
-  home, bathroom and beach, and Tofu's reading nook, bathroom and kitchen.
+  home, bathroom and beach, Tofu's reading nook, bathroom and kitchen, and the park.
 - **Rainbow Village:** `python3 scripts/make-village.py` redraws `public/images/village/`.
 - **Hand-drawn pictures:** `python3 scripts/draw-pictures.py` redraws the 地點 places and other
   pictures it lists. Faces go only on people and animals.

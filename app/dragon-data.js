@@ -42,6 +42,14 @@ const tofuActions = [
   { id: "tofu-reading", animation: "reading", kind: "activity", label: "Reading", icon: "📚", cost: 2, duration: 7.4, reaction: "Once upon a time… ooh, what happens next? 📖" },
 ];
 
+// The park, once it's unlocked: Mochi and Tofu play together.
+const parkActions = [
+  { id: "park-picnic", animation: "picnic", kind: "activity", label: "Have a picnic", icon: "🧺", cost: 2, duration: 7.4, reaction: "Cupcakes for two! Sharing is the best. 🧺" },
+  { id: "park-hide", animation: "hideSeek", kind: "activity", label: "Hide and seek", icon: "🙈", cost: 2, duration: 8.2, reaction: "1, 2, 3… ready or not… found you, Mochi! 🙈" },
+  { id: "park-bubbles", animation: "parkBubbles", kind: "activity", label: "Blow bubbles", icon: "🫧", cost: 2, duration: 6.8, reaction: "Pop, pop, pop! Catch the bubbles! 🫧" },
+  { id: "park-scooters", animation: "scooters", kind: "activity", label: "Ride scooters", icon: "🛴", cost: 2, duration: 7.2, reaction: "Wheee! Race you round the park! 🛴" },
+];
+
 export const dragons = {
   mochi: {
     id: "mochi",
@@ -80,6 +88,27 @@ export const dragons = {
       { id: "tofu-shy", animation: "tofuShy", kind: "pet", label: "Peekaboo", cost: 0, duration: 2.2, reaction: "Eep! …oh, it’s you. Hi! 🙈" },
       { id: "tofu-flutter", animation: "tofuFlutter", kind: "pet", label: "Flutter", cost: 0, duration: 2.4, reaction: "Flutter, flutter… look, I can float! 🧚" },
       { id: "tofu-giggle", animation: "tofuGiggle", kind: "pet", label: "Giggle", cost: 0, duration: 2.2, reaction: "Hee hee… that tickles! 😊" },
+    ],
+  },
+  park: {
+    id: "park",
+    name: "Mochi and Tofu",
+    title: "The Rainbow Park",
+    heading: ["The Rainbow", "Park"],
+    house: "The Park",
+    eyebrow: "PLAY TOGETHER",
+    note: "Mochi and Tofu love playing together in the park.",
+    idleMessage: "Tap Mochi or Tofu to say hi!",
+    footer: "DRAG TO TURN · TAP TO SAY HI",
+    // Spent once, after Tofu has moved in, to open the park.
+    unlockCost: 100,
+    // Only activities here, all in the park.
+    sections: ["activity"],
+    rooms: { activity: "park" },
+    actions: parkActions,
+    petActions: [
+      { id: "park-hello", animation: "parkHello", kind: "pet", label: "Hello", cost: 0, duration: 2.2, reaction: "Hi hi! We’re playing in the park! 👋" },
+      { id: "park-hug", animation: "parkHug", kind: "pet", label: "Hug", cost: 0, duration: 2.4, reaction: "Best friends hug! 💛" },
     ],
   },
 };

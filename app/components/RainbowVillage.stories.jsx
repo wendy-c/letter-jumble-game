@@ -13,4 +13,6 @@ export default {
 
 export const SavingUpForTofu = { args: { tofuUnlocked: false, coins: 37 } };
 export const ReadyToUnlockTofu = { args: { tofuUnlocked: false, coins: 120 } };
-export const TofuMovedIn = { args: { tofuUnlocked: true, coins: 20 } };
+export const SavingUpForThePark = { args: { tofuUnlocked: true, coins: 20 } };
+export const ReadyToOpenThePark = { args: { tofuUnlocked: true, coins: 140 } };
+export const EverythingOpen = { args: { tofuUnlocked: true, parkUnlocked: true, coins: 20 } };

@@ -4,8 +4,9 @@ import { sounds } from "../lib/sounds";
 import DragonScene from "./DragonScene";
 import GameFooter from "./GameFooter";
 
-// Each tab is one of the dragon's rooms (see `rooms` in dragon-data).
-const sections = [
+// Each tab is one of the dragon's rooms (see `rooms` in dragon-data). A place can have just some
+// of them (`sections` in dragon-data): the park only has activities.
+const allSections = [
   { kind: "treat", label: "Treats", icon: "🍎" },
   { kind: "groom", label: "Grooming", icon: "🛁" },
   { kind: "activity", label: "Activities", icon: "🎨" },
@@ -50,11 +51,12 @@ function VillageSign() {
   );
 }
 
-// A dragon's den (Mochi's or Tofu's, from dragon-data): spend coins on treats, grooming and
-// activities, or tap her for something free. A road sign in the corner of the room goes to
-// Rainbow Village (`onGoToVillage`).
+// A dragon's den (Mochi's or Tofu's, from dragon-data), or the park where they play together:
+// spend coins on treats, grooming and activities, or tap a dragon for something free. A road sign
+// in the corner of the room goes to Rainbow Village (`onGoToVillage`).
 export default function DragonDen({ dragon, coins, onSpendCoins, breadcrumbs, onGoToVillage, titleAction = null }) {
   const { idleMessage, actions: dragonActions, petActions } = dragon;
+  const sections = dragon.sections ? allSections.filter(({ kind }) => dragon.sections.includes(kind)) : allSections;
   const [command, setCommand] = useState(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState(idleMessage);
@@ -113,7 +115,9 @@ export default function DragonDen({ dragon, coins, onSpendCoins, breadcrumbs, on
           <p className="eyebrow">{dragon.eyebrow}</p>
           <div className="title-row">
             <h1 id="game-title" className="game-title">
-              {dragon.name} the <span>{dragon.title.replace(`${dragon.name} the `, "")}</span>
+              {dragon.heading
+                ? <>{dragon.heading[0]} <span>{dragon.heading[1]}</span></>
+                : <>{dragon.name} the <span>{dragon.title.replace(`${dragon.name} the `, "")}</span></>}
             </h1>
             {titleAction}
           </div>
@@ -140,7 +144,7 @@ export default function DragonDen({ dragon, coins, onSpendCoins, breadcrumbs, on
         </div>
 
         <div className="dragon-panel">
-          <div className="dragon-tabs" role="tablist" aria-label={`Things to do with ${dragon.name}`} onKeyDown={handleTabKeyDown}>
+          {sections.length > 1 && <div className="dragon-tabs" role="tablist" aria-label={`Things to do with ${dragon.name}`} onKeyDown={handleTabKeyDown}>
             {sections.map(({ kind, label, icon }) => (
               <button
                 className="dragon-tab"
@@ -159,13 +163,13 @@ export default function DragonDen({ dragon, coins, onSpendCoins, breadcrumbs, on
                 <span aria-hidden="true">{icon}</span> {label}
               </button>
             ))}
-          </div>
+          </div>}
 
           <div
             className={`dragon-actions dragon-actions-${section}`}
-            role="tabpanel"
-            id={`dragon-section-${section}`}
-            aria-labelledby={`dragon-tab-${section}`}
+            {...(sections.length > 1
+              ? { role: "tabpanel", id: `dragon-section-${section}`, "aria-labelledby": `dragon-tab-${section}` }
+              : { role: "group", "aria-label": `Things to do with ${dragon.name}` })}
           >
             {dragonActions.filter((action) => action.kind === section).map((action) => (
               <ActionButton key={action.id} action={action} coins={coins} busy={busy} onUse={play} />
