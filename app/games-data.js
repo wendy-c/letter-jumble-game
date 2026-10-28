@@ -13,7 +13,8 @@ export const gameGroups = [
 ];
 
 // `ages` limits a game to those age groups; games without it are for everyone. `group` is the
-// front-page heading it's listed under. On the front page each game shows its `picture` (with
+// front-page heading it's listed under. A `spellingGuide` game can colour the vowel and consonant
+// teams in its words, when a parent turns that on for a child. On the front page each game shows its `picture` (with
 // `pattern` letters as a little chip, where it has them).
 export const games = [
   {
@@ -56,6 +57,7 @@ export const games = [
     note: "For age 5-6 - Cambridge Starters · 8 topics",
     badge: "CAMBRIDGE STARTERS",
     ages: ["5-6"],
+    spellingGuide: true,
   },
   {
     id: "letter-jumble",
@@ -66,6 +68,7 @@ export const games = [
     note: "For age 5-6 - Cambridge Movers · 8 topics",
     badge: "CAMBRIDGE MOVERS",
     ages: ["5-6"],
+    spellingGuide: true,
   },
   {
     id: "chinese",

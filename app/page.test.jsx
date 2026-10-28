@@ -223,6 +223,14 @@ describe("Home", () => {
     await user.click(screen.getByRole("button", { name: "Browse Animals words" }));
     expect(within(screen.getByRole("dialog")).queryByRole("switch")).not.toBeInTheDocument();
   });
+
+  it("shows the spelling guide only in the Letter Jumble game it's turned on for", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "5-6", spellingGuide: ["starters"] }], current: "Ada" }));
+    const user = userEvent.setup();
+    render(<GameApp />);
+    await openGame(user, "Letter Jumble for Movers", "Animals");
+    expect(screen.queryByLabelText("Spelling guide")).not.toBeInTheDocument();
+  });
 });
 
 describe("players", () => {
@@ -1695,26 +1703,33 @@ describe("parent mode", () => {
     const switches = (name) => within(within(parentPage()).getByRole("region", { name })).getAllByRole("switch")
       .map((toggle) => [toggle.querySelector(".spelling-guide-toggle-title").textContent, toggle.getAttribute("aria-checked")]);
     expect(switches(/Ada/)).toEqual([
-      ["CVC Sounds", "true"], ["Consonant Digraphs", "true"], ["R & L Blends", "true"], ["Letter Jumble for Starters", "false"], ["Letter Jumble for Movers", "false"], ["中文認字 · 入門篇", "true"],
-      ["中文認字 · 進階篇", "false"], ["量詞配對", "false"], ["成語", "false"], ["Mochi the Rainbow Dragon", "true"], ["Spelling guide", "false"],
+      ["CVC Sounds", "true"], ["Consonant Digraphs", "true"], ["R & L Blends", "true"], ["Letter Jumble for Starters", "false"], ["Spelling guide", "false"],
+      ["Letter Jumble for Movers", "false"], ["Spelling guide", "false"], ["中文認字 · 入門篇", "true"],
+      ["中文認字 · 進階篇", "false"], ["量詞配對", "false"], ["成語", "false"], ["Mochi the Rainbow Dragon", "true"],
     ]);
     expect(switches(/Elly/)).toEqual([
-      ["CVC Sounds", "false"], ["Consonant Digraphs", "true"], ["R & L Blends", "true"], ["Letter Jumble for Starters", "true"], ["Letter Jumble for Movers", "true"], ["中文認字 · 入門篇", "false"],
-      ["中文認字 · 進階篇", "true"], ["量詞配對", "true"], ["成語", "true"], ["Mochi the Rainbow Dragon", "true"], ["Spelling guide", "false"],
+      ["CVC Sounds", "false"], ["Consonant Digraphs", "true"], ["R & L Blends", "true"], ["Letter Jumble for Starters", "true"], ["Spelling guide", "false"],
+      ["Letter Jumble for Movers", "true"], ["Spelling guide", "false"], ["中文認字 · 入門篇", "false"],
+      ["中文認字 · 進階篇", "true"], ["量詞配對", "true"], ["成語", "true"], ["Mochi the Rainbow Dragon", "true"],
     ]);
     expect(within(parentPage()).queryByRole("button", { name: /Focus/ })).not.toBeInTheDocument();
   });
 
-  it("turns the spelling guide on for one child", async () => {
+  it("turns the spelling guide on for one child's Letter Jumble game, under that game's switch", async () => {
     seedChildren();
     const user = userEvent.setup();
     render(<GameApp />);
     await passGrownUpCheck(user);
     const elly = within(parentPage()).getByRole("region", { name: /Elly/ });
-    await user.click(within(elly).getByRole("switch", { name: /Spelling guide/ }));
-    expect(within(elly).getByRole("switch", { name: /Spelling guide/ })).toHaveAttribute("aria-checked", "true");
-    expect(storedPlayers().players.find((player) => player.name === "Elly").spellingGuide).toBe(true);
+    const guideFor = (name) => within(within(elly).getByRole("switch", { name: new RegExp(name) }).closest("li")).getByRole("switch", { name: /Spelling guide/ });
+    await user.click(guideFor("Letter Jumble for Starters"));
+    expect(guideFor("Letter Jumble for Starters")).toHaveAttribute("aria-checked", "true");
+    expect(guideFor("Letter Jumble for Movers")).toHaveAttribute("aria-checked", "false");
+    expect(storedPlayers().players.find((player) => player.name === "Elly").spellingGuide).toEqual(["starters"]);
     expect(storedPlayers().players.find((player) => player.name === "Ada").spellingGuide).toBeUndefined();
+
+    await user.click(guideFor("Letter Jumble for Starters"));
+    expect(storedPlayers().players.find((player) => player.name === "Elly").spellingGuide).toBeUndefined();
   });
 
   it("turning a game off hides it from that child only", async () => {

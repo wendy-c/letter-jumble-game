@@ -173,9 +173,9 @@ export default function GameApp() {
   const complete = Boolean(puzzle) && placed.length === blanks.length &&
     placed.every((tile, slotIndex) => tile !== null && tiles[tile] === answerLetters.slice(blanks[slotIndex], blanks[slotIndex] + gapLength));
   const allPlaced = placed.every((tile) => tile !== null);
-  // The spelling guide is a parent setting for each child (in Parent mode).
-  const showSpellingGuide = Boolean(currentPlayer?.spellingGuide);
-  const guides = showSpellingGuide && !isCvc && !inChinese ? getSpellingGuides(answer) : null;
+  // The spelling guide is a parent setting for each child and Letter Jumble game (in Parent mode).
+  const showSpellingGuide = Boolean(selectedGame?.spellingGuide && currentPlayer?.spellingGuide?.includes(selectedGame.id));
+  const guides = showSpellingGuide ? getSpellingGuides(answer) : null;
 
   useEffect(() => () => {
     stopSpeaking();

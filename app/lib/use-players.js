@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ageGroups } from "../games-data";
+import { ageGroups, games } from "../games-data";
 
 export const playersStorageKey = "letter-jumble:players";
 // Coins saved before players existed; they're given to the first player created.
@@ -7,6 +7,7 @@ const legacyCoinsStorageKey = "letter-jumble:rainbow-coins";
 export const maxNameLength = 20;
 
 const emptyState = { players: [], current: null };
+const spellingGuideGames = games.filter((game) => game.spellingGuide).map((game) => game.id);
 
 const isCount = (value) => Number.isInteger(value) && value >= 0;
 const isAge = (age) => ageGroups.some((group) => group.id === age);
@@ -23,7 +24,11 @@ function cleanPlayer(player) {
     const progress = Object.fromEntries(Object.entries(player.progress).filter(([, index]) => isCount(index)));
     if (Object.keys(progress).length > 0) cleaned.progress = progress;
   }
-  if (player.spellingGuide === true) cleaned.spellingGuide = true;
+  // The games a parent turned the spelling guide on for. It used to be one switch for all of
+  // them (`true`), which now means every game that has the guide.
+  const guideGames = player.spellingGuide === true ? spellingGuideGames
+    : Array.isArray(player.spellingGuide) ? [...new Set(player.spellingGuide.filter((id) => spellingGuideGames.includes(id)))] : [];
+  if (guideGames.length > 0) cleaned.spellingGuide = guideGames;
   if (player.gameSettings && typeof player.gameSettings === "object") {
     const gameSettings = Object.fromEntries(Object.entries(player.gameSettings).filter(([, on]) => typeof on === "boolean"));
     if (Object.keys(gameSettings).length > 0) cleaned.gameSettings = gameSettings;
@@ -145,11 +150,13 @@ export function usePlayers() {
     });
   }
 
-  // Parent settings: show the spelling guide (vowel and consonant teams) in a child's spelling games.
-  function setSpellingGuide(name, on) {
+  // Parent settings: show the spelling guide (vowel and consonant teams) in one of a child's
+  // Letter Jumble games.
+  function setSpellingGuide(name, gameId, on) {
     updatePlayer(name, (player) => {
-      const { spellingGuide, ...rest } = player;
-      return on ? { ...rest, spellingGuide: true } : rest;
+      const { spellingGuide: old = [], ...rest } = player;
+      const spellingGuide = old.filter((id) => id !== gameId).concat(on ? [gameId] : []);
+      return spellingGuide.length > 0 ? { ...rest, spellingGuide } : rest;
     });
   }
 

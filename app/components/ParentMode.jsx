@@ -49,26 +49,38 @@ function GrownUpCheck({ onPass }) {
   );
 }
 
-function GameSwitch({ game, enabled, suitsAge, onToggle }) {
+// A switch with a title and a note, as used for every Parent mode setting.
+function SettingSwitch({ checked, title, note, onToggle }) {
+  return (
+    <button className="spelling-guide-toggle parent-game-toggle" type="button" role="switch" aria-checked={checked} onClick={onToggle}>
+      <span className="spelling-guide-toggle-copy">
+        <span className="spelling-guide-toggle-title">{title}</span>
+        <span className="spelling-guide-toggle-note">{note}</span>
+      </span>
+      <span className="toggle-track" aria-hidden="true"><span className="toggle-thumb" /></span>
+    </button>
+  );
+}
+
+// A game's switch. The Letter Jumble games also have a spelling guide switch, under the game's.
+function GameSwitch({ game, enabled, suitsAge, onToggle, spellingGuide, onToggleSpellingGuide }) {
   const text = useText();
   return (
     <li className={`parent-game${enabled ? "" : " parent-game-off"}`}>
-      <button
-        className="spelling-guide-toggle parent-game-toggle"
-        type="button"
-        role="switch"
-        aria-checked={enabled}
-        onClick={onToggle}
-      >
-        <span className="spelling-guide-toggle-copy">
-          <span className="spelling-guide-toggle-title">{game.name}</span>
-          <span className="spelling-guide-toggle-note">
-            {enabled ? text.on : text.off}
-            {!suitsAge && text.forAges(game.ages.map((age) => text.ageGroup[age] ?? ageGroups.find((group) => group.id === age)?.label).join(", "))}
-          </span>
+      <SettingSwitch
+        checked={enabled}
+        title={game.name}
+        note={<>
+          {enabled ? text.on : text.off}
+          {!suitsAge && text.forAges(game.ages.map((age) => text.ageGroup[age] ?? ageGroups.find((group) => group.id === age)?.label).join(", "))}
+        </>}
+        onToggle={onToggle}
+      />
+      {game.spellingGuide && (
+        <span className="parent-game-guide">
+          <SettingSwitch checked={spellingGuide} title={text.spellingGuide} note={text.spellingGuideNote} onToggle={onToggleSpellingGuide} />
         </span>
-        <span className="toggle-track" aria-hidden="true"><span className="toggle-thumb" /></span>
-      </button>
+      )}
     </li>
   );
 }
@@ -97,31 +109,18 @@ function ChildSettings({ player, onSetGameEnabled, onSetSpellingGuide }) {
               enabled={enabled}
               suitsAge={suitsAge}
               onToggle={() => onSetGameEnabled(player.name, game.id, !enabled, suitsAge)}
+              spellingGuide={Boolean(player.spellingGuide?.includes(game.id))}
+              onToggleSpellingGuide={() => onSetSpellingGuide(player.name, game.id, !player.spellingGuide?.includes(game.id))}
             />
           );
         })}
       </ul>
-      <div className="parent-option">
-        <button
-          className="spelling-guide-toggle parent-game-toggle"
-          type="button"
-          role="switch"
-          aria-checked={Boolean(player.spellingGuide)}
-          onClick={() => onSetSpellingGuide(player.name, !player.spellingGuide)}
-        >
-          <span className="spelling-guide-toggle-copy">
-            <span className="spelling-guide-toggle-title">{text.spellingGuide}</span>
-            <span className="spelling-guide-toggle-note">{text.spellingGuideNote}</span>
-          </span>
-          <span className="toggle-track" aria-hidden="true"><span className="toggle-thumb" /></span>
-        </button>
-      </div>
     </section>
   );
 }
 
 // The parent mode page ("/parent"): a grown-up maths question, then each child's settings: which
-// games they can play, and whether their spelling games show the spelling guide.
+// games they can play, and whether their Letter Jumble games show the spelling guide.
 // Leaving the page locks it again; "Done" locks it and goes home (`onDone`).
 export default function ParentMode({ players, breadcrumbs, onSetGameEnabled, onSetSpellingGuide, onDone }) {
   const text = useText();

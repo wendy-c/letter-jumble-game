@@ -1184,13 +1184,6 @@ h1 span {
   margin-top: 25px;
 }
 
-/* The spelling guide's switch in Parent mode, under each child's games. */
-.parent-option {
-  margin-top: 12px;
-  border-top: 2px dashed var(--line);
-  padding-top: 12px;
-}
-
 .spelling-guide-toggle {
   display: flex;
   width: 100%;
@@ -3028,8 +3021,21 @@ h1 span {
 
 .parent-game {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
+}
+
+/* A Letter Jumble game's spelling guide switch, tucked under the game's own switch. */
+.parent-game-guide {
+  display: block;
+  width: 100%;
+  padding-left: 24px;
+}
+
+.parent-game-guide .spelling-guide-toggle {
+  border-style: dashed;
+  padding-block: 6px;
 }
 
 .parent-game .parent-game-toggle {
@@ -4523,7 +4529,7 @@ a:focus-visible {
 /* ---------- 感受: a sentence with a feeling missing ---------- */
 
 .sentence-panel {
-  justify-content: center;
+  justify-content: space-around;
 }
 
 .sentence-text {
