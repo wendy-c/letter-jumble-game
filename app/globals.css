@@ -1628,7 +1628,8 @@ h1 span {
   font-weight: 700;
 }
 
-/* "Back to all topics" and "Visit Mochi", side by side (stacked when there isn't room). */
+/* The card's buttons side by side (stacked when there isn't room): "Back to all topics" and
+   "Visit Mochi" with full marks, "Try again" and "Back to all topics" otherwise. */
 .completion-actions {
   display: flex;
   flex-wrap: wrap;
@@ -1642,20 +1643,20 @@ h1 span {
   margin-top: 0;
 }
 
-.completion-mochi {
+.completion-secondary {
   display: flex;
   align-items: center;
   gap: 8px;
   border: 2px solid var(--line-strong);
   border-radius: 999px;
   background: #fff;
-  padding: 9px 18px 9px 12px;
+  padding: 9px 18px;
   box-shadow: 0 4px 0 var(--line-strong);
   color: var(--magic-dark);
   transition: transform 140ms ease;
 }
 
-.completion-mochi:hover {
+.completion-secondary:hover {
   transform: translateY(-2px);
 }
 

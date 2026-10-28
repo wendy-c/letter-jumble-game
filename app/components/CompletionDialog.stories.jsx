@@ -5,7 +5,7 @@ import CompletionDialog, { chineseCompletionText } from "./CompletionDialog";
 export default {
   title: "Components/Cards/CompletionDialog",
   component: CompletionDialog,
-  args: { topicName: "Animals", count: 10, onDone: fn(), onVisitMochi: fn() },
+  args: { topicName: "Animals", count: 10, onDone: fn(), onVisitMochi: fn(), onTryAgain: fn() },
 };
 
 export const NewBadge = { args: { badge: { name: "Animals", image: badgeImage("letter-jumble", "animals") } } };

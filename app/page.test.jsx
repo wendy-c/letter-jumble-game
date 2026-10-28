@@ -484,6 +484,31 @@ describe("progress", () => {
     expect(screen.queryByRole("dialog", { name: "You did it!" })).not.toBeInTheDocument();
   });
 
+  it("offers to try again, not a visit to Mochi, when some answers were wrong", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({
+      players: [{
+        name: "Ada", coins: 0, age: "5-6", progress: { "letter-jumble/animals": 12 }, decks: animalsDeck,
+        results: { "letter-jumble/animals": [false, ...Array(11).fill(true)] },
+      }],
+      current: "Ada",
+    }));
+    const user = userEvent.setup();
+    render(<GameApp />);
+    await openGame(user, "Letter Jumble - Movers", "Animals");
+    for (const letter of ["w", "h", "a", "l", "e"]) {
+      await user.click(screen.getByRole("button", { name: `Letter ${letter}` }));
+    }
+    await user.click(screen.getByRole("button", { name: /Check it/ }));
+    await nextQuestion();
+
+    const card = await screen.findByRole("dialog", { name: "Good try!" });
+    expect(within(card).getAllByRole("button").map((button) => button.textContent.trim())).toEqual(["Try again", "Back to all topics →"]);
+    await user.click(within(card).getByRole("button", { name: "Try again" }));
+    expect(screen.queryByRole("dialog", { name: "Good try!" })).not.toBeInTheDocument();
+    expect(currentPathname()).toBe("/letter-jumble/animals");
+    expect(screen.getByLabelText("Word 1 of 13")).toBeInTheDocument();
+  });
+
   it("doesn't offer Mochi at the end of a topic when a grown-up has turned her off", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({
       players: [{

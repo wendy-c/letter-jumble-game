@@ -456,6 +456,13 @@ export default function GameApp() {
     router.push("/dragon");
   }
 
+  // From the end-of-topic card when some answers were wrong: the same topic again, freshly dealt
+  // and with a new score.
+  function tryTopicAgain() {
+    setCompletedTopic(null);
+    shuffleQuestions();
+  }
+
   function leaveCompletedTopic() {
     // Next time deals a freshly shuffled hand of words. (Not before leaving: dealing straight
     // away would reset the screen under the pop-up.)
@@ -768,6 +775,7 @@ export default function GameApp() {
           text={inChinese ? chineseCompletionText : undefined}
           onDone={leaveCompletedTopic}
           onVisitMochi={currentPlayer && isGameAvailable(games.find((game) => game.id === "dragon"), currentPlayer) ? visitMochiAfterTopic : null}
+          onTryAgain={tryTopicAgain}
         />
       )}
       {playing && answered === "wrong" && !completedTopic && (
