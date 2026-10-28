@@ -1,14 +1,26 @@
 // Chinese measure words (量詞) for 5-6 year olds: each question shows a measure word
 // (一個 ＿＿) and the learner picks the noun that goes with it.
 
-// An emoji (or picture) shown next to each noun, to make the choices friendlier.
+// A picture shown with each noun, to make the choices friendlier.
+const asset = "/images/game-asset";
 const nounIcons = {
-  橙: "🍊", 太陽: "☀️", 蘋果: "🍎", 老師: "🧑‍🏫", 同學: "🧒", 信: "✉️", 圖畫: "🖼️", 鮮花: "💐",
-  生日禮物: "🎁", 紅旗: "🚩", 飯店: "🏨", 屋: "🏠", 房子: "🏡", 學校: "🏫", 門: "🚪", 鉛筆: "✏️",
-  筆: "🖊️", 椅子: "🪑", 桌子: "/images/game-asset/home/table.svg", 紙: "📄", 照片: "📸", 書: "📖",
-  雨傘: "☂️", 頭髮: "💇", 筷子: "🥢", 鞋子: "👟", 手: "👐", 衣服: "👕", 帽子: "🧢", 大樹: "🌳",
-  草: "🌱", 花: "🌸", 白雲: "☁️", 樹葉: "🍃", 草地: "🏞️", 山: "⛰️", 大橋: "🌉", 彩虹: "🌈",
-  種子: "🌰", 糖果: "🍬", 植物: "🪴",
+  橙: `${asset}/food/orange.svg`, 太陽: `${asset}/weather-and-seasons/sunny.svg`, 蘋果: `${asset}/food/apple.svg`,
+  老師: `${asset}/jobs/teacher.svg`, 同學: `${asset}/starters/child.svg`, 信: `${asset}/measure-words/letter.svg`,
+  圖畫: `${asset}/starters/picture.svg`, 鮮花: `${asset}/measure-words/bouquet.svg`,
+  生日禮物: `${asset}/sports-and-leisure/present.svg`, 紅旗: `${asset}/blends/flag.svg`,
+  飯店: `${asset}/places/restaurant.svg`, 屋: `${asset}/starters/house.svg`, 房子: `${asset}/starters/home.svg`,
+  學校: `${asset}/places/school.svg`, 門: `${asset}/starters/door.svg`, 鉛筆: `${asset}/measure-words/pencil.svg`,
+  筆: `${asset}/cvc/pen.svg`, 椅子: `${asset}/home/chair.svg`, 桌子: `${asset}/home/table.svg`,
+  紙: `${asset}/measure-words/paper.svg`, 照片: `${asset}/digraphs/photo.svg`,
+  書: `${asset}/measure-words/book.svg`, 雨傘: `${asset}/measure-words/umbrella.svg`,
+  頭髮: `${asset}/starters/hair.svg`, 筷子: `${asset}/measure-words/chopsticks.svg`,
+  鞋子: `${asset}/clothes/shoes.svg`, 手: `${asset}/starters/hand.svg`, 衣服: `${asset}/clothes/shirt.svg`,
+  帽子: `${asset}/cvc/cap.svg`, 大樹: `${asset}/blends/tree.svg`, 草: `${asset}/blends/grass.svg`,
+  花: `${asset}/blends/flower.svg`, 白雲: `${asset}/weather-and-seasons/cloudy.svg`,
+  樹葉: `${asset}/measure-words/leaf.svg`, 草地: `${asset}/places/country-park.svg`,
+  山: `${asset}/measure-words/mountain.svg`, 大橋: `${asset}/measure-words/bridge.svg`,
+  彩虹: `${asset}/colours/rainbow.svg`, 種子: `${asset}/measure-words/seeds.svg`, 糖果: `${asset}/food/sweet.svg`,
+  植物: `${asset}/blends/plant.svg`,
 };
 
 const measureWords = [

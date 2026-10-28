@@ -252,23 +252,23 @@ SKIN = "#ffe2c4"
 
 
 def person(x, y, s=1.0, hair="#8b5a3c", shirt="#8cc8f2", style="short", extra=""):
-    """A head-and-shoulders person centred on (x, y) (the head's centre), `s` times the usual size."""
-    k = lambda v: f"{v * s:.1f}"
+    """A head-and-shoulders person with the head's centre at (x, y), `s` times the usual size.
+    Drawn around (0, 0) and moved into place, so every part scales together. `extra` is drawn on
+    top in the picture's own coordinates (e.g. glasses or a crown)."""
     hairs = {
-        "short": f'<path d="M{x - 22 * s:.1f} {y - 2 * s:.1f}q0-26 22-26 22 0 22 26-6-12-22-12-16 0-22 12Z" fill="{hair}"/>',
-        "long": f'<path d="M{x - 24 * s:.1f} {y + 26 * s:.1f}q-4-30 2-40 6-14 22-14 16 0 22 14 6 10 2 40Z" fill="{hair}"/>',
-        "bun": f'<circle cx="{x}" cy="{y - 26 * s:.1f}" r="{9 * s:.1f}" fill="{hair}"/><path d="M{x - 22 * s:.1f} {y}q0-24 22-24 22 0 22 24-8-12-22-12-14 0-22 12Z" fill="{hair}"/>',
-        "bald": f'<path d="M{x - 22 * s:.1f} {y + 2 * s:.1f}q-2-10 4-12M{x + 22 * s:.1f} {y + 2 * s:.1f}q2-10-4-12" fill="none" stroke="{hair}" stroke-width="{5 * s:.1f}"/>',
-        "baby": f'<path d="M{x} {y - 22 * s:.1f}q4-6 0-10" fill="none" stroke-width="{3 * s:.1f}"/>',
-        "pigtails": f'<circle cx="{x - 24 * s:.1f}" cy="{y - 4 * s:.1f}" r="{8 * s:.1f}" fill="{hair}"/><circle cx="{x + 24 * s:.1f}" cy="{y - 4 * s:.1f}" r="{8 * s:.1f}" fill="{hair}"/><path d="M{x - 22 * s:.1f} {y}q0-24 22-24 22 0 22 24-8-12-22-12-14 0-22 12Z" fill="{hair}"/>',
+        "short": '<path d="M-23 0q-2-27 23-27 25 0 23 27-6-14-23-14-17 0-23 14Z" fill="HAIR"/>',
+        "long": '<path d="M-23 0q-2-27 23-27 25 0 23 27-6-14-23-14-17 0-23 14Z" fill="HAIR"/>',
+        "bun": '<circle cx="0" cy="-27" r="9" fill="HAIR"/><path d="M-23 0q-2-27 23-27 25 0 23 27-6-14-23-14-17 0-23 14Z" fill="HAIR"/>',
+        "bald": '<path d="M-22 4q-3-10 3-14M22 4q3-10-3-14" fill="none" stroke="HAIR" stroke-width="5"/>',
+        "baby": '<path d="M0-22q5-6 0-11" fill="none" stroke-width="3"/>',
+        "pigtails": '<circle cx="-25" cy="-4" r="8" fill="HAIR"/><circle cx="25" cy="-4" r="8" fill="HAIR"/>'
+                    '<path d="M-23 0q-2-27 23-27 25 0 23 27-6-14-23-14-17 0-23 14Z" fill="HAIR"/>',
     }
-    back = hairs["long"] if style == "long" else ""
-    return (back + f'<path d="M{x - 30 * s:.1f} {y + 56 * s:.1f}q0-26 30-26t30 26Z" fill="{shirt}"/>'
-            f'<circle cx="{x}" cy="{y}" r="{22 * s:.1f}" fill="{SKIN}"/>'
-            + ("" if style == "long" else hairs.get(style, ""))
-            + (f'<path d="M{x - 22 * s:.1f} {y}q0-24 22-24 22 0 22 24-8-12-22-12-14 0-22 12Z" fill="{hair}"/>' if style == "long" else "")
-            + eye(x - 8 * s, y + 2 * s, s) + eye(x + 8 * s, y + 2 * s, s) + cheek(x - 13 * s, y + 9 * s, s) + cheek(x + 13 * s, y + 9 * s, s)
-            + smile(x, y + 11 * s, 6 * s) + extra)
+    behind = '<path d="M-26 24q-6-18-2-30h56q4 12-2 30Z" fill="HAIR"/>' if style == "long" else ""
+    body = (behind + f'<path d="M-30 46q0-28 30-28t30 28Z" fill="{shirt}"/>'
+            f'<circle cx="0" cy="0" r="22" fill="{SKIN}"/>' + hairs[style]
+            + eye(-8, 2) + eye(8, 2) + cheek(-13, 9) + cheek(13, 9) + smile(0, 11, 6)).replace("HAIR", hair)
+    return f'<g transform="translate({x} {y}) scale({s})">{body}</g>' + extra
 
 
 def glasses(x, y, s=1.0):
@@ -662,7 +662,7 @@ pictures[B + "draw"] = svg(
     '<circle cx="34" cy="44" r="9" fill="#ffd45e" stroke-width="3"/>'
     '<path d="M84 96 116 52l8 6-32 44-10 4Z" fill="#ff8fa3"/><path d="M84 96l8 6-10 4Z" fill="#4b2e22"/>')
 pictures[B + "dream"] = svg(
-    '<path d="M10 110q4-24 30-24 20 0 26 18H10Z" fill="#cfe9ff"/>' + person(36, 74, 0.7, "#8b5a3c", "#cfe9ff", "short").replace(eye(36 - 8 * 0.7, 74 + 2 * 0.7, 0.7) + eye(36 + 8 * 0.7, 74 + 2 * 0.7, 0.7), '<path d="M27 76q4 3 8 0M37 76q4 3 8 0" fill="none" stroke-width="2"/>')
+    '<path d="M10 110q4-24 30-24 20 0 26 18H10Z" fill="#cfe9ff"/>' + person(36, 74, 0.7, "#8b5a3c", "#cfe9ff", "short").replace(eye(-8, 2) + eye(8, 2), '<path d="M-13 3q5 4 10 0M3 3q5 4 10 0" fill="none" stroke-width="3"/>')
     + '<circle cx="60" cy="56" r="4" fill="#ffffff" stroke-width="2.5"/><circle cx="68" cy="46" r="6" fill="#ffffff" stroke-width="2.5"/>'
     '<path d="M68 34q-6-22 18-22 6-10 18-6 14 0 14 14 8 8 0 16-6 8-18 4-12 6-22-2-10 2-10-4Z" fill="#ffffff"/>'
     + sparkle(92, 22, 6) + '<path d="M84 26q4-6 10-2-6 4-10 2Z" fill="#ff8fa3" stroke-width="2"/>')
@@ -729,7 +729,7 @@ pictures[B + "shred"] = svg(
     + '<path d="M34 24h40" stroke="#d6d0e0" stroke-width="3"/>')
 pictures[B + "shrug"] = svg(
     f'<path d="M30 74 12 60 6 72M98 74l18-14 6 12" fill="none" stroke="{INK}" stroke-width="12"/><path d="M30 74 12 60 6 72M98 74l18-14 6 12" fill="none" stroke="{SKIN}" stroke-width="6"/>'
-    + person(64, 60, 1.15, "#a46a3c", "#b79cf2", "short").replace(smile(64, 60 + 11 * 1.15, 6 * 1.15), '<path d="M58 73h12" stroke-width="2.5"/>')
+    + person(64, 60, 1.15, "#a46a3c", "#b79cf2", "short").replace(smile(0, 11, 6), '<path d="M-5 12h10" stroke-width="2.5"/>')
     + '<path d="M50 30l-4-10M78 30l4-10" stroke-width="3"/>')
 
 
@@ -752,11 +752,11 @@ pictures[B + "sprout"] = svg(
     '<path d="M14 98q8-20 50-20t50 20v20H14Z" fill="#b9814f"/>'
     '<path d="M64 80V48" stroke="#4fb893" stroke-width="5"/><path d="M64 56q-24 2-30-20 22-4 30 18M64 52q24-4 28-26-22 0-28 22" fill="#8fe3a8" stroke-width="3"/>')
 pictures[B + "blow"] = svg(
-    person(36, 66, 1.0, "#8b5a3c", "#8cc8f2", "short").replace(smile(36, 66 + 11, 6), '<circle cx="42" cy="77" r="3" fill="#ff8fae" stroke-width="2"/>')
+    person(36, 66, 1.0, "#8b5a3c", "#8cc8f2", "short").replace(smile(0, 11, 6), '<circle cx="6" cy="11" r="3" fill="#ff8fae" stroke-width="2"/>')
     + '<path d="M54 62q20-6 30 4t28-2M54 78q24 2 34 12t26 4" fill="none" stroke="#8cc8f2" stroke-width="4"/>'
     '<path d="M102 46q8-4 12 2-6 4-12-2Z" fill="#8fe3a8" stroke-width="2.5"/>')
 pictures[B + "blink"] = svg(
-    person(64, 62, 1.35, "#a46a3c", "#ffb3d1", "long").replace(eye(64 + 8 * 1.35, 62 + 2 * 1.35, 1.35), '<path d="M70 66q5-5 10 0" fill="none" stroke-width="3"/>')
+    person(64, 62, 1.35, "#a46a3c", "#ffb3d1", "long").replace(eye(8, 2), '<path d="M4 3q4-4 8 0" fill="none" stroke-width="3"/>')
     + sparkle(104, 34, 8))
 pictures[B + "clap"] = svg(
     f'<path d="M40 112 34 60q-2-16 12-22l10-4 6-14q4-8 10-4 6 4 2 12l-4 10 22-10q8-4 10 4 2 6-6 10l-12 6 14 4q8 2 6 10-2 6-10 4l-10-2 4 10q2 8-6 10-6 2-10-6l-4-8-6 40Z" fill="{SKIN}"/>'
@@ -841,6 +841,50 @@ pictures[B + "split"] = svg(
     '<ellipse cx="56" cy="76" rx="5" ry="15" fill="#f3d38c"/><ellipse cx="72" cy="76" rx="5" ry="15" fill="#f3d38c"/>'
     '<path d="M64 52 86 14" stroke-width="7"/><path d="M64 52 86 14" stroke="#c98a55" stroke-width="3"/><path d="M52 50l16-12 8 14-14 10Z" fill="#d6d0e0"/>'
     '<path d="M40 50l-6-8M90 50l6-8" stroke-width="3"/>')
+
+
+# ---------- 量詞配對 (measure words) ----------
+M = "measure-words/"
+pictures[M + "letter"] = svg(
+    '<path d="M12 34h104v66H12Z" fill="#ffffff"/><path d="M12 34l52 40 52-40" fill="#fff2bf"/>'
+    '<path d="M12 100l40-34M116 100 76 66" fill="none" stroke-width="3"/><path d="M90 42h16v16H90Z" fill="#ff8fa3" stroke-width="2.5"/>')
+pictures[M + "bouquet"] = svg(
+    '<path d="M44 76 64 118l20-42Z" fill="#c9b6f5"/><path d="M52 86h24" stroke="#ffffff" stroke-width="4"/>'
+    '<path d="M50 70 40 40M64 70V30M78 70l10-30" stroke="#4fb893" stroke-width="4"/>'
+    + "".join(f'<circle cx="{x}" cy="{y}" r="12" fill="{c}"/><circle cx="{x}" cy="{y}" r="4" fill="#ffd45e" stroke-width="2"/>' for x, y, c in [(40, 36, "#ff8fa3"), (64, 24, "#ffd45e"), (88, 36, "#8cc8f2"), (52, 56, "#ffb86b"), (76, 56, "#ff8fb7")]))
+pictures[M + "pencil"] = svg(
+    '<path d="M24 88 92 20l16 16-68 68Z" fill="#ffd45e"/><path d="M92 20l8-8q6-4 10 0l6 6q4 4 0 10l-8 8Z" fill="#ff8fa3"/>'
+    '<path d="M24 88 40 104 14 114Z" fill="#f3d38c"/><path d="M14 114l5-12 7 7Z" fill="#4b2e22"/><path d="M34 82 86 30" stroke="#f2c94c" stroke-width="3"/>')
+pictures[M + "paper"] = svg(
+    '<path d="M26 12h56l20 20v84H26Z" fill="#ffffff"/><path d="M82 12v20h20" fill="#e6dcf5"/>'
+    '<path d="M38 50h52M38 64h52M38 78h52M38 92h34" stroke="#cfe9ff" stroke-width="4"/>')
+pictures[M + "book"] = svg(
+    '<path d="M64 30q-20-14-50-10v80q30-4 50 10Z" fill="#ffffff"/><path d="M64 30q20-14 50-10v80q-30-4-50 10Z" fill="#ffffff"/>'
+    '<path d="M64 30v80" stroke-width="3"/><path d="M24 40q16-2 30 4M24 54q16-2 30 4M74 44q14-6 30-4M74 58q14-6 30-4" stroke="#cfe9ff" stroke-width="4"/>'
+    '<path d="M14 100q30-4 50 10 20-14 50-10v8q-30-2-50 10-20-12-50-10Z" fill="#8cc8f2"/>')
+pictures[M + "umbrella"] = svg(
+    '<path d="M64 60v44q0 12-10 12t-10-10" fill="none" stroke-width="5"/>'
+    '<path d="M10 62q4-46 54-46t54 46q-8-8-18 0-8-8-18 0-8-8-18 0-8-8-18 0-8-8-18 0-8-8-18 0Z" fill="#ff8fa3"/>'
+    '<path d="M64 16q-20 18-18 46M64 16q20 18 18 46" fill="none" stroke-width="3"/><path d="M64 16V8" stroke-width="4"/>')
+pictures[M + "chopsticks"] = svg(
+    '<path d="M30 116 70 12M50 116 92 14" stroke-width="9"/><path d="M30 116 70 12M50 116 92 14" stroke="#e8b46b" stroke-width="5"/>'
+    '<path d="M62 32l14 4M84 34l12 4" stroke="#ff6f6f" stroke-width="5"/>')
+pictures[M + "leaf"] = svg(
+    '<path d="M18 110Q20 30 110 18q-6 88-92 92Z" fill="#8fe3a8"/><path d="M18 110 92 36" stroke="#4fb893" stroke-width="4"/>'
+    '<path d="M42 86l-4-22M58 70l-2-24M74 54l-2-18M42 86l22 2M58 70l22 2M74 54l18 2" stroke="#4fb893" stroke-width="3"/>')
+pictures[M + "mountain"] = svg(
+    '<path d="M4 112 46 36l26 40 16-22 36 58Z" fill="#9fb5d9"/>'
+    '<path d="M46 36 34 58l8-4 6 6 6-6 6 4Z" fill="#ffffff"/><path d="M88 54l-8 12 6-2 4 4 4-4 4 2Z" fill="#ffffff"/>'
+    '<path d="M4 112h120" stroke="#8fe3a8" stroke-width="6"/>')
+pictures[M + "bridge"] = svg(
+    '<path d="M4 100q15-6 30 0t30 0 30 0 30 0v24H4Z" fill="#8cc8f2"/>'
+    '<path d="M4 70h120v12H4Z" fill="#ff8f6f"/><path d="M20 82v28M108 82v28" stroke-width="8"/>'
+    '<path d="M8 70q56-56 112 0" fill="none" stroke-width="5"/>'
+    + "".join(f'<path d="M{x} 70V{70 - (36 - abs(64 - x) * 36 / 56):.0f}" stroke-width="2.5"/>' for x in range(24, 108, 12)))
+pictures[M + "seeds"] = svg(
+    '<path d="M14 90q8-14 50-14t50 14v26H14Z" fill="#b9814f"/>'
+    + "".join(f'<ellipse cx="{x}" cy="{y}" rx="8" ry="11" fill="#e8b46b" transform="rotate({r} {x} {y})"/>' for x, y, r in [(36, 40, -20), (60, 30, 10), (86, 42, 30), (48, 62, 40), (76, 64, -30)])
+    + '<path d="M60 22q4-8 10-6" fill="none" stroke="#4fb893" stroke-width="3"/>')
 
 
 for name, body in pictures.items():

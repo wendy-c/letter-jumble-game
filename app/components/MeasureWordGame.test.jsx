@@ -23,7 +23,7 @@ describe("MeasureWordGame", () => {
     expect(screen.getByLabelText("一枝，空格")).toBeInTheDocument();
     const options = screen.getAllByRole("button").filter((button) => button.classList.contains("measure-option"));
     expect(options).toHaveLength(4);
-    expect(screen.getByRole("button", { name: /鉛筆/ })).toHaveTextContent("✏️");
+    expect(screen.getByRole("button", { name: /鉛筆/ }).querySelector("img")).toHaveAttribute("src", "/images/game-asset/measure-words/pencil.svg");
     expect(speakCantonese).not.toHaveBeenCalled();
   });
 
