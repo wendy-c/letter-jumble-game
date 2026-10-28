@@ -369,11 +369,11 @@ def glasses(x, y, s=1.0):
             f'<path d="M{x - 2 * s:.1f} {y + 2 * s:.1f}h{4 * s:.1f}" stroke-width="{2.5 * s:.1f}"/>')
 
 
-def kid(x, y, s=1.0, arms=None, legs=None, hair="#8b5a3c", shirt="#8fe3a8", shorts="#5b6b8c", facing=0, eyes="open"):
+def kid(x, y, s=1.0, arms=None, legs=None, hair="#8b5a3c", shirt="#8fe3a8", shorts="#5b6b8c", facing=0, eyes="open", back=False):
     """A whole child with the head's centre at (x, y), `s` times the usual size (about 80 tall).
     `arms` are two lists of points from the shoulders (±11, 17) and `legs` two from the hips
     (±6, 42), around the head's centre; hands and shoes go on their ends. Shoes point outwards, or
-    all one way when `facing` is 1 (right) or -1 (left)."""
+    all one way when `facing` is 1 (right) or -1 (left). With `back`, they face away from us."""
     arms = arms or [[(-11, 17), (-17, 38)], [(11, 17), (17, 38)]]
     legs = legs or [[(-6, 42), (-7, 64)], [(6, 42), (7, 64)]]
     body = "".join(limb(leg, shorts, 12) for leg in legs)
@@ -384,6 +384,11 @@ def kid(x, y, s=1.0, arms=None, legs=None, hair="#8b5a3c", shirt="#8fe3a8", shor
              f'<path d="M-9 13h18q5 0 6 6l2 17h-34l2-17q1-6 6-6Z" fill="{shirt}"/>')
     for arm in arms:
         body += limb(arm, SKIN, 10) + f'<circle cx="{arm[-1][0]}" cy="{arm[-1][1]}" r="5" fill="{SKIN}" stroke-width="3"/>'
+    if back:
+        # The back of the head: ears, hair all over and a little swirl.
+        body += (f'<circle cx="-13" cy="2" r="4" fill="{SKIN}" stroke-width="3"/><circle cx="13" cy="2" r="4" fill="{SKIN}" stroke-width="3"/>'
+                 f'<circle cx="0" cy="0" r="13" fill="{hair}"/><path d="M-3-4q5-4 8 2" fill="none" stroke-width="2.5"/>')
+        return f'<g transform="translate({x} {y}) scale({s})">{body}</g>'
     body += (f'<circle cx="0" cy="0" r="13" fill="{SKIN}"/>'
              f'<path d="M-13 1q-1-15 13-15 14 0 13 15-4-8-13-8-9 0-13 8Z" fill="{hair}"/>')
     if eyes == "closed":
@@ -409,6 +414,24 @@ pictures[ST + "baby"] = svg(
 pictures[ST + "man"] = svg(person(64, 54, 1.4, "#7a4e2b", "#6fb3e6", "short"))
 pictures[ST + "woman"] = svg(person(64, 54, 1.4, "#e8b46b", "#b79cf2", "long"))
 pictures[ST + "person"] = svg(person(64, 54, 1.4, "#a46a3c", "#ffd45e", "short"))
+
+
+CL = "clothes/"
+
+
+def trainer(x, y, colour, dark):
+    """A trainer facing right, its heel at (x, y)."""
+    return (f'<g transform="translate({x} {y})">'
+            f'<path d="M0 0V-30q0-6 6-6h20q6 0 9 6l8 12q6 6 18 8l16 4q14 4 15 6Z" fill="{colour}"/>'
+            f'<path d="M5-31q10 8 24 0" fill="{dark}" stroke-width="3"/>'
+            '<path d="M8-14q20 6 40-2" fill="none" stroke="#ffffff" stroke-width="4"/>'
+            '<path d="M34-24l7-4M39-17l8-4M45-11l8-4" stroke="#ffffff" stroke-width="3"/>'
+            f'<path d="M70-7q12 1 20 6" fill="none" stroke="{dark}" stroke-width="3"/>'
+            '<path d="M-2 0h96q6 0 6 6v2q0 6-6 6H4q-6 0-6-6Z" fill="#ffffff"/></g>')
+
+
+pictures[CL + "shoes"] = svg(trainer(24, 68, "#ff8fb7", "#e8679a") + trainer(10, 102, "#ff8fb7", "#e8679a"))
+
 pictures[ST + "parents"] = svg(person(42, 58, 1.0, "#8b5a3c", "#ff8fb7", "long") + person(86, 58, 1.0, "#4b2e22", "#8cc8f2", "short"))
 pictures[ST + "men"] = svg(person(42, 58, 1.0, "#7a4e2b", "#6fb3e6", "short") + person(86, 58, 1.0, "#4b2e22", "#8fe3a8", "short"))
 pictures[ST + "women"] = svg(person(42, 58, 1.0, "#e8b46b", "#b79cf2", "long") + person(86, 58, 1.0, "#8b5a3c", "#ff8fb7", "bun"))
@@ -444,8 +467,13 @@ pictures[ST + "mouth"] = svg(
     '<path d="M14 60q24-18 38-10 12-6 12-6t12 6q14-8 38 10-20 30-50 30T14 60Z" fill="#ff8fa3"/>'
     '<path d="M18 62q46 14 92 0" fill="none" stroke-width="3"/><path d="M34 64h60v8H34Z" fill="#ffffff" stroke-width="2.5"/>')
 pictures[ST + "arm"] = svg(
-    f'<path d="M20 100q-4-30 22-38l20-6q-6-20 8-34 10-10 20-2 12 10 8 24l-10 18q-4 22-26 30l-24 20q-14 4-18-12Z" fill="{SKIN}"/>'
-    '<path d="M62 56q-6 12 4 20" fill="none" stroke="#f2b8a0" stroke-width="4"/>' + sparkle(108, 22, 8) + sparkle(100, 60, 6, "#ffb3d9"))
+    f'<path d="M26 62Q50 40 72 56q6 4 8-4l2-18 22-4 2 50q0 20-18 20L26 96Z" fill="{SKIN}"/>'
+    '<path d="M80 62q-4 8 2 14" fill="none" stroke="#f2b8a0" stroke-width="3"/>'
+    # A fist: knuckles on top, the thumb wrapped across the front.
+    f'<path d="M78 40V22q0-8 7-9 3-6 9-2 4-5 9 0 7 0 8 8l1 21Z" fill="{SKIN}"/>'
+    '<path d="M90 13v8M100 13v8" stroke-width="2.5"/>'
+    + limb([(80, 28), (98, 28)], SKIN, 12)
+    + '<path d="M2 50l30 2q8 22 0 50L2 104Z" fill="#8cc8f2"/>' + sparkle(110, 66, 7) + sparkle(50, 28, 6, "#ffb3d9"))
 pictures[ST + "body"] = svg(
     f'<circle cx="64" cy="22" r="14" fill="{SKIN}"/><path d="M40 40h48l8 44H32Z" fill="#8cc8f2"/>'
     f'<path d="M40 44l-16 34M88 44l16 34" stroke="{INK}" stroke-width="12"/><path d="M40 44l-16 34M88 44l16 34" stroke="{SKIN}" stroke-width="6"/>'
@@ -731,10 +759,25 @@ pictures[D + "where"] = svg(
     + '<path d="M80 24h32v32H80Z" fill="none" stroke="none"/>'
     '<text x="98" y="56" text-anchor="middle" font-family="Fredoka,Arial Rounded MT Bold,Arial,sans-serif" font-size="54" font-weight="700" fill="#8a6ae6" stroke="#ffffff" stroke-width="3" paint-order="stroke">?</text>'
     '<path d="M18 50l-8-4M18 60H8" stroke-width="3"/>')
+
+# One child cups a hand by their mouth and whispers into the other child's ear.
 pictures[D + "whisper"] = svg(
-    person(40, 66, 1.0, "#8b5a3c", "#8fe3a8", "short") + person(90, 66, 1.0, "#a46a3c", "#ffb3d1", "long")
-    + f'<path d="M60 70q4-6 12-6" fill="none" stroke="{SKIN}" stroke-width="8"/>'
-    '<path d="M58 40q6-10 10-4M64 30q8-12 14-4" fill="none" stroke="#b79cf2" stroke-width="3"/>')
+    person(94, 66, 0.9, "#a46a3c", "#ffb3d1", "long").replace(smile(0, 11, 6), f'<ellipse cx="0" cy="12" rx="2.5" ry="3" fill="{INK}" stroke="none"/>')
+    + f'<ellipse cx="75" cy="68" rx="5" ry="7" fill="{SKIN}"/><path d="M76 64q-3 4 0 8" fill="none" stroke-width="2"/>'
+    + '<g transform="rotate(10 36 90)">' + person(36, 66, 0.9, "#8b5a3c", "#8fe3a8", "short")
+    + limb([(46, 108), (56, 92), (58, 80)], SKIN, 10) + f'<ellipse cx="58" cy="76" rx="5" ry="8" fill="{SKIN}"/></g>'
+    + '<path d="M64 62q3 4 0 8M68 58q5 8 0 16" fill="none" stroke="#b79cf2" stroke-width="2.5"/>')
+# A thick book and a thin one; the arrow points at the thick one.
+pictures[D + "thick"] = svg(
+    down_arrow(48)
+    + '<path d="M16 50l24-14h40L56 50Z" fill="#ffffff"/><path d="M56 50l24-14v72l-24 14Z" fill="#ffffff"/>'
+    + "".join(f'<path d="M{56 + 24 * f:.0f} {50 - 14 * f:.1f}v70" stroke="#d6d0e0" stroke-width="2"/>'
+              f'<path d="M{16 + 24 * f:.0f} {50 - 14 * f:.1f}h38" stroke="#d6d0e0" stroke-width="2"/>' for f in (.25, .5, .75))
+    + '<path d="M16 50l24-14h40L56 50Z" fill="none"/><path d="M56 50l24-14v72l-24 14Z" fill="none"/>'
+    '<path d="M16 50h40v72H16Z" fill="#8cc8f2"/><rect x="24" y="64" width="24" height="12" rx="2" fill="#ffffff" stroke-width="2.5"/>'
+    '<path d="M92 50l4-3h22l-4 3Z" fill="#ffffff"/><path d="M114 50l4-3v72l-4 3Z" fill="#ffffff"/>'
+    '<path d="M92 50h22v72H92Z" fill="#ffb3d1"/><rect x="96" y="64" width="14" height="10" rx="2" fill="#ffffff" stroke-width="2.5"/>')
+
 pictures[D + "lock"] = svg(
     '<path d="M40 56V40a24 24 0 0 1 48 0v16" fill="none" stroke-width="8"/><path d="M40 56V40a24 24 0 0 1 48 0v16" fill="none" stroke="#d6d0e0" stroke-width="4"/>'
     '<path d="M26 56h76v56H26Z" fill="#ffd45e"/><circle cx="64" cy="80" r="8" fill="#4b2e22"/><path d="M64 84v14" stroke-width="6"/>')
@@ -832,10 +875,13 @@ pictures[B + "press"] = svg(
     '<path d="M20 106q0-6 6-6h76q6 0 6 6v12H20Z" fill="#d6d0e0"/>'
     '<path d="M36 101q0-17 28-17t28 17Z" fill="#ff6f6f"/><path d="M44 95q4-5 10-6" fill="none" stroke="#ffffff" stroke-width="3"/>'
     + burst(64, 86, 24, 32, (-170, -150, -30, -10))
-    + '<path d="M48-4h32v14H48Z" fill="#8cc8f2"/>'
-    + f'<path d="M44 12h40q4 0 4 6v18q0 8-8 8H48q-8 0-8-8V18q0-6 4-6Z" fill="{SKIN}"/>'
-    '<path d="M74 22h9M74 32h9" stroke-width="2.5"/>'
-    + f'<path d="M57 38v39q0 7 7 7t7-7V38" fill="{SKIN}"/><path d="M60 78q4 3 8 0" fill="none" stroke-width="2"/>')
+    # A hand from the side: the pointing finger presses and the other fingers curl under the palm.
+    + '<path d="M104 2l28 14-14 28-28-14Z" fill="#8cc8f2"/>'
+    + "".join(f'<circle cx="{fx}" cy="{fy}" r="7" fill="{SKIN}"/>' for fx, fy in ((84, 60), (94, 63), (104, 59)))
+    + limb([(82, 48), (65, 78)], SKIN, 15)
+    + f'<path d="M76 50q-2-14 12-18l16-6q12-2 12 10l-2 14q-4 14-18 12l-12-2q-8-2-8-10Z" fill="{SKIN}"/>'
+    + limb([(100, 36), (88, 40), (80, 46)], SKIN, 11)
+    + '<path d="M62 74q3 3 7 2" fill="none" stroke-width="2"/>')
 pictures[B + "print"] = svg(
     '<path d="M32 14h64v34H32Z" fill="#ffffff"/><path d="M14 46h100v44H14Z" fill="#b79cf2"/>'
     '<path d="M32 78h64v38H32Z" fill="#ffffff"/><path d="M42 90h44M42 102h30" stroke="#8cc8f2" stroke-width="4"/>'
@@ -892,9 +938,10 @@ pictures[B + "shred"] = svg(
     + "".join(f'<path d="M{x} 68l{d} 46h8l{-d} -46" fill="#ffffff" stroke-width="3"/>' for x, d in [(28, -2), (46, 2), (64, -2), (82, 2), (100, -2)])
     + '<path d="M34 24h40" stroke="#d6d0e0" stroke-width="3"/>')
 pictures[B + "shrug"] = svg(
-    f'<path d="M30 74 12 60 6 72M98 74l18-14 6 12" fill="none" stroke="{INK}" stroke-width="12"/><path d="M30 74 12 60 6 72M98 74l18-14 6 12" fill="none" stroke="{SKIN}" stroke-width="6"/>'
-    + person(64, 60, 1.15, "#a46a3c", "#b79cf2", "short").replace(smile(0, 11, 6), '<path d="M-5 12h10" stroke-width="2.5"/>')
-    + '<path d="M50 30l-4-10M78 30l4-10" stroke-width="3"/>')
+    kid(64, 34, 1.1, arms=[[(-11, 17), (-22, 30), (-32, 18)], [(11, 17), (22, 30), (32, 18)]], shirt="#b79cf2")
+    .replace(smile(0, 7.5, 5), '<path d="M-4 8q2-2 4 0t4 0" fill="none" stroke-width="2.2"/>'
+             '<path d="M-9-5q3-3 6-1M3-6q3-2 6 1" fill="none" stroke-width="2"/>')
+    + "".join(f'<text x="{qx}" y="34" text-anchor="middle" font-family="Fredoka,Arial Rounded MT Bold,Arial,sans-serif" font-size="22" font-weight="700" fill="#b79cf2" stroke="none">?</text>' for qx in (24, 104)))
 
 
 # ---------- R & L Blends: scr, spr and L blends ----------
@@ -924,9 +971,21 @@ pictures[B + "blow"] = svg(
 pictures[B + "blink"] = svg(
     person(64, 62, 1.35, "#a46a3c", "#ffb3d1", "long").replace(eye(8, 2), '<path d="M4 3q4-4 8 0" fill="none" stroke-width="3"/>')
     + sparkle(104, 34, 8))
+
+def clap_hand():
+    """A right hand seen from the back, fingers up and thumb on the left, its wrist at (0, 0)."""
+    return (limb([(-13, -12), (-21, -24)], SKIN, 13)
+            + "".join(f'<rect x="{fx}" y="{top}" width="8" height="{-20 - top}" rx="4" fill="{SKIN}"/>' for fx, top in ((-16, -54), (-8, -58), (0, -56), (8, -50)))
+            + f'<path d="M-16-4V-32h32V-4q0 6-16 6t-16-6Z" fill="{SKIN}"/>'
+            '<rect x="-17" y="-2" width="34" height="16" rx="3" fill="#8cc8f2"/>')
+
+
+# Two hands clapping, with little lines where they meet.
 pictures[B + "clap"] = svg(
-    kid(64, 48, 1.0, arms=[[(-11, 17), (-18, -2), (-5, -21)], [(11, 17), (18, -2), (5, -21)]], shirt="#ffb3d1")
-    + burst(64, 27, 13, 21, (-160, -120, -60, -20)))
+    f'<g transform="translate(104 112) scale(1.2) rotate(-16)">{clap_hand()}</g>'
+    f'<g transform="translate(24 112) scale(-1.2 1.2) rotate(-16)">{clap_hand()}</g>'
+    + burst(64, 40, 8, 16, (-150, -90, -30)) + burst(64, 64, 34, 42, (-170, -10)))
+
 pictures[B + "clown"] = svg(
     '<path d="M36 30 64 4l28 26Z" fill="#8fe3a8"/><circle cx="64" cy="4" r="5" fill="#ffd45e" stroke-width="2.5"/>'
     '<circle cx="28" cy="52" r="16" fill="#ff8fa3"/><circle cx="100" cy="52" r="16" fill="#ff8fa3"/>'
@@ -937,7 +996,7 @@ pictures[B + "climb"] = svg(
     "".join(f'<path d="M38 {ry}h52" stroke-width="8"/><path d="M38 {ry}h52" stroke="#e0b07a" stroke-width="3"/>' for ry in range(10, 123, 16))
     + '<path d="M38 0v128M90 0v128" stroke-width="10"/><path d="M38 0v128M90 0v128" stroke="#c98a55" stroke-width="5"/>'
     + kid(64, 34, 1.0, arms=[[(-11, 17), (-20, 2), (-16, -24)], [(11, 17), (22, 4), (18, -8)]],
-          legs=[[(-6, 42), (-8, 64)], [(6, 42), (16, 44), (13, 50)]], shirt="#ffd45e"))
+          legs=[[(-6, 42), (-8, 64)], [(6, 42), (16, 44), (13, 50)]], shirt="#ffd45e", back=True))
 pictures[B + "flag"] = svg(
     '<path d="M30 118V10" stroke-width="6"/><path d="M30 14q20-8 40 0t40 0v50q-20 8-40 0t-40 0Z" fill="#ff6f6f"/>'
     '<path d="M50 30l6 12 12 2-9 8 2 12-11-6-11 6 2-12-9-8 12-2Z" fill="#ffffff" stroke-width="2.5"/><path d="M20 118h20" stroke-width="5"/>')
@@ -970,13 +1029,14 @@ pictures[B + "plant"] = svg(
     '<path d="M34 80h60l-8 38H42Z" fill="#ff8f6f"/><path d="M28 72h72v12H28Z" fill="#ff8f6f"/>'
     '<path d="M64 74V36" stroke="#4fb893" stroke-width="5"/>'
     '<path d="M64 60q-30 4-36-20 24-6 36 16M64 46q26-2 32-26-24-4-32 22M64 36q-4-18 6-28 8 14-6 28" fill="#8fe3a8" stroke-width="3"/>')
+
+# A child playing with toy blocks.
 pictures[B + "play"] = svg(
-    '<circle cx="40" cy="28" r="12" fill="#c98a55"/><circle cx="88" cy="28" r="12" fill="#c98a55"/>'
-    '<circle cx="64" cy="48" r="30" fill="#d9a066"/><ellipse cx="64" cy="58" rx="12" ry="9" fill="#f3d38c"/><circle cx="64" cy="54" r="3.5" fill="#4b2e22" stroke="none"/>'
-    + eye(52, 42) + eye(76, 42) + smile(64, 62, 6)
-    + '<ellipse cx="64" cy="98" rx="30" ry="24" fill="#d9a066"/><ellipse cx="64" cy="100" rx="14" ry="12" fill="#f3d38c"/>'
-    '<circle cx="32" cy="112" r="10" fill="#d9a066"/><circle cx="96" cy="112" r="10" fill="#d9a066"/>'
-    '<path d="M52 74l12 8 12-8-12-4Z" fill="#ff8fa3" stroke-width="2.5"/>')
+    "".join(f'<rect x="{bx}" y="{by}" width="26" height="24" rx="3" fill="{fill}"/>'
+            f'<text x="{bx + 13}" y="{by + 19}" text-anchor="middle" font-family="Fredoka,Arial Rounded MT Bold,Arial,sans-serif" font-size="18" font-weight="700" fill="{INK}" stroke="none">{letter}</text>'
+            for bx, by, fill, letter in ((80, 98, "#ffd45e", "A"), (84, 74, "#8cc8f2", "B"), (80, 30, "#ffb3d1", "C")))
+    + kid(42, 40, 1.0, arms=[[(-11, 17), (-18, 36)], [(11, 17), (26, 10), (36, 4)]], shirt="#8fe3a8"))
+
 pictures[B + "plug"] = svg(
     '<path d="M40 50h48v30q0 18-24 18T40 80Z" fill="#ffffff"/><path d="M50 50V22M78 50V22" stroke-width="8"/><path d="M50 50V22M78 50V22" stroke="#d6d0e0" stroke-width="3"/>'
     '<path d="M64 98v12q0 10 14 10h40" fill="none" stroke-width="8"/><path d="M64 98v12q0 10 14 10h40" fill="none" stroke="#b79cf2" stroke-width="3"/>' + sparkle(100, 30, 8))
@@ -995,9 +1055,10 @@ pictures[B + "slow"] = svg(
     '<path d="M98 82q16-6 20 6 2 10-12 10H96Z" fill="#cdeec0"/><path d="M36 92l-4 14h12l2-12M84 92l2 12h12l-4-14" fill="#cdeec0" stroke-width="3"/>'
     + eye(108, 84, 0.8) + '<path d="M22 70q-8 0-12 6" fill="none" stroke-width="3"/>')
 pictures[B + "slipper"] = svg(
-    '<path d="M14 84q0-18 22-20h40q36 2 40 26 2 14-14 14H26q-12 0-12-20Z" fill="#ffb3d1"/>'
-    '<path d="M60 64q0-22 26-22 22 0 28 28" fill="#ff8fb7"/><path d="M60 64q24 8 54 6" fill="none" stroke-width="3"/>'
-    '<circle cx="86" cy="44" r="9" fill="#ffffff"/><path d="M14 100h102" stroke="#ff8fa3" stroke-width="5"/>')
+    '<path d="M8 98q0-10 10-10h84q18 0 18 12 0 10-14 10H18q-10 0-10-12Z" fill="#c9b6f5"/>'
+    '<path d="M16 90q26-5 44-2" fill="none" stroke="#e8dcff" stroke-width="4"/>'
+    '<path d="M54 92Q54 56 90 56q30 0 30 40Z" fill="#ffb3d1"/>'
+    + "".join(f'<circle cx="{(1 - t) ** 2 * 54 + 2 * t * (1 - t) * 54 + t * t * 90:.1f}" cy="{(1 - t) ** 2 * 92 + 2 * t * (1 - t) * 56 + t * t * 56:.1f}" r="6" fill="#ffffff" stroke-width="3"/>' for t in (0.1, 0.3, 0.5, 0.7, 0.9)))
 pictures[B + "splash"] = svg(
     '<path d="M10 96q27-14 54-6t54 6v20H10Z" fill="#8cc8f2"/>'
     '<path d="M64 88q-4-30 -18-42M64 88q4-30 18-44M64 88V34" fill="none" stroke="#8cc8f2" stroke-width="6"/>'
@@ -1071,11 +1132,15 @@ pictures[DR + "palette"] = svg(
     '<path d="M64 14C30 14 10 40 12 66c2 28 26 48 52 48 12 0 14-8 10-16-4-10 2-18 14-18h14c12 0 18-8 18-22C120 34 96 14 64 14Z" fill="#fff2d6"/>'
     + "".join(f'<circle cx="{x}" cy="{y}" r="9" fill="{c}" stroke-width="3"/>' for x, y, c in [(40, 42, "#ff6f6f"), (64, 30, "#ffd45e"), (88, 40, "#8fe3a8"), (32, 68, "#8cc8f2"), (44, 92, "#b79cf2")])
     + '<path d="M120 10 84 70" stroke-width="7"/><path d="M120 10 84 70" stroke="#c98a55" stroke-width="3"/><path d="M86 64l-6 14 10-8Z" fill="#ff8fa3" stroke-width="3"/>')
+
+# A ballerina on her toes, arms in a circle over her head.
 pictures[DR + "ballet"] = svg(
-    '<path d="M48 16q16 8 32 0l4 40H44Z" fill="#ff8fb7"/><path d="M50 16l-4-8M78 16l4-8" stroke-width="4"/>'
-    '<path d="M8 74q18-20 56-20t56 20q-10 6-20 2-8 8-18 2-8 8-18 2-8 8-18 2-8 8-18 2-10 6-20-2-10 4-18-2Z" fill="#ffd3e6"/>'
-    '<path d="M18 84q18-14 46-14t46 14q-8 12-20 8-8 10-18 4-8 10-16 2-8 10-16 2-10 6-14-4-14 6-18-6Z" fill="#ffb3d1"/>'
-    '<path d="M44 56h40" stroke-width="5"/>' + sparkle(104, 30, 8) + sparkle(22, 40, 6, "#ffb3d9"))
+    kid(64, 40, 1.0, arms=[[(-11, 17), (-24, 0), (-7, -22)], [(11, 17), (24, 0), (7, -22)]],
+        legs=[[(-6, 42), (-6, 66)], [(6, 42), (20, 52), (2, 56)]], hair="#a46a3c", shirt="#ff8fb7", shorts="#ffd3e6", eyes="closed")
+    + '<circle cx="64" cy="25" r="6" fill="#a46a3c"/>'
+    + '<path d="M30 82Q64 66 98 82' + "q-5.67 9-11.33 0" * 6 + 'Z" fill="#ffb3d1"/>'
+    + sparkle(104, 30, 8) + sparkle(22, 44, 6, "#ffb3d9"))
+
 pictures[DR + "meditation"] = svg(
     '<path d="M64 108Q30 104 20 80q24-2 44 28 20-30 44-28-10 24-44 28Z" fill="#ffb3d1"/>'
     '<path d="M64 108Q44 70 64 40q20 30 0 68Z" fill="#ff8fb7"/><path d="M64 108Q36 86 34 54q24 12 30 54M64 108q28-22 30-54-24 12-30 54Z" fill="#ffd3e6"/>'
@@ -1089,11 +1154,15 @@ pictures[DR + "science"] = svg(
     '<path d="M50 14h28M54 14v34L24 104q-6 12 8 12h64q14 0 8-12L74 48V14" fill="#ffffff"/>'
     '<path d="M34 86h60l10 18q4 8-8 8H32q-12 0-8-8Z" fill="#b79cf2" stroke="none"/><path d="M50 14h28M54 14v34L24 104q-6 12 8 12h64q14 0 8-12L74 48V14" fill="none"/>'
     + "".join(f'<circle cx="{x}" cy="{y}" r="{r}" fill="#cfe9ff" stroke-width="2.5"/>' for x, y, r in [(56, 96, 4), (70, 92, 5), (64, 70, 3), (84, 30, 6), (98, 18, 8)]))
+
+# Counting with eyes covered.
 pictures[DR + "hide-and-seek"] = svg(
-    '<circle cx="64" cy="58" r="40" fill="#d9c8ff"/>'
-    f'<path d="M22 80q-4-30 18-34l18-2q6 6-2 12l-8 6 8-2q10 2 6 10l-10 4" fill="{SKIN}"/>'
-    f'<path d="M106 80q4-30-18-34l-18-2q-6 6 2 12l8 6-8-2q-10 2-6 10l10 4" fill="{SKIN}"/>'
-    '<path d="M50 90q14 10 28 0" fill="none" stroke-width="3"/>' + cheek(40, 82, 1.4) + cheek(88, 82, 1.4))
+    person(64, 60, 1.35, "#8b5a3c", "#8fe3a8", "short")
+    + limb([(30, 130), (38, 94), (50, 66)], SKIN, 13) + limb([(98, 130), (90, 94), (78, 66)], SKIN, 13)
+    + f'<ellipse cx="51" cy="60" rx="13" ry="10" fill="{SKIN}"/><ellipse cx="77" cy="60" rx="13" ry="10" fill="{SKIN}"/>'
+    '<path d="M42 56h10M41 62h11M86 56H76M87 62H76" stroke-width="2"/>'
+    f'<text x="104" y="18" text-anchor="middle" font-family="Fredoka,Arial Rounded MT Bold,Arial,sans-serif" font-size="14" font-weight="700" fill="#b79cf2" stroke="none">1, 2, 3…</text>')
+
 pictures[DR + "bubbles"] = svg(
     '<path d="M18 114 54 58" stroke-width="6"/><path d="M18 114 54 58" stroke="#ff8fae" stroke-width="2.5"/>'
     '<circle cx="62" cy="46" r="14" fill="none" stroke-width="6"/><circle cx="62" cy="46" r="14" fill="none" stroke="#b79cf2" stroke-width="2.5"/>'
