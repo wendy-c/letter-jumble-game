@@ -186,25 +186,6 @@ pictures["game-asset/animals/swan"] = svg(
     '<path d="M26 92q-2-22 26-22h26q22 0 36-14 6 30-14 42-12 8-40 8-30 0-34-14Z" fill="#ffffff"/>'
     '<path d="M54 80q20-6 34 4-16 12-34 4" fill="#f4ebff" stroke-width="3"/>')
 
-pictures["game-asset/animals/dolphin"] = svg(
-    '<path d="M4 110q15-8 30 0t30 0 30 0 30 0v16H4Z" fill="#8cc8f2"/>'
-    '<path d="M20 92Q28 52 70 42Q96 36 108 50L120 54L108 58Q100 66 86 64Q56 64 36 92L40 106L28 98L14 104Z" fill="#8cc8f2"/>'
-    '<path d="M62 44Q66 26 80 22Q74 34 76 42Z" fill="#8cc8f2"/>'
-    '<path d="M64 62q2 14-10 20 0-10-2-18Z" fill="#6fb3e6"/>'
-    '<path d="M42 80Q62 62 92 62" fill="none" stroke="#e6f4fc" stroke-width="6"/>'
-    '<ellipse cx="94" cy="49" rx="3" ry="3.4" fill="' + INK + '" stroke="none"/><circle cx="95" cy="48" r="1" fill="#fff" stroke="none"/>'
-    '<ellipse cx="88" cy="56" rx="4" ry="2.4" fill="#ffb3c6" stroke="none"/>'
-    '<path d="M104 58q4 3 8 1" fill="none" stroke-width="2.5"/>')
-
-pictures["game-asset/animals/dragonfly"] = svg(
-    '<g fill="#e6f4fc" stroke-width="3"><ellipse cx="38" cy="40" rx="28" ry="10" transform="rotate(-12 38 40)"/><ellipse cx="90" cy="40" rx="28" ry="10" transform="rotate(12 90 40)"/>'
-    '<ellipse cx="40" cy="58" rx="24" ry="8" transform="rotate(10 40 58)"/><ellipse cx="88" cy="58" rx="24" ry="8" transform="rotate(-10 88 58)"/></g>'
-    '<path d="M64 52v62" stroke-width="12"/><path d="M64 52v62" stroke="#6cc28a" stroke-width="6"/>'
-    '<path d="M60 66h8M60 78h8M60 90h8M60 102h8" stroke-width="2.5"/>'
-    '<ellipse cx="64" cy="48" rx="12" ry="10" fill="#6cc28a"/>'
-    '<circle cx="64" cy="30" r="13" fill="#8fe3a8"/>'
-    + face(64, 28, 0.8))
-
 pictures["game-asset/animals/mole"] = svg(
     '<path d="M6 122q4-30 58-30t58 30Z" fill="#c98a55"/>'
     '<path d="M30 100q0-58 34-58t34 58Z" fill="#6e5a6e"/>'
