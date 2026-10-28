@@ -816,6 +816,111 @@ function buildTowel(materials) {
   return towel;
 }
 
+// A white clawfoot bathtub round Mochi's middle, full of water. Built around her feet.
+function buildTub(materials) {
+  const group = new THREE.Group();
+  const bowl = new THREE.Group();
+  bowl.scale.set(1, 1, 0.8);
+  const enamel = new THREE.MeshToonMaterial({ color: 0xffffff, side: THREE.DoubleSide, gradientMap: materials.toon(0xffffff).gradientMap });
+  const water = new THREE.MeshToonMaterial({ color: 0x9fd8f5, gradientMap: materials.toon(0xffffff).gradientMap });
+  const sides = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.3, 0.95, 40, 1, true), enamel);
+  sides.position.y = 0.63;
+  const rim = part(new THREE.TorusGeometry(1.5, 0.08, 10, 40), materials.toon(0xffffff), materials, 0.08, 0.02);
+  rim.rotation.x = Math.PI / 2;
+  rim.position.y = 1.1;
+  const surface = new THREE.Mesh(new THREE.CircleGeometry(1.45, 40), water);
+  surface.rotation.x = -Math.PI / 2;
+  surface.position.y = 0.98;
+  bowl.add(sides, rim, surface);
+  // Soap suds floating on the water.
+  [[-1.1, 0.4], [-0.9, -0.6], [1.15, -0.3], [0.5, 0.95], [-0.4, 1.0], [0.9, 0.7]].forEach(([x, z]) => {
+    const suds = part(sphere(0.13, 0.5), materials.toon(0xffffff), materials, 0.13, 0.015);
+    suds.position.set(x, 1.0, z);
+    bowl.add(suds);
+  });
+  group.add(bowl);
+  [[-1, -0.75], [1, -0.75], [-1, 0.75], [1, 0.75]].forEach(([x, z]) => {
+    const foot = part(sphere(0.12), materials.toon(0xffd45e), materials, 0.12, 0.015);
+    foot.position.set(x, 0.1, z);
+    group.add(foot);
+  });
+  group.userData.dispose = () => {
+    enamel.dispose();
+    water.dispose();
+  };
+  return group;
+}
+
+// A yellow rubber duck, facing +x.
+function buildDuck(materials) {
+  const duck = new THREE.Group();
+  const yellow = materials.toon(0xffe27a);
+  const body = part(sphere(0.2), yellow, materials, 0.2, 0.02);
+  body.scale.set(1.25, 0.8, 1);
+  const head = part(sphere(0.13), yellow, materials, 0.13, 0.02);
+  head.position.set(0.14, 0.18, 0);
+  const beak = part(new THREE.ConeGeometry(0.055, 0.12, 12), materials.toon(0xffa552), materials, 0.05, 0.012);
+  beak.rotation.z = -Math.PI / 2;
+  beak.position.set(0.3, 0.16, 0);
+  const tail = part(new THREE.ConeGeometry(0.07, 0.14, 10), yellow, materials, 0.06, 0.012);
+  tail.rotation.z = Math.PI / 4;
+  tail.position.set(-0.24, 0.1, 0);
+  duck.add(body, head, beak, tail);
+  [-1, 1].forEach((side) => {
+    const eye = new THREE.Mesh(sphere(0.025), materials.toon(0x4b2e22));
+    eye.position.set(0.22, 0.22, side * 0.075);
+    duck.add(eye);
+  });
+  return duck;
+}
+
+// A spotty shower curtain on a rail, in front of Tofu, with a shower head above her. The cloth
+// is drawn from its left end so it can slide open and closed (userData.cloth.scale.x).
+function buildShowerCurtain(materials) {
+  const group = new THREE.Group();
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = 128;
+  const paint = canvas.getContext("2d");
+  paint.fillStyle = "#cfeefa";
+  paint.fillRect(0, 0, 128, 128);
+  [[20, 20, "#ffffff"], [84, 36, "#ffb3d1"], [44, 76, "#ffffff"], [104, 100, "#ffffff"], [12, 112, "#ffb3d1"], [70, 4, "#ffe27a"], [100, 68, "#ffe27a"]].forEach(([x, y, color]) => {
+    paint.fillStyle = color;
+    paint.beginPath();
+    paint.arc(x, y, 9, 0, Math.PI * 2);
+    paint.fill();
+  });
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(3, 2);
+  const clothMaterial = new THREE.MeshToonMaterial({ map: texture, side: THREE.DoubleSide, gradientMap: materials.toon(0xffffff).gradientMap });
+  const geometry = new THREE.PlaneGeometry(2.8, 1.75, 42, 1);
+  geometry.translate(1.4, 0, 0);
+  const position = geometry.attributes.position;
+  for (let index = 0; index < position.count; index += 1) position.setZ(index, Math.sin(position.getX(index) * 9) * 0.07);
+  geometry.computeVertexNormals();
+  const cloth = new THREE.Mesh(geometry, clothMaterial);
+  cloth.position.set(-1.4, 1.95 - 0.875, 0);
+  const metal = materials.toon(0xd6d0e0);
+  const rail = part(new THREE.CylinderGeometry(0.04, 0.04, 3.0, 10), metal, materials, 0.04, 0.012);
+  rail.rotation.z = Math.PI / 2;
+  rail.position.y = 1.97;
+  group.add(rail, cloth);
+  group.position.z = 1.3;
+  // The shower head, above her.
+  const pipe = part(new THREE.CylinderGeometry(0.04, 0.04, 0.9, 10), metal, materials, 0.04, 0.012);
+  pipe.position.set(0, 3.55, -1.15);
+  const rose = part(new THREE.CylinderGeometry(0.12, 0.26, 0.16, 20), metal, materials, 0.22, 0.015);
+  rose.position.set(0, 3.1, -1.15);
+  group.add(pipe, rose);
+  group.userData.cloth = cloth;
+  group.userData.dispose = () => {
+    texture.dispose();
+    clothMaterial.dispose();
+  };
+  return group;
+}
+
 /* ---------- Particles ---------- */
 
 function textTexture(text, color) {
@@ -1099,7 +1204,7 @@ const soundCues = {
   icecream: [[0.8, "chomp"], [1.3, "coo"], [1.95, "shiver"]],
   milkshake: [[0.55, "slurp"], [1.4, "float"], [1.7, "coo"], [4.1, "sparkle"]],
   comb: [[0.3, "swish"], [0.6, "purr"], [1.3, "swish"], [2.3, "swish"], [3.3, "sparkle"]],
-  bath: [[0.1, "bubbles"], [1.4, "bubbles"], [3.0, "rub"], [5.3, "sparkle"], [5.6, "coo"]],
+  bath: [[0.1, "bubbles"], [0.9, "squeak"], [1.4, "giggle"], [1.9, "squeak"], [2.3, "bubbles"], [3.0, "rub"], [5.3, "sparkle"], [5.6, "coo"]],
   painting: [[0.8, "brush"], [1.5, "brush"], [2.2, "brush"], [2.9, "brush"], [3.6, "brush"], [4.3, "brush"], [5.3, "sparkle"], [5.6, "coo"]],
   ballet: [[0.3, "musicBox"], [4.9, "sparkle"], [5.3, "coo"]],
   lemon: [[0.8, "chomp"], [1.3, "pucker"], [2.4, "giggle"]],
@@ -1122,6 +1227,7 @@ const soundCues = {
   tofuFlutter: [[0.1, "whee"], [1.5, "coo", 1.35]],
   tofuGiggle: [[0.1, "giggle"]],
   baking: [[0.6, "rub"], [2.0, "rub"], [4.3, "ding"], [4.6, "sparkle"], [5.0, "coo", 1.35]],
+  tofuBath: [[0.1, "swish"], [0.8, "bubbles"], [1.6, "bubbles"], [2.2, "giggle"], [2.6, "bubbles"], [3.4, "bubbles"], [3.9, "swish"], [4.5, "rub"], [5.6, "sparkle"], [5.9, "coo", 1.35]],
   science: [[0.5, "fizz"], [2.0, "fizz"], [3.5, "poof"], [4.6, "giggle"], [5.0, "sparkle"]],
   singing: [[0.2, "song"], [5.8, "coo", 1.35]],
   reading: [[1.4, "page"], [3.0, "page"], [4.6, "page"], [5.7, "sparkle"], [6.0, "coo", 1.35]],
@@ -1377,20 +1483,97 @@ const actions = {
     if (t > 3.3) once(run, "hearts", () => ctx.fx.hearts(ctx.headWorld().add(new THREE.Vector3(0, 0.9, 0.3)), 4));
   },
 
+  // Mochi in a bathtub: she boops her rubber duck, splashes, then hops out for the towel.
+  // Tofu showers behind a curtain (she's shy), with lots and lots of bubbles, then the towel.
+  tofuBath(run, pose, dt, ctx) {
+    const t = run.t;
+    if (!run.curtain) {
+      run.curtain = buildShowerCurtain(ctx.materials);
+      ctx.turn.add(run.curtain);
+      run.props.push(run.curtain);
+    }
+    const shut = easeInOut(between(t, 0, 0.7)) * (1 - easeInOut(between(t, 3.9, 4.4)));
+    const there = between(t, 0, 0.3) * (1 - between(t, 4.4, 4.7));
+    run.curtain.scale.setScalar(Math.max(0.01, there));
+    run.curtain.userData.cloth.scale.x = 0.12 + 0.88 * shut;
+    pose.foam = 1.3 * between(t, 0.8, 1.4) * (1 - between(t, 4.0, 4.6));
+    if (t > 0.5 && t < 4.0) {
+      pose.happyEyes = true;
+      pose.blush = 0.8;
+      pose.headTilt += 0.12 * Math.sin(t * 3);
+      pose.shakeX += Math.sin(t * 18) * 0.01;
+      // The shower runs onto her head...
+      emit(run, "shower", 40, dt, () => {
+        const from = ctx.headWorld().add(new THREE.Vector3(rand(-0.3, 0.3), 1.05, rand(-0.4, 0.1)));
+        ctx.fx.spawn(ctx.fx.mesh("snow", from, rand(0.7, 1.1), 0x6fb3e6), { velocity: new THREE.Vector3(rand(-0.3, 0.3), -3, 0), life: 0.35 });
+      });
+      // ...and lots of bubbles float up over the curtain.
+      emit(run, "bubble", 45, dt, () => {
+        // From either side of the curtain, drifting outwards, so her face still peeks out.
+        const side = Math.random() < 0.5 ? -1 : 1;
+        const bubble = ctx.fx.mesh("bubble", ctx.bodyWorld().add(new THREE.Vector3(side * rand(0.6, 1.4), rand(0.6, 1.0), rand(0.4, 1.4))), rand(0.08, 0.24));
+        ctx.fx.spawn(bubble, { velocity: new THREE.Vector3(side * rand(0.1, 0.5), rand(0.5, 1.1), rand(0, 0.3)), life: rand(1.5, 2.4), wobble: 0.4, grow: 0.25, opacity: 0.6 });
+      });
+    }
+    if (!run.towel) {
+      run.towel = buildTowel(ctx.materials);
+      run.towel.visible = false;
+      ctx.turn.add(run.towel);
+    }
+    const drying = t > 4.5 && t < 5.6;
+    run.towel.visible = drying;
+    if (drying) {
+      const d = (t - 4.5) / 1.1;
+      run.towel.position.set(Math.sin(d * Math.PI * 5) * 0.5, 2.8 - d * 1.6, 1.25);
+      run.towel.rotation.z = Math.sin(d * Math.PI * 5) * 0.15;
+      pose.happyEyes = true;
+      pose.shakeX += Math.sin(t * 40) * 0.02;
+    }
+    if (t > 5.6) {
+      pose.happyEyes = true;
+      pose.blush = 0.9;
+      pose.hop += pulse(t, 5.6, 6.1) * 0.25;
+      once(run, "clean", () => {
+        ctx.fx.sparkles(ctx.bodyWorld().add(new THREE.Vector3(0, 0.5, 0)), 24, 2.2);
+        ctx.fx.hearts(ctx.headWorld().add(new THREE.Vector3(0, 0.9, 0.3)), 2);
+      });
+    }
+  },
+
   bath(run, pose, dt, ctx) {
     const t = run.t;
-    // Phase 1: bubbles and foam.
-    const soapy = between(t, 0, 0.4) * (1 - between(t, 3.0, 4.6));
-    pose.foam = soapy;
+    if (!run.tub) {
+      run.tub = buildTub(ctx.materials);
+      run.duck = buildDuck(ctx.materials);
+      run.duck.rotation.y = -Math.PI / 2.6;
+      ctx.turn.add(run.tub, run.duck);
+      run.props.push(run.tub, run.duck);
+    }
+    // Phase 1: in the tub with the duck.
+    const inTub = easeInOut(between(t, 0, 0.5)) * (1 - easeInOut(between(t, 2.9, 3.3)));
+    run.tub.scale.setScalar(Math.max(0.01, inTub));
+    run.duck.scale.setScalar(Math.max(0.01, 1.7 * inTub));
+    const boop = pulse(t, 0.8, 1.2) + pulse(t, 1.8, 2.2);
+    run.duck.position.set(0.8, 1.08 + 0.03 * Math.sin(t * 5) + 0.3 * boop, 0.85);
+    run.duck.rotation.z = 0.25 * boop;
+    pose.foam = between(t, 0, 0.4) * (1 - between(t, 3.0, 4.6));
     if (t < 3.0) {
       pose.happyEyes = true;
       pose.blush = 0.7;
-      pose.shakeX += Math.sin(t * 20) * 0.012;
-      pose.armL = 0.6 + 0.3 * Math.sin(t * 6);
-      pose.armR = 0.6 + 0.3 * Math.sin(t * 6 + 1);
-      emit(run, "bubble", 26, dt, () => {
-        const size = rand(0.07, 0.2);
-        const bubble = ctx.fx.mesh("bubble", ctx.bodyWorld().add(new THREE.Vector3(rand(-1.4, 1.4), rand(-1, 1.6), rand(-0.4, 1.2))), size);
+      // Boop the duck with one hand, then splash with both.
+      if (boop > 0) ctx.arms[1].userData.forward = -1.2 * boop;
+      const splashing = between(t, 1.2, 1.4) * (1 - between(t, 2.6, 2.9));
+      pose.armL = Math.max(pose.armL, splashing * (0.9 + 0.6 * Math.sin(t * 16)));
+      pose.armR = Math.max(pose.armR, splashing * (0.9 + 0.6 * Math.sin(t * 16 + Math.PI)));
+      pose.shakeX += Math.sin(t * 20) * 0.015 * splashing;
+      emit(run, "splash", 45 * splashing, dt, () => {
+        const angle = rand(0, Math.PI * 2);
+        const from = ctx.bodyWorld().add(new THREE.Vector3(Math.cos(angle) * 1.15, -0.05, Math.sin(angle) * 0.9));
+        const drop = ctx.fx.mesh("snow", from, rand(0.9, 1.6), 0x6fb3e6);
+        ctx.fx.spawn(drop, { velocity: new THREE.Vector3(Math.cos(angle) * rand(0.6, 1.4), rand(2.2, 3.4), Math.sin(angle) * rand(0.6, 1.4)), gravity: 7, life: 0.8, spin: 6 });
+      });
+      emit(run, "bubble", 8, dt, () => {
+        const bubble = ctx.fx.mesh("bubble", ctx.bodyWorld().add(new THREE.Vector3(rand(-1.3, 1.3), rand(0, 0.6), rand(-0.3, 1.0))), rand(0.07, 0.16));
         ctx.fx.spawn(bubble, { velocity: new THREE.Vector3(0, rand(0.4, 0.9), 0), life: rand(1.2, 2), wobble: 0.6, grow: 0.3, opacity: 0.55 });
       });
     }
