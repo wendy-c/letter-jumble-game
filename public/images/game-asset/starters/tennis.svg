@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+<g stroke="#4b2e22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<g transform="translate(52 50) rotate(-35)"><defs><clipPath id="strings52"><ellipse cx="0" cy="0" rx="30" ry="36"/></clipPath></defs><path d="M0 36L0 54" fill="none" stroke="#4b2e22" stroke-width="8"/><path d="M0 36L0 54" fill="none" stroke="#d6d0e0" stroke-width="3"/><rect x="-6" y="50" width="12" height="26" rx="5" fill="#8cc8f2"/><ellipse cx="0" cy="0" rx="30" ry="36" fill="#ffffff"/><g clip-path="url(#strings52)" stroke="#c4bcd4" stroke-width="1.5"><path d="M-20.0 -36v72M-30 -24.0h60"/><path d="M-10.0 -36v72M-30 -12.0h60"/><path d="M0.0 -36v72M-30 0.0h60"/><path d="M10.0 -36v72M-30 12.0h60"/><path d="M20.0 -36v72M-30 24.0h60"/></g><ellipse cx="0" cy="0" rx="30" ry="36" fill="none" stroke="#8cc8f2" stroke-width="6"/><ellipse cx="0" cy="0" rx="33" ry="39" fill="none" stroke-width="2.5"/></g><circle cx="104" cy="98" r="14" fill="#d9f26b"/><path d="M92 92q12 4 12 18M104 84q4 10 14 10" fill="none" stroke="#ffffff" stroke-width="3"/>
+</g>
+</svg>

@@ -95,7 +95,7 @@ const strings = {
       cvc: "3-4 歲 · 開頭、中間和結尾的音",
       digraphs: "3-6 歲 · ch、sh、th、ph、wh、ck 和 ng",
       blends: "3-6 歲 · br、cr、str、bl、cl、fl 等混合音",
-      starters: "5-6 歲 · 劍橋 Starters · 8 個主題",
+      starters: "5-6 歲 · 劍橋 Starters · 12 個主題",
       "letter-jumble": "5-6 歲 · 劍橋 Movers · 8 個主題",
       chinese: "3-4 歲 · 認識中文字 · 廣東話",
       "chinese-advanced": "5-6 歲 · 認識詞語 · 廣東話",

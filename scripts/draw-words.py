@@ -1305,6 +1305,311 @@ pictures[DR + "scooter"] = svg(
     '<path d="M70 16h-4M102 16h4" stroke="#ff8fae" stroke-width="7"/>'
     '<path d="M22 96h70v10H22Z" fill="#8cc8f2"/><circle cx="28" cy="110" r="9" fill="#6b5a8e"/><circle cx="92" cy="110" r="9" fill="#6b5a8e"/>')
 
+# ---------- Letter Jumble - Starters: School, Toys and Hobbies, Vehicles, Colours ----------
+FONT = "Fredoka,Arial Rounded MT Bold,Arial,sans-serif"
+
+
+def label(x, y, words, size, fill=INK):
+    return f'<text x="{x}" y="{y}" text-anchor="middle" font-family="{FONT}" font-size="{size}" font-weight="700" fill="{fill}" stroke="none">{words}</text>'
+
+
+def pencil(x, y, angle, length=60, colour="#ffd45e"):
+    """A pencil with its point at (x, y), lying along `angle` degrees."""
+    return (f'<g transform="translate({x} {y}) rotate({angle})">'
+            f'<path d="M0 0l16-7v14Z" fill="#f5dcc0"/><path d="M0 0l6-2.6v5.2Z" fill="{INK}" stroke-width="2"/>'
+            f'<path d="M16-7h{length - 26}v14H16Z" fill="{colour}"/>'
+            f'<path d="M{length - 10}-7h6v14h-6Z" fill="#d6d0e0" stroke-width="3"/><path d="M{length - 4}-7h6q4 0 4 7t-4 7h-6Z" fill="#ff8fb7" stroke-width="3"/></g>')
+
+
+def card(x, y, w, h, fill="#ffffff"):
+    return f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="10" fill="{fill}"/>'
+
+
+def bubble(fill):
+    """A speech bubble with its tail at the bottom left."""
+    return f'<path d="M24 14h80q14 0 14 14v48q0 14-14 14H52l-24 22 4-22h-8q-14 0-14-14V28q0-14 14-14Z" fill="{fill}"/>'
+
+
+def open_book(cover="#8cc8f2"):
+    return (f'<path d="M6 40v72q30-8 58 4 28-12 58-4V40Z" fill="{cover}"/>'
+            '<path d="M64 38q-24-10-52-4v70q28-6 52 4Z" fill="#ffffff"/><path d="M64 38q24-10 52-4v70q-28-6-52 4Z" fill="#ffffff"/>')
+
+
+def back_head(x, y, hair, shirt, hand=False):
+    """A child seen from behind: shoulders and the back of the head; `hand` puts one hand up."""
+    out = f'<path d="M{x - 18} 132q0-22 18-22t18 22Z" fill="{shirt}"/>'
+    if hand:
+        out += limb([(x + 12, 116), (x + 18, 86), (x + 16, 70)], SKIN, 10) + f'<circle cx="{x + 16}" cy="68" r="6" fill="{SKIN}" stroke-width="3"/>'
+    return out + (f'<circle cx="{x - 13}" cy="{y + 2}" r="4" fill="{SKIN}" stroke-width="3"/><circle cx="{x + 13}" cy="{y + 2}" r="4" fill="{SKIN}" stroke-width="3"/>'
+                  f'<circle cx="{x}" cy="{y}" r="14" fill="{hair}"/>')
+
+
+def car(x, y, s=1.0, colour="#ff6f6f"):
+    return (f'<g transform="translate({x} {y}) scale({s})">'
+            f'<path d="M10 84q0-10 10-12l16-2 14-18q4-4 10-4h28q6 0 10 4l16 18 8 2q8 2 8 12v10q0 4-4 4H14q-4 0-4-4Z" fill="{colour}"/>'
+            '<path d="M54 56h16v14H44ZM76 56h12q4 0 6 3l9 11H76Z" fill="#cfe9ff" stroke-width="3"/>'
+            '<path d="M73 72v24" stroke-width="3"/><rect x="108" y="78" width="8" height="5" rx="2" fill="#ffd45e" stroke-width="2.5"/>'
+            '<circle cx="36" cy="98" r="12" fill="#5b6b8c"/><circle cx="96" cy="98" r="12" fill="#5b6b8c"/>'
+            '<circle cx="36" cy="98" r="4.5" fill="#d6d0e0" stroke-width="2.5"/><circle cx="96" cy="98" r="4.5" fill="#d6d0e0" stroke-width="2.5"/></g>')
+
+
+def pentagon(cx, cy, r, rot=-90):
+    return "M" + "L".join(f"{cx + r * math.cos(math.radians(rot + 72 * i)):.1f} {cy + r * math.sin(math.radians(rot + 72 * i)):.1f}" for i in range(5)) + "Z"
+
+
+def racket(x, y, angle, rx, ry, shaft, frame):
+    """A racket with its head's centre at (x, y), the handle pointing down `angle` degrees round."""
+    strings = "".join(f'<path d="M{-rx + i * rx / 3:.1f} {-ry}v{2 * ry}M{-rx} {-ry + i * ry / 3:.1f}h{2 * rx}"/>' for i in range(1, 6))
+    return (f'<g transform="translate({x} {y}) rotate({angle})">'
+            f'<defs><clipPath id="strings{x}"><ellipse cx="0" cy="0" rx="{rx}" ry="{ry}"/></clipPath></defs>'
+            + limb([(0, ry), (0, ry + shaft)], "#d6d0e0", 8) + f'<rect x="-6" y="{ry + shaft - 4}" width="12" height="26" rx="5" fill="{frame}"/>'
+            + f'<ellipse cx="0" cy="0" rx="{rx}" ry="{ry}" fill="#ffffff"/><g clip-path="url(#strings{x})" stroke="#c4bcd4" stroke-width="1.5">{strings}</g>'
+            + f'<ellipse cx="0" cy="0" rx="{rx}" ry="{ry}" fill="none" stroke="{frame}" stroke-width="6"/><ellipse cx="0" cy="0" rx="{rx + 3}" ry="{ry + 3}" fill="none" stroke-width="2.5"/></g>')
+
+
+# School
+pictures[ST + "board"] = svg(
+    '<path d="M30 96l-8 26M98 96l8 26" stroke-width="6"/>'
+    '<rect x="8" y="12" width="112" height="86" rx="6" fill="#c98a55"/><rect x="16" y="20" width="96" height="68" rx="3" fill="#5fa37a"/>'
+    + label(64, 52, "A B C", 22, "#ffffff") + label(64, 78, "1 2 3", 18, "#fff6c8")
+    + '<path d="M12 98h104" stroke-width="5"/><rect x="84" y="90" width="16" height="6" rx="2" fill="#ffffff" stroke-width="2.5"/>')
+pictures[ST + "eraser"] = svg(
+    '<g transform="rotate(-18 64 66)"><path d="M22 72v8q0 6 6 6h72q6 0 6-6v-8" fill="#c9b6f5"/>'
+    '<path d="M28 48h36v30H28q-6 0-6-6V54q0-6 6-6Z" fill="#ff8fb7"/><path d="M64 48h36q6 0 6 6v18q0 6-6 6H64Z" fill="#8cc8f2"/></g>'
+    + "".join(f'<circle cx="{x}" cy="{y}" r="3" fill="#ffb3d1" stroke-width="2"/>' for x, y in ((26, 104), (38, 112), (18, 94), (50, 108))))
+pictures[ST + "ruler"] = svg(
+    '<g transform="rotate(-30 64 64)"><rect x="2" y="50" width="124" height="28" rx="4" fill="#ffd45e"/>'
+    + "".join(f'<path d="M{10 + i * 10.8:.1f} 50v{11 if i % 5 == 0 else 6}" stroke-width="2.5"/>' for i in range(11))
+    + label(10, 74, "0", 9) + label(64, 74, "5", 9) + label(118, 74, "10", 9) + '</g>')
+pictures[ST + "page"] = svg(
+    open_book("#8cc8f2")
+    + '<path d="M20 50q20-4 36 2M20 62q20-4 36 2M20 74q20-4 36 2" fill="none" stroke="#d6d0e0" stroke-width="3"/>'
+    + '<path d="M64 40Q78 8 112 6q4 34-6 64-26-6-42 0Z" fill="#fff6c8"/>'
+    '<path d="M76 34q14-12 28-14M74 46q14-10 28-12" fill="none" stroke="#d6d0e0" stroke-width="3"/>' + label(94, 62, "12", 11))
+pictures[ST + "crayon"] = svg(
+    "".join(f'<g transform="rotate({a} 64 64) translate(0 {dy})"><path d="M94 56l18 8-18 8Z" fill="{c}"/><rect x="18" y="56" width="76" height="16" rx="3" fill="{c}"/>'
+            f'<rect x="34" y="56" width="44" height="16" fill="#fff6e0" stroke-width="3"/><path d="M42 56v16M70 56v16" stroke="{c}" stroke-width="3"/></g>'
+            for a, dy, c in ((-34, -16, "#ff6f6f"), (-14, 2, "#8cc8f2"), (6, 20, "#8fe3a8")))
+    + '<path d="M14 116q10-10 20 0t20 0 20 0" fill="none" stroke="#ff6f6f" stroke-width="4"/>')
+pictures[ST + "class"] = svg(
+    person(36, 40, .55, "#8b5a3c", "#8cc8f2") + person(64, 36, .55, "#e8b46b", "#ffb3d1", "pigtails") + person(92, 40, .55, "#4b2e22", "#8fe3a8")
+    + '<rect x="8" y="58" width="112" height="9" rx="3" fill="#d9a066"/>'
+    + person(44, 80, .6, "#a46a3c", "#ffd45e", "long") + person(84, 80, .6, "#c98a55", "#c9b6f5")
+    + '<rect x="6" y="102" width="116" height="10" rx="3" fill="#d9a066"/><path d="M14 112v12M114 112v12" stroke-width="5"/>')
+pictures[ST + "lesson"] = svg(
+    '<rect x="8" y="6" width="84" height="54" rx="4" fill="#c98a55"/><rect x="14" y="12" width="72" height="42" rx="2" fill="#5fa37a"/>'
+    + label(50, 40, "2+2=4", 18, "#ffffff")
+    + person(108, 48, .6, "#4b2e22", "#ff8fb7", "bun") + limb([(98, 64), (90, 46), (84, 30)], SKIN, 8)
+    + back_head(28, 98, "#8b5a3c", "#8fe3a8") + back_head(64, 94, "#e8b46b", "#ffd45e", hand=True) + back_head(100, 98, "#4b2e22", "#8cc8f2"))
+pictures[ST + "homework"] = svg(
+    '<path d="M16 10h56l16 16v92H16Z" fill="#ffffff"/><path d="M72 10v16h16" fill="none" stroke-width="3"/>'
+    + label(50, 46, "2+3=5", 15) + label(50, 70, "4+1=5", 15) + label(50, 94, "3+3=6", 15)
+    + pencil(70, 104, -60, 56)
+    + '<circle cx="104" cy="104" r="18" fill="#ffd45e"/><path d="M94 106l10-10 10 10v10H94Z" fill="#ffffff" stroke-width="3"/><path d="M101 116v-6h6v6" fill="none" stroke-width="2.5"/>')
+pictures[ST + "student"] = svg(
+    '<rect x="44" y="50" width="40" height="34" rx="8" fill="#ff8fb7"/>'
+    + kid(64, 34, 1.0, arms=[[(-11, 17), (-17, 38)], [(11, 17), (20, 36)]], shirt="#ffd45e")
+    + '<path d="M56 48v22M72 48v22" stroke="#ff6f9f" stroke-width="4"/>'
+    '<rect x="78" y="62" width="22" height="28" rx="3" fill="#8cc8f2" transform="rotate(10 89 76)"/>')
+pictures[ST + "letter"] = svg(
+    card(14, 14, 100, 100, "#ffd45e") + label(56, 92, "A", 72, "#ff6f9f") + label(94, 92, "a", 40, INK) + sparkle(104, 26, 7, "#ffffff"))
+pictures[ST + "line"] = svg(
+    card(8, 16, 112, 96)
+    + '<path d="M22 96L86 44" stroke="#ff6f9f" stroke-width="5"/><circle cx="22" cy="96" r="5" fill="#ff6f9f" stroke-width="2.5"/>'
+    + pencil(88, 42, -38.7, 52))
+pictures[ST + "number"] = svg(
+    "".join(f'<g transform="rotate({a} {x + 18} {y + 18})">{card(x, y, 36, 36, c)}{label(x + 18, y + 29, n, 28)}</g>'
+            for x, y, a, c, n in ((8, 52, -8, "#ffb3d1", "1"), (46, 34, 4, "#8cc8f2", "2"), (84, 56, 10, "#8fe3a8", "3"))))
+pictures[ST + "sentence"] = svg(
+    card(4, 34, 120, 60)
+    + f'<text x="64" y="72" text-anchor="middle" font-family="{FONT}" font-size="19" font-weight="700" fill="{INK}" stroke="none"><tspan fill="#ff6f9f">I</tspan> like cats<tspan fill="#ff6f9f">.</tspan></text>'
+    '<path d="M14 82h100" stroke="#d6d0e0" stroke-width="3"/>')
+pictures[ST + "word"] = svg(card(14, 30, 100, 68, "#c9e6fb") + label(64, 78, "cat", 40) + '<path d="M36 86h56" stroke="#8cc8f2" stroke-width="4"/>')
+pictures[ST + "story"] = svg(
+    open_book("#ff8fb7")
+    + '<path d="M22 92V66h8v-8h6v8h8v-8h6v8h6v26Z" fill="#c9b6f5" stroke-width="3"/><path d="M34 92v-10a4 4 0 0 1 8 0v10" fill="#ffffff" stroke-width="2.5"/>'
+    '<path d="M74 54q16-4 32 2M74 66q16-4 32 2M74 78q16-4 32 2M74 90q10-2 20 0" fill="none" stroke="#d6d0e0" stroke-width="3"/>'
+    + sparkle(40, 22, 8) + sparkle(88, 18, 6, "#b79cf2") + sparkle(64, 10, 5, "#ffb3d9"))
+pictures[ST + "question"] = svg(bubble("#c9b6f5") + label(68, 76, "?", 64, "#ffffff"))
+pictures[ST + "answer"] = svg(
+    bubble("#ffffff") + label(56, 64, "2+2=", 22) + label(98, 64, "4", 26, "#3fae6a")
+    + '<circle cx="100" cy="100" r="16" fill="#8fe3a8"/><path d="M92 100l6 6 10-12" fill="none" stroke-width="4"/>')
+
+# Toys and hobbies
+pictures[ST + "toy"] = svg(
+    '<path d="M18 60L28 28h72l10 32Z" fill="#ffb3d1"/>'
+    '<circle cx="40" cy="56" r="14" fill="#8cc8f2"/><path d="M28 50q12 8 24 0" fill="none" stroke="#ffffff" stroke-width="3"/>'
+    '<rect x="58" y="40" width="22" height="22" rx="3" fill="#ffd45e" transform="rotate(-10 69 51)"/>'
+    '<circle cx="86" cy="40" r="6" fill="#d9a066"/><circle cx="104" cy="40" r="6" fill="#d9a066"/><circle cx="95" cy="52" r="13" fill="#d9a066"/>'
+    + eye(90, 50, .7) + eye(100, 50, .7)
+    + '<path d="M14 60h100v52q0 6-6 6H20q-6 0-6-6Z" fill="#ff8fb7"/><path d="M14 74h100" stroke-width="3"/>' + label(64, 104, "TOYS", 18, "#ffffff"))
+pictures[ST + "ball"] = svg(
+    '<circle cx="64" cy="64" r="46" fill="#ffd45e"/>'
+    '<path d="M64 18Q20 64 64 110Q38 64 64 18Z" fill="#ff6f6f"/><path d="M64 18Q108 64 64 110Q90 64 64 18Z" fill="#8cc8f2"/>'
+    '<path d="M64 18Q38 64 64 110Q90 64 64 18Z" fill="#ffffff"/><circle cx="64" cy="64" r="46" fill="none"/>'
+    '<path d="M36 40q6-10 16-14" fill="none" stroke="#ffffff" stroke-width="4"/>')
+pictures[ST + "balloon"] = svg(
+    '<path d="M48 76q-8 16 6 28t4 22M84 66q10 18-2 32t2 26" fill="none" stroke-width="2.5"/>'
+    '<ellipse cx="84" cy="36" rx="22" ry="27" fill="#8cc8f2"/><path d="M80 63l4-4 4 4Z" fill="#8cc8f2" stroke-width="2.5"/>'
+    '<ellipse cx="46" cy="46" rx="24" ry="29" fill="#ff6f86"/><path d="M42 75l4-4 4 4Z" fill="#ff6f86" stroke-width="2.5"/>'
+    '<path d="M32 34q2-10 10-14M74 26q2-8 8-10" fill="none" stroke="#ffffff" stroke-width="4"/>')
+pictures[ST + "block"] = svg(
+    "".join(f'{card(bx, by, 36, 36, fill)}{label(bx + 18, by + 28, letter, 24)}'
+            for bx, by, fill, letter in ((22, 82, "#ffd45e", "A"), (62, 82, "#8cc8f2", "B"), (42, 44, "#ffb3d1", "C"))))
+pictures[ST + "doll"] = svg(
+    limb([(56, 96), (54, 116)], "#ff8fb7", 11) + limb([(72, 96), (74, 116)], "#ff8fb7", 11)
+    + '<ellipse cx="53" cy="118" rx="7" ry="4.5" fill="#8b5a3c"/><ellipse cx="75" cy="118" rx="7" ry="4.5" fill="#8b5a3c"/>'
+    + limb([(52, 64), (34, 84)], SKIN, 10) + limb([(76, 64), (94, 84)], SKIN, 10)
+    + f'<circle cx="34" cy="85" r="5" fill="{SKIN}" stroke-width="3"/><circle cx="94" cy="85" r="5" fill="{SKIN}" stroke-width="3"/>'
+    '<path d="M50 58h28l14 42H36Z" fill="#8cc8f2"/><path d="M54 58l10 8 10-8" fill="#ffffff" stroke-width="3"/>'
+    + "".join(f'<circle cx="{x}" cy="{y}" r="2.5" fill="#ffffff" stroke="none"/>' for x, y in ((52, 80), (64, 88), (76, 80), (58, 94), (72, 94)))
+    + '<circle cx="40" cy="42" r="8" fill="#e8894a"/><circle cx="88" cy="42" r="8" fill="#e8894a"/>'
+    '<path d="M34 50l-6 4 2-8ZM94 50l6 4-2-8Z" fill="#ff6f86" stroke-width="2.5"/>'
+    f'<circle cx="64" cy="38" r="20" fill="{SKIN}"/><path d="M44 36q0-20 20-20t20 20q-6-8-20-8t-20 8Z" fill="#e8894a"/>'
+    + eye(57, 40, .8) + eye(71, 40, .8) + cheek(52, 46, .7) + cheek(76, 46, .7)
+    + '<path d="M59 48q5 4 10 0M61 46v4M64 47v4M67 46v4" fill="none" stroke-width="2"/>')
+pictures[ST + "monster"] = svg(
+    '<path d="M38 52l-4-18 14 12ZM90 52l4-18-14 12Z" fill="#fff6c8"/>'
+    + limb([(26, 84), (12, 72)], "#8fd36f", 12) + limb([(102, 84), (116, 72)], "#8fd36f", 12)
+    + '<path d="M22 114q-6-60 42-66 48 6 42 66-7-8-14 0-7-8-14 0-7-8-14 0-7-8-14 0-7-8-14 0-7-8-14 0Z" fill="#8fd36f"/>'
+    '<g fill="#6cc28a" stroke="none"><circle cx="38" cy="96" r="4"/><circle cx="92" cy="94" r="5"/><circle cx="84" cy="64" r="3"/></g>'
+    '<circle cx="64" cy="72" r="15" fill="#ffffff"/><circle cx="66" cy="74" r="7" fill="#4b2e22" stroke="none"/><circle cx="69" cy="71" r="2.5" fill="#ffffff" stroke="none"/>'
+    '<path d="M48 94q16 14 32 0Z" fill="#ff8fa3" stroke-width="3"/><path d="M54 95l3 5 3-5ZM68 95l3 5 3-5Z" fill="#ffffff" stroke-width="2"/>'
+    + cheek(44, 86, .8) + cheek(84, 86, .8))
+pictures[ST + "robot"] = svg(
+    '<path d="M64 22V12" stroke-width="3"/><circle cx="64" cy="10" r="5" fill="#ff8fb7" stroke-width="3"/>'
+    + limb([(36, 70), (22, 90)], "#d6d0e0", 10) + limb([(92, 70), (106, 90)], "#d6d0e0", 10)
+    + '<path d="M16 92l6 6 6-6M100 92l6 6 6-6" fill="none" stroke-width="4"/>'
+    '<rect x="46" y="98" width="12" height="18" rx="3" fill="#d6d0e0"/><rect x="70" y="98" width="12" height="18" rx="3" fill="#d6d0e0"/>'
+    '<rect x="40" y="112" width="22" height="8" rx="3" fill="#8ea6cc"/><rect x="66" y="112" width="22" height="8" rx="3" fill="#8ea6cc"/>'
+    '<rect x="34" y="60" width="60" height="42" rx="8" fill="#8cc8f2"/><rect x="48" y="68" width="32" height="14" rx="4" fill="#ffffff" stroke-width="3"/>'
+    '<circle cx="56" cy="92" r="4" fill="#ff6f6f" stroke-width="2.5"/><circle cx="72" cy="92" r="4" fill="#ffd45e" stroke-width="2.5"/>'
+    '<rect x="36" y="22" width="56" height="36" rx="9" fill="#c9d6e8"/><circle cx="34" cy="40" r="4" fill="#ffd45e" stroke-width="3"/><circle cx="94" cy="40" r="4" fill="#ffd45e" stroke-width="3"/>'
+    '<circle cx="52" cy="38" r="7" fill="#ffffff" stroke-width="3"/><circle cx="76" cy="38" r="7" fill="#ffffff" stroke-width="3"/>'
+    + eye(52, 38, .9) + eye(76, 38, .9) + '<path d="M56 50h16" stroke-width="3"/>')
+pictures[ST + "teddy-bear"] = svg(
+    '<circle cx="40" cy="28" r="12" fill="#c98a55"/><circle cx="88" cy="28" r="12" fill="#c98a55"/>'
+    '<circle cx="64" cy="48" r="30" fill="#d9a066"/><ellipse cx="64" cy="58" rx="12" ry="9" fill="#f3d38c"/><circle cx="64" cy="54" r="3.5" fill="#4b2e22" stroke="none"/>'
+    + eye(52, 42) + eye(76, 42) + smile(64, 62, 6)
+    + '<ellipse cx="64" cy="98" rx="30" ry="24" fill="#d9a066"/><ellipse cx="64" cy="100" rx="14" ry="12" fill="#f3d38c"/>'
+    '<circle cx="32" cy="112" r="10" fill="#d9a066"/><circle cx="96" cy="112" r="10" fill="#d9a066"/>'
+    '<path d="M52 74l12 8 12-8-12-4Z" fill="#ff8fa3" stroke-width="2.5"/>')
+pictures[ST + "game"] = svg(
+    "".join(f'<g transform="rotate({a} 64 100)"><rect x="46" y="14" width="36" height="52" rx="5" fill="#ffffff"/>'
+            f'<path d="M64 46c-5-4-8-6-8-9 0-4 5-5 8-1 3-4 8-3 8 1 0 3-3 5-8 9Z" fill="{c}" stroke-width="2"/></g>'
+            for a, c in ((-22, "#ff6f6f"), (0, "#ff6f6f"), (22, "#ff6f6f")))
+    + '<rect x="18" y="72" width="38" height="38" rx="8" fill="#ffffff" transform="rotate(-12 37 91)"/>'
+    '<rect x="70" y="74" width="38" height="38" rx="8" fill="#ffffff" transform="rotate(10 89 93)"/>'
+    + "".join(f'<circle cx="{x}" cy="{y}" r="3.4" fill="{INK}" stroke="none"/>' for x, y in ((28, 86), (37, 92), (46, 97), (80, 84), (97, 87), (81, 101), (98, 104))))
+pictures[ST + "board-game"] = svg(
+    card(8, 10, 112, 104, "#fff6c8")
+    + "".join(f'<rect x="{x}" y="{y}" width="14" height="14" rx="2" fill="{["#ff8fb7", "#8cc8f2", "#8fe3a8", "#ffd45e"][i % 4]}" stroke-width="2"/>'
+              for i, (x, y) in enumerate([(16 + 15 * k, 18) for k in range(6)] + [(91, 18 + 15 * k) for k in range(1, 6)] + [(91 - 15 * k, 93) for k in range(1, 6)] + [(16, 93 - 15 * k) for k in range(1, 5)]))
+    + sparkle(64, 56, 12)
+    + '<circle cx="23" cy="20" r="5" fill="#ff6f6f" stroke-width="2.5"/><path d="M17 32q6-12 12 0Z" fill="#ff6f6f" stroke-width="2.5"/>'
+    '<circle cx="98" cy="80" r="5" fill="#6fb3e6" stroke-width="2.5"/><path d="M92 92q6-12 12 0Z" fill="#6fb3e6" stroke-width="2.5"/>'
+    '<rect x="88" y="94" width="30" height="30" rx="6" fill="#ffffff" transform="rotate(14 103 109)"/>'
+    + "".join(f'<circle cx="{x}" cy="{y}" r="3" fill="{INK}" stroke="none"/>' for x, y in ((97, 103), (104, 110), (110, 116))))
+pictures[ST + "bike"] = svg(
+    '<circle cx="32" cy="84" r="22" fill="none" stroke-width="6"/><circle cx="98" cy="84" r="22" fill="none" stroke-width="6"/>'
+    '<circle cx="32" cy="84" r="22" fill="none" stroke="#5b6b8c" stroke-width="2"/><circle cx="98" cy="84" r="22" fill="none" stroke="#5b6b8c" stroke-width="2"/>'
+    '<circle cx="32" cy="84" r="4" fill="#d6d0e0" stroke-width="2.5"/><circle cx="98" cy="84" r="4" fill="#d6d0e0" stroke-width="2.5"/>'
+    + limb([(32, 84), (56, 50), (62, 84), (32, 84)], "#ff6f9f", 9) + limb([(56, 50), (90, 50), (62, 84)], "#ff6f9f", 9)
+    + limb([(90, 50), (98, 84)], "#d6d0e0", 8) + limb([(90, 50), (86, 36), (96, 34)], "#d6d0e0", 7)
+    + '<path d="M44 44h20q2 6-8 6H46q-6 0-2-6Z" fill="#5b6b8c"/><circle cx="62" cy="84" r="6" fill="#d6d0e0" stroke-width="3"/>')
+pictures[ST + "camera"] = svg(
+    '<rect x="28" y="26" width="28" height="16" rx="4" fill="#8ea6cc"/><rect x="86" y="24" width="18" height="10" rx="3" fill="#ff6f6f" stroke-width="3"/>'
+    '<rect x="10" y="36" width="108" height="74" rx="14" fill="#8cc8f2"/><path d="M10 54h108" stroke-width="3"/>'
+    '<circle cx="64" cy="74" r="28" fill="#5b6b8c"/><circle cx="64" cy="74" r="18" fill="#8ea6cc"/><circle cx="64" cy="74" r="8" fill="#4b2e22"/>'
+    '<path d="M54 64q4-5 10-6" fill="none" stroke="#ffffff" stroke-width="3"/><rect x="94" y="62" width="14" height="10" rx="2" fill="#ffffff" stroke-width="3"/>')
+pictures[ST + "kite"] = svg(
+    '<path d="M64 92q-6 10 4 16t-2 18" fill="none" stroke-width="2.5"/><path d="M64 50L8 124" stroke-width="2"/>'
+    + "".join(f'<path d="M{x - 7} {y - 4}l14 8v-8l-14 8Z" fill="#ffb3d1" stroke-width="2.5"/>' for x, y in ((62, 100), (68, 112)))
+    + '<path d="M64 6L64 50L100 46Z" fill="#ff6f6f"/><path d="M64 6L28 46L64 50Z" fill="#ffd45e"/>'
+    '<path d="M28 46L64 92L64 50Z" fill="#8cc8f2"/><path d="M100 46L64 50L64 92Z" fill="#8fe3a8"/>'
+    '<path d="M64 6L100 46L64 92L28 46Z" fill="none"/>')
+pictures[ST + "computer-game"] = svg(
+    '<rect x="8" y="30" width="112" height="70" rx="28" fill="#ff8fb7"/>'
+    '<rect x="40" y="38" width="48" height="54" rx="6" fill="#5b6b8c"/><path d="M44 80h40" stroke="#8fe3a8" stroke-width="5"/>'
+    + sparkle(72, 56, 7) + '<circle cx="54" cy="70" r="5" fill="#ffb86b" stroke-width="2.5"/>'
+    '<path d="M22 60h12v6h6v12h-6v6H22v-6h-6V66h6Z" fill="#ffffff" stroke-width="3"/>'
+    '<circle cx="104" cy="58" r="6" fill="#8fe3a8" stroke-width="3"/><circle cx="96" cy="74" r="6" fill="#ffd45e" stroke-width="3"/><circle cx="110" cy="76" r="6" fill="#8cc8f2" stroke-width="3"/>')
+pictures[ST + "football"] = svg(
+    '<path d="M4 108h120" stroke="#8fe3a8" stroke-width="8"/>'
+    '<defs><clipPath id="ball"><circle cx="64" cy="62" r="42"/></clipPath></defs><circle cx="64" cy="62" r="42" fill="#ffffff"/>'
+    f'<path d="{pentagon(64, 62, 14)}" fill="{INK}" stroke-width="2"/>'
+    '<g clip-path="url(#ball)">'
+    + "".join(f'<path d="M{64 + 14 * math.cos(math.radians(-90 + 72 * i)):.1f} {62 + 14 * math.sin(math.radians(-90 + 72 * i)):.1f}L{64 + 30 * math.cos(math.radians(-90 + 72 * i)):.1f} {62 + 30 * math.sin(math.radians(-90 + 72 * i)):.1f}" stroke-width="2.5"/>'
+              f'<path d="{pentagon(64 + 42 * math.cos(math.radians(-90 + 72 * i)), 62 + 42 * math.sin(math.radians(-90 + 72 * i)), 13, -90 + 72 * i + 36)}" fill="{INK}" stroke-width="2"/>' for i in range(5))
+    + '</g><circle cx="64" cy="62" r="42" fill="none"/>')
+pictures[ST + "basketball"] = svg(
+    '<rect x="78" y="6" width="44" height="30" rx="3" fill="#ffffff"/><rect x="92" y="16" width="16" height="12" fill="none" stroke="#ff6f6f" stroke-width="3"/>'
+    '<path d="M88 40l4 22h16l4-22" fill="none" stroke="#d6d0e0" stroke-width="2.5"/><path d="M94 40l4 22M106 40l-4 22" stroke="#d6d0e0" stroke-width="2"/>'
+    '<ellipse cx="100" cy="40" rx="14" ry="4" fill="none" stroke="#ff6f6f" stroke-width="4"/>'
+    '<circle cx="48" cy="82" r="36" fill="#ffa552"/>'
+    '<path d="M48 46v72M12 82h72M24 56q16 26 0 52M72 56q-16 26 0 52" fill="none" stroke-width="3"/>')
+pictures[ST + "tennis"] = svg(racket(52, 50, -35, 30, 36, 18, "#8cc8f2")
+                              + '<circle cx="104" cy="98" r="14" fill="#d9f26b"/><path d="M92 92q12 4 12 18M104 84q4 10 14 10" fill="none" stroke="#ffffff" stroke-width="3"/>')
+pictures[ST + "baseball"] = svg(
+    '<path d="M18 112l6 6 70-82q8-10 2-16t-16 2Z" fill="#d9a066"/><path d="M14 108l10 10" stroke-width="7"/>'
+    '<circle cx="94" cy="92" r="20" fill="#ffffff"/><path d="M80 80q8 12 0 26M108 78q-8 14 0 28" fill="none" stroke="#ff6f6f" stroke-width="2.5" stroke-dasharray="3 3"/>')
+pictures[ST + "table-tennis"] = svg(
+    '<path d="M4 104h120v12H4Z" fill="#6cc28a"/><path d="M64 104V90" stroke-width="3"/><path d="M58 90h12v14H58Z" fill="#ffffff" stroke-width="2.5"/>'
+    + limb([(36, 66), (20, 92)], "#c98a55", 12) + '<circle cx="44" cy="50" r="24" fill="#ff6f6f"/>'
+    + limb([(94, 72), (112, 96)], "#c98a55", 12) + '<circle cx="86" cy="56" r="22" fill="#6fb3e6"/>'
+    '<circle cx="66" cy="18" r="6" fill="#ffffff" stroke-width="3"/><path d="M52 24q-4 4-6 10M60 28q-2 4-2 8" fill="none" stroke-width="2"/>')
+pictures[ST + "badminton"] = svg(
+    racket(46, 46, -30, 20, 26, 40, "#ff8fb7")
+    + '<g transform="rotate(30 98 46)"><path d="M86 22h24l-6 26H92Z" fill="#ffffff"/><path d="M92 22l2 26M98 22v26M104 22l-2 26" stroke="#d6d0e0" stroke-width="2"/>'
+    '<path d="M90 48h16q0 12-8 12t-8-12Z" fill="#ff6f6f"/></g>')
+pictures[ST + "swimming"] = svg(
+    person(52, 70, .75, "#ff8fb7", "#8cc8f2")
+    + '<circle cx="46" cy="72" r="5" fill="#cfe9ff" stroke-width="2.5"/><circle cx="58" cy="72" r="5" fill="#cfe9ff" stroke-width="2.5"/><path d="M36 70h-4M68 70h4" stroke-width="2.5"/>'
+    + '<path d="M-4 84q16-8 32 0t32 0 32 0 32 0 32 0v48H-4Z" fill="#8cc8f2"/>'
+    + limb([(70, 88), (86, 52), (106, 70)], SKIN, 11) + f'<circle cx="106" cy="72" r="6" fill="{SKIN}" stroke-width="3"/>'
+    + "".join(f'<path d="M{x} {y}q-4 7 0 9 4-2 0-9Z" fill="#cfe9ff" stroke-width="2.5"/>' for x, y in ((112, 82), (98, 84), (22, 76)))
+    + '<path d="M14 104q10-6 20 0M78 112q10-6 20 0" fill="none" stroke="#ffffff" stroke-width="3"/>')
+
+# Vehicles
+pictures[ST + "car"] = svg(car(0, 0))
+pictures[ST + "helicopter"] = svg(
+    limb([(84, 62), (118, 52)], "#ffd45e", 13) + '<circle cx="118" cy="50" r="9" fill="none" stroke-width="3"/><path d="M118 41v18M109 50h18" stroke-width="3"/>'
+    '<path d="M26 104h60M36 92v12M72 92v12" stroke-width="5"/>'
+    '<ellipse cx="54" cy="68" rx="36" ry="26" fill="#ffd45e"/><path d="M68 48q20 2 22 22H68Z" fill="#cfe9ff" stroke-width="3"/>'
+    '<path d="M54 42v-8" stroke-width="5"/><path d="M8 32h92" stroke-width="7"/><path d="M8 32h92" stroke="#d6d0e0" stroke-width="2.5"/><circle cx="54" cy="32" r="4" fill="#5b6b8c" stroke-width="2.5"/>')
+pictures[ST + "motorbike"] = svg(
+    '<circle cx="28" cy="88" r="20" fill="#5b6b8c"/><circle cx="100" cy="88" r="20" fill="#5b6b8c"/>'
+    '<circle cx="28" cy="88" r="7" fill="#d6d0e0" stroke-width="3"/><circle cx="100" cy="88" r="7" fill="#d6d0e0" stroke-width="3"/>'
+    + limb([(100, 88), (88, 48)], "#d6d0e0", 9) + limb([(84, 46), (98, 42)], "#5b6b8c", 8) + limb([(40, 96), (70, 96)], "#d6d0e0", 8)
+    + '<path d="M28 70q2-8 12-8h50l8 14-10 16H48Z" fill="#ff6f6f"/><path d="M30 60h30q4 0 4 4v4H30q-6 0-6-4t6-4Z" fill="#4b2e22"/>'
+    '<rect x="50" y="76" width="20" height="16" rx="4" fill="#d6d0e0" stroke-width="3"/><circle cx="94" cy="58" r="6" fill="#ffd45e" stroke-width="3"/>')
+def inset(name, x, y, size):
+    """Another picture drawn here, smaller: its top-left at (x, y), `size` wide."""
+    inner = pictures[name].split(">", 1)[1].rsplit("</svg>", 1)[0]
+    return f'<svg x="{x}" y="{y}" width="{size}" height="{size}" viewBox="0 0 128 128">{inner}</svg>'
+
+
+# Getting about: a plane in the sky, a bus and a car on the road.
+pictures[ST + "transport"] = svg(
+    '<path d="M-4 104h136v24H-4Z" fill="#a39cb4"/><path d="M6 116h16M38 116h16M70 116h16M102 116h16" stroke="#ffffff" stroke-width="3"/>'
+    + inset(B + "plane", 30, -6, 66) + inset(C + "bus", 0, 50, 64) + inset(ST + "car", 62, 50, 64))
+
+# Pink paint, like the other colours.
+_red = open(os.path.join(IMAGES, "colours/red.svg")).read()
+pictures["colours/pink"] = _red.replace("#ff6b6b", "#ff9fcb").replace("#ff9bb5", "#ff5f9a").replace('<?xml version="1.0"?>', "")
+
+# The topics' icons
+pictures["../icons/starters-school"] = svg(
+    '<rect x="14" y="88" width="100" height="24" rx="4" fill="#8cc8f2"/><path d="M104 92v16" stroke="#ffffff" stroke-width="4"/>'
+    '<rect x="22" y="64" width="86" height="24" rx="4" fill="#ff8fb7"/><path d="M98 68v16" stroke="#ffffff" stroke-width="4"/>'
+    '<path d="M64 62c-14 0-22-10-20-22 2-10 10-14 20-8 10-6 18-2 20 8 2 12-6 22-20 22Z" fill="#ff6f6f"/>'
+    '<path d="M64 34q0-10 6-14" fill="none" stroke-width="3"/><path d="M66 26q10-8 16 0-8 6-16 0Z" fill="#8fe3a8" stroke-width="2.5"/>')
+pictures["../icons/starters-toys-and-hobbies"] = svg(
+    card(10, 74, 40, 40, "#ffd45e") + label(30, 104, "A", 26) + card(30, 34, 40, 40, "#8cc8f2") + label(50, 64, "B", 26)
+    + '<circle cx="92" cy="88" r="26" fill="#ffd45e"/><path d="M92 62Q66 88 92 114Q78 88 92 62Z" fill="#ff6f6f"/><path d="M92 62Q118 88 92 114Q106 88 92 62Z" fill="#8cc8f2"/>'
+    '<path d="M92 62Q78 88 92 114Q106 88 92 62Z" fill="#ffffff"/><circle cx="92" cy="88" r="26" fill="none"/>')
+pictures["../icons/starters-vehicles"] = svg(car(0, -4))
+
 # ---------- Interface icons ----------
 UI = "../icons/ui-"
 pictures[UI + "shuffle"] = svg(

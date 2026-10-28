@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+<g stroke="#4b2e22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<rect x="22" y="82" width="36" height="36" rx="10" fill="#ffd45e"/><text x="40" y="110" text-anchor="middle" font-family="Fredoka,Arial Rounded MT Bold,Arial,sans-serif" font-size="24" font-weight="700" fill="#4b2e22" stroke="none">A</text><rect x="62" y="82" width="36" height="36" rx="10" fill="#8cc8f2"/><text x="80" y="110" text-anchor="middle" font-family="Fredoka,Arial Rounded MT Bold,Arial,sans-serif" font-size="24" font-weight="700" fill="#4b2e22" stroke="none">B</text><rect x="42" y="44" width="36" height="36" rx="10" fill="#ffb3d1"/><text x="60" y="72" text-anchor="middle" font-family="Fredoka,Arial Rounded MT Bold,Arial,sans-serif" font-size="24" font-weight="700" fill="#4b2e22" stroke="none">C</text>
+</g>
+</svg>

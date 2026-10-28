@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+<g stroke="#4b2e22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<path d="M18 60L28 28h72l10 32Z" fill="#ffb3d1"/><circle cx="40" cy="56" r="14" fill="#8cc8f2"/><path d="M28 50q12 8 24 0" fill="none" stroke="#ffffff" stroke-width="3"/><rect x="58" y="40" width="22" height="22" rx="3" fill="#ffd45e" transform="rotate(-10 69 51)"/><circle cx="86" cy="40" r="6" fill="#d9a066"/><circle cx="104" cy="40" r="6" fill="#d9a066"/><circle cx="95" cy="52" r="13" fill="#d9a066"/><ellipse cx="90" cy="50" rx="2.1" ry="2.4" fill="#4b2e22" stroke="none"/><circle cx="90.7" cy="49.3" r="0.7" fill="#fff" stroke="none"/><ellipse cx="100" cy="50" rx="2.1" ry="2.4" fill="#4b2e22" stroke="none"/><circle cx="100.7" cy="49.3" r="0.7" fill="#fff" stroke="none"/><path d="M14 60h100v52q0 6-6 6H20q-6 0-6-6Z" fill="#ff8fb7"/><path d="M14 74h100" stroke-width="3"/><text x="64" y="104" text-anchor="middle" font-family="Fredoka,Arial Rounded MT Bold,Arial,sans-serif" font-size="18" font-weight="700" fill="#ffffff" stroke="none">TOYS</text>
+</g>
+</svg>

@@ -16,9 +16,10 @@ describe("Letter Jumble - Starters", () => {
     ]);
   });
 
-  it("has the six topics added after them, with two spellings where either is right", () => {
+  it("has the topics added after them, with two spellings where either is right", () => {
     expect(starterCategories.map((topic) => topic.name)).toEqual([
       "Pets and Farm", "Wild Animals", "Fruit and Vegetables", "Food and Drinks", "Body and Face", "Clothing and Accessories", "People", "Home",
+      "School", "Toys and Hobbies", "Vehicles", "Colours",
     ]);
     const answers = (id) => starterCategories.find((topic) => topic.id === id).words.map((word) => word.answers.join("/"));
     expect(answers("fruit-and-vegetables")).toEqual([
@@ -45,6 +46,20 @@ describe("Letter Jumble - Starters", () => {
       "bookcase", "chair", "armchair", "desk", "door", "window", "floor", "wall", "picture", "clock", "lamp", "mirror", "mat", "rug",
       "sofa", "table", "television", "phone", "radio",
     ]);
+  });
+
+  it("has the School, Toys and Hobbies, Vehicles and Colours words", () => {
+    const answers = (id) => starterCategories.find((topic) => topic.id === id).words.map((word) => word.answers.join("/"));
+    expect(answers("school")).toEqual([
+      "board", "book", "desk", "eraser/rubber", "ruler", "pen", "pencil", "paper", "page", "crayon", "bag", "computer", "class", "classroom",
+      "lesson", "homework", "teacher", "student", "letter", "line", "number", "sentence", "word", "story", "answer", "question",
+    ]);
+    expect(answers("toys-and-hobbies")).toEqual([
+      "toy", "ball", "balloon", "block", "doll", "monster", "robot", "teddy bear", "train", "game", "board game", "bike", "camera", "kite",
+      "computer game", "football/soccer", "basketball", "tennis", "baseball", "table tennis", "badminton", "fishing", "swimming",
+    ]);
+    expect(answers("vehicles")).toEqual(["transport", "bike", "boat", "bus", "car", "helicopter", "motorbike", "plane", "ship", "train", "truck/lorry"]);
+    expect(answers("colours")).toEqual(["black", "blue", "brown", "green", "grey/gray", "orange", "pink", "purple", "red", "white", "yellow"]);
   });
 
   it("has a picture for every word, and every picture file exists", () => {

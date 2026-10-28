@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+<g stroke="#4b2e22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<path d="M30 96l-8 26M98 96l8 26" stroke-width="6"/><rect x="8" y="12" width="112" height="86" rx="6" fill="#c98a55"/><rect x="16" y="20" width="96" height="68" rx="3" fill="#5fa37a"/><text x="64" y="52" text-anchor="middle" font-family="Fredoka,Arial Rounded MT Bold,Arial,sans-serif" font-size="22" font-weight="700" fill="#ffffff" stroke="none">A B C</text><text x="64" y="78" text-anchor="middle" font-family="Fredoka,Arial Rounded MT Bold,Arial,sans-serif" font-size="18" font-weight="700" fill="#fff6c8" stroke="none">1 2 3</text><path d="M12 98h104" stroke-width="5"/><rect x="84" y="90" width="16" height="6" rx="2" fill="#ffffff" stroke-width="2.5"/>
+</g>
+</svg>

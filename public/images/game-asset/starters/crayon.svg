@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+<g stroke="#4b2e22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<g transform="rotate(-34 64 64) translate(0 -16)"><path d="M94 56l18 8-18 8Z" fill="#ff6f6f"/><rect x="18" y="56" width="76" height="16" rx="3" fill="#ff6f6f"/><rect x="34" y="56" width="44" height="16" fill="#fff6e0" stroke-width="3"/><path d="M42 56v16M70 56v16" stroke="#ff6f6f" stroke-width="3"/></g><g transform="rotate(-14 64 64) translate(0 2)"><path d="M94 56l18 8-18 8Z" fill="#8cc8f2"/><rect x="18" y="56" width="76" height="16" rx="3" fill="#8cc8f2"/><rect x="34" y="56" width="44" height="16" fill="#fff6e0" stroke-width="3"/><path d="M42 56v16M70 56v16" stroke="#8cc8f2" stroke-width="3"/></g><g transform="rotate(6 64 64) translate(0 20)"><path d="M94 56l18 8-18 8Z" fill="#8fe3a8"/><rect x="18" y="56" width="76" height="16" rx="3" fill="#8fe3a8"/><rect x="34" y="56" width="44" height="16" fill="#fff6e0" stroke-width="3"/><path d="M42 56v16M70 56v16" stroke="#8fe3a8" stroke-width="3"/></g><path d="M14 116q10-10 20 0t20 0 20 0" fill="none" stroke="#ff6f6f" stroke-width="4"/>
+</g>
+</svg>

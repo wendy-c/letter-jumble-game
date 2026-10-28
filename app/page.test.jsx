@@ -1231,7 +1231,7 @@ describe("badges", () => {
 
     expect(within(collection).getAllByRole("heading", { level: 2 }).map((heading) => heading.textContent))
       .toEqual(["Consonant Digraphs", "R & L Blends", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 進階篇", "量詞配對", "成語"]);
-    expect(collection).toHaveTextContent("2 of 29 badges");
+    expect(collection).toHaveTextContent("2 of 33 badges");
     expect(within(collection).getByRole("listitem", { name: "Animals: earned" })).toBeInTheDocument();
     expect(within(collection).getByRole("listitem", { name: "成語: earned" })).toBeInTheDocument();
     const movers = within(collection).getByRole("region", { name: "Letter Jumble - Movers" });

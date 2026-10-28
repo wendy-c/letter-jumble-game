@@ -54,7 +54,7 @@ export const games = [
     name: "Letter Jumble - Starters",
     color: "green",
     picture: "/images/icons/starters-pets-and-farm.svg",
-    note: "For age 5-6 - Cambridge Starters · 8 topics",
+    note: "For age 5-6 - Cambridge Starters · 12 topics",
     badge: "CAMBRIDGE STARTERS",
     ages: ["5-6"],
     spellingGuide: true,
