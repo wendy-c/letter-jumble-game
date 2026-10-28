@@ -6,6 +6,7 @@
 import math, os
 
 INK = "#4b2e22"
+SKIN = "#ffe2c4"
 IMAGES = "public/images/game-asset"
 pictures = {}
 
@@ -47,6 +48,36 @@ def burst(x, y, r1, r2, angles, width=3):
         c, s = math.cos(math.radians(a)), math.sin(math.radians(a))
         out += f'<path d="M{x + r1 * c:.1f} {y + r1 * s:.1f}L{x + r2 * c:.1f} {y + r2 * s:.1f}" stroke-width="{width}"/>'
     return out
+
+
+def kid(x, y, s=1.0, arms=None, legs=None, hair="#8b5a3c", shirt="#8fe3a8", shorts="#5b6b8c", facing=0, eyes="open", back=False):
+    """A whole child with the head's centre at (x, y), `s` times the usual size (about 80 tall).
+    `arms` are two lists of points from the shoulders (±11, 17) and `legs` two from the hips
+    (±6, 42), around the head's centre; hands and shoes go on their ends. Shoes point outwards, or
+    all one way when `facing` is 1 (right) or -1 (left). With `back`, they face away from us."""
+    arms = arms or [[(-11, 17), (-17, 38)], [(11, 17), (17, 38)]]
+    legs = legs or [[(-6, 42), (-7, 64)], [(6, 42), (7, 64)]]
+    body = "".join(limb(leg, shorts, 12) for leg in legs)
+    for leg in legs:
+        fx, fy = leg[-1]
+        body += f'<ellipse cx="{fx + 3 * (facing or (1 if fx >= 0 else -1))}" cy="{fy + 2}" rx="7" ry="4.5" fill="#ff8fa3" stroke-width="3"/>'
+    body += (f'<path d="M-13 32h26l2 14H-15Z" fill="{shorts}"/>'
+             f'<path d="M-9 13h18q5 0 6 6l2 17h-34l2-17q1-6 6-6Z" fill="{shirt}"/>')
+    for arm in arms:
+        body += limb(arm, SKIN, 10) + f'<circle cx="{arm[-1][0]}" cy="{arm[-1][1]}" r="5" fill="{SKIN}" stroke-width="3"/>'
+    if back:
+        # The back of the head: ears, hair all over and a little swirl.
+        body += (f'<circle cx="-13" cy="2" r="4" fill="{SKIN}" stroke-width="3"/><circle cx="13" cy="2" r="4" fill="{SKIN}" stroke-width="3"/>'
+                 f'<circle cx="0" cy="0" r="13" fill="{hair}"/><path d="M-3-4q5-4 8 2" fill="none" stroke-width="2.5"/>')
+        return f'<g transform="translate({x} {y}) scale({s})">{body}</g>'
+    body += (f'<circle cx="0" cy="0" r="13" fill="{SKIN}"/>'
+             f'<path d="M-13 1q-1-15 13-15 14 0 13 15-4-8-13-8-9 0-13 8Z" fill="{hair}"/>')
+    if eyes == "closed":
+        body += '<path d="M-8 2q3-3 6 0M2 2q3-3 6 0" fill="none" stroke-width="2.2"/>'
+    else:
+        body += eye(-5, 2, .8) + eye(5, 2, .8)
+    body += cheek(-9, 7, .7) + cheek(9, 7, .7) + smile(0, 7.5, 5)
+    return f'<g transform="translate({x} {y}) scale({s})">{body}</g>'
 
 
 # ---------- Letter Jumble for Movers ----------
@@ -100,11 +131,28 @@ pictures[BF + "fat"] = svg(bear(30, False) + bear(86, True) + down_arrow(86))
 
 
 S = "sports-and-leisure/"
+# A band on stage: a guitarist, a drummer behind the drums and a singer.
+def note(x, y):
+    return f'<ellipse cx="{x}" cy="{y}" rx="4" ry="3" fill="{INK}" stroke="none"/><path d="M{x + 3.5} {y}v-14q5 2 7 7" fill="none" stroke-width="2.5"/>'
+
+
 pictures[S + "band"] = svg(
-    '<path d="M70 50l36-36 8 8-36 36" fill="#c98a55"/><path d="M104 12l8-4 8 8-4 8Z" fill="#8b5a3c"/>'
-    '<path d="M50 52c-12-12-34-6-38 10-4 16 6 26 14 30 2 12 14 24 30 22 18-2 26-18 20-32 10-4 14-14 8-22-8-10-22-14-34-8Z" fill="#ff8fa3"/>'
-    '<circle cx="54" cy="76" r="10" fill="#4b2e22"/><path d="M40 92l18-18M44 96l18-18" stroke="#fff6e0" stroke-width="2"/>'
-    '<path d="M76 54l-24 24" stroke="#fff6e0" stroke-width="2.5"/>')
+    '<path d="M-4 100h136v32H-4Z" fill="#c9b6f5"/>'
+    + kid(64, 30, 0.6, arms=[[(-11, 17), (-24, 20), (-30, 8)], [(11, 17), (24, 20), (30, 8)]], hair="#4b2e22", shirt="#ffd45e")
+    + '<path d="M46 35l-8-8M82 35l8-8" stroke-width="3"/>'
+    '<path d="M92 50v46" stroke-width="3"/><ellipse cx="92" cy="49" rx="11" ry="3" fill="#ffd45e" stroke-width="3"/>'
+    '<path d="M39 58v8q9 5 18 0v-8" fill="#ff8fa3"/><ellipse cx="48" cy="58" rx="9" ry="3.5" fill="#ffffff" stroke-width="3"/>'
+    '<path d="M71 58v8q9 5 18 0v-8" fill="#ff8fa3"/><ellipse cx="80" cy="58" rx="9" ry="3.5" fill="#ffffff" stroke-width="3"/>'
+    '<circle cx="64" cy="80" r="18" fill="#ffffff"/><circle cx="64" cy="80" r="12" fill="none" stroke="#ff8fa3" stroke-width="3"/>'
+    + kid(26, 56, 0.62, arms=[[(-11, 17), (-14, 32), (0, 30)], [(11, 17), (18, 22), (28, 14)]], hair="#c98a55", shirt="#8fe3a8")
+    + limb([(28, 74), (50, 56)], "#8b5a3c", 7) + '<rect x="48" y="50" width="7" height="9" rx="2" fill="#8b5a3c" stroke-width="2.5" transform="rotate(50 51 54)"/>'
+    '<circle cx="20" cy="80" r="9" fill="#ff8fa3"/><circle cx="28" cy="73" r="7" fill="#ff8fa3"/><circle cx="23" cy="77" r="2.5" fill="#4b2e22" stroke="none"/>'
+    f'<circle cx="26" cy="74.6" r="3.2" fill="{SKIN}" stroke-width="2.5"/><circle cx="43.4" cy="64.7" r="3.2" fill="{SKIN}" stroke-width="2.5"/>'
+    + kid(102, 56, 0.62, arms=[[(-11, 17), (-16, 36)], [(11, 17), (20, 24), (10, 10)]], hair="#a46a3c", shirt="#ff8fb7")
+    .replace(smile(0, 7.5, 5), f'<ellipse cx="0" cy="8.5" rx="2.6" ry="3.2" fill="{INK}" stroke="none"/>')
+    + '<path d="M108 62l3 12" stroke-width="4"/><circle cx="107" cy="58" r="4.5" fill="#d6d0e0" stroke-width="3"/>'
+    f'<circle cx="108.2" cy="62.2" r="3.2" fill="{SKIN}" stroke-width="2.5"/>'
+    + note(116, 30) + note(10, 30) + note(104, 16))
 pictures[S + "sailing"] = svg(
     '<path d="M4 108q15-8 30 0t30 0 30 0 30 0v16H4Z" fill="#8cc8f2"/>'
     '<path d="M22 92h84l-12 16H34Z" fill="#c98a55"/><path d="M64 92V14" stroke-width="5"/>'
@@ -364,7 +412,6 @@ pictures[F + "lemonade"] = svg(
 
 # ---------- Letter Jumble for Starters: body, clothes, people and home ----------
 ST = "starters/"
-SKIN = "#ffe2c4"
 
 
 def person(x, y, s=1.0, hair="#8b5a3c", shirt="#8cc8f2", style="short", extra=""):
@@ -391,36 +438,6 @@ def glasses(x, y, s=1.0):
     return (f'<circle cx="{x - 8 * s:.1f}" cy="{y + 2 * s:.1f}" r="{6 * s:.1f}" fill="none" stroke-width="{2.5 * s:.1f}"/>'
             f'<circle cx="{x + 8 * s:.1f}" cy="{y + 2 * s:.1f}" r="{6 * s:.1f}" fill="none" stroke-width="{2.5 * s:.1f}"/>'
             f'<path d="M{x - 2 * s:.1f} {y + 2 * s:.1f}h{4 * s:.1f}" stroke-width="{2.5 * s:.1f}"/>')
-
-
-def kid(x, y, s=1.0, arms=None, legs=None, hair="#8b5a3c", shirt="#8fe3a8", shorts="#5b6b8c", facing=0, eyes="open", back=False):
-    """A whole child with the head's centre at (x, y), `s` times the usual size (about 80 tall).
-    `arms` are two lists of points from the shoulders (±11, 17) and `legs` two from the hips
-    (±6, 42), around the head's centre; hands and shoes go on their ends. Shoes point outwards, or
-    all one way when `facing` is 1 (right) or -1 (left). With `back`, they face away from us."""
-    arms = arms or [[(-11, 17), (-17, 38)], [(11, 17), (17, 38)]]
-    legs = legs or [[(-6, 42), (-7, 64)], [(6, 42), (7, 64)]]
-    body = "".join(limb(leg, shorts, 12) for leg in legs)
-    for leg in legs:
-        fx, fy = leg[-1]
-        body += f'<ellipse cx="{fx + 3 * (facing or (1 if fx >= 0 else -1))}" cy="{fy + 2}" rx="7" ry="4.5" fill="#ff8fa3" stroke-width="3"/>'
-    body += (f'<path d="M-13 32h26l2 14H-15Z" fill="{shorts}"/>'
-             f'<path d="M-9 13h18q5 0 6 6l2 17h-34l2-17q1-6 6-6Z" fill="{shirt}"/>')
-    for arm in arms:
-        body += limb(arm, SKIN, 10) + f'<circle cx="{arm[-1][0]}" cy="{arm[-1][1]}" r="5" fill="{SKIN}" stroke-width="3"/>'
-    if back:
-        # The back of the head: ears, hair all over and a little swirl.
-        body += (f'<circle cx="-13" cy="2" r="4" fill="{SKIN}" stroke-width="3"/><circle cx="13" cy="2" r="4" fill="{SKIN}" stroke-width="3"/>'
-                 f'<circle cx="0" cy="0" r="13" fill="{hair}"/><path d="M-3-4q5-4 8 2" fill="none" stroke-width="2.5"/>')
-        return f'<g transform="translate({x} {y}) scale({s})">{body}</g>'
-    body += (f'<circle cx="0" cy="0" r="13" fill="{SKIN}"/>'
-             f'<path d="M-13 1q-1-15 13-15 14 0 13 15-4-8-13-8-9 0-13 8Z" fill="{hair}"/>')
-    if eyes == "closed":
-        body += '<path d="M-8 2q3-3 6 0M2 2q3-3 6 0" fill="none" stroke-width="2.2"/>'
-    else:
-        body += eye(-5, 2, .8) + eye(5, 2, .8)
-    body += cheek(-9, 7, .7) + cheek(9, 7, .7) + smile(0, 7.5, 5)
-    return f'<g transform="translate({x} {y}) scale({s})">{body}</g>'
 
 
 # People
@@ -483,16 +500,18 @@ pictures[ST + "sister"] = svg(person(64, 58, 1.25, "#c98a55", "#c9b6f5", "long")
 pictures[ST + "face"] = svg(
     f'<circle cx="64" cy="64" r="46" fill="{SKIN}"/><path d="M18 58q0-42 46-42t46 42q-14-22-46-22T18 58Z" fill="#8b5a3c"/>'
     + eye(48, 66, 1.6) + eye(80, 66, 1.6) + cheek(38, 80, 1.6) + cheek(90, 80, 1.6) + smile(64, 86, 14))
-pictures[ST + "hair"] = svg(
-    f'<circle cx="64" cy="70" r="36" fill="{SKIN}"/>'
-    '<path d="M20 104q-8-40 4-62 14-26 40-26t40 26q12 22 4 62-10-28-14-50-12 8-30 8t-30-8q-4 22-14 50Z" fill="#a46a3c"/>'
-    '<path d="M44 26q10 10 20 8M70 22q12 6 22 22" fill="none" stroke="#c98a55" stroke-width="3"/>' + eye(52, 76) + eye(76, 76) + smile(64, 88, 8))
+# A child with long hair, the arrow pointing at it.
+pictures[ST + "hair"] = svg(person(64, 74, 1.5, "#a46a3c", "#8fe3a8", "long")
+                            + '<path d="M46 40q10-8 18-8M72 34q10 2 16 10" fill="none" stroke="#c98a55" stroke-width="3"/>' + down_arrow(64))
 pictures[ST + "eye"] = svg(
     '<path d="M10 64q54-56 108 0-54 56-108 0Z" fill="#ffffff"/><circle cx="64" cy="64" r="22" fill="#8cc8f2"/><circle cx="64" cy="64" r="11" fill="#4b2e22" stroke="none"/>'
     '<circle cx="58" cy="58" r="5" fill="#ffffff" stroke="none"/><path d="M24 40l-8-10M44 28l-4-12M64 24V12M84 28l4-12M104 40l8-10" stroke-width="4"/>')
+# A child's face, the arrow pointing at an ear.
 pictures[ST + "ear"] = svg(
-    f'<path d="M44 30q20-24 46-8 22 16 14 46-6 20-22 30-10 6-10 18-2 12-16 10-14-2-12-18 2-14 10-22 10-10 6-20-4-8-12-4-8 4-10 12-4 8-10 4-6-4-2-14 4-24 16-34Z" fill="{SKIN}"/>'
-    '<path d="M62 44q16-6 22 10 4 14-10 22" fill="none" stroke="#f2b8a0" stroke-width="5"/>')
+    person(54, 60, 1.5, "#a46a3c", "#8fe3a8", "short")
+    + f'<ellipse cx="20" cy="74" rx="8" ry="11" fill="{SKIN}"/><ellipse cx="88" cy="74" rx="8" ry="11" fill="{SKIN}"/>'
+    '<path d="M18 69q-3 5 0 10M90 69q3 5 0 10" fill="none" stroke="#f2b8a0" stroke-width="3"/>'
+    '<path d="M126 66h-14v-8L98 74l14 14v-8h14Z" fill="#ff6f6f" stroke-width="3"/>')
 pictures[ST + "nose"] = svg(
     f'<circle cx="64" cy="64" r="50" fill="{SKIN}" stroke="none"/><path d="M64 24q-6 30-22 48-8 12 4 20 10 6 18-2 8 8 18 2 12-8 4-20-16-18-22-48Z" fill="#ffd6b8"/>'
     '<ellipse cx="54" cy="84" rx="4" ry="3" fill="#4b2e22" stroke="none"/><ellipse cx="74" cy="84" rx="4" ry="3" fill="#4b2e22" stroke="none"/>')
@@ -507,14 +526,31 @@ pictures[ST + "arm"] = svg(
     '<path d="M90 13v8M100 13v8" stroke-width="2.5"/>'
     + limb([(80, 28), (98, 28)], SKIN, 12)
     + '<path d="M2 50l30 2q8 22 0 50L2 104Z" fill="#8cc8f2"/>' + sparkle(110, 66, 7) + sparkle(50, 28, 6, "#ffb3d9"))
+# A whole child inside a dashed outline, with an arrow pointing at them.
 pictures[ST + "body"] = svg(
-    f'<circle cx="64" cy="22" r="14" fill="{SKIN}"/><path d="M40 40h48l8 44H32Z" fill="#8cc8f2"/>'
-    f'<path d="M40 44l-16 34M88 44l16 34" stroke="{INK}" stroke-width="12"/><path d="M40 44l-16 34M88 44l16 34" stroke="{SKIN}" stroke-width="6"/>'
-    '<path d="M44 84h40l-4 34H48Z" fill="#5b6b8c"/><path d="M64 88v30" stroke-width="3"/>'
-    + eye(59, 22, 0.7) + eye(69, 22, 0.7) + smile(64, 28, 5))
+    '<rect x="24" y="8" width="72" height="114" rx="34" fill="#fff0f4" stroke="#ff6f6f" stroke-width="3" stroke-dasharray="7 7"/>'
+    + kid(60, 30, 1.05, arms=[[(-11, 17), (-20, 38)], [(11, 17), (20, 38)]], shirt="#8cc8f2")
+    + '<path d="M126 58h-14v-8L98 64l14 14v-8h14Z" fill="#ff6f6f" stroke-width="3"/>')
+# A bare foot from the side, toes to the right.
+# A sitting cat, the arrow pointing at its curly tail.
+pictures[ST + "tail"] = svg(
+    limb("M78 96C106 96 110 72 102 58 96 46 104 36 110 40", "#ffb86b", 13)
+    + '<path d="M101 64l7-3M101 52l7 1" stroke="#e8894a" stroke-width="3"/>'
+    '<ellipse cx="72" cy="94" rx="15" ry="15" fill="#ffb86b"/><ellipse cx="52" cy="88" rx="28" ry="24" fill="#ffb86b"/>'
+    '<path d="M60 76q6 4 4 12M70 82q4 4 2 10" fill="none" stroke="#e8894a" stroke-width="3"/>'
+    '<rect x="32" y="94" width="10" height="20" rx="5" fill="#ffb86b"/><rect x="46" y="96" width="10" height="18" rx="5" fill="#ffb86b"/>'
+    '<ellipse cx="78" cy="110" rx="10" ry="5" fill="#ffb86b"/>'
+    '<path d="M16 46l2-22 15 13ZM40 37l12-15 5 21Z" fill="#ffb86b"/><path d="M20 40l1-9 6 5ZM44 36l5-7 2 9Z" fill="#ffb3c6" stroke="none"/>'
+    '<circle cx="35" cy="54" r="20" fill="#ffb86b"/>'
+    '<path d="M26 40q4 4 2 8M36 36v8" fill="none" stroke="#e8894a" stroke-width="3"/>'
+    + eye(28, 54, .9) + eye(42, 54, .9) + cheek(23, 62, .7) + cheek(47, 62, .7)
+    + '<path d="M33 60l2 2 2-2Z" fill="#ff8fae" stroke-width="2"/>' + smile(35, 64, 5) + down_arrow(110))
 pictures[ST + "foot"] = svg(
-    f'<path d="M48 40q-10 30 0 54 6 22 22 22 18 0 18-22 0-14-6-26-6-14-2-28-14-10-32 0Z" fill="{SKIN}"/>'
-    + "".join(f'<ellipse cx="{x}" cy="{y}" rx="{r}" ry="{r * 1.2:.1f}" fill="{SKIN}"/>' for x, y, r in [(52, 26, 8), (68, 18, 7), (82, 20, 6), (92, 28, 5), (98, 38, 4.5)]))
+    f'<path d="M32 10v68q-4 28 16 28h58q14 0 14-12 0-8-10-10L82 82q-20-6-24-24l-2-48Z" fill="{SKIN}"/>'
+    + "".join(f'<circle cx="{tx}" cy="{ty}" r="{tr}" fill="{SKIN}" stroke-width="3"/>' for tx, ty, tr in ((86, 82, 4.5), (94, 84, 5), (102, 86, 5.5)))
+    + f'<ellipse cx="112" cy="93" rx="9" ry="8" fill="{SKIN}"/><ellipse cx="116" cy="91" rx="3.5" ry="3" fill="#ffffff" stroke-width="2"/>'
+    '<path d="M48 76q4-4 8 0M64 98q14 2 28 0" fill="none" stroke="#f2b8a0" stroke-width="3"/>'
+    '<path d="M28-4h32l-2 26H30Z" fill="#8cc8f2"/><path d="M30 18h28" stroke="#ffffff" stroke-width="3"/>')
 pictures[ST + "hand"] = svg(
     f'<path d="M38 112V64l-12-18q-4-10 6-12 8 0 12 10l6 12V24q0-8 8-8t8 8v34-42q0-8 8-8t8 8v42-36q0-8 8-8t8 8v38-26q0-8 8-8t8 8v52q0 30-30 30H58q-20 0-20-12Z" fill="{SKIN}"/>'
     '<path d="M58 64v24M72 62v26M86 64v24" stroke="#f2b8a0" stroke-width="3"/>')
@@ -527,10 +563,18 @@ pictures[ST + "dress"] = svg(
     '<path d="M50 14h28l4 26 30 70H16l30-70Z" fill="#ff8fb7"/><path d="M48 40h32" stroke-width="4"/>'
     '<path d="M50 14l-8 6M78 14l8 6" fill="none" stroke-width="4"/>'
     + "".join(f'<circle cx="{x}" cy="{y}" r="3.5" fill="#ffffff" stroke="none"/>' for x, y in [(40, 76), (64, 66), (86, 80), (52, 96), (78, 100)]))
+# A clothes rail: a T-shirt, a dress and jeans on hangers.
+def hanger(x):
+    return f'<path d="M{x} 30q0-6 4-6" fill="none" stroke-width="3"/><path d="M{x - 13} 38L{x} 30l13 8" fill="none" stroke-width="3"/>'
+
+
 pictures[ST + "clothes"] = svg(
-    '<path d="M64 10v8" stroke-width="3"/><path d="M8 28h112" stroke="#c98a55" stroke-width="5"/>'
-    '<path d="M18 30h32l-4 16 12 62H12l12-62Z" fill="#ff8fb7"/>'
-    '<path d="M70 30h40l10 18-10 6v54H80V54l-10-6Z" fill="#8cc8f2"/><path d="M84 30q6 10 12 0" fill="none" stroke-width="3"/>')
+    '<path d="M10 24v94M118 24v94" stroke-width="7"/><path d="M10 24v94M118 24v94" stroke="#d6d0e0" stroke-width="2.5"/>'
+    '<path d="M2 118h18M110 118h18" stroke-width="6"/><path d="M6 24h116" stroke-width="7"/><path d="M6 24h116" stroke="#c98a55" stroke-width="2.5"/>'
+    + hanger(31) + hanger(64) + hanger(97)
+    + '<path d="M22 38h18l10 10-6 7-4-3v36H22V52l-4 3-6-7Z" fill="#8cc8f2"/><path d="M26 38q5 6 10 0" fill="none" stroke-width="3"/>'
+    '<path d="M56 38h16l-2 14 14 44H44l12-44Z" fill="#ff8fb7"/><path d="M56 52h16" stroke-width="3"/>'
+    '<path d="M84 38h26l2 62H100l-3-42-3 42H82Z" fill="#5b6b8c"/><path d="M84 46h26M97 46v12" stroke="#8ea6cc" stroke-width="2.5"/>')
 pictures[ST + "jacket"] = svg(
     '<path d="M40 16h48l28 24-12 20-10-8v62H34V52l-10 8-12-20Z" fill="#ffa552"/>'
     '<path d="M64 20v94" stroke-width="3"/><path d="M48 16l16 22 16-22" fill="#ffe2c4"/><path d="M42 70h14M72 70h14" stroke-width="3"/>')
@@ -569,11 +613,16 @@ pictures[ST + "home"] = svg(
     '<path d="M64 74c-8-10-22-4-16 6l16 14 16-14c6-10-8-16-16-6Z" fill="#ff6f8f" stroke-width="2.5" transform="translate(-22 -6) scale(0.7) translate(30 20)"/>'
     '<path d="M86 70c-4-6-12-2-9 3l9 8 9-8c3-5-5-9-9-3Z" fill="#ff6f8f" stroke-width="2.5"/>'
     '<path d="M2 116h124" stroke="#8fe3a8" stroke-width="6"/>')
+# A dining room: a window and a lamp, a laid table and two chairs.
 pictures[ST + "dining-room"] = svg(
-    '<path d="M14 64h100v10H14Z" fill="#c98a55"/><path d="M24 74v40M104 74v40" stroke-width="6"/>'
-    '<ellipse cx="44" cy="60" rx="16" ry="5" fill="#ffffff"/><ellipse cx="84" cy="60" rx="16" ry="5" fill="#ffffff"/>'
-    '<path d="M60 58V36M68 58V36" stroke-width="3"/><path d="M58 30q6-12 12 0Z" fill="#ffd45e" stroke-width="2.5"/>'
-    '<path d="M24 22h80" stroke-width="3"/><path d="M64 22v-14" stroke-width="3"/>')
+    '<path d="M0 0h128v104H0Z" fill="#fff6e0" stroke="none"/><path d="M-4 104h136v28H-4Z" fill="#e0b07a"/>'
+    '<rect x="10" y="14" width="30" height="34" rx="3" fill="#cfe9ff"/><path d="M25 14v34M10 31h30" stroke-width="3"/>'
+    '<path d="M64 0v18" stroke-width="3"/><path d="M50 30q0-12 14-12t14 12Z" fill="#ffd45e"/>'
+    '<path d="M14 54v56M14 82h20M32 82v28" fill="none" stroke-width="5"/><path d="M114 54v56M114 82H94M96 82v28" fill="none" stroke-width="5"/>'
+    '<path d="M30 72v38M98 72v38" stroke-width="6"/>'
+    '<path d="M22 70h84v8q-7 8-14 0-7 8-14 0-7 8-14 0-7 8-14 0-7 8-14 0-7 8-14 0Z" fill="#ffb3d1"/>'
+    '<ellipse cx="40" cy="68" rx="12" ry="3.5" fill="#ffffff" stroke-width="3"/><ellipse cx="88" cy="68" rx="12" ry="3.5" fill="#ffffff" stroke-width="3"/>'
+    '<path d="M54 60h20q0 10-10 10t-10-10Z" fill="#ffffff" stroke-width="3"/><path d="M60 54q-2-4 0-8M68 54q-2-4 0-8" fill="none" stroke="#d6d0e0" stroke-width="2.5"/>')
 pictures[ST + "garden"] = svg(
     '<path d="M4 98h120v26H4Z" fill="#9fdcbf"/>'
     + "".join(f'<path d="M{x} 100V{y}" stroke="#4fb893" stroke-width="4"/><circle cx="{x}" cy="{y - 6}" r="10" fill="{c}"/><circle cx="{x}" cy="{y - 6}" r="4" fill="#ffd45e" stroke-width="2"/>'
