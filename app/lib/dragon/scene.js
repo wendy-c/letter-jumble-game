@@ -2248,7 +2248,7 @@ const actions = {
 
   /* ----- Tofu: activities in the kitchen ----- */
 
-  // Whisks up banana cupcake batter, then ding! A cupcake pops out of the oven.
+  // Whisks up banana muffin batter, then ding! A muffin pops out of the oven.
   baking(run, pose, dt, ctx) {
     const t = run.t;
     if (!run.bowl) {

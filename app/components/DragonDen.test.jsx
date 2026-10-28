@@ -44,7 +44,7 @@ describe("DragonDen", () => {
     expect(room()).toBe("bathroom");
     await user.click(screen.getByRole("tab", { name: /Activities/ }));
     expect(room()).toBe("beach");
-    await user.click(screen.getByRole("tab", { name: /Treats/ }));
+    await user.click(screen.getByRole("tab", { name: /Food/ }));
     expect(room()).toBe("home");
   });
 
@@ -52,18 +52,18 @@ describe("DragonDen", () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     renderDen(10);
     const tabs = screen.getAllByRole("tab");
-    expect(tabs.map((tab) => tab.textContent.trim())).toEqual(["Treats", "Grooming", "Activities"]);
+    expect(tabs.map((tab) => tab.textContent.trim())).toEqual(["Food", "Grooming", "Activities"]);
     tabs.forEach((tab) => expect(tab.querySelector("img")).toHaveAttribute("src", expect.stringMatching(/\.svg$/)));
     expect(tabs[0]).toHaveAttribute("aria-selected", "true");
 
     const sections = {
-      Treats: ["Apple, 1 rainbow coin", "Carrot, 1 rainbow coin", "Cupcake, 2 rainbow coins",
+      Food: ["Apple, 1 rainbow coin", "Carrot, 1 rainbow coin", "Cupcake, 2 rainbow coins",
         "Chilli pepper, 3 rainbow coins", "Ice cream, 2 rainbow coins", "Milkshake, 2 rainbow coins",
         "Lemon, 1 rainbow coin", "Salad, 2 rainbow coins", "Noodles, 2 rainbow coins"],
       Grooming: ["Comb, 1 rainbow coin", "Bath, 3 rainbow coins", "Brush teeth, 1 rainbow coin"],
       Activities: ["Painting, 2 rainbow coins", "Ballet dancing, 2 rainbow coins", "Meditation, 2 rainbow coins", "Invite a friend, 3 rainbow coins", "Sandcastle, 2 rainbow coins"],
     };
-    expect(screen.getByRole("tabpanel", { name: /Treats/ })).toHaveClass("dragon-actions-treat");
+    expect(screen.getByRole("tabpanel", { name: /Food/ })).toHaveClass("dragon-actions-treat");
     for (const [tab, items] of Object.entries(sections)) {
       await user.click(screen.getByRole("tab", { name: new RegExp(tab) }));
       const panel = screen.getByRole("tabpanel", { name: new RegExp(tab) });
@@ -75,7 +75,7 @@ describe("DragonDen", () => {
   it("moves between tabs with the arrow keys", async () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     renderDen(10);
-    screen.getByRole("tab", { name: /Treats/ }).focus();
+    screen.getByRole("tab", { name: /Food/ }).focus();
 
     await user.keyboard("{ArrowRight}");
     expect(screen.getByRole("tab", { name: /Grooming/ })).toHaveFocus();
@@ -170,7 +170,7 @@ describe("Tofu's den", () => {
     expect(room()).toBe("tofu-bathroom");
     await user.click(screen.getByRole("tab", { name: /Activities/ }));
     expect(room()).toBe("kitchen");
-    expect(items()).toEqual(["Banana cupcakes", "Science", "Singing", "Reading"]);
+    expect(items()).toEqual(["Baking", "Science", "Singing", "Reading"]);
   });
 
   it("reacts to treats in her own shy way", async () => {

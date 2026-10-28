@@ -1,4 +1,4 @@
-// The dragons of Rainbow Village. Each has a den with Treats, Grooming and Activities tabs, each
+// The dragons of Rainbow Village. Each has a den with Food, Grooming and Activities tabs, each
 // tab in its own room (drawn by scripts/make-rooms.py).
 //
 // An action's `duration` is how long its animation runs, in seconds; buttons stay disabled until
@@ -36,7 +36,7 @@ const tofuActions = [
   { id: "tofu-comb", animation: "comb", kind: "groom", label: "Comb", icon: "/images/game-asset/dragon/comb.svg", cost: 1, duration: 4.0, reaction: "Oh! That’s… really nice, actually." },
   { id: "tofu-bath", animation: "bath", kind: "groom", label: "Bath", icon: "/images/game-asset/cvc/tub.svg", cost: 3, duration: 6.4, reaction: "Is the water warm? …Ooh, bubbles!" },
   { id: "tofu-teeth", animation: "teeth", kind: "groom", label: "Brush teeth", icon: "/images/game-asset/digraphs/brush.svg", cost: 1, duration: 5.0, reaction: "Brush, brush… like the book says!" },
-  { id: "tofu-baking", animation: "baking", kind: "activity", label: "Banana cupcakes", icon: "/images/game-asset/food/banana.svg", cost: 2, duration: 7.2, reaction: "Whisk, whisk… ding! Banana cupcakes!" },
+  { id: "tofu-baking", animation: "baking", kind: "activity", label: "Baking", icon: "/images/game-asset/dragon/banana-muffin.svg", cost: 2, duration: 7.2, reaction: "Whisk, whisk… ding! Banana muffins!" },
   { id: "tofu-science", animation: "science", kind: "activity", label: "Science", icon: "/images/game-asset/dragon/science.svg", cost: 2, duration: 7.4, reaction: "What happens if… POOF! Eureka!" },
   { id: "tofu-singing", animation: "singing", kind: "activity", label: "Singing", icon: "/images/game-asset/digraphs/song.svg", cost: 2, duration: 6.6, reaction: "La la la… *blushes* did you hear me?" },
   { id: "tofu-reading", animation: "reading", kind: "activity", label: "Reading", icon: "/images/game-asset/measure-words/book.svg", cost: 2, duration: 7.4, reaction: "Once upon a time… ooh, what happens next?" },
@@ -60,7 +60,7 @@ export const dragons = {
     note: "Spend rainbow coins on yummy treats and pampering.",
     idleMessage: "Tap Mochi for a snuggle!",
     footer: "DRAG TO TURN · TAP TO SNUGGLE",
-    // Treats at home, grooming in the bathroom, activities at the beach.
+    // Food at home, grooming in the bathroom, activities at the beach.
     rooms: { treat: "home", groom: "bathroom", activity: "beach" },
     actions: mochiActions,
     // Free things she does when tapped, taking turns.
@@ -81,7 +81,7 @@ export const dragons = {
     footer: "DRAG TO TURN · TAP TO SAY HELLO",
     // Spent once to move Tofu into Rainbow Village.
     unlockCost: 100,
-    // Treats in her cosy reading nook, grooming in her bathroom, activities in her kitchen.
+    // Food in her cosy reading nook, grooming in her bathroom, activities in her kitchen.
     rooms: { treat: "tofu-home", groom: "tofu-bathroom", activity: "kitchen" },
     actions: tofuActions,
     petActions: [

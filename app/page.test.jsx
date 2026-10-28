@@ -1627,7 +1627,7 @@ describe("Tofu and Rainbow Village", () => {
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("The Rainbow Park");
     expect(within(screen.getByRole("navigation", { name: "Breadcrumb" })).getAllByRole("listitem").map((item) => item.textContent))
       .toEqual([" Home", "Mochi the Rainbow Dragon", "The Park"]);
-    // Just the four activities: no Treats or Grooming tabs.
+    // Just the four activities: no Food or Grooming tabs.
     expect(screen.queryByRole("tab")).not.toBeInTheDocument();
     expect(within(screen.getByRole("group", { name: "Things to do with Mochi and Tofu" })).getAllByRole("button").map((button) => button.textContent))
       .toEqual(["Have a picnic2", "Hide and seek2", "Blow bubbles2", "Ride scooters2"]);

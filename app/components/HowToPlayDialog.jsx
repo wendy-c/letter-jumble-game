@@ -34,7 +34,7 @@ const howTo = {
   },
   dragon: {
     en: [
-      "Spend rainbow coins on treats, grooming and activities.",
+      "Spend rainbow coins on food, grooming and activities.",
       "Tap the dragon for free cuddles and tricks, and drag sideways to turn her around.",
       "Switch tabs to walk to another room.",
       "Save up 100 coins to meet Mochi’s best friend, Tofu!",

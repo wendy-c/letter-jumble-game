@@ -8,7 +8,7 @@ import RoadSign from "./RoadSign";
 // Each tab is one of the dragon's rooms (see `rooms` in dragon-data). A place can have just some
 // of them (`sections` in dragon-data): the park only has activities.
 const allSections = [
-  { kind: "treat", label: "Treats", icon: "/images/icons/ui-treats.svg" },
+  { kind: "treat", label: "Food", icon: "/images/icons/ui-treats.svg" },
   { kind: "groom", label: "Grooming", icon: "/images/game-asset/cvc/tub.svg" },
   { kind: "activity", label: "Activities", icon: "/images/game-asset/dragon/palette.svg" },
 ];
@@ -34,7 +34,7 @@ function ActionButton({ action, coins, busy, onUse }) {
 }
 
 // A dragon's den (Mochi's or Tofu's, from dragon-data), or the park where they play together:
-// spend coins on treats, grooming and activities, or tap a dragon for something free. A road sign
+// spend coins on food, grooming and activities, or tap a dragon for something free. A road sign
 // in the corner of the room goes to Rainbow Village (`onGoToVillage`).
 export default function DragonDen({ dragon, coins, onSpendCoins, breadcrumbs, onGoToVillage, titleAction = null }) {
   const { idleMessage, actions: dragonActions, petActions } = dragon;

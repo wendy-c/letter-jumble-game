@@ -528,9 +528,11 @@ pictures[ST + "ear"] = svg(
 pictures[ST + "nose"] = svg(
     f'<circle cx="64" cy="64" r="50" fill="{SKIN}" stroke="none"/><path d="M64 24q-6 30-22 48-8 12 4 20 10 6 18-2 8 8 18 2 12-8 4-20-16-18-22-48Z" fill="#ffd6b8"/>'
     '<ellipse cx="54" cy="84" rx="4" ry="3" fill="#4b2e22" stroke="none"/><ellipse cx="74" cy="84" rx="4" ry="3" fill="#4b2e22" stroke="none"/>')
+# A child with a big open smile, the arrow pointing at the mouth.
 pictures[ST + "mouth"] = svg(
-    '<path d="M14 60q24-18 38-10 12-6 12-6t12 6q14-8 38 10-20 30-50 30T14 60Z" fill="#ff8fa3"/>'
-    '<path d="M18 62q46 14 92 0" fill="none" stroke-width="3"/><path d="M34 64h60v8H34Z" fill="#ffffff" stroke-width="2.5"/>')
+    person(50, 58, 1.5, "#8b5a3c", "#ffd45e", "short").replace(
+        smile(0, 11, 6), '<path d="M-8 9q8 11 16 0Z" fill="#ff8fa3" stroke-width="2.5"/><path d="M-6 10h12" stroke="#ffffff" stroke-width="2.2"/>')
+    + '<path d="M126 66H90v-8L68 74l22 16v-8h36Z" fill="#ff6f6f" stroke-width="3"/>')
 pictures[ST + "arm"] = svg(
     f'<path d="M26 62Q50 40 72 56q6 4 8-4l2-18 22-4 2 50q0 20-18 20L26 96Z" fill="{SKIN}"/>'
     '<path d="M80 62q-4 8 2 14" fill="none" stroke="#f2b8a0" stroke-width="3"/>'
@@ -1263,6 +1265,14 @@ pictures[DR + "ballet"] = svg(
     + '<path d="M30 82Q64 66 98 82' + "q-5.67 9-11.33 0" * 6 + 'Z" fill="#ffb3d1"/>'
     + sparkle(104, 30, 8) + sparkle(22, 44, 6, "#ffb3d9"))
 
+# Tofu's baking: a banana muffin with banana slices on top, and a banana beside it.
+pictures[DR + "banana-muffin"] = svg(
+    '<path d="M30 70h68l-9 46H39Z" fill="#ffb3d1"/>'
+    '<path d="M46 74l3 40M64 74v40M82 74l-3 40" stroke="#ff8fb7" stroke-width="3"/>'
+    '<path d="M26 72q-6-38 38-40 44 2 38 40-8 6-15 1-8 6-15 0-8 6-16 0-8 6-15 0-8 5-15-1Z" fill="#d99a52"/>'
+    '<path d="M40 52q6-10 18-12" fill="none" stroke="#ecb878" stroke-width="4"/>'
+    + "".join(f'<circle cx="{x}" cy="{y}" r="8" fill="#fff2bf"/><circle cx="{x}" cy="{y}" r="2" fill="#c9a24e" stroke="none"/>' for x, y in ((52, 40), (70, 36), (84, 48)))
+    + '<path d="M84 114q22 2 34-18 6 2 4 8-12 22-38 16Z" fill="#ffe27a"/><path d="M120 96l3-6" stroke-width="3"/>')
 pictures[DR + "meditation"] = svg(
     '<path d="M64 108Q30 104 20 80q24-2 44 28 20-30 44-28-10 24-44 28Z" fill="#ffb3d1"/>'
     '<path d="M64 108Q44 70 64 40q20 30 0 68Z" fill="#ff8fb7"/><path d="M64 108Q36 86 34 54q24 12 30 54M64 108q28-22 30-54-24 12-30 54Z" fill="#ffd3e6"/>'

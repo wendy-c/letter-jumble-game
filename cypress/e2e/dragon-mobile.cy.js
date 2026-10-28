@@ -59,7 +59,7 @@ describe("Mochi's den on phones", () => {
       });
 
       // The very last treat really works: it's at the bottom of the shelf on phones.
-      cy.contains('[role="tab"]', "Treats").click({ scrollBehavior: "center" });
+      cy.contains('[role="tab"]', "Food").click({ scrollBehavior: "center" });
       cy.get('[role="tabpanel"] button').last().then(($button) => scrollLikeAFinger($button[0]));
       cy.get('[role="tabpanel"] button').last().click({ scrollBehavior: false });
       cy.get(".player-chip-coins").should("have.text", "48");

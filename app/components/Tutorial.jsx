@@ -8,7 +8,7 @@ const copy = {
   en: {
     steps: {
       books: { title: "Pick a magic book!", text: "Tap one of the magic books to start a game." },
-      mochi: { title: "Visit Mochi", text: "Spend the rainbow coins you earn on treats, grooming and fun with Mochi the dragon." },
+      mochi: { title: "Visit Mochi", text: "Spend the rainbow coins you earn on food, grooming and fun with Mochi the dragon." },
       menu: { title: "Your player menu", text: "Tap your name to switch to another player, see your badges, or open Parent mode." },
       parent: { title: "Parent mode", text: "In Parent mode, grown-ups can turn on modules made for other age groups." },
     },
