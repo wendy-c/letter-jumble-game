@@ -3,28 +3,28 @@
 const asset = "/images/game-asset";
 
 const rBlends = {
-  br: [["bread", "🍞"], ["brush", "🪥"], ["brick", "🧱"], ["bring", "🫴"], ["brave", "🦸"]],
-  cr: [["crab", "🦀"], ["crown", "👑"], ["cross", "❌"], ["cry", "😢"], ["crib", "👶🛏️"]],
-  dr: [["drum", "🥁"], ["dress", "👗"], ["drink", "🧃"], ["draw", "🖍️"], ["dream", "💭"]],
-  fr: [["frog", "🐸"], ["free", "🕊️"], ["fruit", "🍓🍊"], ["frost", "❄️"], ["friend", "🧑‍🤝‍🧑"]],
-  gr: [["grass", "🌿"], ["green", `${asset}/colours/green.svg`], ["grin", "😁"], ["grape", "🍇"], ["grow", "🌻"]],
-  pr: [["press", "👇🔘"], ["prize", "🏆"], ["prince", "🤴"], ["present", "🎁"], ["print", "🖨️"]],
-  tr: [["tree", "🌳"], ["train", "🚂"], ["truck", "🚚"], ["trash", "🗑️"], ["trap", "🪤"]],
-  str: [["street", "🚦"], ["strong", "💪"], ["straw", "🥤"], ["stretch", "🙆"]],
-  thr: [["throw", "🤾"], ["three", "3️⃣"], ["through", "🚇"]],
-  shr: [["shrimp", "🦐"], ["shred", "📄✂️"], ["shrug", "🤷"]],
-  scr: [["scream", "😱"], ["scratch", "🐱🐾"], ["scrub", "🧽"]],
-  spr: [["spring", "🌸"], ["spray", "🧴"], ["sprout", "🌱"]],
+  br: [["bread", "/images/game-asset/food/bread.svg"], ["brush", "/images/game-asset/digraphs/brush.svg"], ["brick", "/images/game-asset/starters/wall.svg"], ["bring", "/images/game-asset/sports-and-leisure/present.svg"], ["brave", "/images/game-asset/blends/brave.svg"]],
+  cr: [["crab", "/images/game-asset/blends/crab.svg"], ["crown", "/images/game-asset/blends/crown.svg"], ["cross", "/images/game-asset/blends/cross.svg"], ["cry", "/images/game-asset/feelings/sad.svg"], ["crib", "/images/game-asset/cvc/cot.svg"]],
+  dr: [["drum", "/images/game-asset/blends/drum.svg"], ["dress", "/images/game-asset/starters/dress.svg"], ["drink", "/images/game-asset/food/fruit-juice.svg"], ["draw", "/images/game-asset/blends/draw.svg"], ["dream", "/images/game-asset/blends/dream.svg"]],
+  fr: [["frog", "/images/game-asset/animals/frog.svg"], ["free", "/images/game-asset/blends/free.svg"], ["fruit", "/images/game-asset/food/strawberry.svg"], ["frost", "/images/game-asset/weather-and-seasons/snowy.svg"], ["friend", "/images/game-asset/starters/friend.svg"]],
+  gr: [["grass", "/images/game-asset/blends/grass.svg"], ["green", `${asset}/colours/green.svg`], ["grin", "/images/game-asset/feelings/cheerful.svg"], ["grape", "/images/game-asset/food/grapes.svg"], ["grow", "/images/game-asset/blends/grow.svg"]],
+  pr: [["press", "/images/game-asset/blends/press.svg"], ["prize", "/images/game-asset/cvc/win.svg"], ["prince", "/images/game-asset/digraphs/king.svg"], ["present", "/images/game-asset/sports-and-leisure/present.svg"], ["print", "/images/game-asset/blends/print.svg"]],
+  tr: [["tree", "/images/game-asset/blends/tree.svg"], ["train", "/images/game-asset/blends/train.svg"], ["truck", "/images/game-asset/blends/truck.svg"], ["trash", "/images/game-asset/cvc/bin.svg"], ["trap", "/images/game-asset/blends/trap.svg"]],
+  str: [["street", "/images/game-asset/blends/street.svg"], ["strong", "/images/game-asset/starters/arm.svg"], ["straw", "/images/game-asset/food/drink.svg"], ["stretch", "/images/game-asset/blends/stretch.svg"]],
+  thr: [["throw", "/images/game-asset/blends/throw.svg"], ["three", "/images/game-asset/digraphs/three.svg"], ["through", "/images/game-asset/blends/through.svg"]],
+  shr: [["shrimp", "/images/game-asset/blends/shrimp.svg"], ["shred", "/images/game-asset/blends/shred.svg"], ["shrug", "/images/game-asset/blends/shrug.svg"]],
+  scr: [["scream", "/images/game-asset/feelings/panicked.svg"], ["scratch", "/images/game-asset/blends/scratch.svg"], ["scrub", "/images/game-asset/blends/scrub.svg"]],
+  spr: [["spring", "/images/game-asset/weather-and-seasons/spring.svg"], ["spray", "/images/game-asset/blends/spray.svg"], ["sprout", "/images/game-asset/blends/sprout.svg"]],
 };
 
 const lBlends = {
-  bl: [["blue", `${asset}/colours/blue.svg`], ["black", `${asset}/colours/black.svg`], ["blanket", `${asset}/home/blanket.svg`], ["blow", "🌬️"], ["blink", "😉"]],
-  cl: [["clap", "👏"], ["clock", `${asset}/home/clock.svg`], ["cloud", "☁️"], ["clown", "🤡"], ["climb", "🧗"]],
-  fl: [["flag", "🚩"], ["flower", "🌷"], ["fly", "🪰"], ["floor", `${asset}/home/floor.svg`], ["flame", "🔥"]],
-  gl: [["glass", `${asset}/food/glass.svg`], ["glove", "🧤"], ["glasses", "👓"], ["globe", "🌍"], ["glow", "🌟"]],
-  pl: [["plate", `${asset}/food/plate.svg`], ["plane", "✈️"], ["plant", "🪴"], ["play", "🧸"], ["plug", "🔌"]],
-  sl: [["slide", "🛝"], ["sleep", "😴"], ["sled", "🛷"], ["slow", "🐢"], ["slipper", "🥿"]],
-  spl: [["splash", "💦"], ["split", "🪓🪵"]],
+  bl: [["blue", `${asset}/colours/blue.svg`], ["black", `${asset}/colours/black.svg`], ["blanket", `${asset}/home/blanket.svg`], ["blow", "/images/game-asset/blends/blow.svg"], ["blink", "/images/game-asset/blends/blink.svg"]],
+  cl: [["clap", "/images/game-asset/blends/clap.svg"], ["clock", `${asset}/home/clock.svg`], ["cloud", "/images/game-asset/weather-and-seasons/cloudy.svg"], ["clown", "/images/game-asset/blends/clown.svg"], ["climb", "/images/game-asset/blends/climb.svg"]],
+  fl: [["flag", "/images/game-asset/blends/flag.svg"], ["flower", "/images/game-asset/blends/flower.svg"], ["fly", "/images/game-asset/blends/fly.svg"], ["floor", `${asset}/home/floor.svg`], ["flame", "/images/game-asset/nature/fire.svg"]],
+  gl: [["glass", `${asset}/food/glass.svg`], ["glove", "/images/game-asset/blends/glove.svg"], ["glasses", "/images/game-asset/starters/glasses.svg"], ["globe", "/images/game-asset/blends/globe.svg"], ["glow", "/images/game-asset/blends/glow.svg"]],
+  pl: [["plate", `${asset}/food/plate.svg`], ["plane", "/images/game-asset/blends/plane.svg"], ["plant", "/images/game-asset/blends/plant.svg"], ["play", "/images/game-asset/blends/play.svg"], ["plug", "/images/game-asset/blends/plug.svg"]],
+  sl: [["slide", "/images/game-asset/blends/slide.svg"], ["sleep", "/images/game-asset/feelings/tired.svg"], ["sled", "/images/game-asset/blends/sled.svg"], ["slow", "/images/game-asset/blends/slow.svg"], ["slipper", "/images/game-asset/blends/slipper.svg"]],
+  spl: [["splash", "/images/game-asset/blends/splash.svg"], ["split", "/images/game-asset/blends/split.svg"]],
 };
 
 const words = { ...rBlends, ...lBlends };
