@@ -8,9 +8,9 @@ import RoadSign from "./RoadSign";
 // Each tab is one of the dragon's rooms (see `rooms` in dragon-data). A place can have just some
 // of them (`sections` in dragon-data): the park only has activities.
 const allSections = [
-  { kind: "treat", label: "Treats", icon: "🍎" },
-  { kind: "groom", label: "Grooming", icon: "🛁" },
-  { kind: "activity", label: "Activities", icon: "🎨" },
+  { kind: "treat", label: "Treats", icon: "/images/icons/ui-treats.svg" },
+  { kind: "groom", label: "Grooming", icon: "/images/game-asset/cvc/tub.svg" },
+  { kind: "activity", label: "Activities", icon: "/images/game-asset/dragon/palette.svg" },
 ];
 
 function ActionButton({ action, coins, busy, onUse }) {
@@ -23,7 +23,7 @@ function ActionButton({ action, coins, busy, onUse }) {
       aria-label={`${action.label}, ${action.cost} rainbow ${action.cost === 1 ? "coin" : "coins"}`}
       onClick={() => onUse(action)}
     >
-      <span className="dragon-action-icon" aria-hidden="true">{action.icon}</span>
+      <img className="dragon-action-icon" src={action.icon} alt="" width="40" height="40" />
       <span className="dragon-action-label">{action.label}</span>
       <span className="dragon-action-cost" aria-hidden="true">
         <img src="/images/rainbow-coin.svg" alt="" width="16" height="16" />
@@ -142,7 +142,7 @@ export default function DragonDen({ dragon, coins, onSpendCoins, breadcrumbs, on
                 tabIndex={section === kind ? 0 : -1}
                 onClick={() => setSection(kind)}
               >
-                <span aria-hidden="true">{icon}</span> {label}
+                <img className="dragon-tab-icon" src={icon} alt="" width="22" height="22" /> {label}
               </button>
             ))}
           </div>}

@@ -1560,7 +1560,7 @@ const actions = {
     pose.wingFlap += 0.4 * flex;
     pose.headNod -= 0.12 * flex;
     if (flex > 0.3) {
-      emit(run, "strong", 1.4, dt, () => ctx.fx.spawn(ctx.fx.text(pick(["strong!", "healthy!", "💪"]), "#4fb893", ctx.headWorld().add(new THREE.Vector3(pick([-1.4, 1.4]), 0.6, 0.4)), 1.1),
+      emit(run, "strong", 1.4, dt, () => ctx.fx.spawn(ctx.fx.text(pick(["strong!", "healthy!", "yum!"]), "#4fb893", ctx.headWorld().add(new THREE.Vector3(pick([-1.4, 1.4]), 0.6, 0.4)), 1.1),
         { velocity: new THREE.Vector3(0, 0.5, 0), life: 1.1 }));
       emit(run, "sparkle", 12, dt, () => ctx.fx.sparkles(ctx.bodyWorld(), 1, 1.6));
     }

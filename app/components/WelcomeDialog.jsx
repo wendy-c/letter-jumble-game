@@ -53,7 +53,7 @@ export default function WelcomeDialog({ language, onCreate = null, onClose }) {
         <div lang={language === "zh" ? "zh-Hant-HK" : "en"}>
           <h2 id="welcome-title">{copy.title}</h2>
           {copy.paragraphs.map((paragraph) => <p className="welcome-text" key={paragraph}>{paragraph}</p>)}
-          <p className="welcome-motto"><span aria-hidden="true">🌈 </span>{copy.motto}</p>
+          <p className="welcome-motto"><img className="inline-icon" src="/images/game-asset/colours/rainbow.svg" alt="" width="26" height="26" /> {copy.motto}</p>
           {onCreate ? (
             <div className="welcome-form">
               <NewPlayerForm

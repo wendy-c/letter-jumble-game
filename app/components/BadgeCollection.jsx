@@ -18,7 +18,7 @@ export default function BadgeCollection({ player, breadcrumbs }) {
         <p className="eyebrow">RAINBOW ACADEMY</p>
         <h1 id="game-title">{text.badgesTitle(player.name)}</h1>
         <p className="badge-count">
-          <span aria-hidden="true">🏅</span> {text.badgeCount(earnedCount, all.length)}
+          <img className="inline-icon" src="/images/icons/menu-badges.svg" alt="" width="22" height="22" /> {text.badgeCount(earnedCount, all.length)}
         </p>
         {earnedCount === 0 && <p className="heading-note">{text.noBadgesYet}</p>}
       </div>

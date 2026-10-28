@@ -52,7 +52,8 @@ describe("DragonDen", () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     renderDen(10);
     const tabs = screen.getAllByRole("tab");
-    expect(tabs.map((tab) => tab.textContent.trim())).toEqual(["🍎 Treats", "🛁 Grooming", "🎨 Activities"]);
+    expect(tabs.map((tab) => tab.textContent.trim())).toEqual(["Treats", "Grooming", "Activities"]);
+    tabs.forEach((tab) => expect(tab.querySelector("img")).toHaveAttribute("src", expect.stringMatching(/\.svg$/)));
     expect(tabs[0]).toHaveAttribute("aria-selected", "true");
 
     const sections = {

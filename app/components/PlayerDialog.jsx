@@ -66,7 +66,7 @@ export function NewPlayerForm({ label, onCreate, autoFocus = false, submitLabel,
       />
       {error && <p className="player-form-error" id="new-player-error" role="alert">{translatePlayerError(language, error)}</p>}
       <button className={submitClassName} type="submit">
-        {submitLabel ?? <>{text.letsPlay} <span aria-hidden="true">✨</span></>}
+        {submitLabel ?? <>{text.letsPlay} <img className="inline-icon" src="/images/icons/ui-sparkle.svg" alt="" width="20" height="20" /></>}
       </button>
     </form>
   );

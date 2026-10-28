@@ -43,7 +43,7 @@ export default function WordMenu({ topic, round, totalWords, language = "en", on
           </button>
         </div>
         <button className="word-menu-shuffle" type="button" lang={language === "zh" ? "zh-Hant-HK" : undefined} onClick={onShuffle}>
-          <span className="word-menu-shuffle-icon" aria-hidden="true">🔀</span>
+          <img className="word-menu-shuffle-icon" src="/images/icons/ui-shuffle.svg" alt="" width="26" height="26" />
           <span>
             <span className="word-menu-shuffle-title">{shuffle.button}</span>
             <span className="word-menu-shuffle-note">{shuffle.note(topic.words.length, totalWords ?? topic.words.length)}</span>

@@ -20,7 +20,7 @@ export default function Breadcrumbs({ items }) {
                     router.push(item.href);
                   }}
                 >
-                  {index === 0 && <span aria-hidden="true">🏠 </span>}
+                  {index === 0 && <><img className="inline-icon" src="/images/game-asset/starters/house.svg" alt="" width="18" height="18" /> </>}
                   {item.label}
                 </a>
               )}

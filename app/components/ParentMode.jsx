@@ -43,7 +43,7 @@ function GrownUpCheck({ onPass }) {
       />
       {error && <p className="player-form-error" role="alert">{error}</p>}
       <button className="action-button check-button" type="submit">
-        {text.continue} <span aria-hidden="true">🔓</span>
+        {text.continue} <img className="inline-icon" src="/images/icons/menu-parent.svg" alt="" width="20" height="20" />
       </button>
     </form>
   );
@@ -149,7 +149,7 @@ export default function ParentMode({ players, breadcrumbs, onSetGameEnabled, onS
               ))}
             </div>
             <button className="action-button check-button parent-done" type="button" onClick={onDone}>
-              {text.lockParentMode} <span aria-hidden="true">🔒</span>
+              {text.lockParentMode} <img className="inline-icon" src="/images/icons/menu-parent.svg" alt="" width="20" height="20" />
             </button>
           </>
         )}

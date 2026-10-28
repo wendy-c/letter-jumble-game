@@ -830,7 +830,7 @@ describe("breadcrumbs", () => {
     render(<GameApp />);
 
     const trail = await screen.findByRole("navigation", { name: "Breadcrumb" });
-    expect(within(trail).getAllByRole("listitem").map((item) => item.textContent)).toEqual(["🏠 Home", "中文認字 · 進階篇", "職業"]);
+    expect(within(trail).getAllByRole("listitem").map((item) => item.textContent)).toEqual([" Home", "中文認字 · 進階篇", "職業"]);
     expect(within(trail).getByText("職業")).toHaveAttribute("aria-current", "page");
     expect(within(trail).getByRole("link", { name: /Home/ })).toHaveAttribute("href", "/");
 
@@ -847,7 +847,7 @@ describe("breadcrumbs", () => {
     setPathname("/dragon");
     render(<GameApp />);
     const trail = await screen.findByRole("navigation", { name: "Breadcrumb" });
-    expect(within(trail).getAllByRole("listitem").map((item) => item.textContent)).toEqual(["🏠 Home", "Mochi the Rainbow Dragon"]);
+    expect(within(trail).getAllByRole("listitem").map((item) => item.textContent)).toEqual([" Home", "Mochi the Rainbow Dragon"]);
   });
 });
 
@@ -1206,7 +1206,7 @@ describe("badges", () => {
 
     // The breadcrumb leads back home.
     expect(within(screen.getByRole("navigation", { name: "Breadcrumb" })).getAllByRole("listitem").map((item) => item.textContent))
-      .toEqual(["🏠 Home", "My badges"]);
+      .toEqual([" Home", "My badges"]);
     await user.click(crumb("Home"));
     expect(currentPathname()).toBe("/");
   });
@@ -1587,7 +1587,7 @@ describe("Tofu and Rainbow Village", () => {
     expect(storedPlayers().players[0]).toMatchObject({ coins: 20, unlocks: ["tofu"] });
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Tofu the Fairy Dragon");
     expect(within(screen.getByRole("navigation", { name: "Breadcrumb" })).getAllByRole("listitem").map((item) => item.textContent))
-      .toEqual(["🏠 Home", "Mochi the Rainbow Dragon", "Tofu’s House"]);
+      .toEqual([" Home", "Mochi the Rainbow Dragon", "Tofu’s House"]);
   });
 
   it("starts at Rainbow Village once Tofu has moved in, with the park locked", async () => {
@@ -1626,11 +1626,11 @@ describe("Tofu and Rainbow Village", () => {
     expect(storedPlayers().players[0]).toMatchObject({ coins: 30, unlocks: ["tofu", "park"] });
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("The Rainbow Park");
     expect(within(screen.getByRole("navigation", { name: "Breadcrumb" })).getAllByRole("listitem").map((item) => item.textContent))
-      .toEqual(["🏠 Home", "Mochi the Rainbow Dragon", "The Park"]);
+      .toEqual([" Home", "Mochi the Rainbow Dragon", "The Park"]);
     // Just the four activities: no Treats or Grooming tabs.
     expect(screen.queryByRole("tab")).not.toBeInTheDocument();
     expect(within(screen.getByRole("group", { name: "Things to do with Mochi and Tofu" })).getAllByRole("button").map((button) => button.textContent))
-      .toEqual(["🧺Have a picnic2", "🙈Hide and seek2", "🫧Blow bubbles2", "🛴Ride scooters2"]);
+      .toEqual(["Have a picnic2", "Hide and seek2", "Blow bubbles2", "Ride scooters2"]);
 
     await user.click(screen.getByRole("button", { name: "Hide and seek, 2 rainbow coins" }));
     expect(storedPlayers().players[0].coins).toBe(28);
@@ -1784,7 +1784,7 @@ describe("parent mode", () => {
     expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent("Parent mode");
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(within(screen.getByRole("navigation", { name: "Breadcrumb" })).getAllByRole("listitem").map((item) => item.textContent))
-      .toEqual(["🏠 Home", "Parent mode"]);
+      .toEqual([" Home", "Parent mode"]);
     expect(screen.getByLabelText(/What is/)).toBeInTheDocument();
   });
 

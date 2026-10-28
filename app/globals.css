@@ -2491,8 +2491,8 @@ h1 span {
 
 .dragon-action-icon {
   grid-row: span 2;
-  font-size: 30px;
-  line-height: 1;
+  width: 40px;
+  height: 40px;
 }
 
 .dragon-action-label {
@@ -3332,7 +3332,8 @@ a:focus-visible {
   }
 
   .dragon-action-icon {
-    font-size: 24px;
+    width: 32px;
+    height: 32px;
   }
 
   /* Short books on phones, as tall as what's on them, so more games fit on the first screen. */
@@ -4613,4 +4614,19 @@ a:focus-visible {
   .feeling-option img {
     max-width: 84px;
   }
+}
+
+/* A small picture beside a few words (the home crumb, buttons, the badge count). */
+.inline-icon {
+  display: inline-block;
+  width: 1.2em;
+  height: 1.2em;
+  vertical-align: -0.25em;
+}
+
+.dragon-tab-icon {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  vertical-align: -5px;
 }

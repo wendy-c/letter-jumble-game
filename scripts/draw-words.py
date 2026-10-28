@@ -1,5 +1,7 @@
-# Draws the games' word pictures that used to be emoji, in the app's outlined pastel style, into
-# public/images/game-asset/<folder>/. People and animals get faces; things don't.
+# Draws the pictures that used to be emoji, in the app's outlined pastel style: the games' word
+# pictures (public/images/game-asset/<folder>/), Mochi and Tofu's activities
+# (game-asset/dragon/) and a few interface icons (public/images/icons/ui-*). People and animals get
+# faces; things don't.
 # Run from the project root: python3 scripts/draw-words.py
 import math, os
 
@@ -887,8 +889,72 @@ pictures[M + "seeds"] = svg(
     + '<path d="M60 22q4-8 10-6" fill="none" stroke="#4fb893" stroke-width="3"/>')
 
 
+# ---------- Mochi and Tofu's activities ----------
+DR = "dragon/"
+pictures[DR + "chilli"] = svg(
+    '<path d="M86 30q20 6 14 30-8 34-50 52-24 10-34 2 30-8 46-40 10-22 8-42Z" fill="#ff4f4f"/>'
+    '<path d="M86 30q-4-12 6-20 6-4 12 0-10 4-10 12" fill="#6fcf8f" stroke-width="3"/><path d="M90 46q4 16-4 30" fill="none" stroke="#ff9a9a" stroke-width="4"/>')
+pictures[DR + "salad"] = svg(
+    '<path d="M10 62h108q0 48-54 48T10 62Z" fill="#ffffff"/>'
+    '<circle cx="34" cy="54" r="14" fill="#8fe3a8"/><circle cx="56" cy="46" r="14" fill="#6fcf8f"/><circle cx="80" cy="50" r="14" fill="#8fe3a8"/><circle cx="98" cy="58" r="10" fill="#6fcf8f"/>'
+    '<circle cx="46" cy="60" r="7" fill="#ff6f6f" stroke-width="3"/><circle cx="72" cy="60" r="7" fill="#ff6f6f" stroke-width="3"/><path d="M84 56l10 6" stroke="#ffa552" stroke-width="5"/>'
+    '<path d="M10 62h108" stroke-width="4"/><path d="M28 74q36 10 72 0" fill="none" stroke="#8cc8f2" stroke-width="5"/>')
+pictures[DR + "comb"] = svg(
+    '<path d="M14 44h100v22H14Z" fill="#f7a8c8"/>'
+    + "".join(f'<path d="M{x} 66v36" stroke-width="6"/><path d="M{x} 66v36" stroke="#f7a8c8" stroke-width="2"/>' for x in range(22, 112, 11))
+    + sparkle(110, 24, 8))
+pictures[DR + "palette"] = svg(
+    '<path d="M64 14C30 14 10 40 12 66c2 28 26 48 52 48 12 0 14-8 10-16-4-10 2-18 14-18h14c12 0 18-8 18-22C120 34 96 14 64 14Z" fill="#fff2d6"/>'
+    + "".join(f'<circle cx="{x}" cy="{y}" r="9" fill="{c}" stroke-width="3"/>' for x, y, c in [(40, 42, "#ff6f6f"), (64, 30, "#ffd45e"), (88, 40, "#8fe3a8"), (32, 68, "#8cc8f2"), (44, 92, "#b79cf2")])
+    + '<path d="M120 10 84 70" stroke-width="7"/><path d="M120 10 84 70" stroke="#c98a55" stroke-width="3"/><path d="M86 64l-6 14 10-8Z" fill="#ff8fa3" stroke-width="3"/>')
+pictures[DR + "ballet"] = svg(
+    '<path d="M48 16q16 8 32 0l4 40H44Z" fill="#ff8fb7"/><path d="M50 16l-4-8M78 16l4-8" stroke-width="4"/>'
+    '<path d="M8 74q18-20 56-20t56 20q-10 6-20 2-8 8-18 2-8 8-18 2-8 8-18 2-8 8-18 2-10 6-20-2-10 4-18-2Z" fill="#ffd3e6"/>'
+    '<path d="M18 84q18-14 46-14t46 14q-8 12-20 8-8 10-18 4-8 10-16 2-8 10-16 2-10 6-14-4-14 6-18-6Z" fill="#ffb3d1"/>'
+    '<path d="M44 56h40" stroke-width="5"/>' + sparkle(104, 30, 8) + sparkle(22, 40, 6, "#ffb3d9"))
+pictures[DR + "meditation"] = svg(
+    '<path d="M64 108Q30 104 20 80q24-2 44 28 20-30 44-28-10 24-44 28Z" fill="#ffb3d1"/>'
+    '<path d="M64 108Q44 70 64 40q20 30 0 68Z" fill="#ff8fb7"/><path d="M64 108Q36 86 34 54q24 12 30 54M64 108q28-22 30-54-24 12-30 54Z" fill="#ffd3e6"/>'
+    '<path d="M14 116q25-8 50 0t50 0" fill="none" stroke="#8cc8f2" stroke-width="5"/>' + sparkle(100, 24, 8))
+pictures[DR + "sandcastle"] = svg(
+    '<path d="M4 110q30-10 60-6t60 6v14H4Z" fill="#ffe7b0"/>'
+    '<path d="M30 104V62h68v42Z" fill="#f3d38c"/><path d="M30 62v-8h10v8h10v-8h10v8h8v-8h10v8h10v-8h10v8" fill="#f3d38c"/>'
+    '<path d="M46 62V34h36v28" fill="#f3d38c"/><path d="M46 34v-8h9v8h9v-8h9v8h9v-8" fill="#f3d38c"/>'
+    '<path d="M58 104V88q6-8 12 0v16Z" fill="#c9a060"/><path d="M64 26V8" stroke-width="3"/><path d="M64 8l14 5-14 5Z" fill="#ff8fae" stroke-width="2.5"/>')
+pictures[DR + "science"] = svg(
+    '<path d="M50 14h28M54 14v34L24 104q-6 12 8 12h64q14 0 8-12L74 48V14" fill="#ffffff"/>'
+    '<path d="M34 86h60l10 18q4 8-8 8H32q-12 0-8-8Z" fill="#b79cf2" stroke="none"/><path d="M50 14h28M54 14v34L24 104q-6 12 8 12h64q14 0 8-12L74 48V14" fill="none"/>'
+    + "".join(f'<circle cx="{x}" cy="{y}" r="{r}" fill="#cfe9ff" stroke-width="2.5"/>' for x, y, r in [(56, 96, 4), (70, 92, 5), (64, 70, 3), (84, 30, 6), (98, 18, 8)]))
+pictures[DR + "hide-and-seek"] = svg(
+    '<circle cx="64" cy="58" r="40" fill="#d9c8ff"/>'
+    f'<path d="M22 80q-4-30 18-34l18-2q6 6-2 12l-8 6 8-2q10 2 6 10l-10 4" fill="{SKIN}"/>'
+    f'<path d="M106 80q4-30-18-34l-18-2q-6 6 2 12l8 6-8-2q-10 2-6 10l10 4" fill="{SKIN}"/>'
+    '<path d="M50 90q14 10 28 0" fill="none" stroke-width="3"/>' + cheek(40, 82, 1.4) + cheek(88, 82, 1.4))
+pictures[DR + "bubbles"] = svg(
+    '<path d="M18 114 54 58" stroke-width="6"/><path d="M18 114 54 58" stroke="#ff8fae" stroke-width="2.5"/>'
+    '<circle cx="62" cy="46" r="14" fill="none" stroke-width="6"/><circle cx="62" cy="46" r="14" fill="none" stroke="#b79cf2" stroke-width="2.5"/>'
+    + "".join(f'<circle cx="{x}" cy="{y}" r="{r}" fill="#e6f6ff" fill-opacity=".85" stroke="#8cc8f2" stroke-width="3"/><path d="M{x - r * .4:.0f} {y - r * .4:.0f}q{r * .3:.0f} -{r * .3:.0f} {r * .6:.0f} -{r * .2:.0f}" fill="none" stroke="#ffffff" stroke-width="3"/>'
+              for x, y, r in [(96, 30, 18), (100, 78, 12), (82, 104, 8), (114, 54, 7)]))
+pictures[DR + "scooter"] = svg(
+    '<path d="M86 16v84" stroke-width="7"/><path d="M86 16v84" stroke="#d6d0e0" stroke-width="3"/><path d="M72 16h28" stroke-width="7"/>'
+    '<path d="M70 16h-4M102 16h4" stroke="#ff8fae" stroke-width="7"/>'
+    '<path d="M22 96h70v10H22Z" fill="#8cc8f2"/><circle cx="28" cy="110" r="9" fill="#6b5a8e"/><circle cx="92" cy="110" r="9" fill="#6b5a8e"/>')
+
+# ---------- Interface icons ----------
+UI = "../icons/ui-"
+pictures[UI + "shuffle"] = svg(
+    '<path d="M12 40h22q20 0 30 24t30 24h14M12 88h22q20 0 30-24t30-24h14" fill="none" stroke-width="10"/>'
+    '<path d="M12 40h22q20 0 30 24t30 24h14M12 88h22q20 0 30-24t30-24h14" fill="none" stroke="#b79cf2" stroke-width="5"/>'
+    '<path d="M104 28l16 12-16 12ZM104 76l16 12-16 12Z" fill="#b79cf2"/>')
+pictures[UI + "sparkle"] = svg(sparkle(56, 64, 38) + sparkle(102, 30, 16, "#ffb3d9") + sparkle(100, 98, 12, "#8cc8f2"))
+pictures[UI + "treats"] = svg(
+    '<path d="M64 36c-30-10-50 12-46 40 4 30 26 44 46 36 20 8 42-6 46-36 4-28-16-50-46-40Z" fill="#ff6f6f"/>'
+    '<path d="M64 36q2-16 12-24" fill="none" stroke-width="4"/><path d="M70 22q16-12 28-2-14 10-28 2Z" fill="#8fe3a8" stroke-width="3"/>'
+    '<path d="M38 58q6-10 16-12" fill="none" stroke="#ffffff" stroke-width="5"/>')
+
+
 for name, body in pictures.items():
-    path = os.path.join(IMAGES, name + ".svg")
+    path = os.path.normpath(os.path.join(IMAGES, name + ".svg"))
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w") as f:
         f.write(body)
