@@ -51,7 +51,7 @@ export const games = [
   {
     id: "starters",
     group: "cambridge",
-    name: "Letter Jumble for Starters",
+    name: "Letter Jumble - Starters",
     color: "green",
     picture: "/images/icons/starters-pets-and-farm.svg",
     note: "For age 5-6 - Cambridge Starters · 8 topics",
@@ -62,7 +62,7 @@ export const games = [
   {
     id: "letter-jumble",
     group: "cambridge",
-    name: "Letter Jumble for Movers",
+    name: "Letter Jumble - Movers",
     color: "lilac",
     picture: "/images/icons/starters-wild-animals.svg",
     note: "For age 5-6 - Cambridge Movers · 8 topics",

@@ -233,7 +233,7 @@ pictures["game-asset/jobs/reporter"] = svg(
                        '<circle cx="110" cy="64" r="9" fill="#5b5b6e"/><path d="M104 62h12M106 58h8M106 66h8" stroke="#8a8fa8" stroke-width="2"/>'))
 
 # ---------- 地點 (places) ----------
-# (Bank, cinema and library use Letter Jumble for Movers' drawings, so they aren't drawn here.)
+# (Bank, cinema and library use Letter Jumble - Movers' drawings, so they aren't drawn here.)
 P = "game-asset/places/"
 
 def flag(x, y, color):

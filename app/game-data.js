@@ -164,7 +164,7 @@ export const categories = [
   }
 ].map(wordCategory);
 
-// Turns a topic's [word, picture] pairs into spelling puzzles. Shared with Letter Jumble for Starters.
+// Turns a topic's [word, picture] pairs into spelling puzzles. Shared with Letter Jumble - Starters.
 export function wordCategory(category) {
   return {
     ...category,

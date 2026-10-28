@@ -11,7 +11,7 @@ export default {
   component: GameHeading,
   args: {
     topic: animals, round: 3, rainbowCoins: 12, wordMenuOpen: false, onOpenWordMenu: fn(),
-    breadcrumbs: <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Letter Jumble for Movers", href: "/letter-jumble" }, { label: "Animals", href: "/letter-jumble/animals" }]} />,
+    breadcrumbs: <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Letter Jumble - Movers", href: "/letter-jumble" }, { label: "Animals", href: "/letter-jumble/animals" }]} />,
     titleAction: <HowToPlayButton language="en" onClick={fn()} />,
   },
 };

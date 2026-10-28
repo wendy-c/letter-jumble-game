@@ -93,7 +93,7 @@ describe("Home", () => {
   it("starts on the game picker", () => {
     render(<GameApp />);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("What shall we play today?");
-    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Letter Jumble for Starters", "Letter Jumble for Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語", "Mochi the Rainbow Dragon"]);
   });
 
   it("has Mochi, arms open, greet the player by name", async () => {
@@ -132,7 +132,7 @@ describe("Home", () => {
   it("plays a Letter Jumble word and earns a rainbow coin", async () => {
     const user = userEvent.setup();
     render(<GameApp />);
-    await openGame(user, "Letter Jumble for Movers", "Animals");
+    await openGame(user, "Letter Jumble - Movers", "Animals");
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Animals");
     for (const letter of ["b", "a", "t"]) {
@@ -160,7 +160,7 @@ describe("Home", () => {
   it("asks to fill every box, then shows the right answer for a wrong word and moves on", async () => {
     const user = userEvent.setup();
     render(<GameApp />);
-    await openGame(user, "Letter Jumble for Movers", "Animals");
+    await openGame(user, "Letter Jumble - Movers", "Animals");
 
     await user.click(screen.getByRole("button", { name: /Check it/ }));
     expect(screen.getByText("Fill every box before you check.")).toBeInTheDocument();
@@ -216,7 +216,7 @@ describe("Home", () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "5-6", spellingGuide: true }], current: "Ada" }));
     const user = userEvent.setup();
     render(<GameApp />);
-    await openGame(user, "Letter Jumble for Movers", "Animals");
+    await openGame(user, "Letter Jumble - Movers", "Animals");
     expect(screen.getByLabelText("Spelling guide")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Letter 1 of 3, empty, single sound" })).toHaveClass("letter-slot-guide-other");
 
@@ -228,7 +228,7 @@ describe("Home", () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "5-6", spellingGuide: ["starters"] }], current: "Ada" }));
     const user = userEvent.setup();
     render(<GameApp />);
-    await openGame(user, "Letter Jumble for Movers", "Animals");
+    await openGame(user, "Letter Jumble - Movers", "Animals");
     expect(screen.queryByLabelText("Spelling guide")).not.toBeInTheDocument();
   });
 });
@@ -291,7 +291,7 @@ describe("players", () => {
     const user = userEvent.setup();
     render(<GameApp />);
 
-    await user.click(screen.getByRole("button", { name: /Letter Jumble for Movers/ }));
+    await user.click(screen.getByRole("button", { name: /Letter Jumble - Movers/ }));
     const list = within(screen.getByRole("dialog", { name: whoIsPlaying })).getByRole("list", { name: "Players" });
     expect(within(list).getAllByRole("button").map((button) => button.textContent)).toEqual([
       "AAda3 rainbow coins",
@@ -308,7 +308,7 @@ describe("players", () => {
     const user = userEvent.setup();
     render(<GameApp />);
 
-    await user.click(screen.getByRole("button", { name: /Letter Jumble for Movers/ }));
+    await user.click(screen.getByRole("button", { name: /Letter Jumble - Movers/ }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Letter Jumble");
   });
@@ -316,7 +316,7 @@ describe("players", () => {
   it("switches player mid-game and stores coins under the new player", async () => {
     const user = userEvent.setup();
     render(<GameApp />);
-    await openGame(user, "Letter Jumble for Movers", "Animals");
+    await openGame(user, "Letter Jumble - Movers", "Animals");
     await earnCoin(user);
     expect(screen.getByLabelText(coinsLabel(1))).toBeInTheDocument();
 
@@ -342,7 +342,7 @@ describe("players", () => {
   it("logs out back to the picker and asks again next time", async () => {
     const user = userEvent.setup();
     render(<GameApp />);
-    await openGame(user, "Letter Jumble for Movers", "Animals");
+    await openGame(user, "Letter Jumble - Movers", "Animals");
 
     await user.click(screen.getByRole("button", { name: /Player options/ }));
     await user.click(screen.getByRole("menuitem", { name: "Log out" }));
@@ -388,7 +388,7 @@ describe("ages", () => {
     await user.click(screen.getByRole("button", { name: /Player options/ }));
     await user.click(screen.getByRole("menuitem", { name: "Switch player" }));
     await user.click(within(screen.getByRole("list", { name: "Players" })).getByRole("button", { name: /Elly/ }));
-    expect(shownGames()).toEqual(["Consonant Digraphs", "R & L Blends", "Letter Jumble for Starters", "Letter Jumble for Movers", "中文認字 · 進階篇", "量詞配對", "成語", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["Consonant Digraphs", "R & L Blends", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 進階篇", "量詞配對", "成語", "Mochi the Rainbow Dragon"]);
   });
 
   it("lists games under Phonics, Cambridge YLE training, 中文 and Visit Mochi, hiding empty headings", () => {
@@ -399,7 +399,7 @@ describe("ages", () => {
     const { unmount } = render(<GameApp />);
     expect(groups()).toEqual([
       ["Phonics", ["CVC Sounds", "Consonant Digraphs", "R & L Blends"]],
-      ["Cambridge YLE training", ["Letter Jumble for Starters", "Letter Jumble for Movers"]],
+      ["Cambridge YLE training", ["Letter Jumble - Starters", "Letter Jumble - Movers"]],
       ["中文", ["中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語"]],
       ["Visit Mochi", ["Mochi the Rainbow Dragon"]],
     ]);
@@ -412,14 +412,14 @@ describe("ages", () => {
 
   it("shows every game to visitors before anyone is playing", () => {
     render(<GameApp />);
-    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Letter Jumble for Starters", "Letter Jumble for Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語", "Mochi the Rainbow Dragon"]);
   });
 
   it("stays on the picker when the chosen game isn't for the new player's age", async () => {
     const user = userEvent.setup();
     render(<GameApp />);
 
-    await user.click(screen.getByRole("button", { name: /Letter Jumble for Movers/ }));
+    await user.click(screen.getByRole("button", { name: /Letter Jumble - Movers/ }));
     await addPlayer(user, "Mia", "3-4");
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("What shall we play today?");
@@ -444,11 +444,11 @@ describe("progress", () => {
   it("carries on from the word the player got up to", async () => {
     const user = userEvent.setup();
     const { unmount } = render(<GameApp />);
-    await openGame(user, "Letter Jumble for Movers", "Animals");
+    await openGame(user, "Letter Jumble - Movers", "Animals");
     await earnCoin(user);
     expect(screen.getByLabelText("Word 2 of 13")).toBeInTheDocument();
 
-    await user.click(crumb("Letter Jumble for Movers"));
+    await user.click(crumb("Letter Jumble - Movers"));
     expect(screen.getByRole("button", { name: /Animals/ })).toHaveTextContent("1 of 13 words learned");
     expect(screen.getByRole("button", { name: /Body and Face/ })).toHaveTextContent("13 words to learn");
 
@@ -470,7 +470,7 @@ describe("progress", () => {
     }));
     const user = userEvent.setup();
     render(<GameApp />);
-    await openGame(user, "Letter Jumble for Movers", "Animals");
+    await openGame(user, "Letter Jumble - Movers", "Animals");
     for (const letter of ["w", "h", "a", "l", "e"]) {
       await user.click(screen.getByRole("button", { name: `Letter ${letter}` }));
     }
@@ -494,7 +494,7 @@ describe("progress", () => {
     }));
     const user = userEvent.setup();
     render(<GameApp />);
-    await openGame(user, "Letter Jumble for Movers", "Animals");
+    await openGame(user, "Letter Jumble - Movers", "Animals");
     for (const letter of ["w", "h", "a", "l", "e"]) {
       await user.click(screen.getByRole("button", { name: `Letter ${letter}` }));
     }
@@ -515,7 +515,7 @@ describe("progress", () => {
     }));
     const user = userEvent.setup();
     render(<GameApp />);
-    await openGame(user, "Letter Jumble for Movers", "Animals");
+    await openGame(user, "Letter Jumble - Movers", "Animals");
     expect(screen.getByLabelText("Word 13 of 13")).toBeInTheDocument();
 
     for (const letter of ["w", "h", "a", "l", "e"]) {
@@ -942,14 +942,14 @@ describe("Consonant Digraphs", () => {
   });
 });
 
-describe("Letter Jumble for Starters", () => {
+describe("Letter Jumble - Starters", () => {
   it("is offered to 5-6 year olds before Movers, with Pets and Farm and Wild Animals", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
     const user = userEvent.setup();
     render(<GameApp />);
-    expect(shownGames().indexOf("Letter Jumble for Starters")).toBe(shownGames().indexOf("Letter Jumble for Movers") - 1);
+    expect(shownGames().indexOf("Letter Jumble - Starters")).toBe(shownGames().indexOf("Letter Jumble - Movers") - 1);
 
-    await user.click(screen.getByRole("button", { name: /Letter Jumble for Starters/ }));
+    await user.click(screen.getByRole("button", { name: /Letter Jumble - Starters/ }));
     expect(currentPathname()).toBe("/starters");
     expect(screen.getByRole("button", { name: /Pets and Farm/ })).toHaveTextContent("17 words to learn");
     expect(screen.getByRole("button", { name: /Wild Animals/ })).toHaveTextContent("20 words to learn");
@@ -959,7 +959,7 @@ describe("Letter Jumble for Starters", () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
     const user = userEvent.setup();
     render(<GameApp />);
-    await user.click(screen.getByRole("button", { name: /Letter Jumble for Starters/ }));
+    await user.click(screen.getByRole("button", { name: /Letter Jumble - Starters/ }));
     await user.click(screen.getByRole("button", { name: /Pets and Farm/ }));
 
     // With the order pinned, the first word is "cat".
@@ -975,7 +975,7 @@ describe("Letter Jumble for Starters", () => {
   it("isn't offered to 3-4 year olds", () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
     render(<GameApp />);
-    expect(shownGames()).not.toContain("Letter Jumble for Starters");
+    expect(shownGames()).not.toContain("Letter Jumble - Starters");
   });
 
   it("shows the hyphen in T-shirt and only asks for its letters", async () => {
@@ -1205,11 +1205,11 @@ describe("badges", () => {
     const collection = await openBadges(user);
 
     expect(within(collection).getAllByRole("heading", { level: 2 }).map((heading) => heading.textContent))
-      .toEqual(["Consonant Digraphs", "R & L Blends", "Letter Jumble for Starters", "Letter Jumble for Movers", "中文認字 · 進階篇", "量詞配對", "成語"]);
+      .toEqual(["Consonant Digraphs", "R & L Blends", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 進階篇", "量詞配對", "成語"]);
     expect(collection).toHaveTextContent("2 of 29 badges");
     expect(within(collection).getByRole("listitem", { name: "Animals: earned" })).toBeInTheDocument();
     expect(within(collection).getByRole("listitem", { name: "成語: earned" })).toBeInTheDocument();
-    const movers = within(collection).getByRole("region", { name: "Letter Jumble for Movers" });
+    const movers = within(collection).getByRole("region", { name: "Letter Jumble - Movers" });
     expect(within(movers).getByRole("listitem", { name: "Body and Face: not earned yet" })).toBeInTheDocument();
 
     // The breadcrumb leads back home.
@@ -1405,7 +1405,7 @@ describe("site language", () => {
     expect(JSON.parse(window.localStorage.getItem(siteKey))).toMatchObject({ language: "zh" });
 
     // Inside an English game, the game's words stay English; the breadcrumb is the site's.
-    await user.click(screen.getByRole("button", { name: /Letter Jumble for Movers/ }));
+    await user.click(screen.getByRole("button", { name: /Letter Jumble - Movers/ }));
     await user.click(screen.getByRole("button", { name: /Animals/ }));
     expect(screen.getByRole("button", { name: /Check it/ })).toBeInTheDocument();
     expect(within(screen.getByRole("navigation", { name: "Breadcrumb" })).getAllByRole("listitem")[0]).toHaveTextContent("主頁");
@@ -1419,11 +1419,11 @@ describe("how to play", () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "5-6" }], current: "Ada" }));
     const user = userEvent.setup();
     render(<GameApp />);
-    await user.click(screen.getByRole("button", { name: /Letter Jumble for Movers/ }));
+    await user.click(screen.getByRole("button", { name: /Letter Jumble - Movers/ }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: /Animals/ }));
-    const howTo = screen.getByRole("dialog", { name: "How to play Letter Jumble for Movers" });
+    const howTo = screen.getByRole("dialog", { name: "How to play Letter Jumble - Movers" });
     expect(howTo.querySelector(".how-to-icon")).toBeNull();
     expect(within(howTo).getAllByRole("listitem").map((item) => item.textContent)).toEqual([
       "Look at the picture, tap the speaker if you need a hint.",
@@ -1438,7 +1438,7 @@ describe("how to play", () => {
     expect(help).toHaveTextContent(/^\?$/);
     expect(help.closest(".title-row")).toContainElement(screen.getByRole("heading", { level: 1 }));
     await user.click(help);
-    expect(screen.getByRole("dialog", { name: "How to play Letter Jumble for Movers" })).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "How to play Letter Jumble - Movers" })).toBeInTheDocument();
   });
 
   it("shows CVC Sounds' three numbered steps", async () => {
@@ -1703,13 +1703,13 @@ describe("parent mode", () => {
     const switches = (name) => within(within(parentPage()).getByRole("region", { name })).getAllByRole("switch")
       .map((toggle) => [toggle.querySelector(".spelling-guide-toggle-title").textContent, toggle.getAttribute("aria-checked")]);
     expect(switches(/Ada/)).toEqual([
-      ["CVC Sounds", "true"], ["Consonant Digraphs", "true"], ["R & L Blends", "true"], ["Letter Jumble for Starters", "false"], ["Spelling guide", "false"],
-      ["Letter Jumble for Movers", "false"], ["Spelling guide", "false"], ["中文認字 · 入門篇", "true"],
+      ["CVC Sounds", "true"], ["Consonant Digraphs", "true"], ["R & L Blends", "true"], ["Letter Jumble - Starters", "false"], ["Spelling guide", "false"],
+      ["Letter Jumble - Movers", "false"], ["Spelling guide", "false"], ["中文認字 · 入門篇", "true"],
       ["中文認字 · 進階篇", "false"], ["量詞配對", "false"], ["成語", "false"], ["Mochi the Rainbow Dragon", "true"],
     ]);
     expect(switches(/Elly/)).toEqual([
-      ["CVC Sounds", "false"], ["Consonant Digraphs", "true"], ["R & L Blends", "true"], ["Letter Jumble for Starters", "true"], ["Spelling guide", "false"],
-      ["Letter Jumble for Movers", "true"], ["Spelling guide", "false"], ["中文認字 · 入門篇", "false"],
+      ["CVC Sounds", "false"], ["Consonant Digraphs", "true"], ["R & L Blends", "true"], ["Letter Jumble - Starters", "true"], ["Spelling guide", "false"],
+      ["Letter Jumble - Movers", "true"], ["Spelling guide", "false"], ["中文認字 · 入門篇", "false"],
       ["中文認字 · 進階篇", "true"], ["量詞配對", "true"], ["成語", "true"], ["Mochi the Rainbow Dragon", "true"],
     ]);
     expect(within(parentPage()).queryByRole("button", { name: /Focus/ })).not.toBeInTheDocument();
@@ -1722,13 +1722,13 @@ describe("parent mode", () => {
     await passGrownUpCheck(user);
     const elly = within(parentPage()).getByRole("region", { name: /Elly/ });
     const guideFor = (name) => within(within(elly).getByRole("switch", { name: new RegExp(name) }).closest("li")).getByRole("switch", { name: /Spelling guide/ });
-    await user.click(guideFor("Letter Jumble for Starters"));
-    expect(guideFor("Letter Jumble for Starters")).toHaveAttribute("aria-checked", "true");
-    expect(guideFor("Letter Jumble for Movers")).toHaveAttribute("aria-checked", "false");
+    await user.click(guideFor("Letter Jumble - Starters"));
+    expect(guideFor("Letter Jumble - Starters")).toHaveAttribute("aria-checked", "true");
+    expect(guideFor("Letter Jumble - Movers")).toHaveAttribute("aria-checked", "false");
     expect(storedPlayers().players.find((player) => player.name === "Elly").spellingGuide).toEqual(["starters"]);
     expect(storedPlayers().players.find((player) => player.name === "Ada").spellingGuide).toBeUndefined();
 
-    await user.click(guideFor("Letter Jumble for Starters"));
+    await user.click(guideFor("Letter Jumble - Starters"));
     expect(storedPlayers().players.find((player) => player.name === "Elly").spellingGuide).toBeUndefined();
   });
 
@@ -1756,13 +1756,13 @@ describe("parent mode", () => {
     await passGrownUpCheck(user);
 
     const ada = within(parentPage()).getByRole("region", { name: /Ada/ });
-    const movers = within(ada).getByRole("switch", { name: /Letter Jumble for Movers/ });
+    const movers = within(ada).getByRole("switch", { name: /Letter Jumble - Movers/ });
     expect(movers).toHaveTextContent("Off · for 5-6 years old");
     await user.click(movers);
     await user.click(within(parentPage()).getByRole("button", { name: /Done/ }));
 
-    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Letter Jumble for Movers", "中文認字 · 入門篇", "Mochi the Rainbow Dragon"]);
-    await user.click(screen.getByRole("button", { name: /Letter Jumble for Movers/ }));
+    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Letter Jumble - Movers", "中文認字 · 入門篇", "Mochi the Rainbow Dragon"]);
+    await user.click(screen.getByRole("button", { name: /Letter Jumble - Movers/ }));
     expect(currentPathname()).toBe("/letter-jumble");
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Letter Jumble");
   });

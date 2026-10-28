@@ -80,7 +80,7 @@ def kid(x, y, s=1.0, arms=None, legs=None, hair="#8b5a3c", shirt="#8fe3a8", shor
     return f'<g transform="translate({x} {y}) scale({s})">{body}</g>'
 
 
-# ---------- Letter Jumble for Movers ----------
+# ---------- Letter Jumble - Movers ----------
 A = "animals/"
 pictures[A + "penguin"] = svg(
     '<path d="M64 14C40 14 30 40 30 70c0 26 12 44 34 44s34-18 34-44C98 40 88 14 64 14Z" fill="#5b6b8c"/>'
@@ -221,7 +221,7 @@ pictures[S + "pirate"] = svg(
     + eye(54, 66) + cheek(48, 76) + smile(64, 80, 10))
 
 
-# ---------- Letter Jumble for Starters: animals ----------
+# ---------- Letter Jumble - Starters: animals ----------
 def face(x, y, s=1.0):
     return eye(x - 8 * s, y, s) + eye(x + 8 * s, y, s) + cheek(x - 14 * s, y + 7 * s, s) + cheek(x + 14 * s, y + 7 * s, s) + smile(x, y + 8 * s, 6 * s)
 
@@ -319,7 +319,7 @@ pictures[A + "dragonfly"] = svg(
     '<circle cx="55" cy="24" r="8" fill="#a6ece8" stroke-width="3"/><circle cx="73" cy="24" r="8" fill="#a6ece8" stroke-width="3"/>'
     + eye(55, 24) + eye(73, 24) + cheek(52, 34, .7) + cheek(76, 34, .7) + smile(64, 35, 6) + '</g>')
 
-# ---------- Letter Jumble for Starters: food ----------
+# ---------- Letter Jumble - Starters: food ----------
 F = "food/"
 # A whole coconut and half of one, white inside.
 pictures[F + "coconut"] = svg(
@@ -410,7 +410,7 @@ pictures[F + "lemonade"] = svg(
     '<path d="M52 30l-6-22" stroke-width="5"/><path d="M52 30l-6-22" stroke="#ff8fa3" stroke-width="2"/>')
 
 
-# ---------- Letter Jumble for Starters: body, clothes, people and home ----------
+# ---------- Letter Jumble - Starters: body, clothes, people and home ----------
 ST = "starters/"
 
 

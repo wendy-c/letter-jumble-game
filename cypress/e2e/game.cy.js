@@ -47,7 +47,7 @@ function visitWithSpellingGuide() {
 
 function visitLetterJumble(options, newPlayer = "Ada") {
   cy.visit("/", options);
-  cy.contains("button", "Letter Jumble for Movers").click();
+  cy.contains("button", "Letter Jumble - Movers").click();
   if (newPlayer) addPlayer(newPlayer);
 }
 
@@ -217,7 +217,7 @@ describe("Movers spelling game", () => {
     cy.get(".letter-slot").eq(0).should("have.class", "letter-slot-guide-consonant");
     cy.get(".letter-slot").eq(1).should("have.class", "letter-slot-guide-consonant");
 
-    crumb("Letter Jumble for Movers");
+    crumb("Letter Jumble - Movers");
     cy.contains("button", "Body and Face").click();
     cy.get('button[aria-label="Browse Body and Face words"]').click();
     cy.get(".word-menu-item").contains("Tooth").click();
@@ -301,7 +301,7 @@ describe("Movers spelling game", () => {
     cy.contains("button", "Body and Face").click();
     cy.contains("01 / 13");
     cy.get(".letter-bank .letter-tile").should("have.length", 5);
-    crumb("Letter Jumble for Movers");
+    crumb("Letter Jumble - Movers");
     cy.contains("h1", "Letter Jumble");
   });
 });
@@ -418,7 +418,7 @@ describe("players", () => {
     cy.get('button[aria-label^="Playing as Theo"]').click();
     cy.contains('[role="menuitem"]', "Switch player").click();
     cy.get('[role="dialog"] .player-option').contains("Mia").click();
-    crumb("Letter Jumble for Movers");
+    crumb("Letter Jumble - Movers");
     cy.contains("button", "Animals").should("contain.text", "1 of 13 words learned").click();
     cy.get(".player-chip-coins").should("have.text", "1");
     cy.contains("02 / 13");

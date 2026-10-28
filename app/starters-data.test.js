@@ -4,7 +4,7 @@ import { starterCategories } from "./starters-data";
 
 const publicDir = path.join(__dirname, "..", "public");
 
-describe("Letter Jumble for Starters", () => {
+describe("Letter Jumble - Starters", () => {
   it("has the Pets and Farm and Wild Animals words", () => {
     const words = (id) => starterCategories.find((topic) => topic.id === id).words.map((word) => word.word);
     expect(words("pets-and-farm")).toEqual([

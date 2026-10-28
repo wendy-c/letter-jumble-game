@@ -1,7 +1,7 @@
 import { wordCategory } from "./game-data";
 
-// Letter Jumble for Starters: Cambridge Starters (YLE) vocabulary, played like Letter Jumble for
-// Movers. Pictures reuse the games' animal drawings where there is one, or an emoji.
+// Letter Jumble - Starters: Cambridge Starters (YLE) vocabulary, played like Letter Jumble -
+// Movers. Pictures reuse the games' drawings where there is one.
 const animalPictures = "/images/game-asset/animals";
 const fruit = "/images/game-asset/food";
 const food = "/images/game-asset/food";
