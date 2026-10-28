@@ -4,26 +4,26 @@ const drawn = "/images/game-asset/digraphs";
 
 const words = {
   ch: [
-    ["chair", "/images/game-asset/home/chair.svg"], ["chin", `${drawn}/chin.svg`], ["cheese", "🧀"], ["cherry", "🍒"],
-    ["chicken", "/images/game-asset/animals/chicken.svg"], ["beach", "🏖️"], ["lunch", "🍱"], ["peach", "🍑"],
+    ["chair", "/images/game-asset/home/chair.svg"], ["chin", `${drawn}/chin.svg`], ["cheese", `${drawn}/cheese.svg`], ["cherry", `${drawn}/cherry.svg`],
+    ["chicken", "/images/game-asset/animals/chicken.svg"], ["beach", "/images/game-asset/places/beach.svg"], ["lunch", `${drawn}/lunch.svg`], ["peach", `${drawn}/peach.svg`],
     ["bench", `${drawn}/bench.svg`], ["match", `${drawn}/match.svg`],
   ],
   sh: [
-    ["ship", "🚢"], ["shop", "🏪"], ["shell", "🐚"], ["shoe", "/images/game-asset/clothes/shoes.svg"],
-    ["shirt", "/images/game-asset/clothes/shirt.svg"], ["fish", "🐟"], ["wish", "🌠"], ["brush", "🪥"], ["wash", "🧼"], ["dish", "🍽️"],
+    ["ship", `${drawn}/ship.svg`], ["shop", "/images/game-asset/places/supermarket.svg"], ["shell", `${drawn}/shell.svg`], ["shoe", "/images/game-asset/clothes/shoes.svg"],
+    ["shirt", "/images/game-asset/clothes/shirt.svg"], ["fish", "/images/game-asset/food/fish.svg"], ["wish", `${drawn}/wish.svg`], ["brush", `${drawn}/brush.svg`], ["wash", `${drawn}/wash.svg`], ["dish", "/images/game-asset/home/dishes.svg"],
   ],
   th: [
-    ["thin", "/images/game-asset/body-and-face/thin.svg"], ["thick", `${drawn}/thick.svg`], ["thumb", "👍"], ["three", "3️⃣"],
-    ["think", "🤔"], ["bath", "🛁"], ["moth", "/images/game-asset/animals/moth.svg"], ["path", `${drawn}/path.svg`],
-    ["tooth", "/images/game-asset/body-and-face/tooth.svg"], ["both", "🙌"],
+    ["thin", "/images/game-asset/body-and-face/thin.svg"], ["thick", `${drawn}/thick.svg`], ["thumb", `${drawn}/thumb.svg`], ["three", `${drawn}/three.svg`],
+    ["think", `${drawn}/think.svg`], ["bath", "/images/game-asset/cvc/tub.svg"], ["moth", "/images/game-asset/animals/moth.svg"], ["path", `${drawn}/path.svg`],
+    ["tooth", "/images/game-asset/body-and-face/tooth.svg"], ["both", `${drawn}/both.svg`],
   ],
-  ph: [["graph", "📊"], ["phone", "📱"], ["photo", "📸"], ["phase", "🌓"], ["phantom", "👻"]],
+  ph: [["graph", `${drawn}/graph.svg`], ["phone", "/images/game-asset/starters/phone.svg"], ["photo", `${drawn}/photo.svg`], ["phase", `${drawn}/phase.svg`], ["phantom", `${drawn}/phantom.svg`]],
   wh: [
     ["wheel", `${drawn}/wheel.svg`], ["white", "/images/game-asset/colours/white.svg"],
-    ["whale", "/images/game-asset/animals/whale.svg"], ["where", "🔍❓"], ["whisper", "🤫"],
+    ["whale", "/images/game-asset/animals/whale.svg"], ["where", `${drawn}/where.svg`], ["whisper", `${drawn}/whisper.svg`],
   ],
-  ck: [["duck", "🦆"], ["lock", "🔒"], ["pack", "🎒"], ["black", "/images/game-asset/colours/black.svg"], ["kick", "🦵⚽"]],
-  ng: [["king", "🤴"], ["ring", "💍"], ["song", "🎵"], ["long", "📏"], ["bring", "🎁"]],
+  ck: [["duck", "/images/game-asset/animals/duck.svg"], ["lock", `${drawn}/lock.svg`], ["pack", "/images/game-asset/starters/bag.svg"], ["black", "/images/game-asset/colours/black.svg"], ["kick", `${drawn}/kick.svg`]],
+  ng: [["king", `${drawn}/king.svg`], ["ring", `${drawn}/ring.svg`], ["song", `${drawn}/song.svg`], ["long", `${drawn}/long.svg`], ["bring", "/images/game-asset/sports-and-leisure/present.svg"]],
 };
 
 export const digraphs = Object.keys(words);
