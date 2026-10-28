@@ -86,15 +86,6 @@ pictures["game-asset/food/cake"] = svg(
               for x in (46, 64, 82))
     + '<g fill="#fff6c8" stroke="none"><circle cx="40" cy="96" r="2"/><circle cx="58" cy="100" r="2"/><circle cx="88" cy="96" r="2"/></g>')
 
-pictures["game-asset/food/milk"] = svg(
-    '<path d="M38 40h44l8 12v62H30V52Z" fill="#ffffff"/>'
-    '<path d="M38 40l8-18h28l8 18Z" fill="#8cc8f2"/>'
-    '<rect x="52" y="8" width="16" height="12" rx="3" fill="#8cc8f2" stroke-width="3"/>'
-    '<path d="M30 52h60" stroke-width="3"/>'
-    '<path d="M30 66h60v20H30Z" fill="#8cc8f2" stroke-width="3"/>'
-    '<path d="M60 92q-12 14 0 18 12-4 0-18Z" fill="#c9e6fb" stroke-width="3"/>'
-    '<path d="M38 58l6 0" stroke="#fff" stroke-width="3"/>')
-
 pictures["game-asset/food/banana"] = svg(
     '<path d="M18 30q-2 52 46 72 34 12 52-6-30 4-52-14-26-22-34-58Z" fill="#ffe27a"/>'
     '<path d="M30 46q8 34 40 50" fill="none" stroke="#f2c14e" stroke-width="4"/>'

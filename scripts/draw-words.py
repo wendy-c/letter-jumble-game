@@ -273,9 +273,14 @@ pictures[A + "dragonfly"] = svg(
 
 # ---------- Letter Jumble for Starters: food ----------
 F = "food/"
+# A whole coconut and half of one, white inside.
 pictures[F + "coconut"] = svg(
-    '<circle cx="64" cy="66" r="44" fill="#a46a3c"/><path d="M28 62q36-20 72 0" fill="none" stroke="#7a4e2b" stroke-width="3"/>'
-    '<path d="M44 44a26 26 0 0 0 40 0" fill="#fff6e0" stroke-width="3"/><path d="M58 34l4 6M70 34l-4 6M64 42v6" stroke="#7a4e2b" stroke-width="3"/>')
+    '<circle cx="46" cy="56" r="34" fill="#8b5a3c"/>'
+    '<path d="M22 40q8-10 18-12M20 62q4 14 14 20M60 30q10 4 14 14" fill="none" stroke="#6b4228" stroke-width="3"/>'
+    '<g fill="#5a3620" stroke="none"><circle cx="40" cy="30" r="2.6"/><circle cx="48" cy="28" r="2.6"/><circle cx="44" cy="35" r="2.6"/></g>'
+    '<path d="M54 82q0 36 32 36t32-36Z" fill="#8b5a3c"/>'
+    '<path d="M64 98q8 8 20 10M100 104q8-6 12-14" fill="none" stroke="#6b4228" stroke-width="3"/>'
+    '<ellipse cx="86" cy="82" rx="32" ry="12" fill="#ffffff"/><ellipse cx="86" cy="82" rx="23" ry="7.5" fill="#fff6e0" stroke-width="2.5"/>')
 pictures[F + "kiwi"] = svg(
     '<ellipse cx="44" cy="70" rx="30" ry="34" fill="#a46a3c"/>'
     '<circle cx="80" cy="66" r="34" fill="#8fd36f"/><circle cx="80" cy="66" r="24" fill="#c8f0a0" stroke="none"/><ellipse cx="80" cy="66" rx="8" ry="6" fill="#fff6e0" stroke="none"/>'
@@ -303,10 +308,29 @@ pictures[F + "burger"] = svg(
     '<path d="M16 72h96v12H16Z" fill="#a46a3c"/><path d="M14 86h100l-8 8-8-6-8 6-8-6-8 6-8-6-8 6-8-6-8 6-8-6-8 6Z" fill="#ffd45e"/>'
     '<path d="M18 96h92q0 16-16 16H34q-16 0-16-16Z" fill="#e8b46b"/>'
     '<path d="M44 38h4M64 32h4M82 40h4" stroke="#fff6e0" stroke-width="4"/>')
+# A roast chicken on a plate.
 pictures[F + "chicken"] = svg(
-    '<path d="M40 30q34-18 54 8 14 22-6 40-12 10-26 8L44 100q-6 6-12 0l-4-4q-6-6 0-12l16-16q-12-12-14-24 0-8 10-14Z" fill="#d98b4a"/>'
-    '<path d="M28 96q-14 4-14-6 0-8 10-8-2-10 6-10 10 0 8 12Z" fill="#fff6e0"/>'
-    '<path d="M54 42q16-8 28 4" fill="none" stroke="#f3b37a" stroke-width="5"/>')
+    '<ellipse cx="64" cy="100" rx="56" ry="16" fill="#ffffff"/><ellipse cx="64" cy="98" rx="42" ry="10" fill="none" stroke="#d6d0e0" stroke-width="3"/>'
+    + limb([(84, 60), (100, 34)], "#fff6e0", 10) + limb([(98, 70), (116, 50)], "#fff6e0", 10)
+    + '<circle cx="98" cy="31" r="5" fill="#fff6e0" stroke-width="3"/><circle cx="104" cy="35" r="5" fill="#fff6e0" stroke-width="3"/>'
+    '<circle cx="114" cy="46" r="5" fill="#fff6e0" stroke-width="3"/><circle cx="120" cy="51" r="5" fill="#fff6e0" stroke-width="3"/>'
+    '<path d="M18 90q-4-34 34-42 40-6 56 20 8 18-12 24-14 4-34 4-38 0-44-6Z" fill="#e8a25a"/>'
+    '<ellipse cx="84" cy="66" rx="12" ry="16" transform="rotate(35 84 66)" fill="#d98a45"/>'
+    '<ellipse cx="100" cy="76" rx="10" ry="13" transform="rotate(40 100 76)" fill="#d98a45"/>'
+    '<path d="M32 66q14-12 32-12" fill="none" stroke="#f5c27a" stroke-width="5"/>'
+    '<path d="M10 96q6-10 16-6-4 10-16 6ZM114 98q-4-10-14-8 2 10 14 8Z" fill="#8fe3a8" stroke-width="3"/>')
+# A milk carton with a cow on the front.
+pictures[F + "milk"] = svg(
+    '<path d="M78 46l20-10v74l-20 10Z" fill="#cfe9ff"/>'
+    '<path d="M54 22l20-10 24 24-20 10Z" fill="#6fb3e6"/><path d="M52 24l20-10" stroke-width="7"/>'
+    '<path d="M30 46h48v74H30Z" fill="#ffffff"/><path d="M30 46l24-24 24 24Z" fill="#8cc8f2"/>'
+    '<path d="M30 102h48v18H30Z" fill="#8cc8f2"/>'
+    f'<text x="54" y="116" text-anchor="middle" font-family="Fredoka,Arial Rounded MT Bold,Arial,sans-serif" font-size="12" font-weight="700" fill="#ffffff" stroke="none">MILK</text>'
+    '<path d="M42 64l-3-7M66 64l3-7" stroke-width="3"/>'
+    '<ellipse cx="41" cy="70" rx="6" ry="3.5" fill="#ffffff" stroke-width="3"/><ellipse cx="67" cy="70" rx="6" ry="3.5" fill="#ffffff" stroke-width="3"/>'
+    '<ellipse cx="54" cy="76" rx="13" ry="13" fill="#ffffff"/><path d="M44 68q4-6 10-4-2 8-10 10Z" fill="#4b2e22" stroke="none"/>'
+    '<ellipse cx="54" cy="86" rx="10" ry="6" fill="#ffb3c6"/><circle cx="50" cy="86" r="1.6" fill="#4b2e22" stroke="none"/><circle cx="58" cy="86" r="1.6" fill="#4b2e22" stroke="none"/>'
+    + eye(49, 75, .7) + eye(59, 75, .7))
 pictures[F + "chocolate"] = svg(
     '<path d="M30 16h62v96H30Z" fill="#8b5a3c"/>'
     + "".join(f'<path d="M{36 + c * 26} {22 + r * 22}h20v16H{36 + c * 26}Z" fill="#a46a3c" stroke-width="3"/>' for c in range(2) for r in range(4))
@@ -414,6 +438,15 @@ pictures[ST + "baby"] = svg(
 pictures[ST + "man"] = svg(person(64, 54, 1.4, "#7a4e2b", "#6fb3e6", "short"))
 pictures[ST + "woman"] = svg(person(64, 54, 1.4, "#e8b46b", "#b79cf2", "long"))
 pictures[ST + "person"] = svg(person(64, 54, 1.4, "#a46a3c", "#ffd45e", "short"))
+
+
+HM = "home/"
+# A table with a friendly face on its front.
+pictures[HM + "table"] = svg(
+    '<path d="M26 72h10v42H26ZM92 72h10v42H92Z" fill="#c98a55"/>'
+    '<path d="M20 58h88v18H20Z" fill="#c98a55"/>'
+    '<rect x="10" y="46" width="108" height="14" rx="5" fill="#d9a066"/>'
+    + eye(56, 66, .8) + eye(72, 66, .8) + cheek(49, 71, .7) + cheek(79, 71, .7) + smile(64, 71, 6))
 
 
 CL = "clothes/"
@@ -622,9 +655,14 @@ pictures[C + "wet"] = svg(
     '<path d="M64 20q-34 40-34 60a34 34 0 0 0 68 0q0-20-34-60Z" fill="#8cc8f2"/>'
     '<path d="M46 80q0 14 12 20" fill="none" stroke="#ffffff" stroke-width="5"/>'
     '<path d="M22 30q-8 12 0 16 8-4 0-16ZM106 40q-8 12 0 16 8-4 0-16ZM18 96q-6 10 0 13 6-3 0-13Z" fill="#cfe9ff" stroke-width="3"/>')
+# A push pin, tipped over to show its point.
 pictures[C + "pin"] = svg(
-    '<circle cx="76" cy="44" r="26" fill="#ff6f6f"/><path d="M64 30q6-8 14-6" fill="none" stroke="#ffffff" stroke-width="4"/>'
-    '<path d="M62 60 20 108" stroke-width="5"/><path d="M62 60 20 108" stroke="#d6d0e0" stroke-width="2"/>')
+    '<g transform="rotate(32 64 64)">'
+    '<path d="M64 84v36" stroke-width="6"/><path d="M64 84v32" stroke="#d6d0e0" stroke-width="2.5"/>'
+    '<ellipse cx="64" cy="82" rx="22" ry="7" fill="#ff6f6f"/>'
+    '<path d="M54 80l4-38h12l4 38Z" fill="#ff6f6f"/>'
+    '<path d="M44 40V26h40v14q0 7-20 7t-20-7Z" fill="#ff6f6f"/><ellipse cx="64" cy="26" rx="20" ry="7" fill="#ff8f8f"/>'
+    '<path d="M50 30v8M60 52l-2 22" stroke="#ffffff" stroke-width="3"/></g>')
 pictures[C + "bin"] = svg(
     '<path d="M28 36h72l-8 78H36Z" fill="#8fe3a8"/><path d="M22 26h84v12H22Z" fill="#6fcf8f"/><path d="M52 26v-8h24v8" fill="none" stroke-width="4"/>'
     '<path d="M50 50v50M64 50v50M78 50v50" stroke="#4fb893" stroke-width="4"/>')
@@ -957,10 +995,20 @@ pictures[B + "scrub"] = svg(
     '<path d="M16 90h96v22H16Z" fill="#cfe9ff"/><path d="M34 52h60q8 0 8 8v24H26V60q0-8 8-8Z" fill="#ffe27a"/>'
     '<path d="M26 74h76v12H26Z" fill="#8fe3a8"/>'
     + "".join(f'<circle cx="{x}" cy="{y}" r="{r}" fill="#ffffff" stroke-width="2.5"/>' for x, y, r in [(30, 40, 8), (52, 34, 6), (86, 36, 9), (104, 46, 6), (70, 24, 5)]))
+# A spray bottle squirting a fine mist.
 pictures[B + "spray"] = svg(
-    '<path d="M40 52h44v60H40Z" fill="#8cc8f2"/><path d="M50 32h24v20H50Z" fill="#ffffff"/><path d="M52 32V20h28l-4 12" fill="#ff8fa3"/>'
-    '<path d="M46 72h32" stroke="#ffffff" stroke-width="4"/>'
-    + "".join(f'<circle cx="{x}" cy="{y}" r="2.5" fill="#8cc8f2" stroke="none"/>' for x, y in [(92, 18), (100, 26), (96, 12), (106, 16), (108, 30), (114, 22)]))
+    '<path d="M84 30L126 4v54Z" fill="#e6f4fc" stroke="none"/>'
+    + "".join(f'<circle cx="{x}" cy="{y}" r="{r}" fill="#8cc8f2" stroke="none"/>' for x, y, r in [
+        (90, 28, 2), (96, 24, 2.5), (98, 34, 2), (104, 18, 2.5), (106, 30, 3), (104, 40, 2), (112, 14, 2), (114, 24, 2.5),
+        (112, 36, 3), (114, 46, 2), (120, 10, 2.5), (122, 20, 2), (121, 31, 2.5), (122, 42, 2), (120, 52, 2.5)])
+    + '<path d="M24 62q0-8 8-8h22q8 0 8 8v50q0 8-8 8H32q-8 0-8-8Z" fill="#cfe9ff"/>'
+    '<path d="M27 82h32v30q0 5-5 5H32q-5 0-5-5Z" fill="#8cc8f2" stroke="none"/>'
+    '<path d="M24 62q0-8 8-8h22q8 0 8 8v50q0 8-8 8H32q-8 0-8-8Z" fill="none"/>'
+    '<rect x="32" y="88" width="22" height="16" rx="3" fill="#ffffff" stroke-width="3"/>'
+    '<path d="M34 40h18v14H34Z" fill="#ffffff"/>'
+    '<path d="M54 40q12 4 10 22-6 2-10-6Z" fill="#ff8fa3"/>'
+    '<rect x="22" y="20" width="54" height="22" rx="7" fill="#ff8fa3"/><path d="M74 26h10v10H74Z" fill="#ff8fa3"/>'
+    + burst(84, 31, 6, 10, (-60, 60), 2.5))
 pictures[B + "sprout"] = svg(
     '<path d="M14 98q8-20 50-20t50 20v20H14Z" fill="#b9814f"/>'
     '<path d="M64 80V48" stroke="#4fb893" stroke-width="5"/><path d="M64 56q-24 2-30-20 22-4 30 18M64 52q24-4 28-26-22 0-28 22" fill="#8fe3a8" stroke-width="3"/>')
@@ -1054,15 +1102,24 @@ pictures[B + "slow"] = svg(
     '<path d="M46 60l18 10 18-10M40 80h48M64 70v22" fill="none" stroke="#4fb893" stroke-width="3"/>'
     '<path d="M98 82q16-6 20 6 2 10-12 10H96Z" fill="#cdeec0"/><path d="M36 92l-4 14h12l2-12M84 92l2 12h12l-4-14" fill="#cdeec0" stroke-width="3"/>'
     + eye(108, 84, 0.8) + '<path d="M22 70q-8 0-12 6" fill="none" stroke-width="3"/>')
+# A foot in a fluffy slipper, the heel showing at the open back.
 pictures[B + "slipper"] = svg(
-    '<path d="M8 98q0-10 10-10h84q18 0 18 12 0 10-14 10H18q-10 0-10-12Z" fill="#c9b6f5"/>'
-    '<path d="M16 90q26-5 44-2" fill="none" stroke="#e8dcff" stroke-width="4"/>'
-    '<path d="M54 92Q54 56 90 56q30 0 30 40Z" fill="#ffb3d1"/>'
-    + "".join(f'<circle cx="{(1 - t) ** 2 * 54 + 2 * t * (1 - t) * 54 + t * t * 90:.1f}" cy="{(1 - t) ** 2 * 92 + 2 * t * (1 - t) * 56 + t * t * 56:.1f}" r="6" fill="#ffffff" stroke-width="3"/>' for t in (0.1, 0.3, 0.5, 0.7, 0.9)))
+    f'<path d="M30 30h28l2 36q2 8 14 10l30 6q12 4 10 14l-86 2q-10 0-8-12l10-20Z" fill="{SKIN}"/>'
+    '<path d="M20 -4h44l-2 38H24Z" fill="#b79cf2"/><path d="M24 26h38" stroke="#ffffff" stroke-width="3"/>'
+    '<path d="M32 4v18M44 4v18M56 4v18" stroke="#d6c8fa" stroke-width="3"/>'
+    '<path d="M50 98Q50 64 82 64q32 0 36 34Z" fill="#ffb3d1"/>'
+    + "".join(f'<circle cx="{(1 - t) ** 2 * 50 + 2 * t * (1 - t) * 50 + t * t * 82:.1f}" cy="{(1 - t) ** 2 * 98 + 2 * t * (1 - t) * 64 + t * t * 64:.1f}" r="6" fill="#ffffff" stroke-width="3"/>' for t in (0.1, 0.3, 0.5, 0.7, 0.9))
+    + '<path d="M12 98h108q6 0 6 6 0 8-8 8H18q-8 0-8-8 0-6 2-6Z" fill="#c9b6f5"/>')
+# A child falling into the water: arms up, mouth open, a big splash all round.
 pictures[B + "splash"] = svg(
-    '<path d="M10 96q27-14 54-6t54 6v20H10Z" fill="#8cc8f2"/>'
-    '<path d="M64 88q-4-30 -18-42M64 88q4-30 18-44M64 88V34" fill="none" stroke="#8cc8f2" stroke-width="6"/>'
-    + "".join(f'<path d="M{x} {y}q-6 9 0 12 6-3 0-12Z" fill="#cfe9ff" stroke-width="2.5"/>' for x, y in [(40, 30), (88, 24), (64, 16), (24, 56), (104, 52)]))
+    '<g transform="rotate(-14 64 70)">'
+    + kid(64, 38, 1.0, arms=[[(-11, 17), (-24, 2), (-30, -16)], [(11, 17), (24, 2), (28, -18)]], shirt="#ffd45e")
+    .replace(smile(0, 7.5, 5), f'<ellipse cx="0" cy="8.5" rx="2.6" ry="3.2" fill="{INK}" stroke="none"/>') + '</g>'
+    '<path d="M-4 86q17-8 34 0t34 0 34 0 34 0v46H-4Z" fill="#8cc8f2"/>'
+    '<path d="M34 90q-14-10-26-8 12-6 22 0-8-14-8-26 12 8 16 26 2-12 10-18-2 12-2 26Z" fill="#cfe9ff"/>'
+    '<path d="M94 90q14-10 26-8-12-6-22 0 8-14 8-26-12 8-16 26-2-12-10-18 2 12 2 26Z" fill="#cfe9ff"/>'
+    + "".join(f'<path d="M{x} {y}q-5 8 0 10 5-2 0-10Z" fill="#cfe9ff" stroke-width="2.5"/>' for x, y in [(14, 44), (114, 40), (24, 66), (106, 62)])
+    + '<path d="M18 106q12-6 24 0M70 112q12-6 24 0" fill="none" stroke="#ffffff" stroke-width="3"/>')
 pictures[B + "split"] = svg(
     '<path d="M4 92h120v24H4Z" fill="#c98a55"/><path d="M18 60h38v32H18Z" fill="#d9a066"/><path d="M72 60h38v32H72Z" fill="#d9a066"/>'
     '<ellipse cx="56" cy="76" rx="5" ry="15" fill="#f3d38c"/><ellipse cx="72" cy="76" rx="5" ry="15" fill="#f3d38c"/>'
