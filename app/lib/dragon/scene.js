@@ -1022,14 +1022,26 @@ function buildBubbleWand(materials) {
   return group;
 }
 
-// A kick scooter, pointing the way its rider faces (+z in her turn group).
+// A metal rod from point `a` to point `b`.
+function rod(a, b, radius, material, materials) {
+  const from = new THREE.Vector3(...a);
+  const to = new THREE.Vector3(...b);
+  const mesh = part(new THREE.CylinderGeometry(radius, radius, from.distanceTo(to), 10), material, materials, radius, 0.012);
+  mesh.position.copy(from).add(to).multiplyScalar(0.5);
+  mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), to.clone().sub(from).normalize());
+  return mesh;
+}
+
+// A kick scooter, pointing the way its rider faces (+z in her turn group). The stem stands
+// in front of her tummy and the handlebars curve back to where her hands reach.
 function buildScooter(materials, color) {
   const group = new THREE.Group();
   const paint = materials.toon(color);
-  const deck = part(new THREE.BoxGeometry(0.5, 0.08, 1.3), paint, materials, 0.06, 0.015);
-  deck.position.set(0, 0.2, 0.1);
+  const metal = materials.toon(0xd6d0e0);
+  const deck = part(new THREE.BoxGeometry(0.5, 0.08, 1.8), paint, materials, 0.06, 0.015);
+  deck.position.set(0, 0.2, 0.4);
   group.add(deck);
-  const wheels = [-0.45, 0.62].map((z) => {
+  const wheels = [-0.4, 1.2].map((z) => {
     const axle = new THREE.Group();
     axle.position.set(0, 0.12, z);
     axle.rotation.z = Math.PI / 2;
@@ -1038,18 +1050,11 @@ function buildScooter(materials, color) {
     group.add(axle);
     return wheel;
   });
-  const stem = part(new THREE.CylinderGeometry(0.035, 0.035, 1.35, 10), materials.toon(0xd6d0e0), materials, 0.035, 0.012);
-  stem.position.set(0, 0.85, 0.95);
-  stem.rotation.x = -0.18;
-  const bar = part(new THREE.CylinderGeometry(0.035, 0.035, 0.75, 10), materials.toon(0xd6d0e0), materials, 0.035, 0.012);
-  bar.rotation.z = Math.PI / 2;
-  bar.position.set(0, 1.5, 1.07);
-  group.add(stem, bar);
-  [-0.38, 0.38].forEach((x) => {
-    const grip = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.14, 10), paint);
-    grip.rotation.z = Math.PI / 2;
-    grip.position.set(x, 1.5, 1.07);
-    group.add(grip);
+  group.add(rod([0, 0.2, 1.3], [0, 1.33, 1.08], 0.04, metal, materials));
+  group.add(rod([-0.5, 1.33, 1.08], [0.5, 1.33, 1.08], 0.035, metal, materials));
+  [-1, 1].forEach((side) => {
+    group.add(rod([side * 0.5, 1.33, 1.08], [side * 0.66, 1.33, 0.8], 0.035, metal, materials));
+    group.add(rod([side * 0.6, 1.33, 0.9], [side * 0.68, 1.33, 0.76], 0.055, paint, materials));
   });
   group.userData.wheels = wheels;
   return group;
@@ -2042,12 +2047,15 @@ const actions = {
     const direction = 1 - 2 * easeInOut(between(t, 3.0, 3.6));
     const facing = direction * Math.PI / 2 - ctx.userTurn;
     const speed = Math.abs(out - back) > 0 && t > 0.8 && t < 5.9 ? 1 : 0;
-    [[pose, 0], [tofuPose, 0.25]].forEach(([who, lag]) => {
+    [[pose, 0, ctx.arms], [tofuPose, 0.25, tofu.arms]].forEach(([who, lag, arms], index) => {
       who.x += travel * (1 - lag * 0.2);
       who.turn = who.turn * (1 - riding) + facing * riding;
-      who.hop += 0.2 * riding;
-      who.armL = who.armR = Math.max(who.armL, 1.0 * riding);
-      who.armHug = Math.max(who.armHug, 0.55 * riding);
+      // She steps up onto the deck; the scooter stays on the ground.
+      who.hop += 0.26 * riding;
+      run.scooters[index].position.y = -0.26 * riding;
+      // Both hands reach forward to hold the handlebars.
+      who.armHug = Math.max(who.armHug, 0.75 * riding);
+      if (riding > 0) arms.forEach((arm) => { arm.userData.forward = -1.45 * riding; });
       if (riding > 0.5) {
         who.happyEyes = true;
         who.earFlap += 0.25 * Math.sin(t * 14);
