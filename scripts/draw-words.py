@@ -457,6 +457,19 @@ pictures[ST + "woman"] = svg(person(64, 54, 1.4, "#e8b46b", "#b79cf2", "long"))
 pictures[ST + "person"] = svg(person(64, 54, 1.4, "#a46a3c", "#ffd45e", "short"))
 
 
+# The Food and drinks topic's icon: a burger and a drink with a straw.
+pictures["../icons/starters-food-and-drinks"] = svg(
+    limb([(98, 34), (106, 10), (116, 10)], "#ff8fa3", 9)
+    + '<path d="M76 40h42l-6 76H82Z" fill="#ffb3d1"/><path d="M79 70h36" stroke="#ffffff" stroke-width="6"/>'
+    '<rect x="72" y="32" width="50" height="10" rx="4" fill="#ffffff"/>'
+    '<path d="M12 72q0-30 34-30t34 30Z" fill="#f2b766"/>'
+    '<path d="M32 54l3-2M46 50l3 1M58 56l3-1M40 62l3-1" stroke="#fff6e0" stroke-width="3"/>'
+    '<path d="M10 76q5-7 11 0t11 0 11 0 11 0 11 0 11 0v6H10Z" fill="#8fe3a8"/>'
+    '<rect x="10" y="82" width="72" height="12" rx="6" fill="#8b5a3c"/>'
+    '<path d="M14 82h64l-8 8-8-8-8 8-8-8-8 8-8-8-8 8Z" fill="#ffd45e" stroke-width="3"/>'
+    '<path d="M12 96h68q0 16-14 16H26q-14 0-14-16Z" fill="#f2b766"/>')
+
+
 HM = "home/"
 # A table with a friendly face on its front.
 pictures[HM + "table"] = svg(
@@ -669,8 +682,11 @@ pictures[C + "map"] = svg(
     '<path d="M18 60q16-16 30 0t32 0" fill="none" stroke="#8cc8f2" stroke-width="5"/>'
     '<path d="M86 50l14 14M100 50 86 64" stroke="#ff6f6f" stroke-width="5"/><path d="M24 88q10-8 18 0" fill="#8fe3a8" stroke-width="3"/>')
 pictures[C + "cap"] = svg(
-    '<path d="M22 76q0-46 42-46t42 46Z" fill="#8cc8f2"/><path d="M64 30v46" stroke-width="3"/>'
-    '<path d="M98 72q30 2 26 18-32 4-60-8" fill="#6fb3e6"/><circle cx="64" cy="28" r="5" fill="#ffd45e" stroke-width="3"/>')
+    '<path d="M58 80q30-12 60 2 8 10-4 16-30 8-58-8Z" fill="#6fb3e6"/><path d="M66 84q24-6 46 4" fill="none" stroke="#8cc8f2" stroke-width="3"/>'
+    '<path d="M14 82q-4-54 48-56 46 0 50 50-48 18-98 6Z" fill="#8cc8f2"/>'
+    '<path d="M62 26q-16 22-14 58M62 26q22 18 24 52" fill="none" stroke="#6fb3e6" stroke-width="3"/>'
+    '<path d="M14 82q50 12 98-6" fill="none" stroke-width="4"/>'
+    '<circle cx="62" cy="26" r="5" fill="#ffd45e" stroke-width="3"/>' + sparkle(68, 56, 9))
 pictures[C + "jam"] = svg(
     '<path d="M32 40h64v66q0 10-10 10H42q-10 0-10-10Z" fill="#ff6f8f"/><path d="M28 26h72v16H28Z" fill="#fff2bf"/>'
     '<path d="M28 34l6-6 6 6 6-6 6 6 6-6 6 6 6-6 6 6 6-6 6 6 6-6" fill="none" stroke="#ff8fa3" stroke-width="3"/>'
@@ -715,10 +731,14 @@ pictures[C + "pin"] = svg(
 pictures[C + "bin"] = svg(
     '<path d="M28 36h72l-8 78H36Z" fill="#8fe3a8"/><path d="M22 26h84v12H22Z" fill="#6fcf8f"/><path d="M52 26v-8h24v8" fill="none" stroke-width="4"/>'
     '<path d="M50 50v50M64 50v50M78 50v50" stroke="#4fb893" stroke-width="4"/>')
+# A pan lid lifted off a steaming pot.
 pictures[C + "lid"] = svg(
-    '<path d="M34 64h60v50H34Z" fill="#d6d0e0"/><path d="M40 74h48v30H40Z" fill="#ffd45e" stroke-width="3"/>'
-    '<ellipse cx="72" cy="36" rx="34" ry="10" fill="#b39ef0" transform="rotate(-18 72 36)"/><path d="M68 22l6-8" stroke-width="4"/>'
-    '<path d="M40 50l6-8M54 46l4-8" stroke="#8cc8f2" stroke-width="3"/>')
+    '<path d="M22 84h84v20q0 14-14 14H36q-14 0-14-14Z" fill="#ff8f8f"/><path d="M22 84h84" stroke-width="5"/>'
+    '<path d="M22 92H10M106 92h12" stroke-width="7"/>'
+    '<path d="M50 78q-4-6 0-12M64 76q-4-6 0-12M78 78q-4-6 0-12" fill="none" stroke="#c9b6f5" stroke-width="3"/>'
+    '<g transform="rotate(-10 64 46)"><path d="M28 54q0-24 36-24t36 24Z" fill="#d6d0e0"/>'
+    '<ellipse cx="64" cy="54" rx="38" ry="5" fill="#c4bcd4"/><path d="M40 44q8-8 20-9" fill="none" stroke="#ffffff" stroke-width="3"/>'
+    '<rect x="56" y="20" width="16" height="10" rx="4" fill="#8b5a3c"/></g>')
 pictures[C + "win"] = svg(
     '<path d="M38 18h52v28a26 26 0 0 1-52 0Z" fill="#ffd45e"/><path d="M38 26H22q0 22 18 26M90 26h16q0 22-18 26" fill="none" stroke-width="5"/>'
     '<path d="M58 72h12v16H58Z" fill="#ffd45e"/><path d="M40 88h48v14H40Z" fill="#c98a55"/><path d="M34 102h60v12H34Z" fill="#a46a3c"/>'
@@ -822,10 +842,6 @@ pictures[D + "think"] = svg(
     person(52, 64, 1.2, "#8b5a3c", "#8cc8f2", "short")
     + '<circle cx="96" cy="30" r="18" fill="#ffffff"/><circle cx="80" cy="54" r="5" fill="#ffffff" stroke-width="3"/><circle cx="72" cy="62" r="3" fill="#ffffff" stroke-width="2.5"/>'
     '<text x="96" y="38" text-anchor="middle" font-family="Fredoka,Arial Rounded MT Bold,Arial,sans-serif" font-size="24" font-weight="700" fill="#b79cf2" stroke="none">?</text>')
-pictures[D + "both"] = svg(
-    f'<path d="M16 116V70l-8-24q-2-8 6-10 6-2 8 6l6 18 4-30q2-8 8-6 6 2 6 8l-2 30 8-24q2-6 8-4 6 2 4 8l-8 30v44Z" fill="{SKIN}"/>'
-    f'<path d="M112 116V70l8-24q2-8-6-10-6-2-8 6l-6 18-4-30q-2-8-8-6-6 2-6 8l2 30-8-24q-2-6-8-4-6 2-4 8l8 30v44Z" fill="{SKIN}"/>'
-    + sparkle(64, 20, 10))
 pictures[D + "graph"] = svg(
     '<path d="M16 16v96h96" fill="none" stroke-width="5"/>'
     '<path d="M28 80h16v32H28ZM52 56h16v56H52ZM76 70h16v42H76ZM100 36h12v76H100Z" fill="#8cc8f2"/>'

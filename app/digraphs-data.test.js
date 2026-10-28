@@ -8,9 +8,9 @@ const topic = (id) => digraphTopics.find((candidate) => candidate.id === id);
 describe("Consonant Digraphs", () => {
   it("has three modules of 10 questions each: ch/sh/th, ph/wh/ck/ng, and all of them mixed", () => {
     expect(digraphTopics.map((module) => [module.name, module.words.length, module.wordsPerGame])).toEqual([
-      ["ch · sh · th", 30, 10],
+      ["ch · sh · th", 29, 10],
       ["ph · wh · ck · ng", 20, 10],
-      ["Mixed Digraphs", 50, 10],
+      ["Mixed Digraphs", 49, 10],
     ]);
     expect(digraphWordsPerGame).toBe(10);
     expect(topic("ch-sh-th").words.filter((word) => word.digraph === "ch").map((word) => word.word))

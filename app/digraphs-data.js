@@ -15,7 +15,7 @@ const words = {
   th: [
     ["thin", "/images/game-asset/body-and-face/thin.svg"], ["thick", `${drawn}/thick.svg`], ["thumb", `${drawn}/thumb.svg`], ["three", `${drawn}/three.svg`],
     ["think", `${drawn}/think.svg`], ["bath", "/images/game-asset/cvc/tub.svg"], ["moth", "/images/game-asset/animals/moth.svg"], ["path", `${drawn}/path.svg`],
-    ["tooth", "/images/game-asset/body-and-face/tooth.svg"], ["both", `${drawn}/both.svg`],
+    ["tooth", "/images/game-asset/body-and-face/tooth.svg"],
   ],
   ph: [["graph", `${drawn}/graph.svg`], ["phone", "/images/game-asset/starters/phone.svg"], ["photo", `${drawn}/photo.svg`], ["phase", `${drawn}/phase.svg`], ["phantom", `${drawn}/phantom.svg`]],
   wh: [
