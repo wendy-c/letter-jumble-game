@@ -1,4 +1,7 @@
 import { act, render, screen, waitFor, within } from "@testing-library/react";
+import { track } from "@vercel/analytics";
+
+jest.mock("@vercel/analytics", () => ({ track: jest.fn() }));
 import { today } from "./math-data/math-data";
 import userEvent from "@testing-library/user-event";
 import GameApp from "./components/GameApp";
@@ -2002,6 +2005,34 @@ describe("Daily Challenge", () => {
     expect(screen.getByRole("button", { name: /Level 2 · / })).toBeDisabled();
     expect(screen.getByRole("button", { name: /Level 2 · / })).toHaveTextContent("Opens tomorrow");
     expect(screen.getByRole("button", { name: /Level 3 · / })).toHaveTextContent("Finish Level 2 to open");
+  });
+
+  it("tells analytics when a child reaches Level 15, and not for other levels", async () => {
+    // Plays the last question of a level, with the levels up to it already open.
+    const finishLevel = async (number) => {
+      const key = `math-logic/k1-level-${number}`;
+      setPathname("/");
+      seedPlayer({
+        decks: { [key]: inOrder(10) }, progress: { [key]: 9 }, results: { [key]: Array(9).fill(true) },
+        unlocks: Array.from({ length: number - 1 }, (_, index) => `math-logic/k1-level-${index + 2}@2000-01-01`),
+      });
+      const user = userEvent.setup();
+      const view = render(<GameApp />);
+      await user.click(screen.getByRole("button", { name: /Daily Challenge/ }));
+      await user.click(screen.getByRole("button", { name: new RegExp(`Level ${number} · `) }));
+      await user.click(within(screen.getByRole("group", { name: "Choices" })).getAllByRole("button")[0]);
+      if (screen.queryByRole("dialog", { name: "The answer is…" })) await user.click(screen.getByRole("button", { name: /Next question/ }));
+      await nextQuestion();
+      await screen.findByRole("dialog", { name: /You did it!|Good try!/ });
+      expect(storedPlayers().players[0].unlocks).toContain(`math-logic/k1-level-${number + 1}@${today()}`);
+      view.unmount();
+    };
+
+    await finishLevel(12);
+    expect(track).not.toHaveBeenCalled();
+    await finishLevel(14);
+    expect(track).toHaveBeenCalledTimes(1);
+    expect(track).toHaveBeenCalledWith("k1-challenge", { level: "15" });
   });
 
   it("has the next level open on a later day", async () => {
