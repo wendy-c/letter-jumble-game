@@ -4234,6 +4234,34 @@ a:focus-visible {
   line-height: 1.5;
 }
 
+/* A tip with a picture under the steps (the Letter Jumble games' spelling guide). */
+.how-to-tip {
+  margin: 14px 0 0;
+}
+
+.how-to-tip img {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  margin: 0 auto;
+  border: 3px solid var(--line);
+  border-radius: 16px;
+}
+
+.how-to-tip figcaption {
+  margin-top: 8px;
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.how-to-tip em {
+  color: var(--magic-dark);
+  font-weight: 700;
+}
+
 @media (min-width: 720px) {
   .how-to-pictures {
     grid-template-columns: repeat(2, minmax(0, 1fr));

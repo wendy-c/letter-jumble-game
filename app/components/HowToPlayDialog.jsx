@@ -78,6 +78,16 @@ const pictureSteps = {
 };
 howTo["chinese-advanced"] = howTo.chinese;
 
+// A tip with a picture under a game's steps: the Letter Jumble games' spelling guide, which a
+// grown-up turns on in Parent mode (an annotated screenshot of where).
+const spellingGuideTip = {
+  picture: "/images/how-to/parent-spelling-guide.jpg",
+  alt: "Parent mode, with Letter Jumble - Starters’ settings open and an arrow pointing at the spelling guide switch",
+  en: <>Try the spelling guide, you can turn it on in the <em>parent mode</em>!</>,
+  zh: <>試試拼字指引，可以在<em>家長模式</em>開啟！</>,
+};
+const pictureTips = { starters: spellingGuideTip, "letter-jumble": spellingGuideTip };
+
 export const hasHowToPlay = (gameId) => gameId === "cvc" || Boolean(howTo[gameId] || pictureSteps[gameId]);
 
 // CVC Sounds has its own simpler card: three numbered steps.
@@ -193,6 +203,12 @@ export default function HowToPlayDialog({ game, language, onClose }) {
             <ol className="how-to-numbered">
               {steps.map((step) => <li key={step}>{step}</li>)}
             </ol>
+          )}
+          {pictureTips[game.id] && (
+            <figure className="how-to-tip">
+              <img src={pictureTips[game.id].picture} alt={pictureTips[game.id].alt} width="640" height="514" />
+              <figcaption>{pictureTips[game.id][language]}</figcaption>
+            </figure>
           )}
           <button className="reward-continue completion-button how-to-button" type="button" autoFocus onClick={onClose}>
             {buttons[language]} <span aria-hidden="true">→</span>
