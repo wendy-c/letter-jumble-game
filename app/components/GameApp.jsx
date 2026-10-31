@@ -9,7 +9,7 @@ import AnswerRevealDialog, { chineseRevealLabels } from "./AnswerRevealDialog";
 import BadgeCollection from "./BadgeCollection";
 import ChineseGame from "./ChineseGame";
 import Breadcrumbs from "./Breadcrumbs";
-import CompletionDialog, { chineseCompletionText } from "./CompletionDialog";
+import CompletionDialog, { chineseCompletionText, mathCompletionText } from "./CompletionDialog";
 import DragonDen from "./DragonDen";
 import RainbowVillage from "./RainbowVillage";
 import { dragons } from "../dragon-data";
@@ -19,6 +19,8 @@ import GamePicker from "./GamePicker";
 import IdiomGame from "./IdiomGame";
 import SentenceGame from "./SentenceGame";
 import MeasureWordGame from "./MeasureWordGame";
+import MathGame from "./MathGame";
+import { isLevelOpen, levelUnlockKey } from "../math-data";
 import PictureClue from "./PictureClue";
 import ParentMode from "./ParentMode";
 import PlayerDialog from "./PlayerDialog";
@@ -104,7 +106,10 @@ export default function GameApp() {
   const allowed = Boolean(routeGame && loaded && currentPlayer?.age && isGameAvailable(routeGame, currentPlayer));
   const selectedGame = allowed ? routeGame : null;
   const gameTopics = topicsByGame[selectedGame?.id] ?? [];
-  const routeTopic = (topicId && gameTopics.find((topic) => topic.id === topicId)) || null;
+  const isMath = selectedGame?.id === "math-logic";
+  // Math and Logic's levels open one by one; a level that isn't open yet goes back to the list.
+  const topicOpen = (topic) => !isMath || isLevelOpen(topic, currentPlayer);
+  const routeTopic = (topicId && gameTopics.find((topic) => topic.id === topicId && topicOpen(topic))) || null;
   // The dragon game: "/dragon" is Rainbow Village once Tofu has moved in (Mochi's den before),
   // "/dragon/village" is always the village, and "/dragon/mochi" or "/dragon/tofu" is a dragon's
   // den. Tofu's house needs unlocking first, from the village.
@@ -418,6 +423,10 @@ export default function GameApp() {
 
   // What the "not quite" card shows for the current question.
   function revealFor(question) {
+    if (isMath) {
+      const right = question.options.find((option) => option.correct);
+      return right.picture ? { text: right.label, picture: right.picture, note: question.prompt } : { text: right.label, picture: question.picture, wide: true, note: question.prompt };
+    }
     if (isMeasure) return { text: question.answers[0], picture: question.icon };
     if (isIdiom) return { text: question.idiom, picture: question.picture, note: question.meaning };
     if (question.sentence) return { text: question.character, picture: question.picture, note: question.sentence };
@@ -444,7 +453,15 @@ export default function GameApp() {
     const hasBadge = Boolean(currentPlayer?.badges?.includes(categoryKey));
     const newBadge = correct === count && !hasBadge;
     if (newBadge) awardBadge(categoryKey);
-    setCompletedTopic({ name: selectedCategory.name, count, correct, hasBadge, badge: newBadge ? { name: routeTopic.name, image: badgeImage(selectedGame.id, routeTopic.id) } : null });
+    // Finishing a Math and Logic level opens the next one.
+    const nextLevel = isMath ? gameTopics[gameTopics.indexOf(routeTopic) + 1] : null;
+    const opensLevel = Boolean(nextLevel) && !isLevelOpen(nextLevel, currentPlayer);
+    if (opensLevel) unlock(levelUnlockKey(nextLevel));
+    setCompletedTopic({
+      name: selectedCategory.name, count, correct, hasBadge,
+      badge: newBadge ? { name: routeTopic.name, image: badgeImage(selectedGame.id, routeTopic.id) } : null,
+      nextLevel: opensLevel ? nextLevel.name : null,
+    });
     sounds.sparkle?.();
   }
 
@@ -604,13 +621,37 @@ export default function GameApp() {
             isChinese={isChinese}
             isMeasure={isMeasure}
             isIdiom={isIdiom}
+            isMath={isMath}
+            isLocked={(topic) => !topicOpen(topic)}
             topics={gameTopics}
             progressFor={(topic) => currentPlayer?.progress?.[`${selectedGame.id}/${topic.id}`] ?? 0}
             breadcrumbs={breadcrumbs}
             onSelectTopic={selectCategory}
           />
         )
-      ) : !playing ? null : isIdiom ? (
+      ) : !playing ? null : isMath ? (
+        <section className="game-wrap mx-auto w-full max-w-6xl" aria-labelledby="game-title">
+          <GameHeading
+            titleAction={howToButton}
+            topic={selectedCategory}
+            round={round}
+            rainbowCoins={rainbowCoins}
+            wordMenuOpen={wordMenuOpen}
+            breadcrumbs={breadcrumbs}
+            onOpenWordMenu={() => setWordMenuOpen(true)}
+            eyebrow="BRAIN CHALLENGE"
+            note="Look, count and think!"
+          />
+          <MathGame
+            key={`${selectedCategory.id}-${round}`}
+            topic={selectedCategory}
+            round={round}
+            question={puzzle}
+            onAnswer={answerQuestion}
+          />
+          <GameFooter>ONE QUESTION AT A TIME</GameFooter>
+        </section>
+      ) : isIdiom ? (
         <section className="game-wrap mx-auto w-full max-w-6xl" aria-labelledby="game-title">
           <GameHeading
             titleAction={howToButton}
@@ -772,7 +813,8 @@ export default function GameApp() {
           correct={completedTopic.correct}
           hasBadge={completedTopic.hasBadge}
           badge={completedTopic.badge}
-          text={inChinese ? chineseCompletionText : undefined}
+          text={inChinese ? chineseCompletionText : isMath ? mathCompletionText : undefined}
+          nextLevel={completedTopic.nextLevel}
           onDone={leaveCompletedTopic}
           onVisitMochi={currentPlayer && isGameAvailable(games.find((game) => game.id === "dragon"), currentPlayer) ? visitMochiAfterTopic : null}
           onTryAgain={tryTopicAgain}

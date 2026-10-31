@@ -8,13 +8,22 @@ function cardNote(isChinese, isMeasure, done, total) {
   return done > 0 ? `${done} of ${total} words learned` : `${total} words to learn`;
 }
 
-export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false, isBlend = false, isChinese = false, isMeasure = false, isIdiom = false, topics, progressFor = () => 0, breadcrumbs, onSelectTopic }) {
+// `isLocked(topic)` says a topic can't be played yet (Math and Logic's later levels).
+export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false, isBlend = false, isChinese = false, isMeasure = false, isIdiom = false, isMath = false, isLocked = () => false, topics, progressFor = () => 0, breadcrumbs, onSelectTopic }) {
   return (
     <section className="game-wrap category-menu mx-auto w-full max-w-6xl" aria-labelledby="game-title">
       <div className="menu-heading">
         {breadcrumbs}
-        {isChinese || isMeasure || isIdiom ? null : <p className="eyebrow">WELCOME TO SPELLING SCHOOL</p>}
-        {isIdiom ? (
+        {isChinese || isMeasure || isIdiom ? null : <p className="eyebrow">{isMath ? "BRAIN CHALLENGE" : "WELCOME TO SPELLING SCHOOL"}</p>}
+        {isMath ? (
+          <>
+            <div className="title-row">
+              <h1 id="game-title">Math and <span>Logic</span></h1>
+              {titleAction}
+            </div>
+            <p className="heading-note">Everyone starts at Level 1. Finish a level to open the next one!</p>
+          </>
+        ) : isIdiom ? (
           <>
             <div className="title-row">
               <h1 id="game-title" lang="zh-Hant-HK">成<span>語</span></h1>
@@ -73,21 +82,27 @@ export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false
         )}
       </div>
       <div className={`category-grid${isCvc && !isDigraph && !isBlend ? " mode-grid" : ""}`}>
-        {topics.map((topic, index) => (
-          <ChoiceCard
-            key={topic.id}
-            color={topic.color}
-            icon={topic.pattern
-              ? <LetterPattern letters={topic.pattern} />
-              : <img src={topic.icon} alt="" width="40" height="40" />}
-            number={index + 1}
-            name={topic.name}
-            note={cardNote(isIdiom ? "idiom" : isChinese, isMeasure, progressFor(topic), topic.wordsPerGame ?? topic.words.length)}
-            onClick={() => onSelectTopic(topic)}
-          />
-        ))}
+        {topics.map((topic, index) => {
+          const locked = isLocked(topic);
+          return (
+            <ChoiceCard
+              key={topic.id}
+              color={topic.color}
+              icon={topic.pattern
+                ? <LetterPattern letters={topic.pattern} />
+                : <img src={topic.icon} alt="" width="40" height="40" />}
+              number={index + 1}
+              name={isMath ? `${topic.name} · ${topic.english}` : topic.name}
+              note={isMath
+                ? (locked ? `Finish ${topics[index - 1].name} to open` : progressFor(topic) > 0 ? `${progressFor(topic)} of ${topic.words.length} questions done` : `${topic.words.length} questions`)
+                : cardNote(isIdiom ? "idiom" : isChinese, isMeasure, progressFor(topic), topic.wordsPerGame ?? topic.words.length)}
+              locked={locked}
+              onClick={() => onSelectTopic(topic)}
+            />
+          );
+        })}
       </div>
-      <GameFooter>{isChinese || isMeasure || isIdiom ? "選一個主題" : isCvc ? "PICK A GAME" : "PICK A SPELL BOOK"}</GameFooter>
+      <GameFooter>{isChinese || isMeasure || isIdiom ? "選一個主題" : isMath ? "PICK A LEVEL" : isCvc ? "PICK A GAME" : "PICK A SPELL BOOK"}</GameFooter>
     </section>
   );
 }

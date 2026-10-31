@@ -1610,6 +1610,422 @@ pictures["../icons/starters-toys-and-hobbies"] = svg(
     '<path d="M92 62Q78 88 92 114Q106 88 92 62Z" fill="#ffffff"/><circle cx="92" cy="88" r="26" fill="none"/>')
 pictures["../icons/starters-vehicles"] = svg(car(0, -4))
 
+# ---------- Math and Logic ----------
+# Scenes are 256 × 160 (wide, like the idioms' pictures); pattern pieces are the usual 128 square.
+MA = "math/"
+
+
+def wide(body):
+    return svg(body).replace('viewBox="0 0 128 128"', 'viewBox="0 0 256 160"', 1)
+
+
+def at(x, y, s, body):
+    return f'<g transform="translate({x} {y}) scale({s})">{body}</g>'
+
+
+def asset(path, x, y, size, swaps=()):
+    """A picture from public/images/game-asset, drawn `size` wide with its top-left at (x, y)."""
+    text = pictures.get(path) or open(os.path.join(IMAGES, path + ".svg")).read()
+    inner = text.split(">", 1)[1].rsplit("</svg>", 1)[0]
+    for old, new in swaps:
+        inner = inner.replace(old, new)
+    return f'<svg x="{x}" y="{y}" width="{size}" height="{size}" viewBox="0 0 128 128">{inner}</svg>'
+
+
+def scene(sky="#eaf6ff", ground="#bfe8c8", horizon=110):
+    return f'<path d="M0 0h256v{horizon}H0Z" fill="{sky}" stroke="none"/><path d="M0 {horizon}h256v{160 - horizon}H0Z" fill="{ground}" stroke="none"/>'
+
+
+def ten_frame(x, y, filled, colour="#ff6f86", cell=22, item=None):
+    """Two rows of five boxes; the first `filled` hold a counter (or `item(cx, cy)`)."""
+    out = f'<rect x="{x}" y="{y}" width="{cell * 5}" height="{cell * 2}" rx="4" fill="#ffffff"/>'
+    out += "".join(f'<path d="M{x + cell * i} {y}v{cell * 2}" stroke-width="2.5"/>' for i in range(1, 5)) + f'<path d="M{x} {y + cell}h{cell * 5}" stroke-width="2.5"/>'
+    for n in range(filled):
+        cx, cy = x + cell * (n % 5) + cell / 2, y + cell * (n // 5) + cell / 2
+        out += item(cx, cy) if item else f'<circle cx="{cx}" cy="{cy}" r="{cell * 0.32:.1f}" fill="{colour}" stroke-width="2.5"/>'
+    return out
+
+
+# Little things to count, drawn round (0, 0) about 30 across.
+def kitten(kind):
+    fur, patch = ("#ffb86b", "#e8894a") if kind == "tabby" else ("#ffffff", "#ffb86b")
+    marks = ('<path d="M-4-19v5M0-20v6M4-19v5M-12 8h6M6 12h6M-10 16h5" stroke="#e8894a" stroke-width="2.5"/>' if kind == "tabby"
+             else '<path d="M3-20q10-2 11 8-6 2-11-1Z" fill="#ffb86b" stroke="none"/><path d="M-13-14q2-8 9-6-2 6-9 6Z" fill="#5b4a52" stroke="none"/>'
+                  '<ellipse cx="-6" cy="12" rx="6" ry="5" fill="#5b4a52" stroke="none"/><ellipse cx="7" cy="16" rx="5" ry="4" fill="#ffb86b" stroke="none"/>')
+    return (f'<path d="M12 18q14-2 10-16" fill="none" stroke="{fur}" stroke-width="7"/><path d="M12 18q14-2 10-16" fill="none" stroke-width="2" stroke-dasharray="0"/>'
+            f'<ellipse cx="0" cy="12" rx="14" ry="12" fill="{fur}"/><path d="M-13-12l2-14 9 8ZM13-12l-2-14-9 8Z" fill="{fur}"/>'
+            f'<circle cx="0" cy="-8" r="14" fill="{fur}"/>{marks}'
+            + eye(-5, -8, .7) + eye(5, -8, .7) + '<path d="M-1.5-3h3l-1.5 2Z" fill="#ff8fae" stroke="none"/>' + cheek(-9, -3, .5) + cheek(9, -3, .5))
+
+
+def house(roof):
+    body = '<rect x="-18" y="-6" width="36" height="28" fill="#fff6e0"/><rect x="-6" y="6" width="12" height="16" rx="2" fill="#c98a55" stroke-width="2.5"/>'
+    top = ('<path d="M-24-4L0-26 24-4Z" fill="#ff8f8f"/>' if roof == "slanted"
+           else '<rect x="-22" y="-14" width="44" height="9" rx="2" fill="#8ea6cc"/>')
+    return body + top + '<rect x="-15" y="-1" width="7" height="7" fill="#cfe9ff" stroke-width="2"/><rect x="8" y="-1" width="7" height="7" fill="#cfe9ff" stroke-width="2"/>'
+
+
+def donut():
+    icing = "L".join(f"{(12 + 1.6 * math.sin(math.radians(a) * 8)) * math.cos(math.radians(a)):.1f} {(12 + 1.6 * math.sin(math.radians(a) * 8)) * math.sin(math.radians(a)):.1f}" for a in range(0, 360, 6))
+    return ('<circle cx="0" cy="0" r="16" fill="#e0a560"/>'
+            f'<path d="M{icing}Z" fill="#ffb3d1" stroke-width="2.5"/>'
+            '<circle cx="0" cy="0" r="5" fill="#ffffff"/><path d="M-6-7l3-1M5-8l2 2M7 1l2 2M-8 3l2-2" stroke="#8cc8f2" stroke-width="2.5"/>')
+
+
+def grab_hand():
+    """A hand reaching down from above, to sit over something at (0, 0)."""
+    return (limb([(0, -50), (0, -22)], SKIN, 14) + '<path d="M-10-62h20v16h-20Z" fill="#8cc8f2"/>'
+            + f'<ellipse cx="0" cy="-16" rx="13" ry="9" fill="{SKIN}"/>'
+            + "".join(f'<rect x="{x}" y="-14" width="6" height="13" rx="3" fill="{SKIN}" stroke-width="2.5"/>' for x in (-12, -6, 0, 6)))
+
+
+def balloon(colour, popped=False):
+    if popped:
+        return (f'<path d="M0-26l4 8 9-4-3 9 9 3-9 4 3 9-9-3-4 9-4-9-9 3 3-9-9-4 9-3-3-9 9 4Z" fill="{colour}" stroke-width="2.5"/>'
+                '<path d="M0-4q-4 10 2 22" fill="none" stroke-width="2"/>')
+    return (f'<path d="M0-4q-4 10 2 22" fill="none" stroke-width="2"/><ellipse cx="0" cy="-18" rx="11" ry="14" fill="{colour}"/>'
+            f'<path d="M-2-4l2-3 2 3Z" fill="{colour}" stroke-width="2"/><path d="M-5-24q1-4 4-6" fill="none" stroke="#ffffff" stroke-width="2.5"/>')
+
+
+def little_bird(colour, flying=False):
+    wing = '<path d="M-4-2q4-14 14-12-2 10-10 14Z" fill="#ffffff" stroke-width="2.5"/>' if flying else '<path d="M-6 2q6-6 12 0-6 6-12 0Z" fill="#ffffff" stroke-width="2.5"/>'
+    return (f'<circle cx="0" cy="0" r="11" fill="{colour}"/>{wing}<path d="M10-3l7 2-7 3Z" fill="#ffb86b" stroke-width="2"/>'
+            + eye(5, -3, .6) + ('' if flying else '<path d="M-3 11v5M3 11v5" stroke-width="2"/>'))
+
+
+def ball(colour):
+    return f'<circle cx="0" cy="0" r="12" fill="{colour}"/><path d="M-12 0q12 6 24 0" fill="none" stroke="#ffffff" stroke-width="3"/>'
+
+
+def cupcake(colour):
+    return (f'<path d="M-11 0h22l-3 14H-8Z" fill="#ffd45e"/><path d="M-5 1l1 12M0 1v12M5 1l-1 12" stroke="#f2b632" stroke-width="2"/>'
+            f'<path d="M-13 2q-2-14 13-15 15 1 13 15Z" fill="{colour}"/><circle cx="0" cy="-15" r="3.5" fill="#ff6f6f" stroke-width="2"/>')
+
+
+def star5(colour, r=13):
+    pts = []
+    for i in range(10):
+        a = math.radians(-90 + 36 * i)
+        rr = r if i % 2 == 0 else r * 0.45
+        pts.append(f"{rr * math.cos(a):.1f} {rr * math.sin(a):.1f}")
+    return f'<path d="M{"L".join(pts)}Z" fill="{colour}" stroke-width="3"/>'
+
+
+def cookie(bitten=False, gone=False):
+    if gone:
+        return '<circle cx="0" cy="0" r="14" fill="none" stroke="#c4bcd4" stroke-width="2.5" stroke-dasharray="4 4"/>'
+    points = []
+    for step in range(60):
+        a = step * 6
+        r = 14
+        if bitten and 20 <= a <= 80:
+            r = 14 - 4.5 * abs(math.sin((a - 20) / 60 * 3 * math.pi))
+        points.append(f"{r * math.cos(math.radians(a)):.1f} {r * math.sin(math.radians(a)):.1f}")
+    return (f'<path d="M{"L".join(points)}Z" fill="#e8b46b"/>'
+            '<g fill="#8b5a3c" stroke="none"><circle cx="-5" cy="-4" r="2"/><circle cx="4" cy="-6" r="2"/><circle cx="-2" cy="5" r="2"/><circle cx="6" cy="3" r="1.8"/></g>')
+
+
+def tomato(s=1):
+    return at(0, 0, s, '<circle cx="0" cy="2" r="12" fill="#ff6f6f"/><path d="M-6-9l6 3 6-3-2 5-4-1-4 1Z" fill="#6cc28a" stroke-width="2"/>')
+
+
+def carrot(s=1):
+    return at(0, 0, s, '<path d="M-6-8q6-4 12 0L1 22q-1 2-2 0Z" fill="#ffa552"/><path d="M-2-6l2 2M0 4l3-1" stroke="#e8894a" stroke-width="2"/>'
+                       '<path d="M0-9l-6-9M0-9v-11M0-9l6-9" stroke="#6cc28a" stroke-width="4"/>')
+
+
+def broccoli(s=1):
+    return at(0, 0, s, '<path d="M-4 2h8l2 16H-6Z" fill="#a8e0a0"/><circle cx="-8" cy="-4" r="8" fill="#5cb87a"/><circle cx="8" cy="-4" r="8" fill="#5cb87a"/><circle cx="0" cy="-10" r="9" fill="#6cc28a"/>')
+
+
+def cabbage(s=1):
+    return at(0, 0, s, '<circle cx="0" cy="0" r="15" fill="#b5e8a0"/><path d="M0-15q-8 15 0 30M-12-8q10 8 0 18M12-8q-10 8 0 18" fill="none" stroke="#6cc28a" stroke-width="2.5"/>')
+
+
+def strawberry(s=1):
+    return at(0, 0, s, '<path d="M-11-4q0-6 11-6t11 6q0 12-11 20-11-8-11-20Z" fill="#ff6f86"/><path d="M-7-10l7 4 7-4-3-4-4 2-4-2Z" fill="#6cc28a" stroke-width="2"/>'
+                       '<g fill="#fff6c8" stroke="none"><circle cx="-4" cy="0" r="1.3"/><circle cx="4" cy="2" r="1.3"/><circle cx="0" cy="8" r="1.3"/></g>')
+
+
+def apple(s=1):
+    return at(0, 0, s, '<path d="M0-6q-14-6-14 8 0 14 14 14t14-14q0-14-14-8Z" fill="#ff6f6f"/><path d="M0-6v-6" stroke-width="2.5"/><path d="M1-9q6-6 10-2-6 4-10 2Z" fill="#8fe3a8" stroke-width="2"/>')
+
+
+def banana(s=1):
+    return at(0, 0, s, '<path d="M-16-6q4 20 32 16 2-4-2-4-22 2-26-14Z" fill="#ffe27a"/><path d="M-16-6l-2-4" stroke-width="3"/>')
+
+
+def grapes(s=1):
+    return at(0, 0, s, "".join(f'<circle cx="{x}" cy="{y}" r="5" fill="#a07ae6" stroke-width="2.5"/>' for x, y in ((-6, -6), (4, -6), (-1, 2), (9, 2), (4, 10), (-6, 10))) + '<path d="M0-12q2-6 6-6" fill="none" stroke-width="2.5"/>')
+
+
+def scatter(seed, kinds, counts, area=(14, 14, 242, 146), min_gap=24):
+    """Places `counts` of each kind at random, not touching, over `area`; returns svg."""
+    import random as _random
+    rng = _random.Random(seed)
+    spots = []
+    placed = []
+    for kind, count in zip(kinds, counts):
+        for _ in range(count):
+            for _try in range(400):
+                x, y = rng.uniform(area[0], area[2]), rng.uniform(area[1], area[3])
+                if all((x - px) ** 2 + (y - py) ** 2 > min_gap ** 2 for px, py in spots):
+                    break
+            spots.append((x, y))
+            placed.append((kind, x, y, rng.uniform(0.75, 1.3)))
+    rng.shuffle(placed)
+    return "".join(f'<g transform="translate({x:.1f} {y:.1f})">{kind(s)}</g>' for kind, x, y, s in placed)
+
+
+def tri(x, y, s, colour, rot=0):
+    return f'<path d="M{x} {y - s}L{x + s * 0.95:.1f} {y + s * 0.65:.1f}H{x - s * 0.95:.1f}Z" fill="{colour}" transform="rotate({rot} {x} {y})"/>'
+
+
+def shapes_scene(triangles, others):
+    """Mixed shapes for "how many triangles?"."""
+    out = '<rect x="2" y="2" width="252" height="156" rx="12" fill="#fff6e0"/>'
+    out += "".join(tri(x, y, 15, c, r) for x, y, c, r in triangles)
+    for kind, x, y, c in others:
+        if kind == "circle":
+            out += f'<circle cx="{x}" cy="{y}" r="14" fill="{c}"/>'
+        elif kind == "square":
+            out += f'<rect x="{x - 13}" y="{y - 13}" width="26" height="26" rx="3" fill="{c}"/>'
+        elif kind == "star":
+            out += at(x, y, 1.1, star5(c))
+        elif kind == "heart":
+            out += f'<path d="M{x} {y + 12}c-16-10-16-24-6-24 4 0 6 3 6 5 0-2 2-5 6-5 10 0 10 14-6 24Z" fill="{c}"/>'
+        elif kind == "rect":
+            out += f'<rect x="{x - 18}" y="{y - 10}" width="36" height="20" rx="3" fill="{c}"/>'
+    return out
+
+
+def ten_seat_bus(upper, lower):
+    """A double-decker bus whose windows are a ten frame: `upper` and `lower` passengers."""
+    out = ('<path d="M16 26h214q12 0 12 12v92H16Z" fill="#ff6f6f"/><path d="M16 84h226" stroke-width="3"/>'
+           '<circle cx="62" cy="134" r="14" fill="#5b6b8c"/><circle cx="200" cy="134" r="14" fill="#5b6b8c"/>'
+           '<circle cx="62" cy="134" r="5" fill="#d6d0e0" stroke-width="2.5"/><circle cx="200" cy="134" r="5" fill="#d6d0e0" stroke-width="2.5"/>'
+           '<rect x="226" y="92" width="12" height="34" rx="2" fill="#cfe9ff" stroke-width="2.5"/>')
+    for row, count in ((0, upper), (1, lower)):
+        for i in range(5):
+            x, y = 26 + i * 40, 34 + row * 58
+            out += f'<rect x="{x}" y="{y}" width="34" height="40" rx="5" fill="#cfe9ff" stroke-width="3"/>'
+            if i < count:
+                hair = ["#8b5a3c", "#e8b46b", "#4b2e22", "#a46a3c", "#c98a55"][i]
+                out += person(x + 17, y + 22, 0.42, hair, ["#8fe3a8", "#ffd45e", "#c9b6f5", "#8cc8f2", "#ffb3d1"][i])
+    return out
+
+
+def fence(y1, y2):
+    posts = "".join(f'<rect x="{x}" y="{y1 - 10}" width="8" height="{y2 - y1 + 14}" rx="2" fill="#d9a066" stroke-width="2.5"/>' for x in range(10, 250, 40))
+    return f'<path d="M6 {y1}h244M6 {y2}h244" stroke="#c98a55" stroke-width="7"/>' + posts
+
+
+def equals_row(y, left, count, right, unknown=False):
+    """One line of a "1 ○ = 2 △" swap: `left` and `right` draw an item at (0, 0)."""
+    out = at(40, y, 1.1, left) + label(70, y + 8, "=", 24)
+    if unknown:
+        out += label(100, y + 9, "?", 26, "#ff6f9f") + at(130, y, 1.1, right)
+    else:
+        out += "".join(at(100 + i * 32, y, 1.1, right) for i in range(count))
+    return out
+
+
+def lollipop():
+    return '<path d="M0 6v18" stroke-width="4"/><circle cx="0" cy="-4" r="12" fill="#ff8fb7"/><path d="M0-4m-6 0a6 6 0 1 1 12 0 3 3 0 1 1-6 0" fill="none" stroke="#ffffff" stroke-width="2.5"/>'
+
+
+def candy():
+    return '<path d="M-8-6l-8-4v20l8-4ZM8-6l8-4v20l-8-4Z" fill="#c9b6f5" stroke-width="2.5"/><ellipse cx="0" cy="0" rx="10" ry="8" fill="#b79cf2"/>'
+
+
+def cracker():
+    return '<rect x="-11" y="-11" width="22" height="22" rx="3" fill="#ffd38c"/><g fill="#c98a55" stroke="none"><circle cx="-5" cy="-5" r="1.6"/><circle cx="5" cy="-5" r="1.6"/><circle cx="-5" cy="5" r="1.6"/><circle cx="5" cy="5" r="1.6"/><circle cx="0" cy="0" r="1.6"/></g>'
+
+
+def melon():
+    return '<path d="M-14-4a14 14 0 0 0 28 0Z" fill="#ff6f86"/><path d="M-14-4a14 14 0 0 0 28 0" fill="none" stroke="#6cc28a" stroke-width="5"/><g fill="#4b2e22" stroke="none"><circle cx="-5" cy="1" r="1.4"/><circle cx="0" cy="3" r="1.4"/><circle cx="5" cy="1" r="1.4"/></g>'
+
+
+def pineapple():
+    return '<path d="M0-12l-6-8M0-12v-10M0-12l6-8" stroke="#6cc28a" stroke-width="4"/><ellipse cx="0" cy="2" rx="10" ry="13" fill="#ffc94a"/><path d="M-7-4l14 10M7-4l-14 10" stroke="#e0a030" stroke-width="2"/>'
+
+
+def box(size):
+    s = {"big": 14, "medium": 10, "small": 6}[size]
+    return f'<rect x="{-s}" y="{-s}" width="{2 * s}" height="{2 * s}" rx="2" fill="#e0b07a"/><path d="M{-s} {-s / 3:.1f}h{2 * s}M0 {-s}v{2 * s}" stroke="#c98a55" stroke-width="2"/>'
+
+
+def tower(height):
+    return "".join(f'<rect x="-9" y="{-18 * (i + 1)}" width="18" height="18" rx="2" fill="{["#ff8fb7", "#8cc8f2", "#ffd45e", "#8fe3a8"][i % 4]}" stroke-width="2.5"/>' for i in range(height))
+
+
+def moon():
+    return '<path d="M4-12a12 12 0 1 0 8 18 10 10 0 1 1-8-18Z" fill="#ffe27a"/>'
+
+
+def cloud():
+    return '<path d="M-14 6q-6 0-6-6t8-6q2-8 10-8t10 6q8-2 10 6 4 8-4 8Z" fill="#ffffff" stroke-width="2.5"/>'
+
+
+# Level 1
+pictures[MA + "kittens"] = wide(
+    scene("#fff6e0", "#bfe8c8", 60) + fence(34, 56)
+    + "".join(at(x, y, 1.1, kitten(kind)) for x, y, kind in ((36, 104, "tabby"), (76, 120, "calico"), (118, 104, "tabby"), (158, 120, "tabby"), (200, 104, "calico"), (234, 122, "tabby")))
+    + '<path d="M6 150h244" stroke="#c98a55" stroke-width="7"/>')
+pictures[MA + "shapes-1"] = wide(shapes_scene(
+    [(40, 40, "#ff8fb7", 0), (120, 110, "#8cc8f2", 20), (200, 46, "#ffd45e", -15), (226, 124, "#8fe3a8", 0), (70, 122, "#c9b6f5", 180), (150, 38, "#ffb86b", 10)],
+    [("circle", 90, 46, "#8fe3a8"), ("square", 30, 100, "#ffd45e"), ("star", 176, 96, "#ff8fb7"), ("heart", 236, 62, "#ff6f86"), ("rect", 110, 76, "#c9b6f5"), ("circle", 186, 136, "#8cc8f2")]))
+pictures[MA + "fruit-stand"] = wide(
+    '<path d="M0 0h256v160H0Z" fill="#fff6e0" stroke="none"/>'
+    '<path d="M110 10h140v18q-8 8-16 0-8 8-16 0-8 8-16 0-8 8-16 0-8 8-16 0-8 8-16 0-8 8-16 0-8 8-16 0-8 8-12 0Z" fill="#ff8fa3"/>'
+    + asset("animals/fox", 166, 26, 62) + '<rect x="120" y="78" width="130" height="28" rx="4" fill="#d9a066"/>'
+    + "".join(at(134 + i * 16, 76, .7, apple()) for i in range(7))
+    + asset("animals/pig", 8, 46, 84)
+    + '<path d="M70 58l-11-7v14ZM70 58l11-7v14Z" fill="#ff6f86" stroke-width="2.5"/><circle cx="70" cy="58" r="3.5" fill="#ff6f86" stroke-width="2.5"/>'
+    + '<path d="M6 6h138q8 0 8 8v20q0 8-8 8H70l-12 12-2-12H14q-8 0-8-8V14q0-8 8-8Z" fill="#ffffff" stroke-width="3"/>'
+    f'<text x="79" y="29" text-anchor="middle" font-family="{FONT}" font-size="12" font-weight="700" fill="{INK}" stroke="none">請給我10個蘋果，謝謝!</text>'
+    '<path d="M100 108h132l-6 48H106Z" fill="#e0b07a"/>' + ten_frame(111, 112, 8, cell=22, item=lambda cx, cy: at(cx, cy, .55, apple())))
+pictures[MA + "monkeys"] = wide(
+    scene() + "".join(asset("animals/monkey", x, 44, 62) for x in (6, 66))
+    + "".join(asset("animals/monkey", x, 44, 62, (("#a0673f", "#9a98ab"), ("#ffd0b0", "#ebe7f2"))) for x in (130, 190)))
+pictures[MA + "houses"] = wide(scene("#eaf6ff", "#bfe8c8", 120) + "".join(at(x, 96, 1.0, house(roof)) for x, roof in ((34, "slanted"), (80, "flat"), (128, "slanted"), (176, "flat"), (222, "slanted"))))
+pictures[MA + "donuts"] = wide(
+    '<rect x="6" y="40" width="244" height="110" rx="14" fill="#ffffff"/>'
+    + "".join(at(38 + (i % 4) * 60, 80 + (i // 4) * 44, 1.1, donut()) for i in range(8))
+    + "".join(at(38 + (i % 4) * 60, 80 + (i // 4) * 44, 0.9, grab_hand()) for i in (0, 2, 3)))
+pictures[MA + "bus-upper"] = wide(ten_seat_bus(5, 0))
+
+# Level 2
+pictures[MA + "ducks-chicks"] = wide(
+    scene("#eaf6ff", "#bfe8c8", 70) + '<ellipse cx="66" cy="112" rx="62" ry="30" fill="#9fd8f5"/>'
+    + "".join(asset("animals/duck", x, y, 46) for x, y in ((18, 82), (60, 96), (98, 80)))
+    + "".join(asset("animals/chicken", x, y, 44, (("#ffffff", "#ffe27a"),)) for x, y in ((140, 70), (190, 76), (150, 108), (200, 110))))
+pictures[MA + "shapes-2"] = wide(shapes_scene(
+    [(30, 34, "#8fe3a8", 0), (96, 40, "#ff8fb7", 30), (166, 30, "#8cc8f2", 0), (228, 40, "#ffd45e", 180), (56, 92, "#ffb86b", -20), (140, 96, "#c9b6f5", 0), (210, 104, "#ff6f86", 15), (100, 136, "#8cc8f2", 180)],
+    [("circle", 62, 40, "#ffd45e"), ("square", 196, 66, "#8fe3a8"), ("star", 24, 136, "#ffb86b"), ("heart", 170, 136, "#ff8fb7"), ("rect", 236, 136, "#c9b6f5")]))
+pictures[MA + "strawberry-tray"] = wide(
+    '<rect x="28" y="26" width="200" height="108" rx="14" fill="#c9e6fb"/>' + ten_frame(38, 40, 6, cell=36, item=lambda cx, cy: at(cx, cy, 1.1, strawberry())))
+pictures[MA + "birds-3-5"] = wide(
+    scene() + '<path d="M0 64h256" stroke="#8b5a3c" stroke-width="5"/>'
+    + "".join(at(x, 50, 1.4, little_bird("#8cc8f2")) for x in (22, 56, 90))
+    + "".join(at(x, 50, 1.4, little_bird("#ffd45e")) for x in (134, 162, 190, 218, 246)))
+pictures[MA + "cars-buses"] = wide(scene("#eaf6ff", "#c9c3d6", 100) + "".join(asset("starters/car", x, 20 + (i % 2) * 40, 54) for i, x in enumerate((4, 46, 88, 130, 172)))
+                                   + "".join(asset("cvc/bus", x, 92, 62) for x in (16, 96, 176)))
+pictures[MA + "balloons-pop"] = wide(
+    scene("#eaf6ff", "#bfe8c8", 140) + "".join(at(20 + i * 27, 70 + (i % 2) * 18, 1.2, balloon(["#ff6f86", "#8cc8f2", "#ffd45e", "#8fe3a8", "#c9b6f5"][i % 5], i in (1, 4, 5, 8))) for i in range(9)))
+pictures[MA + "birds-fly-away"] = wide(
+    scene() + '<path d="M0 104q120-14 200-4" fill="none" stroke="#8b5a3c" stroke-width="8"/>'
+    + "".join(at(x, 88, 1.3, little_bird("#ff8fb7")) for x in (20, 50, 80, 110, 140, 170))
+    + "".join(at(x, y, 1.2, little_bird("#ff8fb7", flying=True)) for x, y in ((206, 50), (232, 26), (186, 22))))
+
+# Level 3
+pictures[MA + "balls"] = wide(
+    '<rect x="20" y="70" width="216" height="80" rx="10" fill="#e0b07a"/>'
+    + "".join(at(40 + i * 30, 58 + (i % 2) * 6, 1.3, ball("#ff6f6f")) for i in range(6))
+    + "".join(at(40 + (6 + i) * 30, 58 + (i % 2) * 6, 1.3, ball("#6fb3e6")) for i in range(3)) + label(128, 120, "TOYS", 22, "#ffffff"))
+pictures[MA + "shapes-3"] = wide(shapes_scene(
+    [(30, 30, "#ff8fb7", 0), (86, 28, "#8fe3a8", 180), (150, 34, "#ffd45e", 0), (224, 30, "#8cc8f2", 20), (52, 82, "#c9b6f5", 0), (124, 86, "#ff6f86", -25), (196, 82, "#ffb86b", 180), (32, 136, "#8cc8f2", 0), (164, 134, "#8fe3a8", 0)],
+    [("circle", 118, 134, "#ffd45e"), ("square", 232, 128, "#ff8fb7"), ("heart", 82, 132, "#c9b6f5"), ("star", 236, 82, "#ffd45e")]))
+pictures[MA + "eggs"] = wide(
+    '<rect x="28" y="30" width="200" height="104" rx="12" fill="#c9b6f5"/>'
+    + ten_frame(38, 42, 7, cell=36, item=lambda cx, cy: f'<ellipse cx="{cx}" cy="{cy}" rx="11" ry="14" fill="#fff6e0" stroke-width="3"/>'))
+pictures[MA + "cupcakes"] = wide(
+    '<rect x="6" y="100" width="244" height="12" rx="4" fill="#d9a066"/>'
+    + "".join(at(26 + i * 26, 82, 1.3, cupcake("#ffb3d1")) for i in range(4)) + "".join(at(140 + i * 26, 82, 1.3, cupcake("#8cc8f2")) for i in range(5)))
+pictures[MA + "stars"] = wide(
+    '<rect x="2" y="2" width="252" height="156" rx="12" fill="#5b4a72"/>'
+    + "".join(at(30 + (i % 5) * 48, 46 + (i // 5) * 62, 1.5, star5("#ffd45e" if i < 7 else "#ff8fb7")) for i in range(10)))
+pictures[MA + "cookies-bitten"] = wide(
+    '<ellipse cx="128" cy="84" rx="120" ry="64" fill="#ffffff"/><ellipse cx="128" cy="84" rx="100" ry="48" fill="none" stroke="#d6d0e0" stroke-width="3"/>'
+    + "".join(at(56 + (i % 4) * 48, 66 + (i // 4) * 40, 1.3, cookie(bitten=i in (2, 5))) for i in range(7)))
+pictures[MA + "frogs"] = wide(
+    scene("#eaf6ff", "#9fd8f5", 60) + '<ellipse cx="96" cy="124" rx="80" ry="22" fill="#8fe3a8"/><path d="M96 124l40-16" stroke="#9fd8f5" stroke-width="8"/>'
+    + "".join(asset("animals/frog", x, 86, 40) for x in (34, 70, 106, 142))
+    + "".join(asset("animals/frog", x, y, 40) for x, y in ((186, 50), (212, 22), (220, 84)))
+    + '<path d="M190 76q10-26 30-30M216 48q10-14 24-12" fill="none" stroke-width="2.5" stroke-dasharray="3 5"/>')
+
+# Level 4
+pictures[MA + "vegetables"] = wide('<rect x="2" y="2" width="252" height="156" rx="12" fill="#fff6e0"/>'
+                                   + scatter(4, (tomato, carrot, broccoli, cabbage), (11, 6, 5, 4)))
+pictures[MA + "bus-stop"] = wide(
+    scene("#eaf6ff", "#c9c3d6", 120)
+    + '<path d="M8 40h120q10 0 10 10v66H8Z" fill="#ffd45e"/>'
+    + "".join(f'<rect x="{13 + i * 17}" y="50" width="15" height="26" rx="3" fill="#cfe9ff" stroke-width="2.5"/>' + person(20.5 + i * 17, 66, .26, ["#8b5a3c", "#e8b46b", "#4b2e22"][i % 3], ["#8fe3a8", "#ffb3d1", "#c9b6f5", "#ffd45e"][i % 4]) for i in range(7))
+    + '<circle cx="34" cy="118" r="11" fill="#5b6b8c"/><circle cx="110" cy="118" r="11" fill="#5b6b8c"/>'
+    + '<path d="M150 120V30" stroke-width="4"/><circle cx="150" cy="30" r="10" fill="#ff6f6f"/>' + label(150, 34, "BUS", 7, "#ffffff")
+    + "".join(kid(168 + i * 15, 88, .45, shirt=["#8fe3a8", "#ffd45e", "#c9b6f5", "#8cc8f2", "#ffb3d1", "#ffb86b"][i]) for i in range(6)))
+pictures[MA + "ten-and-six"] = wide(ten_frame(14, 58, 10, cell=22) + label(134, 92, "+", 28) + ten_frame(146, 58, 6, colour="#6fb3e6", cell=22))
+pictures[MA + "swap-sweets"] = wide(
+    '<rect x="2" y="2" width="252" height="156" rx="12" fill="#ffffff"/>'
+    + equals_row(30, lollipop(), 2, candy()) + equals_row(80, candy(), 2, cracker()) + equals_row(130, lollipop(), 0, cracker(), unknown=True))
+pictures[MA + "monkeys-tree"] = wide(
+    scene("#eaf6ff", "#9fd8f5", 128) + '<rect x="80" y="70" width="22" height="64" fill="#a46a3c"/>'
+    '<ellipse cx="92" cy="54" rx="86" ry="48" fill="#8fd36f"/>'
+    + "".join(asset("animals/monkey", x, y, 34) for x, y in ((14, 30), (46, 20), (80, 14), (114, 22), (146, 32), (28, 62), (98, 58), (134, 66)))
+    + "".join(asset("animals/monkey", x, 122, 30) for x in (178, 200, 222, 160))
+    + '<path d="M164 146q8-6 16 0M196 146q8-6 16 0M228 146q8-6 16 0" fill="none" stroke="#ffffff" stroke-width="3"/>')
+
+# Level 5
+pictures[MA + "fruit-mix"] = wide('<rect x="2" y="2" width="252" height="156" rx="12" fill="#fff6e0"/>'
+                                  + scatter(5, (strawberry, apple, banana, grapes), (13, 5, 4, 4), min_gap=23))
+pictures[MA + "classroom"] = wide(
+    '<path d="M0 0h256v160H0Z" fill="#fff6e0" stroke="none"/><rect x="196" y="30" width="54" height="124" fill="#c98a55"/><rect x="202" y="36" width="42" height="118" fill="#fff6e0"/>'
+    + "".join(person(22 + (i % 5) * 36, 40 + (i // 5) * 52, .42, ["#8b5a3c", "#e8b46b", "#4b2e22"][i % 3], ["#8fe3a8", "#ffd45e", "#c9b6f5", "#8cc8f2"][i % 4]) for i in range(9))
+    + "".join(f'<rect x="{6 + (i % 5) * 36}" y="{56 + (i // 5) * 52}" width="32" height="8" rx="2" fill="#d9a066"/>' for i in range(10))
+    + "".join(kid(x, y, .46, shirt=c) for x, y, c in ((212, 84, "#ffb3d1"), (234, 88, "#ffb86b"), (154, 108, "#8fe3a8"), (176, 112, "#8cc8f2"), (198, 116, "#ffd45e"))))
+pictures[MA + "ten-and-eight"] = wide(ten_frame(14, 58, 10, cell=22) + label(134, 92, "+", 28) + ten_frame(146, 58, 8, colour="#6fb3e6", cell=22))
+pictures[MA + "swap-fruit"] = wide(
+    '<rect x="2" y="2" width="252" height="156" rx="12" fill="#ffffff"/>'
+    + equals_row(30, melon(), 2, pineapple()) + '<g>' + at(40, 80, 1.1, pineapple()) + label(70, 88, "=", 24) + "".join(at(100 + i * 32, 80, 1.1, apple()) for i in range(3)) + '</g>'
+    + equals_row(130, melon(), 0, apple(), unknown=True))
+pictures[MA + "towers"] = wide('<path d="M10 140h236" stroke="#c98a55" stroke-width="6"/>' + "".join(at(x, 136, 1.1, tower(h)) for x, h in ((44, 2), (104, 4), (164, 6)))
+                               + label(220, 120, "?", 40, "#ff6f9f"))
+pictures[MA + "ducks-pond"] = wide(
+    scene("#eaf6ff", "#bfe8c8", 60) + '<ellipse cx="96" cy="108" rx="90" ry="44" fill="#9fd8f5"/>'
+    + "".join(asset("animals/duck", 18 + (i % 5) * 32, 74 + (i // 5) * 34, 38) for i in range(9))
+    + "".join(asset("animals/duck", 190 + (i % 2) * 30, 64 + (i // 2) * 30, 34) for i in range(6)))
+
+# Level 6
+pictures[MA + "night-sky"] = wide('<rect x="2" y="2" width="252" height="156" rx="12" fill="#5b4a72"/>'
+                                  + scatter(6, (lambda s: at(0, 0, s, star5("#ffd45e")), lambda s: at(0, 0, s, moon()), lambda s: at(0, 0, s * .9, cloud())), (14, 4, 4), min_gap=26))
+pictures[MA + "birds-wire"] = wide(
+    scene() + '<path d="M0 90q128 20 256 0" fill="none" stroke-width="3"/><path d="M10 160V70M246 160V70" stroke-width="6"/>'
+    + "".join(at(24 + i * 26, 82 + (4 if 2 < i < 6 else 0), 1.1, little_bird("#8cc8f2")) for i in range(8))
+    + "".join(at(x, y, 1.0, little_bird("#ffd45e", flying=True)) for x, y in ((228, 40), (200, 24), (170, 40), (140, 22), (110, 38), (240, 64), (84, 22))))
+pictures[MA + "seven-and-eight"] = wide(ten_frame(14, 58, 7, cell=22) + label(134, 92, "+", 28) + ten_frame(146, 58, 8, colour="#6fb3e6", cell=22))
+pictures[MA + "swap-boxes"] = wide(
+    '<rect x="2" y="2" width="252" height="156" rx="12" fill="#ffffff"/>'
+    + equals_row(30, box("big"), 2, box("medium"))
+    + at(40, 80, 1.1, box("medium")) + label(70, 88, "=", 24) + "".join(at(96 + i * 24, 80, 1.1, box("small")) for i in range(4))
+    + equals_row(130, box("big"), 0, box("small"), unknown=True))
+pictures[MA + "cookies-eaten"] = wide(
+    '<ellipse cx="128" cy="84" rx="122" ry="70" fill="#ffffff"/>'
+    + "".join(at(36 + (i % 6) * 37, 50 + (i // 6) * 36, 1.15, cookie(gone=i >= 7)) for i in range(16)))
+
+# Pattern pieces, 128 square
+pictures[MA + "circle"] = svg('<circle cx="64" cy="64" r="40" fill="#ff8fb7"/>')
+pictures[MA + "square"] = svg('<rect x="26" y="26" width="76" height="76" rx="6" fill="#8cc8f2"/>')
+pictures[MA + "triangle"] = svg('<path d="M64 20L108 100H20Z" fill="#ffd45e"/>')
+pictures[MA + "big-circle"] = svg('<circle cx="64" cy="64" r="46" fill="#8fe3a8"/>')
+pictures[MA + "small-circle"] = svg('<circle cx="64" cy="64" r="20" fill="#8fe3a8"/>')
+for name, colour in (("flower-red", "#ff6f86"), ("flower-yellow", "#ffd45e"), ("flower-blue", "#8cc8f2")):
+    pictures[MA + name] = svg('<path d="M64 80v40" stroke="#6cc28a" stroke-width="6"/>'
+                              + "".join(f'<circle cx="{64 + 20 * math.cos(math.radians(a)):.1f}" cy="{56 + 20 * math.sin(math.radians(a)):.1f}" r="15" fill="{colour}"/>' for a in range(-90, 270, 72))
+                              + '<circle cx="64" cy="56" r="12" fill="#fff6c8"/>')
+for name, angle in (("arrow-up", 0), ("arrow-right", 90), ("arrow-down", 180), ("arrow-left", 270)):
+    pictures[MA + name] = svg(f'<path d="M64 14l38 40H78v58H50V54H26Z" fill="#c9b6f5" transform="rotate({angle} 64 64)"/>')
+pictures[MA + "apple"] = svg(at(64, 64, 3.2, apple()))
+pictures[MA + "banana"] = svg(at(64, 64, 3.0, banana()))
+pictures[MA + "grapes"] = svg(at(64, 64, 3.6, grapes()))
+
+# The game's picture and the Challenge heading's icon.
+pictures["../icons/math-logic"] = svg(
+    card(10, 10, 52, 52, "#ffd45e") + label(36, 48, "1", 34) + card(66, 10, 52, 52, "#8cc8f2") + label(92, 48, "+", 34)
+    + card(10, 66, 52, 52, "#ffb3d1") + label(36, 104, "2", 34) + card(66, 66, 52, 52, "#8fe3a8") + label(92, 104, "?", 34))
+pictures["../icons/group-challenge"] = svg(
+    '<path d="M38 20h52v26a26 26 0 0 1-52 0Z" fill="#ffd45e"/><path d="M38 28H22q0 22 18 26M90 28h16q0 22-18 26" fill="none" stroke-width="5"/>'
+    '<path d="M58 72h12v18H58Z" fill="#ffd45e"/><rect x="40" y="90" width="48" height="16" rx="4" fill="#c98a55"/>' + label(64, 46, "?", 28, "#ffffff"))
+
 # ---------- Interface icons ----------
 UI = "../icons/ui-"
 pictures[UI + "shuffle"] = svg(

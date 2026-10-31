@@ -6,6 +6,7 @@ import { blendTopics } from "./blends-data";
 import { chineseAdvancedTopics, chineseTopics } from "./chinese-data";
 import { measureWordTopics } from "./measure-words-data";
 import { idiomTopics } from "./idioms-data";
+import { mathLevels } from "./math-data";
 import { gamesForPlayer } from "./games-data";
 
 // Every game's topics. Finishing a topic earns its badge, saved per player by
@@ -20,6 +21,7 @@ export const topicsByGame = {
   idioms: idiomTopics,
   starters: starterCategories,
   "letter-jumble": categories,
+  "math-logic": mathLevels,
 };
 
 const badgeKey = (gameId, topicId) => `${gameId}/${topicId}`;

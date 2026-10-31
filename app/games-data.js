@@ -9,6 +9,7 @@ export const gameGroups = [
   { id: "phonics", name: "Phonics", icon: "/images/icons/group-phonics.svg" },
   { id: "cambridge", name: "Cambridge YLE training", icon: "/images/icons/group-cambridge.svg" },
   { id: "chinese", name: "中文", icon: "/images/icons/group-chinese.svg", lang: "zh-Hant-HK" },
+  { id: "challenge", name: "Challenge", icon: "/images/icons/group-challenge.svg" },
   { id: "mochi", name: "Visit Mochi", icon: "/images/icons/group-mochi.svg" },
 ];
 
@@ -112,6 +113,15 @@ export const games = [
     note: "For age 5-6 - Chinese idioms · Cantonese",
     badge: "成語",
     ages: ["5-6"],
+  },
+  {
+    id: "math-logic",
+    group: "challenge",
+    name: "Math and Logic",
+    color: "blue",
+    picture: "/images/icons/math-logic.svg",
+    note: "For all ages - Count, add, take away and find patterns · 6 levels",
+    badge: "MATH & LOGIC",
   },
   {
     id: "dragon",

@@ -35,7 +35,7 @@ const strings = {
     greetingQuestion: "What shall we play today?",
     pickAGame: "PICK A GAME",
     noGames: (name) => `No games are turned on for ${name} yet. Ask a grown-up to choose some in Parent mode.`,
-    groups: { phonics: "Phonics", cambridge: "Cambridge YLE training", chinese: "中文", mochi: "Visit Mochi" },
+    groups: { phonics: "Phonics", cambridge: "Cambridge YLE training", chinese: "中文", challenge: "Challenge", mochi: "Visit Mochi" },
     gameNotes: {},
 
     badgesTitle: (name) => `${name}’s badges`,
@@ -90,7 +90,7 @@ const strings = {
     greetingQuestion: "今天玩甚麼？",
     pickAGame: "選一個遊戲",
     noGames: (name) => `${name} 還沒有可以玩的遊戲。請家長在「家長模式」選擇遊戲。`,
-    groups: { phonics: "自然拼讀", cambridge: "劍橋英語考試預備", chinese: "中文", mochi: "探望 Mochi 和彩虹村" },
+    groups: { phonics: "自然拼讀", cambridge: "劍橋英語考試預備", chinese: "中文", challenge: "挑戰", mochi: "探望 Mochi 和彩虹村" },
     gameNotes: {
       cvc: "3-4 歲 · 開頭、中間和結尾的音",
       digraphs: "3-6 歲 · ch、sh、th、ph、wh、ck 和 ng",
@@ -101,6 +101,7 @@ const strings = {
       "chinese-advanced": "5-6 歲 · 認識詞語 · 廣東話",
       "measure-words": "5-6 歲 · 量詞 · 廣東話",
       idioms: "5-6 歲 · 成語 · 廣東話",
+      "math-logic": "所有年齡 · 數一數、加減和找規律 · 6 個關卡",
       dragon: "用彩虹幣買零食，跟Mochi玩",
     },
 

@@ -15,6 +15,15 @@ const englishCompletionText = {
   badge: (topicName) => `New badge! ${topicName} is in your badge collection.`,
 };
 
+export const mathCompletionText = {
+  ...englishCompletionText,
+  kicker: "LEVEL COMPLETE",
+  message: (topicName) => `You got every ${topicName} question right. Mochi is so proud of you!`,
+  tryMessage: (topicName) => `Get every ${topicName} question right to earn its badge. Try again!`,
+  button: "Back to all levels",
+  nextLevel: (levelName) => `${levelName} is open now!`,
+};
+
 export const chineseCompletionText = {
   kicker: "全部完成",
   title: "你好叻呀！",
@@ -34,7 +43,8 @@ export const chineseCompletionText = {
 // Continuing goes back to the topic list. With full marks, `onVisitMochi` (when the player can
 // visit her) adds a button to go and spend the coins on Mochi; otherwise `onTryAgain` adds a
 // "Try again" button that plays the topic again from the start.
-export default function CompletionDialog({ topicName, count, correct = count, badge = null, hasBadge = false, text = englishCompletionText, onDone, onVisitMochi = null, onTryAgain = null }) {
+// `nextLevel` (Math and Logic) names the level that finishing this one has just opened.
+export default function CompletionDialog({ topicName, count, correct = count, badge = null, hasBadge = false, text = englishCompletionText, onDone, onVisitMochi = null, onTryAgain = null, nextLevel = null }) {
   const perfect = correct === count;
   const tryAgain = !perfect && onTryAgain;
   return (
@@ -54,6 +64,7 @@ export default function CompletionDialog({ topicName, count, correct = count, ba
           <p className="reward-coin-earned completion-message">
             {perfect ? text.message(topicName) : hasBadge ? text.practiseMessage() : text.tryMessage(topicName)}
           </p>
+          {nextLevel && <p className="completion-next-level">{text.nextLevel(nextLevel)}</p>}
           {badge && (
             <div className="completion-badge">
               <BadgeMedal image={badge.image} earned />

@@ -10,6 +10,11 @@ import { gameGroups, games } from "../app/games-data";
 function questionAsset(gameId, question) {
   if (gameId === "measure-words") return { picture: question.icon, label: `一${question.character}${question.noun}` };
   if (gameId === "idioms") return { picture: question.picture, label: question.idiom, wide: true };
+  // Math and Logic: its picture (or the right pattern piece), named as in the question menu.
+  if (gameId === "math-logic") {
+    const right = question.options.find((option) => option.correct);
+    return { picture: question.picture ?? right.picture ?? null, label: question.answers[0], note: `Answer: ${question.answer}`, wide: Boolean(question.picture) };
+  }
   if (question.character) return { picture: question.picture, label: question.character, note: question.english };
   return { picture: question.picture, label: question.word };
 }
@@ -38,11 +43,13 @@ function Asset({ picture, label, note, wide }) {
     <li>
       <button
         type="button"
-        title={`Copy ${picture}`}
-        onClick={() => navigator.clipboard?.writeText(picture)}
+        title={picture ? `Copy ${picture}` : label}
+        onClick={() => picture && navigator.clipboard?.writeText(picture)}
         style={{ display: "flex", width: "100%", flexDirection: "column", alignItems: "center", gap: 4, border: `2px solid ${missing ? "#ff6f6f" : border}`, borderRadius: 14, background: "#fff", padding: 8, cursor: "copy", font: "inherit", color: "inherit" }}
       >
-        <img src={picture} alt="" onError={() => setMissing(true)} style={{ width: "100%", height: wide ? 110 : 76, objectFit: "contain" }} loading="lazy" />
+        {picture
+          ? <img src={picture} alt="" onError={() => setMissing(true)} style={{ width: "100%", height: wide ? 110 : 76, objectFit: "contain" }} loading="lazy" />
+          : <span style={{ display: "flex", height: 76, alignItems: "center", fontSize: 12, color: "#8a80a6" }}>No picture</span>}
         <span style={{ fontSize: 13, fontWeight: 600 }}>{label}</span>
         {note && <span style={{ fontSize: 11, color: "#8a80a6" }}>{note}</span>}
       </button>
@@ -103,4 +110,5 @@ export const AllGames = { args: {} };
 export const Phonics = { args: { group: "phonics" } };
 export const Cambridge = { args: { group: "cambridge" } };
 export const Chinese = { args: { group: "chinese" } };
+export const Challenge = { args: { group: "challenge" } };
 export const VisitMochi = { args: { group: "mochi" } };

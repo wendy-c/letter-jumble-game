@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 160">
+<g stroke="#4b2e22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<path d="M0 0h256v70H0Z" fill="#eaf6ff" stroke="none"/><path d="M0 70h256v90H0Z" fill="#bfe8c8" stroke="none"/><ellipse cx="66" cy="112" rx="62" ry="30" fill="#9fd8f5"/><svg x="18" y="82" width="46" height="46" viewBox="0 0 128 128">
+<g stroke="#4b2e22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<circle cx="84" cy="50" r="19" fill="#ffe27a"/><path d="M14 56q10 14 30 12h42q20 0 20 20 0 22-40 22-42 0-48-26-4-12-4-28Z" fill="#ffe27a"/><path d="M44 82q20-10 36 0-6 16-28 12-8-2-8-12Z" fill="#ffd45e" stroke-width="3"/><path d="M100 44q14-4 20 2-4 8-20 6Z" fill="#ffb86b"/><ellipse cx="88" cy="44" rx="3.0" ry="3.4" fill="#4b2e22" stroke="none"/><circle cx="89.0" cy="43.0" r="1.0" fill="#fff" stroke="none"/><ellipse cx="84" cy="54" rx="4.0" ry="2.4" fill="#ffb3c6" stroke="none"/><path d="M-2 104q15-8 30 0t30 0 30 0 30 0 30 0v26H-2Z" fill="#8cc8f2"/>
+</g>
+</svg><svg x="60" y="96" width="46" height="46" viewBox="0 0 128 128">
+<g stroke="#4b2e22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<circle cx="84" cy="50" r="19" fill="#ffe27a"/><path d="M14 56q10 14 30 12h42q20 0 20 20 0 22-40 22-42 0-48-26-4-12-4-28Z" fill="#ffe27a"/><path d="M44 82q20-10 36 0-6 16-28 12-8-2-8-12Z" fill="#ffd45e" stroke-width="3"/><path d="M100 44q14-4 20 2-4 8-20 6Z" fill="#ffb86b"/><ellipse cx="88" cy="44" rx="3.0" ry="3.4" fill="#4b2e22" stroke="none"/><circle cx="89.0" cy="43.0" r="1.0" fill="#fff" stroke="none"/><ellipse cx="84" cy="54" rx="4.0" ry="2.4" fill="#ffb3c6" stroke="none"/><path d="M-2 104q15-8 30 0t30 0 30 0 30 0 30 0v26H-2Z" fill="#8cc8f2"/>
+</g>
+</svg><svg x="98" y="80" width="46" height="46" viewBox="0 0 128 128">
+<g stroke="#4b2e22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<circle cx="84" cy="50" r="19" fill="#ffe27a"/><path d="M14 56q10 14 30 12h42q20 0 20 20 0 22-40 22-42 0-48-26-4-12-4-28Z" fill="#ffe27a"/><path d="M44 82q20-10 36 0-6 16-28 12-8-2-8-12Z" fill="#ffd45e" stroke-width="3"/><path d="M100 44q14-4 20 2-4 8-20 6Z" fill="#ffb86b"/><ellipse cx="88" cy="44" rx="3.0" ry="3.4" fill="#4b2e22" stroke="none"/><circle cx="89.0" cy="43.0" r="1.0" fill="#fff" stroke="none"/><ellipse cx="84" cy="54" rx="4.0" ry="2.4" fill="#ffb3c6" stroke="none"/><path d="M-2 104q15-8 30 0t30 0 30 0 30 0 30 0v26H-2Z" fill="#8cc8f2"/>
+</g>
+</svg><svg x="140" y="70" width="44" height="44" viewBox="0 0 128 128">
+<g stroke="#4b2e22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<path d="M50 24q4-14 12-4 6-14 14 0 10-6 8 10Z" fill="#ff6b6b"/>
+<path d="M64 22c26 0 40 30 40 56s-18 38-40 38-40-12-40-38 14-56 40-56Z" fill="#ffe27a"/>
+<path d="M26 78q-14 0-10 14 8 2 16-4Z" fill="#ffe27a"/><path d="M102 78q14 0 10 14-8 2-16-4Z" fill="#ffe27a"/>
+<g stroke="none"><ellipse cx="50" cy="58" rx="3.6" ry="4.1" fill="#4b2e22"/><ellipse cx="78" cy="58" rx="3.6" ry="4.1" fill="#4b2e22"/><circle cx="51.2" cy="56.6" r="1.2" fill="#fff"/><circle cx="79.2" cy="56.6" r="1.2" fill="#fff"/><g fill="#ff9bb5" opacity=".75"><ellipse cx="42" cy="66" rx="5" ry="3"/><ellipse cx="86" cy="66" rx="5" ry="3"/></g></g>
+<path d="M58 66h12l-6 9Z" fill="#ffa552" stroke-width="3"/>
+<path d="M62 76q-2 10 2 12 4-2 2-12Z" fill="#ff6b6b" stroke-width="2.5"/>
+</g>
+</svg><svg x="190" y="76" width="44" height="44" viewBox="0 0 128 128">
+<g stroke="#4b2e22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<path d="M50 24q4-14 12-4 6-14 14 0 10-6 8 10Z" fill="#ff6b6b"/>
+<path d="M64 22c26 0 40 30 40 56s-18 38-40 38-40-12-40-38 14-56 40-56Z" fill="#ffe27a"/>
+<path d="M26 78q-14 0-10 14 8 2 16-4Z" fill="#ffe27a"/><path d="M102 78q14 0 10 14-8 2-16-4Z" fill="#ffe27a"/>
+<g stroke="none"><ellipse cx="50" cy="58" rx="3.6" ry="4.1" fill="#4b2e22"/><ellipse cx="78" cy="58" rx="3.6" ry="4.1" fill="#4b2e22"/><circle cx="51.2" cy="56.6" r="1.2" fill="#fff"/><circle cx="79.2" cy="56.6" r="1.2" fill="#fff"/><g fill="#ff9bb5" opacity=".75"><ellipse cx="42" cy="66" rx="5" ry="3"/><ellipse cx="86" cy="66" rx="5" ry="3"/></g></g>
+<path d="M58 66h12l-6 9Z" fill="#ffa552" stroke-width="3"/>
+<path d="M62 76q-2 10 2 12 4-2 2-12Z" fill="#ff6b6b" stroke-width="2.5"/>
+</g>
+</svg><svg x="150" y="108" width="44" height="44" viewBox="0 0 128 128">
+<g stroke="#4b2e22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<path d="M50 24q4-14 12-4 6-14 14 0 10-6 8 10Z" fill="#ff6b6b"/>
+<path d="M64 22c26 0 40 30 40 56s-18 38-40 38-40-12-40-38 14-56 40-56Z" fill="#ffe27a"/>
+<path d="M26 78q-14 0-10 14 8 2 16-4Z" fill="#ffe27a"/><path d="M102 78q14 0 10 14-8 2-16-4Z" fill="#ffe27a"/>
+<g stroke="none"><ellipse cx="50" cy="58" rx="3.6" ry="4.1" fill="#4b2e22"/><ellipse cx="78" cy="58" rx="3.6" ry="4.1" fill="#4b2e22"/><circle cx="51.2" cy="56.6" r="1.2" fill="#fff"/><circle cx="79.2" cy="56.6" r="1.2" fill="#fff"/><g fill="#ff9bb5" opacity=".75"><ellipse cx="42" cy="66" rx="5" ry="3"/><ellipse cx="86" cy="66" rx="5" ry="3"/></g></g>
+<path d="M58 66h12l-6 9Z" fill="#ffa552" stroke-width="3"/>
+<path d="M62 76q-2 10 2 12 4-2 2-12Z" fill="#ff6b6b" stroke-width="2.5"/>
+</g>
+</svg><svg x="200" y="110" width="44" height="44" viewBox="0 0 128 128">
+<g stroke="#4b2e22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<path d="M50 24q4-14 12-4 6-14 14 0 10-6 8 10Z" fill="#ff6b6b"/>
+<path d="M64 22c26 0 40 30 40 56s-18 38-40 38-40-12-40-38 14-56 40-56Z" fill="#ffe27a"/>
+<path d="M26 78q-14 0-10 14 8 2 16-4Z" fill="#ffe27a"/><path d="M102 78q14 0 10 14-8 2-16-4Z" fill="#ffe27a"/>
+<g stroke="none"><ellipse cx="50" cy="58" rx="3.6" ry="4.1" fill="#4b2e22"/><ellipse cx="78" cy="58" rx="3.6" ry="4.1" fill="#4b2e22"/><circle cx="51.2" cy="56.6" r="1.2" fill="#fff"/><circle cx="79.2" cy="56.6" r="1.2" fill="#fff"/><g fill="#ff9bb5" opacity=".75"><ellipse cx="42" cy="66" rx="5" ry="3"/><ellipse cx="86" cy="66" rx="5" ry="3"/></g></g>
+<path d="M58 66h12l-6 9Z" fill="#ffa552" stroke-width="3"/>
+<path d="M62 76q-2 10 2 12 4-2 2-12Z" fill="#ff6b6b" stroke-width="2.5"/>
+</g>
+</svg>
+</g>
+</svg>
