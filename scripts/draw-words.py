@@ -2049,6 +2049,104 @@ pictures[MA + "candy-heart"] = svg(
 pictures[MA + "star"] = svg(at(64, 66, 3.6, star5("#ffd45e", 13)))
 pictures[MA + "strawberry"] = svg(at(64, 66, 3.2, strawberry()))
 
+# Leaves for K3's "count the plants" questions.
+def maple_points(cx, cy, r):
+    out = []
+    for i in range(60):
+        a = math.radians(-90 + i * 6)
+        lobe = 0.62 + 0.38 * abs(math.cos(2.5 * (a + math.pi / 2)))
+        jag = 0.06 if i % 2 else 0
+        rr = r * (lobe - jag)
+        out.append(f"{cx + rr * math.cos(a):.1f} {cy + rr * math.sin(a) * (1 if math.sin(a) < 0 else 0.8):.1f}")
+    return "M" + "L".join(out) + "Z"
+
+
+pictures[MA + "leaf-maple"] = svg(
+    '<path d="M64 84v32" stroke="#6b8f3a" stroke-width="5"/>'
+    f'<path d="{maple_points(64, 64, 50)}" fill="#8fd36f"/>'
+    '<path d="M64 88V30M64 70L36 46M64 70l28-24M64 80L40 84M64 80l24 4" fill="none" stroke="#5cb87a" stroke-width="3"/>')
+pictures[MA + "leaf-spotted"] = svg(
+    '<g transform="rotate(-30 64 64)"><path d="M64 10q36 26 0 108Q28 36 64 10Z" fill="#5a9e5a"/>'
+    '<path d="M64 18v96" stroke="#3d6e3d" stroke-width="3"/>'
+    + "".join(f'<circle cx="{x}" cy="{y}" r="{r}" fill="#3a4a34" stroke="none"/>' for x, y, r in ((54, 40, 4), (74, 50, 5), (56, 66, 4.5), (72, 80, 4), (58, 90, 3.5), (68, 34, 3)))
+    + '</g>')
+pictures[MA + "leaf-fern"] = svg(
+    '<path d="M64 120V10" stroke="#4f8a4f" stroke-width="4"/>'
+    + "".join(f'<ellipse cx="{64 + side * 16}" cy="{y}" rx="15" ry="6" fill="#6cc28a" transform="rotate({side * -20} {64 + side * 16} {y})"/>'
+              for y in (24, 40, 56, 72, 88) for side in (-1, 1))
+    + '<ellipse cx="64" cy="12" rx="6" ry="10" fill="#6cc28a"/>')
+pictures[MA + "leaf-plain"] = svg(
+    '<path d="M64 120V96" stroke="#6b8f3a" stroke-width="5"/>'
+    '<path d="M64 8q44 30 0 92Q20 38 64 8Z" fill="#a8e08a"/>'
+    '<path d="M64 16v80M64 44l-14-10M64 44l14-10M64 64l-16-10M64 64l16-10M64 82l-12-8M64 82l12-8" fill="none" stroke="#6cbf5a" stroke-width="3"/>')
+
+# Whole animals and a child, every leg showing, for K3's "how many legs?" questions.
+pictures[MA + "legs-dog"] = svg(
+    limb([(102, 62), (116, 44)], "#d9a066", 9)
+    + "".join(limb([(x, 74), (x + dx, 104)], "#c98f55" if back else "#d9a066", 11) for x, dx, back in ((50, -2, 1), (96, 2, 1), (34, -2, 0), (82, 2, 0)))
+    + '<ellipse cx="66" cy="66" rx="40" ry="18" fill="#d9a066"/>'
+    + "".join(f'<ellipse cx="{x}" cy="106" rx="7" ry="4" fill="#c98f55" stroke-width="3"/>' for x in (30, 46, 86, 100))
+    + '<circle cx="30" cy="40" r="19" fill="#d9a066"/><ellipse cx="14" cy="48" rx="11" ry="8" fill="#fff4e6"/>'
+    '<ellipse cx="6" cy="45" rx="4" ry="3" fill="#4b2e22" stroke="none"/>'
+    '<path d="M36 24q14-2 14 14q-2 12-8 14q-8-12-6-28Z" fill="#9a6a3a"/>'
+    + eye(28, 36) + cheek(32, 48, .8) + '<ellipse cx="74" cy="60" rx="10" ry="7" fill="#9a6a3a" stroke="none"/>')
+pictures[MA + "legs-elephant"] = svg(
+    '<path d="M108 58q10 6 8 20" fill="none" stroke-width="4"/>'
+    + "".join(f'<rect x="{x}" y="70" width="16" height="38" rx="5" fill="{c}"/>' for x, c in ((42, "#8f9fd6"), (94, "#8f9fd6"), (32, "#a9b8e8"), (84, "#a9b8e8")))
+    + '<ellipse cx="72" cy="62" rx="40" ry="28" fill="#a9b8e8"/>'
+    '<circle cx="34" cy="50" r="22" fill="#a9b8e8"/><path d="M18 58q-12 14-8 34q2 6 8 2q-2-14 8-26" fill="#a9b8e8"/>'
+    '<path d="M38 34q22-6 22 18t-20 18q-6-18-2-36Z" fill="#c8d2f2"/>' + eye(28, 46) + cheek(22, 56)
+    + '<path d="M22 64q-6 6-4 12" fill="none" stroke="#fffaf0" stroke-width="5"/>')
+pictures[MA + "legs-ant"] = svg(
+    "".join(f'<path d="M{x} 70q{side * 10} -{rise} {side * 22} {side * 0}" fill="none" stroke-width="4"/>' for x, side, rise in ())
+    + "".join(f'<path d="M{x} 72L{x + dx} 92L{x + dx * 1.5} 108" fill="none" stroke-width="4"/>' for x, dx in ((54, -10), (64, -2), (74, 8)))
+    + "".join(f'<path d="M{x} 64L{x + dx} 48L{x + dx * 1.6} 36" fill="none" stroke-width="4"/>' for x, dx in ((54, -12), (64, -2), (74, 10)))
+    + '<ellipse cx="96" cy="68" rx="22" ry="16" fill="#8a5a44"/><ellipse cx="64" cy="68" rx="13" ry="10" fill="#8a5a44"/>'
+    '<circle cx="34" cy="62" r="16" fill="#8a5a44"/><path d="M28 48q-6-18-18-20M38 47q2-18 14-24" fill="none" stroke-width="3"/>'
+    '<circle cx="10" cy="28" r="3" fill="#4b2e22" stroke="none"/><circle cx="52" cy="23" r="3" fill="#4b2e22" stroke="none"/>'
+    + eye(28, 60) + eye(40, 60) + cheek(24, 68, .7) + cheek(44, 68, .7) + smile(34, 68, 5))
+pictures[MA + "legs-child"] = svg(kid(64, 30, 1.25))
+
+# Things with wheels (or none), seen so every wheel shows.
+pictures[MA + "race-car"] = svg(
+    "".join(f'<rect x="{x}" y="{y}" width="22" height="14" rx="4" fill="#4b4b5a"/>' for x, y in ((22, 22), (22, 92), (84, 18), (84, 96)))
+    + '<path d="M30 36h12M30 92h12M92 32h12M92 96h12" stroke-width="5"/>'
+    '<path d="M14 54h10l14-8h50l22 10h8v16h-8l-22 10H38l-14-8H14Z" fill="#ff6f6f"/>'
+    '<rect x="6" y="40" width="10" height="48" rx="3" fill="#ffd45e"/><rect x="114" y="46" width="8" height="36" rx="3" fill="#ffd45e"/>'
+    '<ellipse cx="64" cy="64" rx="12" ry="9" fill="#5b6b8c"/><circle cx="64" cy="64" r="6" fill="#ffffff" stroke-width="3"/>'
+    + label(92, 70, "1", 16, "#ffffff"))
+pictures[MA + "rocket"] = svg(
+    '<path d="M50 96l-4 22 14-10M78 96l4 22-14-10" fill="#ff8f6f"/>'
+    '<path d="M64 6q26 22 22 90H42Q38 28 64 6Z" fill="#f2f2f8"/>'
+    '<path d="M42 70l-18 22 2 12 16-8M86 70l18 22-2 12-16-8" fill="#ff6f6f"/>'
+    '<circle cx="64" cy="48" r="11" fill="#8cc8f2"/><path d="M52 104q12 20 24 0Z" fill="#ffd45e"/>'
+    '<path d="M51 22q13-8 26 0" fill="none" stroke="#ff6f6f" stroke-width="6"/>')
+pictures[MA + "tricycle"] = svg(
+    '<circle cx="34" cy="92" r="26" fill="#ffffff"/><circle cx="34" cy="92" r="5" fill="#ffd45e" stroke-width="3"/>'
+    '<circle cx="86" cy="102" r="14" fill="#ffffff"/><circle cx="86" cy="102" r="4" fill="#ffd45e" stroke-width="3"/>'
+    '<circle cx="110" cy="92" r="14" fill="#ffffff"/><circle cx="110" cy="92" r="4" fill="#ffd45e" stroke-width="3"/>'
+    + limb([(34, 92), (44, 40), (40, 30)], "#ff8fa3", 10) + limb([(42, 60), (96, 70), (110, 92)], "#ff8fa3", 10) + limb([(96, 70), (86, 100)], "#ff8fa3", 8)
+    + limb([(30, 30), (52, 30)], "#8cc8f2", 9) + '<path d="M70 56q14-6 26 0v8H70Z" fill="#8cc8f2"/>')
+
+# Hong Kong coins: $1, $2 (with its wavy edge), $5 and $10 (silver round a gold middle).
+def coin(value, r, rim, middle=None, wavy=False):
+    if wavy:
+        edge = "M" + "L".join(f"{64 + (r + 4 * (i % 2)) * math.cos(math.radians(i * 15)):.1f} {64 + (r + 4 * (i % 2)) * math.sin(math.radians(i * 15)):.1f}" for i in range(24)) + "Z"
+        out = f'<path d="{edge}" fill="{rim}"/>'
+    else:
+        out = f'<circle cx="64" cy="64" r="{r}" fill="{rim}"/>'
+    if middle:
+        out += f'<circle cx="64" cy="64" r="{r * 0.62:.0f}" fill="{middle}" stroke-width="3"/>'
+    else:
+        out += f'<circle cx="64" cy="64" r="{r - 8}" fill="none" stroke="#ffffff" stroke-width="3" stroke-dasharray="2 5"/>'
+    return svg(out + label(64, 64 + r * 0.3, value, r * (0.62 if len(value) > 2 else 0.8)))
+
+
+pictures[MA + "coin-1"] = coin("$1", 44, "#d9dde6")
+pictures[MA + "coin-2"] = coin("$2", 44, "#d9dde6", wavy=True)
+pictures[MA + "coin-5"] = coin("$5", 52, "#c9ced9")
+pictures[MA + "coin-10"] = coin("$10", 56, "#d9dde6", middle="#f2c94c")
+
 # The game's picture and the Challenge heading's icon.
 pictures["../icons/math-logic"] = svg(
     card(10, 10, 52, 52, "#ffd45e") + label(36, 48, "1", 34) + card(66, 10, 52, 52, "#8cc8f2") + label(92, 48, "+", 34)

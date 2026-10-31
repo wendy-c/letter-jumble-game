@@ -8,13 +8,15 @@ const levelsFor = (age) => mathLevels.filter((level) => level.ages.includes(age)
 const allQuestions = mathLevels.flatMap((level) => level.words);
 
 describe("Daily Challenge", () => {
-  it("has twenty levels of ten questions for each age", () => {
-    ["k1", "k2"].forEach((age) => {
+  it("has twenty levels of ten questions for each class", () => {
+    ["k1", "k2", "k3"].forEach((age) => {
       expect(levelsFor(age).map((level) => level.name)).toEqual(Array.from({ length: 20 }, (_, index) => `Level ${index + 1}`));
       levelsFor(age).forEach((level) => expect(level.words).toHaveLength(10));
     });
     expect(mathLevels.map((level) => level.id).slice(0, 2)).toEqual(["k1-level-1", "k1-level-2"]);
-    expect(mathLevels.filter((level) => level.first).map((level) => level.id)).toEqual(["k1-level-1", "k2-level-1"]);
+    expect(mathLevels.filter((level) => level.first).map((level) => level.id)).toEqual(["k1-level-1", "k2-level-1", "k3-level-1"]);
+    // Each class plays only its own levels.
+    mathLevels.forEach((level) => expect(level.ages).toEqual([level.id.split("-")[0]]));
   });
 
   it("starts each age with the levels made by hand", () => {
@@ -30,10 +32,11 @@ describe("Daily Challenge", () => {
     ]);
   });
 
-  it("keeps answers to 10 for 3-4 year olds and to 20 for 5-6 year olds", () => {
+  it("keeps answers to 10 for K1, to 20 for K2 and to 100 for K3", () => {
     const biggest = (age) => Math.max(...levelsFor(age).flatMap((level) => level.words.map((question) => Number(question.answer)).filter(Number.isFinite)));
     expect(biggest("k1")).toBeLessThanOrEqual(10);
     expect(biggest("k2")).toBeLessThanOrEqual(20);
+    expect(biggest("k3")).toBeLessThanOrEqual(100);
   });
 
   it("makes its later levels from question templates, getting harder", () => {
@@ -49,7 +52,7 @@ describe("Daily Challenge", () => {
     allQuestions.forEach((question) => {
       expect(question.options.filter((option) => option.correct).map((option) => option.label)).toEqual([question.answer]);
       expect(new Set(question.options.map((option) => option.label)).size).toBe(question.options.length);
-      question.options.filter((option) => !option.picture && !option.cells).forEach((option) => expect(Number(option.label)).toBeGreaterThanOrEqual(0));
+      question.options.filter((option) => !option.picture && !option.cells && !option.name).forEach((option) => expect(Number(option.label)).toBeGreaterThanOrEqual(0));
     });
   });
 
@@ -102,6 +105,11 @@ describe("Daily Challenge", () => {
       ...(question.scene?.type === "count" ? question.scene.items : []),
       ...(question.scene?.type === "frame" ? [question.scene.picture] : []),
       ...(question.scene?.type === "swap" ? question.scene.rows.flatMap((row) => [row.from, row.to]) : []),
+      ...(question.scene?.type === "scatter" ? question.scene.items.map((item) => item.picture) : []),
+      ...(["steps", "queue"].includes(question.scene?.type) ? [question.scene.picture] : []),
+      ...(question.scene?.type === "rows" ? question.scene.rows.flat() : []),
+      ...(question.scene?.type === "menu" ? [...question.scene.items, ...question.scene.buyers].map((item) => item.picture) : []),
+      ...(question.scene?.type === "coins" ? [...question.scene.coins.map((value) => `/images/game-asset/math/coin-${value}.svg`), question.scene.item.picture] : []),
     ]).filter(Boolean);
     expect([...new Set(files)].filter((file) => !fs.existsSync(path.join(publicDir, file)))).toEqual([]);
   });
@@ -120,6 +128,112 @@ describe("Daily Challenge", () => {
   it("writes today's date in the player's own time zone", () => {
     expect(today(new Date(2026, 0, 5, 23, 30))).toBe("2026-01-05");
     expect(levelUnlockKey(levelsFor("k1")[1], "2026-01-05")).toBe("math-logic/k1-level-2@2026-01-05");
+  });
+});
+
+describe("Daily Challenge for K3", () => {
+  const k3 = levelsFor("k3");
+  const kinds = (level) => level.words.map((question) => question.kind).sort();
+
+  it("asks the same mix in every level: 1 count, 2 stories, 2 sums, 2 about numbers to 100, 2 logic, 1 everyday", () => {
+    k3.forEach((level) => expect(kinds(level)).toEqual(
+      ["counting", "everyday", "logic", "logic", "numbers", "numbers", "story", "story", "sum", "sum"],
+    ));
+  });
+
+  it("mixes up the order of each level's questions", () => {
+    const orders = new Set(k3.map((level) => level.words.map((question) => question.kind).join()));
+    expect(orders.size).toBeGreaterThan(15);
+  });
+
+  it("uses every kind of question somewhere", () => {
+    const titles = k3.flatMap((level) => level.words.map((question) => question.answers[0]));
+    [/^Count the (circles|squares|triangles)$/, /^Count the .*(leaves|sprouts)$/, / now$|(in the|in the car) /, /’s line$/, /^Swap /,
+      /^\d+ \+ \d+ \+ \d+ = \?$/, /^\? [+−] \d+ = \d+$|^\d+ [+−] \? = \d+$/, /^Smallest to biggest$|^Biggest to smallest$/,
+      /^Count the (legs|wheels)$/, /^The different group$/, /^How the shading moves$/, /^The row with the most /, /^Turning grid/,
+      /^Who spent the (most|least)$/, /^Enough for the /, /days? (before|after) /, /^What time is it\?$/,
+    ].forEach((title) => expect(titles.some((text) => title.test(text))).toBe(true));
+  });
+
+  it("has its sums typed on a number pad, with the right answer worked out", () => {
+    const sums = k3.flatMap((level) => level.words).filter((question) => question.kind === "sum");
+    sums.forEach((question) => {
+      expect(question.input).toBe("pad");
+      const [left, right] = question.visual.text.split(" = ");
+      const work = (text) => Function(`return ${text.replace(/−/g, "-")}`)();
+      if (right === "?") expect(work(left)).toBe(Number(question.answer));
+      else expect(work(left.replace("?", question.answer))).toBe(Number(right));
+      expect(Number(question.answer)).toBeGreaterThanOrEqual(0);
+      expect(Number(question.answer)).toBeLessThanOrEqual(20);
+    });
+    expect(k3.flatMap((level) => level.words).filter((question) => question.input === "pad").every((question) => question.kind === "sum")).toBe(true);
+  });
+
+  it("asks about numbers to 100 going up and down, in twos (odd and even), fives, tens and ones", () => {
+    const runs = k3.flatMap((level) => level.words).filter((question) => question.visual?.type === "sequence");
+    const steps = new Set(runs.map((question) => {
+      const [a, b, c] = question.visual.items;
+      return a !== null && b !== null ? b - a : c - (a ?? b - (c - b));
+    }));
+    [2, -2, 5, 10, 1].forEach((step) => expect(steps.has(step)).toBe(true));
+    runs.forEach((question) => question.visual.items.filter((item) => item !== null).forEach((item) => {
+      expect(item).toBeGreaterThanOrEqual(0);
+      expect(item).toBeLessThanOrEqual(100);
+    }));
+  });
+
+  it("works out the stories' answers", () => {
+    const stories = k3.flatMap((level) => level.words).filter((question) => question.kind === "story");
+    stories.forEach((question) => {
+      const { scene } = question;
+      if (scene.type === "steps") expect(Number(question.answer)).toBe(scene.changes.reduce((sum, change) => sum + change, scene.start));
+      if (scene.type === "queue") expect(Number(question.answer)).toBe(scene.front + scene.behind + 1);
+      if (scene.type === "swap") expect(Number(question.answer)).toBe(scene.rows[0].count * scene.rows[1].count * scene.rows[2].fromCount);
+      expect(Number(question.answer)).toBeGreaterThan(0);
+    });
+  });
+
+  it("asks a queue question both ways later on", () => {
+    expect(levelsFor("k3")[10].words.length).toBe(10);
+    const queues = k3.flatMap((level) => level.words).filter((question) => question.scene?.type === "queue");
+    expect(queues.some((question) => /from the front/.test(question.prompt.en))).toBe(true);
+    expect(queues.some((question) => /in front of it/.test(question.prompt.en))).toBe(true);
+  });
+
+  it("checks the everyday questions: the clock, the days, the coins and who spent most", () => {
+    const everyday = k3.flatMap((level) => level.words).filter((question) => question.kind === "everyday");
+    expect(everyday).toHaveLength(20);
+    everyday.forEach((question) => {
+      const { scene } = question;
+      if (scene.type === "clock") expect(question.answer).toBe(`${scene.hour}:${String(scene.minute).padStart(2, "0")}`);
+      if (scene.type === "coins") expect(question.answer).toBe(scene.coins.reduce((sum, coin) => sum + coin, 0) >= scene.item.price ? "yes" : "no");
+      if (scene.type === "menu") {
+        const totals = scene.buyers.map((buyer) => buyer.picks.reduce((sum, pick) => sum + scene.items[pick].price, 0));
+        const best = /least/.test(question.prompt.en) ? Math.min(...totals) : Math.max(...totals);
+        expect(totals.filter((total) => total === best)).toHaveLength(1);
+        expect(question.options.find((option) => option.correct).picture).toBe(scene.buyers[totals.indexOf(best)].picture);
+      }
+    });
+    const week = everyday.find((question) => question.scene.type === "week");
+    expect(week.options.map((option) => option.name.zh)).toContain(week.options.find((option) => option.correct).name.zh);
+  });
+
+  it("asks the different-group puzzle with three groups of one kind (odd or even) and one of the other", () => {
+    k3.flatMap((level) => level.words).filter((question) => question.visual?.type === "sets").forEach((question) => {
+      const odd = question.visual.sets.map((set) => set.numbers[0] % 2);
+      const different = question.visual.sets.find((set) => set.letter === question.answer);
+      expect(odd.filter((value) => value === different.numbers[0] % 2)).toHaveLength(1);
+    });
+  });
+
+  it("makes each shading puzzle's pairs follow one move that only the right choice finishes", () => {
+    const shading = k3.flatMap((level) => level.words).filter((question) => question.visual?.type === "shading");
+    expect(shading.length).toBeGreaterThan(0);
+    shading.forEach((question) => {
+      expect(question.options).toHaveLength(4);
+      expect(question.options.filter((option) => option.correct).map((option) => option.label)).toEqual([question.answer]);
+      expect(question.visual.pairs).toHaveLength(3);
+    });
   });
 });
 

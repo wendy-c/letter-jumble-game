@@ -447,9 +447,11 @@ export default function GameApp() {
       const note = question.prompt[site.language] ?? question.prompt.en;
       // A turning-grid puzzle shows the right grid itself.
       if (right.cells) return { text: "", cells: right.cells, label: right.name?.[site.language], note };
+      // A shading puzzle shows the right shaded grid.
+      if (right.shade) return { text: "", shade: right.shade, size: right.size, label: right.name?.[site.language], note };
       if (right.picture) return { text: right.name?.[site.language] ?? right.label, picture: right.picture, note };
       const picture = typeof question.picture === "string" ? question.picture : question.picture?.[site.language];
-      return { text: right.label, picture, wide: Boolean(picture), note };
+      return { text: right.reveal?.[site.language] ?? right.name?.[site.language] ?? right.label, picture, wide: Boolean(picture), note };
     }
     if (isMeasure) return { text: question.answers[0], picture: question.icon };
     if (isIdiom) return { text: question.idiom, picture: question.picture, note: question.meaning };

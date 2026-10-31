@@ -1,6 +1,5 @@
 import LevelQuestions from "../LevelQuestions";
 
-// K3 plays the K2 levels too.
 export default {
   title: "Challenge/Daily Challenge/K2/Level 12",
   component: LevelQuestions,

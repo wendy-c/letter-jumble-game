@@ -1,9 +1,11 @@
-// Daily Challenge (每日大挑戰): twenty levels of ten questions for K1 and for K2, in English or
-// Chinese (the site's language): numbers under 10 for K1 and to 20 for K2 (K3 plays the K2 levels
-// too). Each set's first three levels are made by hand here; the rest come from math-generator.js.
-// A child starts at Level 1 of their set, and a level opens the day after the one before it was
-// finished. Every question is answered by tapping one of the choices: numbers, or
-// pictures for "what comes next?" patterns. The pictures are drawn by scripts/draw-words.py.
+// Daily Challenge (每日大挑戰): twenty levels of ten questions for each of K1, K2 and K3, in English
+// or Chinese (the site's language): numbers under 10 for K1, to 20 for K2 and to 100 for K3. K1's
+// and K2's first three levels are made by hand here, and the rest come from math-generator.js; all
+// of K3's come from k3-generator.js. A child starts at Level 1 of their set, and a level opens the
+// day after the one before it was finished. Most questions are answered by tapping one of the
+// choices (numbers, words, or pictures for patterns); K3's sums are typed on a number pad. The
+// pictures are drawn by scripts/draw-words.py.
+import { generateK3Level } from "./k3-generator";
 import { generateLevel, gridPattern } from "./math-generator";
 
 const art = "/images/game-asset/math";
@@ -211,24 +213,24 @@ const levels = [
 
 const levelsPerAge = 20;
 const colors = ["pink", "yellow", "blue", "green", "lilac", "peach"];
-const focusFor = { k1: say("Numbers under 10", "10 以內的數"), k2: say("Numbers to 20", "20 以內的數") };
-// Who plays each set: K3 plays the K2 levels.
-const playersOf = { k1: ["k1"], k2: ["k2", "k3"] };
+const focusFor = {
+  k1: say("Numbers under 10", "10 以內的數"), k2: say("Numbers to 20", "20 以內的數"), k3: say("Numbers to 100", "100 以內的數"),
+};
 
-// Each age's levels: the three made by hand above, then generated ones up to Level 20.
-export const mathLevels = ["k1", "k2"].flatMap((age) => {
+// Each class's levels: K1's and K2's three made by hand above, then generated ones up to Level 20.
+export const mathLevels = ["k1", "k2", "k3"].flatMap((age) => {
   const handMade = levels.filter((level) => level.ages[0] === age);
   return Array.from({ length: levelsPerAge }, (_, index) => {
     const number = index + 1;
     const color = colors[index % colors.length];
-    const words = index < handMade.length ? handMade[index].words : generateLevel(age, number);
+    const words = index < handMade.length ? handMade[index].words : age === "k3" ? generateK3Level(number) : generateLevel(age, number);
     return {
       id: `${age}-level-${number}`,
       name: `Level ${number}`,
       names: say(`Level ${number}`, `第 ${number} 關`),
       english: focusFor[age].en,
       focus: focusFor[age],
-      ages: playersOf[age],
+      ages: [age],
       // Each age's Level 1 is open from the start.
       first: number === 1,
       color,
