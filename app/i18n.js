@@ -95,7 +95,7 @@ const strings = {
     greetingQuestion: "今天玩甚麼？",
     pickAGame: "選一個遊戲",
     noGames: (name) => `${name} 還沒有可以玩的遊戲。請家長在「家長模式」選擇遊戲。`,
-    groups: { phonics: "自然拼讀", cambridge: "劍橋英語考試預備", chinese: "中文", challenge: "數學", mochi: "探望 Mochi 和彩虹村" },
+    groups: { phonics: "自然拼讀", cambridge: "劍橋英語考試預備", chinese: "中文", challenge: "數學", mochi: "到彩虹鎮探望Mochi" },
     gameNotes: {
       cvc: "3-4 歲 · 開頭、中間和結尾的音",
       digraphs: "3-6 歲 · ch、sh、th、ph、wh、ck 和 ng",
