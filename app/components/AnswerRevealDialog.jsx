@@ -14,7 +14,8 @@ export const chineseRevealLabels = {
 
 // Shown after a wrong answer: Mochi holds up a red cross, and the right answer is shown in a red
 // box (the answer given was wrong), then on to the next question (no second try).
-// `reveal` is { text, picture, note }: the picture is an image path or an emoji.
+// `reveal` is { text, picture, note }: the picture is an image path or an emoji. A turning-grid
+// puzzle's answer is a grid instead: `cells` (four pictures) and its `label`.
 export default function AnswerRevealDialog({ reveal, labels = englishRevealLabels, lang, onContinue }) {
   const wide = reveal.wide ?? reveal.picture?.startsWith("/images/idioms/");
   return (
@@ -25,10 +26,15 @@ export default function AnswerRevealDialog({ reveal, labels = englishRevealLabel
           <span className="reward-kicker">{labels.kicker}</span>
           <h2 className="reward-title reveal-title" id="reveal-title">{labels.title}</h2>
           <div className="reveal-answer" lang={lang}>
+            {reveal.cells && (
+              <span className="math-grid math-grid-reveal" role="img" aria-label={reveal.label}>
+                {reveal.cells.map((picture, index) => <span key={index} className="math-grid-cell"><img src={picture} alt="" width="48" height="48" /></span>)}
+              </span>
+            )}
             {reveal.picture && (reveal.picture.startsWith("/")
               ? <img className={`reveal-picture${wide ? " reveal-picture-wide" : ""}`} src={reveal.picture} alt="" width={wide ? 256 : 96} height={wide ? 160 : 96} />
               : <span className="reveal-emoji" aria-hidden="true">{reveal.picture}</span>)}
-            <span className="reveal-text">{reveal.text}</span>
+            {reveal.text && <span className="reveal-text">{reveal.text}</span>}
             {reveal.note && <p className="reveal-note">{reveal.note}</p>}
           </div>
           <button className="reward-continue completion-button" type="button" autoFocus onClick={onContinue}>

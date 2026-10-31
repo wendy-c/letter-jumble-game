@@ -444,6 +444,8 @@ export default function GameApp() {
     if (isMathGame) {
       const right = question.options.find((option) => option.correct);
       const note = question.prompt[site.language] ?? question.prompt.en;
+      // A turning-grid puzzle shows the right grid itself.
+      if (right.cells) return { text: "", cells: right.cells, label: right.name?.[site.language], note };
       if (right.picture) return { text: right.name?.[site.language] ?? right.label, picture: right.picture, note };
       const picture = typeof question.picture === "string" ? question.picture : question.picture?.[site.language];
       return { text: right.label, picture, wide: Boolean(picture), note };

@@ -24,9 +24,9 @@ describe("Daily Challenge", () => {
       ["3", "9", "3", "9", "3", "7", "triangle", "5", "7", "4"],
     ]);
     expect(levelsFor("5-6").slice(0, 3).map((level) => level.words.map((question) => question.answer))).toEqual([
-      ["11", "19", "sock", "13", "16", "11", "4", "big circle", "13", "8"],
-      ["13", "17", "hat", "14", "18", "14", "6", "8", "13", "9"],
-      ["14", "15", "red flower", "15", "15", "11", "8", "right", "12", "7"],
+      ["11", "19", "green sweet | heart sweet | purple sweet | star sweet", "13", "16", "11", "4", "circle | star | triangle | square", "13", "8"],
+      ["13", "17", "pig | cat | frog | duck", "14", "18", "14", "6", "8", "13", "9"],
+      ["14", "15", "grapes | strawberry | apple | banana", "15", "15", "11", "8", "heart sweet | purple sweet | star sweet | green sweet", "12", "7"],
     ]);
   });
 
@@ -49,7 +49,7 @@ describe("Daily Challenge", () => {
     allQuestions.forEach((question) => {
       expect(question.options.filter((option) => option.correct).map((option) => option.label)).toEqual([question.answer]);
       expect(new Set(question.options.map((option) => option.label)).size).toBe(question.options.length);
-      question.options.filter((option) => !option.picture).forEach((option) => expect(Number(option.label)).toBeGreaterThanOrEqual(0));
+      question.options.filter((option) => !option.picture && !option.cells).forEach((option) => expect(Number(option.label)).toBeGreaterThanOrEqual(0));
     });
   });
 
@@ -74,10 +74,29 @@ describe("Daily Challenge", () => {
     ]);
   });
 
+  it("gives 5-6 year olds turning-grid puzzles instead of rows of pictures", () => {
+    const patterns = (age) => levelsFor(age).flatMap((level) => level.words).map((question) => question.visual?.type).filter((type) => type === "pattern" || type === "grids");
+    expect(new Set(patterns("5-6"))).toEqual(new Set(["grids"]));
+    expect(new Set(patterns("3-4"))).toEqual(new Set(["pattern"]));
+    // Level 1's: four sweets turning clockwise, the last grid's top left and bottom right to fill.
+    const sweets = levelsFor("5-6")[0].words[2];
+    const file = (picture) => picture && picture.split("/").pop();
+    expect(sweets.visual.grids.map((cells) => cells.map(file))).toEqual([
+      ["candy-box.svg", "candy-dots.svg", "candy-star.svg", "candy-heart.svg"],
+      ["candy-star.svg", "candy-box.svg", "candy-heart.svg", "candy-dots.svg"],
+      ["candy-heart.svg", "candy-star.svg", "candy-dots.svg", "candy-box.svg"],
+    ]);
+    expect(sweets.visual.last.map(file)).toEqual([null, "candy-heart.svg", "candy-box.svg", null]);
+    expect(sweets.options.filter((option) => option.correct).map((option) => option.cells.map(file)))
+      .toEqual([["candy-dots.svg", "candy-heart.svg", "candy-box.svg", "candy-star.svg"]]);
+    expect(sweets.options).toHaveLength(4);
+  });
+
   it("has every picture it uses", () => {
     const files = allQuestions.flatMap((question) => [
       ...(typeof question.picture === "object" && question.picture ? Object.values(question.picture) : [question.picture]),
-      ...question.options.map((option) => option.picture),
+      ...question.options.flatMap((option) => [option.picture, ...(option.cells ?? [])]),
+      ...(question.visual?.type === "grids" ? [...question.visual.grids.flat(), ...question.visual.last] : []),
       ...(question.visual?.type === "pattern" ? question.visual.items.map((item) => item?.picture) : []),
       ...(question.scene?.type === "groups" ? question.scene.groups.map((group) => group.picture) : []),
       ...(question.scene?.type === "count" ? question.scene.items : []),

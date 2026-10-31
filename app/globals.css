@@ -4811,6 +4811,73 @@ a:focus-visible {
   stroke-width: 2.5;
 }
 
+/* Turning grids: four 2 × 2 grids in a row, shrinking to fit; the last one's empty cells are dashed. */
+.math-grids {
+  display: flex;
+  width: 100%;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: clamp(6px, 1.6vw, 14px);
+}
+
+.math-grid {
+  display: grid;
+  min-width: 0;
+  max-width: 116px;
+  flex: 1 1 0;
+  grid-template-columns: repeat(2, 1fr);
+  border: 3px solid #c77dd6;
+  border-radius: 6px;
+  background: #c77dd6;
+  gap: 3px;
+}
+
+.math-grid-cell {
+  display: grid;
+  aspect-ratio: 1;
+  place-items: center;
+  background: #fff;
+  color: var(--magic);
+  font-size: clamp(14px, 3vw, 22px);
+  font-weight: 700;
+}
+
+.math-grid-cell img {
+  width: 80%;
+  height: auto;
+}
+
+.math-grid-cell.math-missing {
+  outline: 2px dashed var(--magic);
+  outline-offset: -5px;
+  background: #f5f0ff;
+}
+
+.math-grid-cell.math-missing-filled {
+  outline-color: #3fae6a;
+  background: #ecfaf2;
+}
+
+/* The right grid on the "not quite" card. */
+.math-grid-reveal {
+  width: 132px;
+  max-width: none;
+  flex: none;
+  margin: 0 auto;
+}
+
+/* A grid as an answer to tap. */
+.math-option .math-grid-small {
+  width: clamp(64px, 18vw, 92px);
+  max-width: none;
+  flex: none;
+}
+
+.math-option .math-grid-small img {
+  width: 78%;
+  height: auto;
+}
+
 /* Pictures made from small pictures of things: groups, a mix to count, ten frames and swaps. */
 .math-scene {
   display: flex;

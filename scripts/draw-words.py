@@ -2030,6 +2030,25 @@ pictures[MA + "apple"] = svg(at(64, 64, 3.2, apple()))
 pictures[MA + "banana"] = svg(at(64, 64, 3.0, banana()))
 pictures[MA + "grapes"] = svg(at(64, 64, 3.6, grapes()))
 
+# Sweets, a star and a strawberry for the 5-6 year olds' turning-grid puzzles.
+pictures[MA + "candy-box"] = svg(
+    '<path d="M54 34q-8-16 4-18 6 0 6 10 0-10 6-10 12 2 4 18Z" fill="#ffb3d1" stroke-width="3"/>'
+    '<path d="M24 50l40-16 40 16v44l-40 18-40-18Z" fill="#c9b6f5"/><path d="M24 50l40 18 40-18M64 68v44" fill="none" stroke-width="3"/>'
+    + sparkle(42, 82, 7, "#fff6c8") + sparkle(84, 86, 6, "#fff6c8") + sparkle(60, 50, 5, "#fff6c8"))
+pictures[MA + "candy-dots"] = svg(
+    '<path d="M30 64L8 48q-4 10 0 16-4 6 0 16Z" fill="#6cc28a"/><path d="M98 64l22-16q4 10 0 16 4 6 0 16Z" fill="#6cc28a"/>'
+    '<ellipse cx="64" cy="64" rx="36" ry="30" fill="#5cb87a"/>'
+    + "".join(f'<circle cx="{x}" cy="{y}" r="6" fill="#ffe27a" stroke-width="2.5"/>' for x, y in ((48, 50), (72, 46), (56, 70), (82, 64), (44, 80), (70, 84))))
+pictures[MA + "candy-star"] = svg(
+    '<path d="M28 64L8 50q-4 8 0 14-4 6 0 14Z" fill="#8cc8f2"/><path d="M100 64l20-14q4 8 0 14 4 6 0 14Z" fill="#8cc8f2"/>'
+    '<rect x="26" y="40" width="76" height="48" rx="10" fill="#ffffff"/><path d="M40 40v48M88 40v48" stroke="#8cc8f2" stroke-width="5"/>'
+    + at(64, 64, 1.3, star5("#ffd45e", 12)))
+pictures[MA + "candy-heart"] = svg(
+    '<rect x="22" y="34" width="84" height="64" rx="12" fill="#ffe27a"/><path d="M96 38q10 26 0 56" fill="none" stroke="#ff8f6f" stroke-width="8"/>'
+    '<path d="M58 84c-16-10-20-20-14-28 5-6 12-4 14 2 2-6 9-8 14-2 6 8 2 18-14 28Z" fill="#ffb3c6" stroke-width="3"/>')
+pictures[MA + "star"] = svg(at(64, 66, 3.6, star5("#ffd45e", 13)))
+pictures[MA + "strawberry"] = svg(at(64, 66, 3.2, strawberry()))
+
 # The game's picture and the Challenge heading's icon.
 pictures["../icons/math-logic"] = svg(
     card(10, 10, 52, 52, "#ffd45e") + label(36, 48, "1", 34) + card(66, 10, 52, 52, "#8cc8f2") + label(92, 48, "+", 34)

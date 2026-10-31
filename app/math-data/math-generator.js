@@ -56,6 +56,70 @@ const pieceSets = [
   ["red flower", "yellow flower", "blue flower"], ["up", "right", "down"],
 ];
 
+// Sets of four for the turning-grid puzzles: [picture, English name, Chinese name].
+const gridSets = {
+  sweets: [[`${art}/math/candy-box.svg`, "purple sweet", "紫色糖果"], [`${art}/math/candy-dots.svg`, "green sweet", "綠色糖果"],
+    [`${art}/math/candy-heart.svg`, "heart sweet", "心心糖果"], [`${art}/math/candy-star.svg`, "star sweet", "星星糖果"]],
+  animals: [[`${art}/animals/cat.svg`, "cat", "貓"], [`${art}/animals/duck.svg`, "duck", "鴨子"],
+    [`${art}/animals/frog.svg`, "frog", "青蛙"], [`${art}/animals/pig.svg`, "pig", "豬"]],
+  shapes: [[`${art}/math/circle.svg`, "circle", "圓形"], [`${art}/math/square.svg`, "square", "正方形"],
+    [`${art}/math/triangle.svg`, "triangle", "三角形"], [`${art}/math/star.svg`, "star", "星形"]],
+  fruit: [[`${art}/math/apple.svg`, "apple", "蘋果"], [`${art}/math/banana.svg`, "banana", "香蕉"],
+    [`${art}/math/grapes.svg`, "grapes", "提子"], [`${art}/math/strawberry.svg`, "strawberry", "士多啤梨"]],
+};
+
+// A 2 × 2 grid's four things going round it: top left, top right, bottom right, bottom left.
+// Each turn moves them all one place clockwise or anticlockwise, or two places (a half turn).
+const turns = {
+  clockwise: (ring) => [ring[3], ring[0], ring[1], ring[2]],
+  anticlockwise: (ring) => [ring[1], ring[2], ring[3], ring[0]],
+  half: (ring) => [ring[2], ring[3], ring[0], ring[1]],
+};
+// The order a grid's cells are shown in: top left, top right, bottom left, bottom right.
+const cellsOf = (ring) => [ring[0], ring[1], ring[3], ring[2]];
+
+// A turning-grid puzzle: three 2 × 2 grids, each turned from the one before, then a fourth with
+// some cells empty (`blanks`, by cell). The choices are whole grids: the right one, one turned
+// the other way, one not turned at all, and one with the missing things swapped round.
+export function gridPattern({ set, turn, blanks, start = [0, 1, 2, 3] }) {
+  const items = gridSets[set];
+  const rings = [start];
+  for (let step = 0; step < 3; step += 1) rings.push(turns[turn](rings[step]));
+  const grids = rings.map(cellsOf);
+  const answer = grids[3];
+  const other = turn === "anticlockwise" ? "clockwise" : "anticlockwise";
+  const swapped = [...answer];
+  if (blanks.length >= 2) [swapped[blanks[0]], swapped[blanks[1]]] = [swapped[blanks[1]], swapped[blanks[0]]];
+  const candidates = [answer, cellsOf(turns[other](rings[2])), grids[2], swapped, cellsOf(turns.half(rings[2])), cellsOf(turns.clockwise(rings[3]))];
+  const seen = new Set();
+  const choices = candidates.filter((cells) => {
+    const key = cells.join(",");
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).slice(0, 4);
+  const label = (cells) => cells.map((index) => items[index][1]).join(" | ");
+  const option = (cells) => ({
+    label: label(cells),
+    cells: cells.map((index) => items[index][0]),
+    name: { en: cells.map((index) => items[index][1]).join(", "), zh: cells.map((index) => items[index][2]).join("、") },
+    correct: cells === answer,
+  });
+  return {
+    prompt: { en: "The pictures turn round the grid. Which grid comes next?", zh: "圖畫在格子裏轉動。下一個格子應該是怎樣的？" },
+    picture: null,
+    scene: null,
+    visual: {
+      type: "grids",
+      grids: grids.slice(0, 3).map((cells) => cells.map((index) => items[index][0])),
+      last: answer.map((index, cell) => (blanks.includes(cell) ? null : items[index][0])),
+    },
+    answer: label(answer),
+    answers: [`Turning grid (${set})`],
+    options: choices.map(option),
+  };
+}
+
 const plural = (thing, count) => thing.en[count === 1 ? 0 : 1];
 
 // "fly away" for several, "flies away" for one (and "are eaten", "is eaten").
@@ -178,6 +242,15 @@ function makers(random) {
         visual: { type: "sequence", items: shown },
       });
     },
+    // The 5-6 year olds' patterns: turning grids, a quarter turn one way at first, then either
+    // way, then half turns with three cells to fill.
+    grid(level) {
+      const turn = level < 7 ? "clockwise" : level < 14 ? pick(["clockwise", "anticlockwise"]) : pick(["clockwise", "anticlockwise", "half"]);
+      const cells = [0, 1, 2, 3].sort(() => random() - 0.5);
+      const blanks = cells.slice(0, level < 14 ? 2 : 3).sort();
+      const start = [0, 1, 2, 3].sort(() => random() - 0.5);
+      return gridPattern({ set: pick(Object.keys(gridSets)), turn, blanks, start });
+    },
     pattern(level) {
       const set = pick(pieceSets);
       const units = level < 6 ? ["AB"] : level < 12 ? ["AB", "AAB", "ABB"] : ["AAB", "ABB", "ABC", "AABB"];
@@ -242,7 +315,7 @@ export function generateLevel(age, level) {
   }
   const n = Math.min(20, 10 + Math.ceil(level / 2));
   return [
-    make.count(Math.min(n, 15)), make.sequence(n, level), make.pattern(level), make.sum(n), make.missingAddend(n),
+    make.count(Math.min(n, 15)), make.sequence(n, level), make.grid(level), make.sum(n), make.missingAddend(n),
     make.frame(n), make.swap(n), make.difference(n), make.difference(n), make.bond(n),
   ];
 }

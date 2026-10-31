@@ -3,7 +3,7 @@
 // first three levels are made by hand here; the rest come from math-generator.js. A child starts
 // at Level 1 of their age, and a level opens the day after the one before it was finished. Every question is answered by tapping one of the choices: numbers, or
 // pictures for "what comes next?" patterns. The pictures are drawn by scripts/draw-words.py.
-import { generateLevel } from "./math-generator";
+import { generateLevel, gridPattern } from "./math-generator";
 
 const art = "/images/game-asset/math";
 
@@ -161,12 +161,13 @@ const levels = [
     words: [
       story("vegetables", say("How many tomatoes can you find?", "你能找到多少個番茄？"), 11, "Count the tomatoes"),
       sequence([20, null, 18, 17, 16]),
-      pattern(["sock", "shoe", "sock", "sock", "shoe", "sock", null], "sock", ["sock", "shoe", "hat"]),
+      // Four sweets turning clockwise round the grid; the last grid's top left and bottom right are missing.
+      gridPattern({ set: "sweets", turn: "clockwise", blanks: [0, 3] }),
       story("bus-stop", say("There are 7 people on the bus and 6 people waiting at the bus stop. How many people are on the bus after everyone gets on?", "巴士上有 7 個人，巴士站有 6 個人在等車。大家都上車後，巴士上有多少人？"), 13, "The bus stop"),
       sum(10, 6, "ten-and-six"),
       sequence([8, 9, 10, null, 12]),
       story("swap-sweets", say("1 lollipop is worth 2 candies. 1 candy is worth 2 crackers. How many crackers is 1 lollipop worth?", "1 枝波板糖可以換 2 粒糖果，1 粒糖果可以換 2 塊餅乾。1 枝波板糖可以換多少塊餅乾？"), 4, "Lollipop swap"),
-      pattern(["big circle", "small circle", "small circle", "big circle", "small circle", "small circle", null], "big circle", ["big circle", "small circle", "square"]),
+      gridPattern({ set: "shapes", turn: "clockwise", blanks: [1, 2], start: [2, 0, 3, 1] }),
       difference(15, 2),
       story("monkeys-tree", say("There are 12 monkeys in the tree. 4 jump into the water. How many monkeys are left in the tree?", "樹上有 12 隻猴子，4 隻跳進了水裏。樹上還有多少隻猴子？"), 8, "Monkeys in the tree"),
     ],
@@ -178,7 +179,7 @@ const levels = [
     words: [
       story("fruit-mix", say("How many strawberries can you find?", "你能找到多少粒士多啤梨？"), 13, "Count the strawberries"),
       sequence([15, 16, null, 18, 19]),
-      pattern(["hat", "hat", "sock", "hat", "hat", "sock", null], "hat", ["hat", "sock", "shoe"]),
+      gridPattern({ set: "animals", turn: "anticlockwise", blanks: [0, 2] }),
       story("classroom", say("9 children are in the classroom. 5 more come in. How many children are there now?", "課室裏有 9 個小朋友，再有 5 個走進來。現在有多少個小朋友？"), 14, "The classroom"),
       sum(10, 8, "ten-and-eight"),
       sequence([20, 18, 16, null, 12]),
@@ -195,12 +196,12 @@ const levels = [
     words: [
       story("night-sky", say("How many stars can you find?", "你能找到多少粒星星？"), 14, "Count the stars"),
       sequence([11, 13, null, 17, 19]),
-      pattern(["red flower", "yellow flower", "yellow flower", "red flower", "yellow flower", "yellow flower", null], "red flower", ["red flower", "yellow flower", "blue flower"]),
+      gridPattern({ set: "fruit", turn: "anticlockwise", blanks: [1, 3], start: [3, 1, 0, 2] }),
       story("birds-wire", say("8 birds sit on the wire. 7 more fly down to join them. How many birds are on the wire now?", "電線上有 8 隻小鳥，再有 7 隻飛下來。現在電線上有多少隻小鳥？"), 15, "Birds on the wire"),
       sum(7, 8, "seven-and-eight"),
       sequence([20, 17, 14, null, 8]),
       story("swap-boxes", say("1 big box holds 2 medium boxes. 1 medium box holds 4 small boxes. How many small boxes fit in 1 big box?", "1 個大箱可以放 2 個中箱，1 個中箱可以放 4 個小箱。1 個大箱可以放多少個小箱？"), 8, "Boxes in boxes"),
-      pattern(["up", "right", "down", "left", "up", null], "right", ["up", "right", "down", "left"]),
+      gridPattern({ set: "sweets", turn: "half", blanks: [0, 1, 3], start: [1, 3, 2, 0] }),
       difference(19, 7),
       story("cookies-eaten", say("There were 16 cookies on the plate. The children ate 9. How many cookies are left?", "碟上本來有 16 塊曲奇，小朋友吃了 9 塊。還剩多少塊？"), 7, "Cookies on the plate"),
     ],

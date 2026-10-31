@@ -28,6 +28,25 @@ function MathVisual({ visual, answer, solved }) {
       </p>
     );
   }
+  if (visual.type === "grids") {
+    // Turning grids: three whole grids, then the fourth with empty cells to fill.
+    const grid = (cells, key, last = false) => (
+      <div key={key} className={`math-grid${last ? " math-grid-last" : ""}`}>
+        {cells.map((picture, index) => (
+          <span key={index} className={`math-grid-cell${picture === null ? missingClass(null) : ""}`}>
+            {picture ? <img src={picture} alt="" width="40" height="40" />
+              : solved ? <img src={visual.answerCells[index]} alt="" width="40" height="40" /> : "?"}
+          </span>
+        ))}
+      </div>
+    );
+    return (
+      <div className="math-grids" role="img" aria-label={visual.label}>
+        {visual.grids.map((cells, index) => grid(cells, index))}
+        {grid(visual.last, "last", true)}
+      </div>
+    );
+  }
   if (visual.type === "sequence") {
     return (
       <ol className="math-sequence" aria-label={visual.items.map((item) => fill(item)).join(", ")}>
@@ -142,7 +161,9 @@ export default function MathGame({ topic, round, question, onAnswer, language = 
   const right = question.options.find((option) => option.correct);
   const visual = question.visual?.type === "pattern"
     ? { ...question.visual, answerPicture: right.picture, answerName: nameOf(right), nameOf }
-    : question.visual;
+    : question.visual?.type === "grids"
+      ? { ...question.visual, answerCells: right.cells, label: chinese ? "三個格子，和一個有空位的格子" : "Three grids, and a fourth with gaps" }
+      : question.visual;
   const hasPicture = Boolean(picture || question.scene);
 
   useEffect(() => () => stopSpeaking(), []);
@@ -203,14 +224,18 @@ export default function MathGame({ topic, round, question, onAnswer, language = 
             const isRight = solved && option.correct;
             return (
               <button
-                className={`math-option${option.picture ? " math-option-picture" : ""}${wrong ? " chinese-option-wrong" : ""}${isRight ? " chinese-option-right" : ""}`}
+                className={`math-option${option.picture || option.cells ? " math-option-picture" : ""}${wrong ? " chinese-option-wrong" : ""}${isRight ? " chinese-option-right" : ""}`}
                 type="button"
                 key={option.label}
                 aria-label={nameOf(option)}
                 disabled={solved}
                 onClick={() => pick(option)}
               >
-                {option.picture ? <img src={option.picture} alt="" width="56" height="56" /> : option.label}
+                {option.cells ? (
+                  <span className="math-grid math-grid-small" aria-hidden="true">
+                    {option.cells.map((picture, index) => <span key={index} className="math-grid-cell"><img src={picture} alt="" width="28" height="28" /></span>)}
+                  </span>
+                ) : option.picture ? <img src={option.picture} alt="" width="56" height="56" /> : option.label}
               </button>
             );
           })}
