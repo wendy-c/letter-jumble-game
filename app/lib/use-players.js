@@ -46,6 +46,11 @@ function cleanPlayer(player) {
     const unlocks = [...new Set(player.unlocks.filter((unlock) => typeof unlock === "string" && unlock.length > 0))];
     if (unlocks.length > 0) cleaned.unlocks = unlocks;
   }
+  // Best times (in milliseconds) for timed topics, e.g. { "speed-quest/within-10": 41250 }.
+  if (player.records && typeof player.records === "object") {
+    const records = Object.fromEntries(Object.entries(player.records).filter(([, time]) => Number.isFinite(time) && time > 0));
+    if (Object.keys(records).length > 0) cleaned.records = records;
+  }
   if (Array.isArray(player.badges)) {
     const badges = [...new Set(player.badges.filter((badge) => typeof badge === "string" && badge.length > 0))];
     if (badges.length > 0) cleaned.badges = badges;
@@ -168,13 +173,20 @@ export function usePlayers() {
     setState((current) => ({ ...current, current: null }));
   }
 
-  function addCoin() {
+  // Gives the current player coins: one for a right answer, more for a bonus.
+  function addCoin(amount = 1) {
     setState((current) => ({
       ...current,
       players: current.players.map((player) => (
-        player.name === current.current ? { ...player, coins: player.coins + 1 } : player
+        player.name === current.current ? { ...player, coins: player.coins + amount } : player
       )),
     }));
+  }
+
+  // Saves the current player's best time for a timed topic ("<game>/<topic>").
+  function saveRecord(key, time) {
+    if (!state.current) return;
+    updatePlayer(state.current, (player) => ({ ...player, records: { ...player.records, [key]: time } }));
   }
 
   // Takes coins from the current player. Returns false (and spends nothing) if they can't afford it.
@@ -251,6 +263,7 @@ export function usePlayers() {
     selectPlayer,
     logOut,
     addCoin,
+    saveRecord,
     spendCoins,
     saveProgress,
     setGameEnabled,

@@ -124,6 +124,15 @@ export const games = [
     badge: "DAILY CHALLENGE",
   },
   {
+    id: "speed-quest",
+    group: "challenge",
+    name: "Rainbow Speed Quest",
+    color: "yellow",
+    picture: "/images/icons/speed-quest.svg",
+    note: "Speed calculation of addition and subtraction. Try to break your own record each time!",
+    badge: "SPEED QUEST",
+  },
+  {
     id: "dragon",
     group: "mochi",
     name: "Mochi the Rainbow Dragon",

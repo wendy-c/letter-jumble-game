@@ -11,9 +11,10 @@ function questionAsset(gameId, question) {
   if (gameId === "measure-words") return { picture: question.icon, label: `一${question.character}${question.noun}` };
   if (gameId === "idioms") return { picture: question.picture, label: question.idiom, wide: true };
   // Daily Challenge: its picture (or the right pattern piece), named as in the question menu.
-  if (gameId === "math-logic") {
+  if (gameId === "math-logic" || gameId === "speed-quest") {
     const right = question.options.find((option) => option.correct);
-    return { picture: question.picture ?? right.picture ?? null, label: question.answers[0], note: `Answer: ${question.answer}`, wide: Boolean(question.picture) };
+    const picture = typeof question.picture === "object" && question.picture ? question.picture.en : question.picture;
+    return { picture: picture ?? right.picture ?? null, label: question.answers[0], note: `Answer: ${question.answer}`, wide: Boolean(picture) };
   }
   if (question.character) return { picture: question.picture, label: question.character, note: question.english };
   return { picture: question.picture, label: question.word };

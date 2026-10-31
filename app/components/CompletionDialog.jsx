@@ -1,5 +1,6 @@
 import BadgeMedal from "./BadgeMedal";
 import Mascot from "./Mascot";
+import { formatTime } from "./MathGame";
 
 const englishCompletionText = {
   kicker: "TOPIC COMPLETE",
@@ -13,15 +14,6 @@ const englishCompletionText = {
   tryAgain: "Try again",
   visitMochi: "Visit Mochi",
   badge: (topicName) => `New badge! ${topicName} is in your badge collection.`,
-};
-
-export const mathCompletionText = {
-  ...englishCompletionText,
-  kicker: "LEVEL COMPLETE",
-  message: (topicName) => `You got every ${topicName} question right. Mochi is so proud of you!`,
-  tryMessage: (topicName) => `Get every ${topicName} question right to earn its badge. Try again!`,
-  button: "Back to all levels",
-  nextLevel: (levelName) => `${levelName} opens tomorrow!`,
 };
 
 export const chineseCompletionText = {
@@ -38,13 +30,58 @@ export const chineseCompletionText = {
   badge: (topicName) => `你得到「${topicName}」徽章！`,
 };
 
+// The Daily Challenge's texts, in English and Chinese (it follows the site's language).
+export const mathCompletionText = {
+  en: {
+    ...englishCompletionText,
+    kicker: "LEVEL COMPLETE",
+    message: (topicName) => `You got every ${topicName} question right. Mochi is so proud of you!`,
+    tryMessage: (topicName) => `Get every ${topicName} question right to earn its badge. Try again!`,
+    button: "Back to all levels",
+    nextLevel: (levelName) => `${levelName} opens tomorrow!`,
+  },
+  zh: {
+    ...chineseCompletionText,
+    kicker: "完成關卡",
+    button: "返回所有關卡",
+    nextLevel: (levelName) => `明天就可以玩${levelName}！`,
+  },
+};
+
+// Rainbow Speed Quest's: the round's time, and its record.
+export const speedCompletionText = {
+  en: {
+    ...englishCompletionText,
+    kicker: "ROUND COMPLETE",
+    message: (topicName) => `You got every ${topicName} sum right. Mochi is so proud of you!`,
+    tryMessage: (topicName) => `Get every ${topicName} sum right to earn its badge and set a record. Try again!`,
+    yourTime: (time) => `Your time: ${time}`,
+    bestTime: (time) => `Your record: ${time}`,
+    firstRecord: "That’s your first record! Can you beat it next time?",
+    newRecord: "New record!",
+    recordBonus: (coins) => `+${coins} rainbow coins for beating your record!`,
+  },
+  zh: {
+    ...chineseCompletionText,
+    kicker: "完成一輪",
+    yourTime: (time) => `你的時間：${time}`,
+    bestTime: (time) => `你的紀錄：${time}`,
+    firstRecord: "這是你的第一個紀錄！下次可以打破它嗎？",
+    newRecord: "打破紀錄！",
+    recordBonus: (coins) => `打破紀錄，獎勵 ${coins} 個彩虹金幣！`,
+  },
+};
+
 // The end of a topic: how many answers were right (e.g. 8 / 10). Only a perfect score earns the
 // topic's badge; `badge` is { name, image } when it just did, and `hasBadge` says it was earned before.
 // Continuing goes back to the topic list. With full marks, `onVisitMochi` (when the player can
 // visit her) adds a button to go and spend the coins on Mochi; otherwise `onTryAgain` adds a
 // "Try again" button that plays the topic again from the start.
 // `nextLevel` (Daily Challenge) names the level that finishing this one opens, from tomorrow.
-export default function CompletionDialog({ topicName, count, correct = count, badge = null, hasBadge = false, text = englishCompletionText, onDone, onVisitMochi = null, onTryAgain = null, nextLevel = null }) {
+// `speed` (Rainbow Speed Quest) is { time, best, newRecord, bonus }: the round's time in
+// milliseconds (null when it wasn't timed from the start), the record before it, and whether it set
+// a new one (earning `bonus` coins when it beat an earlier record).
+export default function CompletionDialog({ topicName, count, correct = count, badge = null, hasBadge = false, text = englishCompletionText, onDone, onVisitMochi = null, onTryAgain = null, nextLevel = null, speed = null }) {
   const perfect = correct === count;
   const tryAgain = !perfect && onTryAgain;
   return (
@@ -65,6 +102,15 @@ export default function CompletionDialog({ topicName, count, correct = count, ba
             {perfect ? text.message(topicName) : hasBadge ? text.practiseMessage() : text.tryMessage(topicName)}
           </p>
           {nextLevel && <p className="completion-next-level">{text.nextLevel(nextLevel)}</p>}
+          {speed && speed.time !== null && (
+            <div className="completion-speed">
+              <p className="completion-time">{text.yourTime(formatTime(speed.time))}</p>
+              {speed.newRecord
+                ? <p className="completion-record">{speed.best === null ? text.firstRecord : text.newRecord}</p>
+                : speed.best !== null && <p>{text.bestTime(formatTime(speed.best))}</p>}
+              {speed.bonus > 0 && <p className="completion-record">{text.recordBonus(speed.bonus)}</p>}
+            </div>
+          )}
           {badge && (
             <div className="completion-badge">
               <BadgeMedal image={badge.image} earned />

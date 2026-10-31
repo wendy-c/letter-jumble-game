@@ -9,7 +9,7 @@ import AnswerRevealDialog, { chineseRevealLabels } from "./AnswerRevealDialog";
 import BadgeCollection from "./BadgeCollection";
 import ChineseGame from "./ChineseGame";
 import Breadcrumbs from "./Breadcrumbs";
-import CompletionDialog, { chineseCompletionText, mathCompletionText } from "./CompletionDialog";
+import CompletionDialog, { chineseCompletionText, mathCompletionText, speedCompletionText } from "./CompletionDialog";
 import DragonDen from "./DragonDen";
 import RainbowVillage from "./RainbowVillage";
 import { dragons } from "../dragon-data";
@@ -21,6 +21,7 @@ import SentenceGame from "./SentenceGame";
 import MeasureWordGame from "./MeasureWordGame";
 import MathGame from "./MathGame";
 import { isLevelEarned, levelState, levelUnlockKey } from "../math-data";
+import { speedRecordBonus } from "../speed-quest-data";
 import PictureClue from "./PictureClue";
 import ParentMode from "./ParentMode";
 import PlayerDialog from "./PlayerDialog";
@@ -81,7 +82,7 @@ export default function GameApp() {
   const { gameId, topicId } = parsePath(pathname);
 
   const {
-    loaded, players, currentPlayer, createPlayer, setPlayerAge, selectPlayer, logOut, addCoin, spendCoins, saveProgress, saveDeck,
+    loaded, players, currentPlayer, createPlayer, setPlayerAge, selectPlayer, logOut, addCoin, saveRecord, spendCoins, saveProgress, saveDeck,
     setGameEnabled, setSpellingGuide, awardBadge, saveResult, unlock,
   } = usePlayers();
   const site = useSiteSettings();
@@ -105,8 +106,16 @@ export default function GameApp() {
   // hasn't turned it off for them.
   const allowed = Boolean(routeGame && loaded && currentPlayer?.age && isGameAvailable(routeGame, currentPlayer));
   const selectedGame = allowed ? routeGame : null;
-  const gameTopics = topicsByGame[selectedGame?.id] ?? [];
   const isMath = selectedGame?.id === "math-logic";
+  const isSpeed = selectedGame?.id === "speed-quest";
+  // The Math games (Daily Challenge, Rainbow Speed Quest) are in the site's language.
+  const isMathGame = isMath || isSpeed;
+  const mathInChinese = isMathGame && site.language === "zh";
+  // A game's topics: only those for the player's age (the Daily Challenge's levels), named in the
+  // site's language where they have names in both.
+  const gameTopics = (topicsByGame[selectedGame?.id] ?? [])
+    .filter((topic) => !topic.ages || !currentPlayer?.age || topic.ages.includes(currentPlayer.age))
+    .map((topic) => (topic.names ? { ...topic, name: topic.names[site.language] ?? topic.name, english: topic.focus?.[site.language] ?? topic.english } : topic));
   // The Daily Challenge's levels open one a day; a level that isn't open yet goes back to the list.
   const topicOpen = (topic) => !isMath || levelState(topic, currentPlayer) === "open";
   const routeTopic = (topicId && gameTopics.find((topic) => topic.id === topicId && topicOpen(topic))) || null;
@@ -153,6 +162,9 @@ export default function GameApp() {
   const [answered, setAnswered] = useState(null);
   // Set once the last word of a topic is done, to show the "you finished" pop-up.
   const [completedTopic, setCompletedTopic] = useState(null);
+  // When a timed round (Rainbow Speed Quest) started: { key, startedAt }. Only a round played from
+  // its first question is timed.
+  const [timer, setTimer] = useState({ key: null, startedAt: null });
 
   const isDigraph = selectedGame?.id === "digraphs";
   const isBlend = selectedGame?.id === "blends";
@@ -229,6 +241,7 @@ export default function GameApp() {
     setChecked(false);
     setWordMenuOpen(false);
     setCompletedTopic(null);
+    setTimer({ key: categoryKey, startedAt: selectedCategory.timed && start === 0 ? Date.now() : null });
     // Only when the topic, player or dealt words change, not on every progress save.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryKey, currentPlayer?.name, validDeck]);
@@ -413,7 +426,7 @@ export default function GameApp() {
     saveResult(categoryKey, round, correct);
     if (correct) {
       sounds.correct();
-      const messages = inChinese ? chineseRewardMessages : rewardMessages;
+      const messages = inChinese || mathInChinese ? chineseRewardMessages : rewardMessages;
       setToast({ message: messages[rainbowCoins % messages.length], id: Date.now() });
       addCoin();
     } else {
@@ -423,9 +436,12 @@ export default function GameApp() {
 
   // What the "not quite" card shows for the current question.
   function revealFor(question) {
-    if (isMath) {
+    if (isMathGame) {
       const right = question.options.find((option) => option.correct);
-      return right.picture ? { text: right.label, picture: right.picture, note: question.prompt } : { text: right.label, picture: question.picture, wide: true, note: question.prompt };
+      const note = question.prompt[site.language] ?? question.prompt.en;
+      if (right.picture) return { text: right.name?.[site.language] ?? right.label, picture: right.picture, note };
+      const picture = typeof question.picture === "string" ? question.picture : question.picture?.[site.language];
+      return { text: right.label, picture, wide: Boolean(picture), note };
     }
     if (isMeasure) return { text: question.answers[0], picture: question.icon };
     if (isIdiom) return { text: question.idiom, picture: question.picture, note: question.meaning };
@@ -457,10 +473,23 @@ export default function GameApp() {
     const nextLevel = isMath ? gameTopics[gameTopics.indexOf(routeTopic) + 1] : null;
     const opensLevel = Boolean(nextLevel) && !isLevelEarned(nextLevel, currentPlayer);
     if (opensLevel) unlock(levelUnlockKey(nextLevel));
+    // A timed round with every answer right sets a record if it's the first or the fastest yet;
+    // beating an earlier record earns a bonus.
+    let speed = null;
+    if (routeTopic.timed) {
+      const time = timer.key === categoryKey && timer.startedAt ? Date.now() - timer.startedAt : null;
+      const best = currentPlayer?.records?.[categoryKey] ?? null;
+      const newRecord = correct === count && time !== null && (best === null || time < best);
+      if (newRecord) saveRecord(categoryKey, time);
+      const bonus = newRecord && best !== null ? speedRecordBonus : 0;
+      if (bonus) addCoin(bonus);
+      speed = { time, best, newRecord, bonus };
+    }
     setCompletedTopic({
       name: selectedCategory.name, count, correct, hasBadge,
       badge: newBadge ? { name: routeTopic.name, image: badgeImage(selectedGame.id, routeTopic.id) } : null,
       nextLevel: opensLevel ? nextLevel.name : null,
+      speed,
     });
     sounds.sparkle?.();
   }
@@ -496,6 +525,7 @@ export default function GameApp() {
     saveDeck(categoryKey, newDeck);
     saveProgress(categoryKey, 0);
     setPosition({ key: categoryKey, round: 0 });
+    setTimer({ key: categoryKey, startedAt: routeTopic.timed ? Date.now() : null });
     setPlaced(Array(slotCount(routeTopic.words[newDeck[0]], 0)).fill(null));
     setVoiceMessage("");
     resetAnswer();
@@ -622,14 +652,16 @@ export default function GameApp() {
             isMeasure={isMeasure}
             isIdiom={isIdiom}
             isMath={isMath}
+            isSpeed={isSpeed}
             lockFor={(topic) => (isMath ? levelState(topic, currentPlayer) : "open")}
+            recordFor={(topic) => currentPlayer?.records?.[`${selectedGame.id}/${topic.id}`] ?? null}
             topics={gameTopics}
             progressFor={(topic) => currentPlayer?.progress?.[`${selectedGame.id}/${topic.id}`] ?? 0}
             breadcrumbs={breadcrumbs}
             onSelectTopic={selectCategory}
           />
         )
-      ) : !playing ? null : isMath ? (
+      ) : !playing ? null : isMathGame ? (
         <section className="game-wrap mx-auto w-full max-w-6xl" aria-labelledby="game-title">
           <GameHeading
             titleAction={howToButton}
@@ -639,8 +671,8 @@ export default function GameApp() {
             wordMenuOpen={wordMenuOpen}
             breadcrumbs={breadcrumbs}
             onOpenWordMenu={() => setWordMenuOpen(true)}
-            eyebrow="BRAIN CHALLENGE"
-            note="Look, count and think!"
+            eyebrow={isSpeed ? (mathInChinese ? "速算挑戰" : "SPEED QUEST") : mathInChinese ? "腦力挑戰" : "BRAIN CHALLENGE"}
+            note={isSpeed ? (mathInChinese ? "看看你有多快！" : "How fast can you go?") : mathInChinese ? "看一看，數一數，想一想！" : "Look, count and think!"}
           />
           <MathGame
             key={`${selectedCategory.id}-${round}`}
@@ -648,8 +680,10 @@ export default function GameApp() {
             round={round}
             question={puzzle}
             onAnswer={answerQuestion}
+            language={site.language}
+            startedAt={timer.key === categoryKey ? timer.startedAt : null}
           />
-          <GameFooter>ONE QUESTION AT A TIME</GameFooter>
+          <GameFooter>{mathInChinese ? "一題一題慢慢來" : "ONE QUESTION AT A TIME"}</GameFooter>
         </section>
       ) : isIdiom ? (
         <section className="game-wrap mx-auto w-full max-w-6xl" aria-labelledby="game-title">
@@ -790,7 +824,7 @@ export default function GameApp() {
         />
       )}
       {howToShown && (
-        <HowToPlayDialog game={selectedGame} language={gameLanguage} onClose={closeHowTo} />
+        <HowToPlayDialog game={{ ...selectedGame, name: text.gameNames[selectedGame.id] ?? selectedGame.name }} language={gameLanguage} onClose={closeHowTo} />
       )}
       {aboutOpen && selectedGame && hasAbout(selectedGame.id) && (
         <AboutDialog game={selectedGame} onClose={() => setAboutOpen(false)} />
@@ -813,8 +847,9 @@ export default function GameApp() {
           correct={completedTopic.correct}
           hasBadge={completedTopic.hasBadge}
           badge={completedTopic.badge}
-          text={inChinese ? chineseCompletionText : isMath ? mathCompletionText : undefined}
+          text={inChinese ? chineseCompletionText : isSpeed ? speedCompletionText[site.language] : isMath ? mathCompletionText[site.language] : undefined}
           nextLevel={completedTopic.nextLevel}
+          speed={completedTopic.speed}
           onDone={leaveCompletedTopic}
           onVisitMochi={currentPlayer && isGameAvailable(games.find((game) => game.id === "dragon"), currentPlayer) ? visitMochiAfterTopic : null}
           onTryAgain={tryTopicAgain}
@@ -823,8 +858,8 @@ export default function GameApp() {
       {playing && answered === "wrong" && !completedTopic && (
         <AnswerRevealDialog
           reveal={revealFor(puzzle)}
-          labels={inChinese ? chineseRevealLabels : undefined}
-          lang={inChinese ? "zh-Hant-HK" : undefined}
+          labels={inChinese || mathInChinese ? chineseRevealLabels : undefined}
+          lang={inChinese || mathInChinese ? "zh-Hant-HK" : undefined}
           onContinue={nextWord}
         />
       )}
@@ -832,8 +867,8 @@ export default function GameApp() {
         <AnswerToast
           key={toast.id}
           message={toast.message}
-          earnedLabel={coinEarned[inChinese ? "zh" : "en"]}
-          lang={inChinese ? "zh-Hant-HK" : undefined}
+          earnedLabel={coinEarned[inChinese || mathInChinese ? "zh" : "en"]}
+          lang={inChinese || mathInChinese ? "zh-Hant-HK" : undefined}
         />
       )}
     </main>

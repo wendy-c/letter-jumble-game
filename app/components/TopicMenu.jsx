@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { LanguageContext } from "../i18n";
 import ChoiceCard from "./ChoiceCard";
+import { formatTime } from "./MathGame";
 import GameFooter from "./GameFooter";
 import LetterPattern from "./LetterPattern";
 
@@ -10,17 +11,47 @@ function cardNote(isChinese, isMeasure, done, total) {
   return done > 0 ? `${done} of ${total} words learned` : `${total} words to learn`;
 }
 
+// A Daily Challenge level's note: how far through it is, or when it opens.
+function levelNote(lock, before, done, total, chinese) {
+  if (lock === "tomorrow") return chinese ? "明天開放" : "Opens tomorrow";
+  if (lock !== "open") return chinese ? `完成${before.name}就可以玩` : `Finish ${before.name} to open`;
+  if (done > 0) return chinese ? `已答 ${done} / ${total} 題` : `${done} of ${total} questions done`;
+  return chinese ? `${total} 題` : `${total} questions`;
+}
+
+// A Rainbow Speed Quest topic's note: the record to beat.
+function speedNote(record, chinese) {
+  if (record === null) return chinese ? "10 題 · 還沒有紀錄" : "10 sums · no record yet";
+  return chinese ? `紀錄：${formatTime(record)}` : `Record: ${formatTime(record)}`;
+}
+
 // `lockFor(topic)` says whether a topic can be played: "open", "tomorrow" or "locked" (the Daily
 // Challenge's later levels open one a day).
-export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false, isBlend = false, isChinese = false, isMeasure = false, isIdiom = false, isMath = false, lockFor = () => "open", topics, progressFor = () => 0, breadcrumbs, onSelectTopic }) {
+export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false, isBlend = false, isChinese = false, isMeasure = false, isIdiom = false, isMath = false, isSpeed = false, lockFor = () => "open", recordFor = () => null, topics, progressFor = () => 0, breadcrumbs, onSelectTopic }) {
   // The Daily Challenge's heading follows the site's language.
   const inChinese = useContext(LanguageContext) === "zh";
   return (
     <section className="game-wrap category-menu mx-auto w-full max-w-6xl" aria-labelledby="game-title">
       <div className="menu-heading">
         {breadcrumbs}
-        {isChinese || isMeasure || isIdiom ? null : <p className="eyebrow">{isMath ? "BRAIN CHALLENGE" : "WELCOME TO SPELLING SCHOOL"}</p>}
-        {isMath ? (
+        {isChinese || isMeasure || isIdiom ? null : (
+          <p className="eyebrow">
+            {isSpeed ? (inChinese ? "速算挑戰" : "SPEED QUEST") : isMath ? (inChinese ? "腦力挑戰" : "BRAIN CHALLENGE") : "WELCOME TO SPELLING SCHOOL"}
+          </p>
+        )}
+        {isSpeed ? (
+          <>
+            <div className="title-row">
+              {inChinese
+                ? <h1 id="game-title" lang="zh-Hant-HK">彩虹<span>速算站</span></h1>
+                : <h1 id="game-title">Rainbow <span>Speed Quest</span></h1>}
+              {titleAction}
+            </div>
+            <p className="heading-note">
+              {inChinese ? "加減速算，每次都嘗試打破自己的紀錄！" : "Speed calculation of addition and subtraction. Try to break your own record each time!"}
+            </p>
+          </>
+        ) : isMath ? (
           <>
             <div className="title-row">
               {inChinese
@@ -102,9 +133,9 @@ export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false
                 ? <LetterPattern letters={topic.pattern} />
                 : <img src={topic.icon} alt="" width="40" height="40" />}
               number={index + 1}
-              name={isMath ? `${topic.name} · ${topic.english}` : topic.name}
-              note={isMath
-                ? (lock === "tomorrow" ? "Opens tomorrow" : locked ? `Finish ${topics[index - 1].name} to open` : progressFor(topic) > 0 ? `${progressFor(topic)} of ${topic.words.length} questions done` : `${topic.words.length} questions`)
+              name={isMath || isSpeed ? `${topic.name} · ${topic.english}` : topic.name}
+              note={isSpeed ? speedNote(recordFor(topic), inChinese)
+                : isMath ? levelNote(lock, topics[index - 1], progressFor(topic), topic.words.length, inChinese)
                 : cardNote(isIdiom ? "idiom" : isChinese, isMeasure, progressFor(topic), topic.wordsPerGame ?? topic.words.length)}
               locked={locked}
               onClick={() => onSelectTopic(topic)}
@@ -112,7 +143,7 @@ export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false
           );
         })}
       </div>
-      <GameFooter>{isChinese || isMeasure || isIdiom ? "選一個主題" : isMath ? "PICK A LEVEL" : isCvc ? "PICK A GAME" : "PICK A SPELL BOOK"}</GameFooter>
+      <GameFooter>{isChinese || isMeasure || isIdiom ? "選一個主題" : isSpeed ? (inChinese ? "選一個挑戰" : "PICK A QUEST") : isMath ? (inChinese ? "選一個關卡" : "PICK A LEVEL") : isCvc ? "PICK A GAME" : "PICK A SPELL BOOK"}</GameFooter>
     </section>
   );
 }

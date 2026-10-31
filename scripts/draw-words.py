@@ -1881,7 +1881,9 @@ pictures[MA + "kittens"] = wide(
 pictures[MA + "shapes-1"] = wide(shapes_scene(
     [(40, 40, "#ff8fb7", 0), (120, 110, "#8cc8f2", 20), (200, 46, "#ffd45e", -15), (226, 124, "#8fe3a8", 0), (70, 122, "#c9b6f5", 180), (150, 38, "#ffb86b", 10)],
     [("circle", 90, 46, "#8fe3a8"), ("square", 30, 100, "#ffd45e"), ("star", 176, 96, "#ff8fb7"), ("heart", 236, 62, "#ff6f86"), ("rect", 110, 76, "#c9b6f5"), ("circle", 186, 136, "#8cc8f2")]))
-pictures[MA + "fruit-stand"] = wide(
+def fruit_stand(words, size):
+    """Mommy Pig at Mr Fox's fruit stand, saying `words`; his basket's ten frame has 8 apples."""
+    return wide(
     '<path d="M0 0h256v160H0Z" fill="#fff6e0" stroke="none"/>'
     '<path d="M110 10h140v18q-8 8-16 0-8 8-16 0-8 8-16 0-8 8-16 0-8 8-16 0-8 8-16 0-8 8-16 0-8 8-16 0-8 8-12 0Z" fill="#ff8fa3"/>'
     + asset("animals/fox", 166, 26, 62) + '<rect x="120" y="78" width="130" height="28" rx="4" fill="#d9a066"/>'
@@ -1889,8 +1891,12 @@ pictures[MA + "fruit-stand"] = wide(
     + asset("animals/pig", 8, 46, 84)
     + '<path d="M70 58l-11-7v14ZM70 58l11-7v14Z" fill="#ff6f86" stroke-width="2.5"/><circle cx="70" cy="58" r="3.5" fill="#ff6f86" stroke-width="2.5"/>'
     + '<path d="M6 6h138q8 0 8 8v20q0 8-8 8H70l-12 12-2-12H14q-8 0-8-8V14q0-8 8-8Z" fill="#ffffff" stroke-width="3"/>'
-    f'<text x="79" y="29" text-anchor="middle" font-family="{FONT}" font-size="12" font-weight="700" fill="{INK}" stroke="none">請給我10個蘋果，謝謝!</text>'
+    f'<text x="79" y="29" text-anchor="middle" font-family="{FONT}" font-size="{size}" font-weight="700" fill="{INK}" stroke="none">{words}</text>'
     '<path d="M100 108h132l-6 48H106Z" fill="#e0b07a"/>' + ten_frame(111, 112, 8, cell=22, item=lambda cx, cy: at(cx, cy, .55, apple())))
+
+
+pictures[MA + "fruit-stand"] = fruit_stand("請給我10個蘋果，謝謝!", 12)
+pictures[MA + "fruit-stand-en"] = fruit_stand("10 apples, please!", 14)
 pictures[MA + "monkeys"] = wide(
     scene() + "".join(asset("animals/monkey", x, 44, 62) for x in (6, 66))
     + "".join(asset("animals/monkey", x, 44, 62, (("#a0673f", "#9a98ab"), ("#ffd0b0", "#ebe7f2"))) for x in (130, 190)))
@@ -2028,6 +2034,12 @@ pictures[MA + "grapes"] = svg(at(64, 64, 3.6, grapes()))
 pictures["../icons/math-logic"] = svg(
     card(10, 10, 52, 52, "#ffd45e") + label(36, 48, "1", 34) + card(66, 10, 52, 52, "#8cc8f2") + label(92, 48, "+", 34)
     + card(10, 66, 52, 52, "#ffb3d1") + label(36, 104, "2", 34) + card(66, 66, 52, 52, "#8fe3a8") + label(92, 104, "?", 34))
+# Rainbow Speed Quest's picture: a stopwatch with plus and minus on it.
+pictures["../icons/speed-quest"] = svg(
+    '<rect x="54" y="6" width="20" height="12" rx="4" fill="#ff8fa3"/><path d="M64 18v8M98 30l8-8" stroke-width="5"/>'
+    '<circle cx="64" cy="72" r="46" fill="#ffd45e"/><circle cx="64" cy="72" r="36" fill="#ffffff"/>'
+    '<path d="M64 72V44" stroke="#ff6f86" stroke-width="5"/><circle cx="64" cy="72" r="5" fill="#4b2e22" stroke="none"/>'
+    + label(44, 92, "+", 26, "#3fae6a") + label(86, 92, "−", 26, "#6fb3e6") + sparkle(108, 18, 8, "#b79cf2"))
 pictures["../icons/group-challenge"] = svg(
     '<path d="M38 20h52v26a26 26 0 0 1-52 0Z" fill="#ffd45e"/><path d="M38 28H22q0 22 18 26M90 28h16q0 22-18 26" fill="none" stroke-width="5"/>'
     '<path d="M58 72h12v18H58Z" fill="#ffd45e"/><rect x="40" y="90" width="48" height="16" rx="4" fill="#c98a55"/>' + label(64, 46, "?", 28, "#ffffff"))

@@ -104,9 +104,10 @@ const strings = {
       "measure-words": "5-6 歲 · 量詞 · 廣東話",
       idioms: "5-6 歲 · 成語 · 廣東話",
       "math-logic": "所有年齡 · 數一數、加減和找規律 · 每天一個新關卡",
+      "speed-quest": "加減速算，每次都嘗試打破自己的紀錄！",
       dragon: "用彩虹幣買零食，跟Mochi玩",
     },
-    gameNames: { "math-logic": "每日大挑戰" },
+    gameNames: { "math-logic": "每日大挑戰", "speed-quest": "彩虹速算站" },
 
     badgesTitle: (name) => `${name} 的徽章`,
     badgeCount: (earned, total) => `${earned} / ${total} 個徽章`,

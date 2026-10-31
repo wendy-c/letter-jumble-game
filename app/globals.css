@@ -4655,6 +4655,151 @@ a:focus-visible {
   height: 22px;
 }
 
+/* Rainbow Speed Quest's time and record on the end-of-round card. */
+.completion-speed {
+  margin: 12px auto 0;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.completion-speed p {
+  margin: 4px 0 0;
+}
+
+.completion-time {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.completion-record {
+  color: var(--pink-dark);
+  font-weight: 700;
+}
+
+/* The clock in a timed round's question card. */
+.math-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 999px;
+  background: #fff;
+  padding: 4px 10px;
+  color: var(--ink);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.math-timer svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 2.5;
+}
+
+/* Pictures made from small pictures of things: groups, a mix to count, ten frames and swaps. */
+.math-scene {
+  display: flex;
+  width: 100%;
+  max-width: 480px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  border-radius: 18px;
+  background: #fff;
+  padding: 16px;
+}
+
+.math-group,
+.math-count {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.math-group + .math-group {
+  border-left: 3px dashed var(--line);
+  padding-left: 14px;
+}
+
+.math-thing {
+  position: relative;
+  display: inline-flex;
+}
+
+.math-thing img {
+  width: clamp(30px, 8vw, 60px);
+  height: auto;
+}
+
+.math-scene-many .math-thing img {
+  width: clamp(24px, 6vw, 44px);
+}
+
+/* Taken away: faded, with a cross. */
+.math-thing-gone img {
+  opacity: 0.35;
+}
+
+.math-thing-gone::after {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(45deg, transparent 44%, #f0506e 44%, #f0506e 56%, transparent 56%),
+    linear-gradient(-45deg, transparent 44%, #f0506e 44%, #f0506e 56%, transparent 56%);
+  content: "";
+}
+
+.math-frame {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border: 3px solid var(--ink);
+  border-radius: 6px;
+  background: var(--ink);
+  gap: 3px;
+}
+
+.math-frame-cell {
+  display: grid;
+  width: clamp(32px, 8vw, 54px);
+  aspect-ratio: 1;
+  place-items: center;
+  background: #fff;
+}
+
+.math-frame-cell img {
+  width: 80%;
+  height: auto;
+}
+
+.math-swaps {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.math-swap-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.math-swap-row img {
+  width: clamp(28px, 7vw, 52px);
+  height: auto;
+}
+
+.math-swap-equals {
+  margin: 0 4px;
+  color: var(--ink);
+  font-size: 26px;
+  font-weight: 700;
+}
+
 .completion-next-level {
   margin: 12px auto 0;
   border-radius: 999px;

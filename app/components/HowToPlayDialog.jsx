@@ -46,6 +46,18 @@ const howTo = {
       reward.zh,
     ],
   },
+  "speed-quest": {
+    en: [
+      "Pick within 10 or within 20. Each round has 10 adding and taking-away sums.",
+      "Tap the right answer as fast as you can. The clock is ticking!",
+      "Get all 10 right to set a record. Beat your record to earn 10 bonus rainbow coins!",
+    ],
+    zh: [
+      "選擇 10 以內或 20 以內。每一輪有 10 題加減數。",
+      "盡快按一按正確的答案，時間正在計算！",
+      "全部 10 題答對就可以創造紀錄。打破自己的紀錄，可以得到 10 個彩虹金幣獎勵！",
+    ],
+  },
   dragon: {
     en: [
       "Spend rainbow coins on food, grooming and activities.",
@@ -139,7 +151,8 @@ export function AboutButton({ onClick }) {
 const chineseGames = ["chinese", "chinese-advanced", "measure-words", "idioms"];
 export function howToLanguage(gameId, siteLanguage) {
   if (chineseGames.includes(gameId)) return "zh";
-  if (gameId === "dragon") return siteLanguage;
+  // Mochi's game and the Math games follow the site's language.
+  if (["dragon", "math-logic", "speed-quest"].includes(gameId)) return siteLanguage;
   return "en";
 }
 
