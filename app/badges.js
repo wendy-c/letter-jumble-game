@@ -6,6 +6,8 @@ import { blendTopics } from "./blends-data";
 import { chineseAdvancedTopics, chineseTopics } from "./chinese-data";
 import { measureWordTopics } from "./measure-words-data";
 import { idiomTopics } from "./idioms-data";
+import { mathLevels } from "./math-data";
+import { speedTopics } from "./speed-quest-data";
 import { gamesForPlayer } from "./games-data";
 
 // Every game's topics. Finishing a topic earns its badge, saved per player by
@@ -20,6 +22,8 @@ export const topicsByGame = {
   idioms: idiomTopics,
   starters: starterCategories,
   "letter-jumble": categories,
+  "math-logic": mathLevels,
+  "speed-quest": speedTopics,
 };
 
 const badgeKey = (gameId, topicId) => `${gameId}/${topicId}`;
@@ -33,7 +37,8 @@ export function badgeShelves(player) {
     .filter((game) => topicsByGame[game.id])
     .map((game) => ({
       game,
-      badges: topicsByGame[game.id].map((topic) => ({
+      // Only the topics for the player's age (the Daily Challenge's levels).
+      badges: topicsByGame[game.id].filter((topic) => !topic.ages || !player?.age || topic.ages.includes(player.age)).map((topic) => ({
         key: badgeKey(game.id, topic.id),
         topic,
         image: badgeImage(game.id, topic.id),

@@ -44,8 +44,8 @@ describe("games by age", () => {
   const names = (list) => list.map((game) => game.name);
 
   it("gives CVC Sounds to 3-4 year olds and Letter Jumble to 5-6 year olds", () => {
-    expect(names(gamesForAge("3-4"))).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "中文認字 · 入門篇", "Mochi the Rainbow Dragon"]);
-    expect(names(gamesForAge("5-6"))).toEqual(["Consonant Digraphs", "R & L Blends", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 進階篇", "量詞配對", "成語", "Mochi the Rainbow Dragon"]);
+    expect(names(gamesForAge("3-4"))).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "中文認字 · 入門篇", "Daily Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
+    expect(names(gamesForAge("5-6"))).toEqual(["Consonant Digraphs", "R & L Blends", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 進階篇", "量詞配對", "成語", "Daily Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
   });
 
   it("shows every game when the age isn't known", () => {

@@ -6,7 +6,7 @@ import MochiDriveCard from "./MochiDriveCard";
 import MochiGreeting from "./MochiGreeting";
 
 // The front page: Mochi says hello, then the player's games under headings (Phonics, Cambridge YLE
-// training, 中文 and Visit Mochi). A heading with none of their games isn't shown.
+// training, 中文, Math and Visit Mochi). A heading with none of their games isn't shown.
 export default function GamePicker({ games, playerName = null, onSelectGame, emptyMessage }) {
   const text = useText();
   const shelves = gameGroups
@@ -27,7 +27,7 @@ export default function GamePicker({ games, playerName = null, onSelectGame, emp
             {shelfGames.map((game) => (
               game.id === "dragon"
                 ? <MochiDriveCard key={game.id} game={game} note={text.gameNotes[game.id] ?? game.note} onSelect={() => onSelectGame(game)} />
-                : <GameCard key={game.id} game={game} note={text.gameNotes[game.id] ?? game.note} onSelect={() => onSelectGame(game)} />
+                : <GameCard key={game.id} game={{ ...game, name: text.gameNames[game.id] ?? game.name }} note={text.gameNotes[game.id] ?? game.note} onSelect={() => onSelectGame(game)} />
             ))}
           </div>
         </section>

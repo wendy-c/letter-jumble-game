@@ -87,6 +87,10 @@ def octagon(r):  # 成語: a seal
     return rounded_polygon(8, r, -math.pi / 2 + math.pi / 8, 0.2)
 
 
+def pentagon(r):  # Math and Logic: a five-sided shield
+    return rounded_polygon(5, r, -math.pi / 2, 0.18)
+
+
 def heart(r):  # 量詞: a heart
     s = r / 70
     p = lambda x, y: f"{CX + x * s:.1f} {CY + y * s:.1f}"
@@ -96,11 +100,11 @@ def heart(r):  # 量詞: a heart
 
 SHAPES = {
     "cvc": sunburst, "digraphs": sunburst, "blends": sunburst, "starters": scallop, "letter-jumble": shield, "chinese": flower,
-    "chinese-advanced": hexagon, "measure-words": heart, "idioms": octagon,
+    "chinese-advanced": hexagon, "measure-words": heart, "idioms": octagon, "math-logic": pentagon, "speed-quest": sunburst,
 }
 # Little extras on top of each game's badge.
 CROWN = {"letter-jumble": "crown", "starters": "star", "cvc": "star", "digraphs": "crown", "blends": "star", "chinese": "lantern", "chinese-advanced": "crown",
-         "measure-words": "star", "idioms": "lantern"}
+         "measure-words": "star", "idioms": "lantern", "math-logic": "crown", "speed-quest": "star"}
 
 
 def sparkle(x, y, size, fill):

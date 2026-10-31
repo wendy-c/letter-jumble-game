@@ -16,7 +16,7 @@ export const chineseRevealLabels = {
 // box (the answer given was wrong), then on to the next question (no second try).
 // `reveal` is { text, picture, note }: the picture is an image path or an emoji.
 export default function AnswerRevealDialog({ reveal, labels = englishRevealLabels, lang, onContinue }) {
-  const wide = reveal.picture?.startsWith("/images/idioms/");
+  const wide = reveal.wide ?? reveal.picture?.startsWith("/images/idioms/");
   return (
     <div className="reward-overlay">
       <div className="reward-dialog reveal-dialog" role="dialog" aria-modal="true" aria-labelledby="reveal-title">
