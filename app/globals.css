@@ -4694,7 +4694,6 @@ a:focus-visible {
   color: var(--ink);
   font-size: 40px;
   font-weight: 700;
-  white-space: pre;
 }
 
 .math-box,
@@ -4727,34 +4726,62 @@ a:focus-visible {
   color: #2f8f55;
 }
 
+/* A run of numbers or pictures always stays on one row: the pieces shrink to fit. */
 .math-sequence,
 .math-pattern {
   display: flex;
-  flex-wrap: wrap;
+  width: 100%;
+  flex-wrap: nowrap;
   justify-content: center;
-  gap: 8px;
+  gap: clamp(4px, 1.4vw, 8px);
   margin: 12px 0 0;
   padding: 0;
   list-style: none;
 }
 
+.math-sequence .math-box,
 .math-pattern-piece {
   display: flex;
-  width: 62px;
-  height: 62px;
+  min-width: 0;
+  max-width: 64px;
+  height: auto;
+  flex: 1 1 0;
   align-items: center;
   justify-content: center;
-  border: 3px solid var(--line);
-  border-radius: 14px;
+  aspect-ratio: 1;
+  border: 3px solid var(--line-strong);
+  border-radius: clamp(8px, 2vw, 14px);
   background: #fff;
-  color: var(--magic);
-  font-size: 30px;
+  padding: 0;
+  color: var(--ink);
+  font-size: clamp(16px, 4.6vw, 30px);
   font-weight: 700;
 }
 
+.math-pattern-piece {
+  border-color: var(--line);
+  color: var(--magic);
+}
+
+.math-sequence .math-missing,
+.math-pattern-piece.math-missing {
+  border-style: dashed;
+  border-color: var(--magic);
+  background: #f5f0ff;
+  color: var(--magic);
+}
+
+.math-sequence .math-missing-filled,
+.math-pattern-piece.math-missing-filled {
+  border-style: solid;
+  border-color: #3fae6a;
+  background: #ecfaf2;
+  color: #2f8f55;
+}
+
 .math-pattern-piece img {
-  width: 48px;
-  height: 48px;
+  width: 78%;
+  height: auto;
 }
 
 /* A number bond: the whole on top, its two parts below. */
@@ -4845,15 +4872,5 @@ a:focus-visible {
   .math-option {
     min-height: 60px;
     font-size: 26px;
-  }
-
-  .math-pattern-piece {
-    width: 48px;
-    height: 48px;
-  }
-
-  .math-pattern-piece img {
-    width: 38px;
-    height: 38px;
   }
 }

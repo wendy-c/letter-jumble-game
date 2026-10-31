@@ -24,7 +24,7 @@ function MathVisual({ visual, answer, solved }) {
     const [question, rest] = visual.text.split("?");
     return (
       <p className="math-equation">
-        {question}<span className={`math-box${missingClass(null)}`}>{fill(null)}</span>{rest}
+        {question.trim()}<span className={`math-box${missingClass(null)}`}>{fill(null)}</span>{rest.trim()}
       </p>
     );
   }
@@ -94,7 +94,6 @@ export default function MathGame({ topic, round, question, onAnswer }) {
 
       <section className="answer-panel math-answer-panel" aria-label="Answer">
         <div className="answer-intro">
-          <span className="step-number">01</span>
           <div>
             <h2 className="math-prompt" lang={question.lang}>{question.prompt}</h2>
           </div>

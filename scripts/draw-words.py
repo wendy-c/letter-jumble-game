@@ -1759,22 +1759,28 @@ def grapes(s=1):
     return at(0, 0, s, "".join(f'<circle cx="{x}" cy="{y}" r="5" fill="#a07ae6" stroke-width="2.5"/>' for x, y in ((-6, -6), (4, -6), (-1, 2), (9, 2), (4, 10), (-6, 10))) + '<path d="M0-12q2-6 6-6" fill="none" stroke-width="2.5"/>')
 
 
-def scatter(seed, kinds, counts, area=(14, 14, 242, 146), min_gap=24):
-    """Places `counts` of each kind at random, not touching, over `area`; returns svg."""
+def scatter(seed, kinds, counts, area=(10, 10, 246, 150), scales=(0.75, 1.15)):
+    """Places `counts` of each kind at random sizes over `area`, none of them overlapping, so
+    every one can be counted. `kinds` are (draw, radius) pairs, the radius at size 1."""
     import random as _random
-    rng = _random.Random(seed)
-    spots = []
-    placed = []
-    for kind, count in zip(kinds, counts):
-        for _ in range(count):
-            for _try in range(400):
-                x, y = rng.uniform(area[0], area[2]), rng.uniform(area[1], area[3])
-                if all((x - px) ** 2 + (y - py) ** 2 > min_gap ** 2 for px, py in spots):
+    for attempt in range(500):
+        rng = _random.Random(seed * 1000 + attempt)
+        placed = []
+        for (kind, radius), count in zip(kinds, counts):
+            for _ in range(count):
+                for _try in range(600):
+                    s = rng.uniform(*scales)
+                    r = radius * s
+                    x, y = rng.uniform(area[0] + r, area[2] - r), rng.uniform(area[1] + r, area[3] - r)
+                    if all(math.hypot(x - px, y - py) > r + pr + 3 for _, px, py, pr, _ in placed):
+                        placed.append((kind, x, y, r, s))
+                        break
+                else:
                     break
-            spots.append((x, y))
-            placed.append((kind, x, y, rng.uniform(0.75, 1.3)))
-    rng.shuffle(placed)
-    return "".join(f'<g transform="translate({x:.1f} {y:.1f})">{kind(s)}</g>' for kind, x, y, s in placed)
+        if len(placed) == sum(counts):
+            rng.shuffle(placed)
+            return "".join(f'<g transform="translate({x:.1f} {y:.1f})">{kind(s)}</g>' for kind, x, y, _, s in placed)
+    raise ValueError("couldn't fit everything in without overlapping")
 
 
 def tri(x, y, s, colour, rot=0):
@@ -1946,7 +1952,7 @@ pictures[MA + "frogs"] = wide(
 
 # Level 4
 pictures[MA + "vegetables"] = wide('<rect x="2" y="2" width="252" height="156" rx="12" fill="#fff6e0"/>'
-                                   + scatter(4, (tomato, carrot, broccoli, cabbage), (11, 6, 5, 4)))
+                                   + scatter(4, ((tomato, 14), (carrot, 22), (broccoli, 18), (cabbage, 16)), (11, 4, 3, 3)))
 pictures[MA + "bus-stop"] = wide(
     scene("#eaf6ff", "#c9c3d6", 120)
     + '<path d="M8 40h120q10 0 10 10v66H8Z" fill="#ffd45e"/>'
@@ -1967,7 +1973,7 @@ pictures[MA + "monkeys-tree"] = wide(
 
 # Level 5
 pictures[MA + "fruit-mix"] = wide('<rect x="2" y="2" width="252" height="156" rx="12" fill="#fff6e0"/>'
-                                  + scatter(5, (strawberry, apple, banana, grapes), (13, 5, 4, 4), min_gap=23))
+                                  + scatter(5, ((strawberry, 16), (apple, 16), (banana, 18), (grapes, 17)), (13, 3, 2, 2), scales=(0.7, 1.0)))
 pictures[MA + "classroom"] = wide(
     '<path d="M0 0h256v160H0Z" fill="#fff6e0" stroke="none"/><rect x="196" y="30" width="54" height="124" fill="#c98a55"/><rect x="202" y="36" width="42" height="118" fill="#fff6e0"/>'
     + "".join(person(22 + (i % 5) * 36, 40 + (i // 5) * 52, .42, ["#8b5a3c", "#e8b46b", "#4b2e22"][i % 3], ["#8fe3a8", "#ffd45e", "#c9b6f5", "#8cc8f2"][i % 4]) for i in range(9))
@@ -1987,7 +1993,7 @@ pictures[MA + "ducks-pond"] = wide(
 
 # Level 6
 pictures[MA + "night-sky"] = wide('<rect x="2" y="2" width="252" height="156" rx="12" fill="#5b4a72"/>'
-                                  + scatter(6, (lambda s: at(0, 0, s, star5("#ffd45e")), lambda s: at(0, 0, s, moon()), lambda s: at(0, 0, s * .9, cloud())), (14, 4, 4), min_gap=26))
+                                  + scatter(6, ((lambda s: at(0, 0, s, star5("#ffd45e")), 14), (lambda s: at(0, 0, s, moon()), 13), (lambda s: at(0, 0, s * .9, cloud()), 20)), (14, 3, 3)))
 pictures[MA + "birds-wire"] = wide(
     scene() + '<path d="M0 90q128 20 256 0" fill="none" stroke-width="3"/><path d="M10 160V70M246 160V70" stroke-width="6"/>'
     + "".join(at(24 + i * 26, 82 + (4 if 2 < i < 6 else 0), 1.1, little_bird("#8cc8f2")) for i in range(8))

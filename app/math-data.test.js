@@ -39,7 +39,8 @@ describe("Math and Logic", () => {
 
   it("asks the fruit stand question in Chinese", () => {
     const [question] = mathLevels[0].words.filter((item) => item.lang !== "en");
-    expect(question.prompt).toBe("豬媽媽到水果店買蘋果，她說「請給我10個蘋果，謝謝!」，狐狸店長差多少個蘋果？");
+    expect(question.prompt).toBe("豬媽媽到水果店買蘋果，狐狸店長的籃子裏差多少個蘋果？");
+    expect(question.visual).toEqual({ type: "equation", text: "8 + ? = 10" });
     expect(question.lang).toBe("zh-Hant-HK");
   });
 

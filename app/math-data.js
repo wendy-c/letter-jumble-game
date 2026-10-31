@@ -98,7 +98,10 @@ const levels = [
     words: [
       bond(6, 2, "kittens", "There are 6 kittens in the pen. 2 are calico cats. How many are tabby cats?"),
       story("shapes-1", "How many triangles can you find?", 6, "Find the triangles"),
-      story("fruit-stand", "豬媽媽到水果店買蘋果，她說「請給我10個蘋果，謝謝!」，狐狸店長差多少個蘋果？", 2, "豬媽媽買蘋果", chinese),
+      numberQuestion({
+        prompt: "豬媽媽到水果店買蘋果，狐狸店長的籃子裏差多少個蘋果？", lang: chinese, picture: "fruit-stand", answer: 2, title: "豬媽媽買蘋果",
+        visual: { type: "equation", text: "8 + ? = 10" },
+      }),
       sum(2, 2, "monkeys", "2 brown monkeys and 2 grey monkeys. How many monkeys altogether?"),
       bond(5, 3, "houses", "There are 5 houses. 3 have slanted roofs. How many have flat roofs?"),
       sequence([4, 5, null, 7, 8]),
@@ -114,7 +117,7 @@ const levels = [
     words: [
       bond(7, 3, "ducks-chicks", "There are 7 birds. 3 are ducks. How many are chicks?"),
       story("shapes-2", "How many triangles can you find?", 8, "Find the triangles"),
-      story("strawberry-tray", "How many more strawberries will fill the tray to make 10?", 4, "Make 10"),
+      story("strawberry-tray", "How many more strawberries to make 10?", 4, "Make 10"),
       sum(3, 5, "birds-3-5", "3 blue birds and 5 yellow birds. How many birds altogether?"),
       bond(8, 5, "cars-buses", "There are 8 cars and buses. 5 are cars. How many are buses?"),
       sequence([2, 4, 6, null, 10]),
