@@ -1,7 +1,8 @@
-// Daily Challenge (每日大挑戰): twenty levels of ten questions for each age, in English or Chinese
-// (the site's language): numbers under 10 for 3-4 year olds and to 20 for 5-6 year olds. Each age's
-// first three levels are made by hand here; the rest come from math-generator.js. A child starts
-// at Level 1 of their age, and a level opens the day after the one before it was finished. Every question is answered by tapping one of the choices: numbers, or
+// Daily Challenge (每日大挑戰): twenty levels of ten questions for K1 and for K2, in English or
+// Chinese (the site's language): numbers under 10 for K1 and to 20 for K2 (K3 plays the K2 levels
+// too). Each set's first three levels are made by hand here; the rest come from math-generator.js.
+// A child starts at Level 1 of their set, and a level opens the day after the one before it was
+// finished. Every question is answered by tapping one of the choices: numbers, or
 // pictures for "what comes next?" patterns. The pictures are drawn by scripts/draw-words.py.
 import { generateLevel, gridPattern } from "./math-generator";
 
@@ -101,7 +102,7 @@ function pattern(items, answer, choices) {
 const levels = [
   {
     focus: say("Numbers under 10", "10 以內的數"),
-    ages: ["3-4"],
+    ages: ["k1"],
     color: "pink",
     words: [
       bond(6, 2, "kittens", say("There are 6 kittens in the pen. 2 are calico cats. How many are tabby cats?", "圍欄裏有 6 隻小貓，其中 2 隻是三色貓。有多少隻是虎斑貓？")),
@@ -122,7 +123,7 @@ const levels = [
   },
   {
     focus: say("Numbers under 10", "10 以內的數"),
-    ages: ["3-4"],
+    ages: ["k1"],
     color: "yellow",
     words: [
       bond(7, 3, "ducks-chicks", say("There are 7 birds. 3 are ducks. How many are chicks?", "有 7 隻雀鳥，3 隻是鴨子。有多少隻是小雞？")),
@@ -139,7 +140,7 @@ const levels = [
   },
   {
     focus: say("Numbers under 10", "10 以內的數"),
-    ages: ["3-4"],
+    ages: ["k1"],
     color: "blue",
     words: [
       bond(9, 6, "balls", say("There are 9 balls. 6 are red. How many are blue?", "有 9 個球，6 個是紅色的。有多少個是藍色的？")),
@@ -156,7 +157,7 @@ const levels = [
   },
   {
     focus: say("Numbers to 20", "20 以內的數"),
-    ages: ["5-6"],
+    ages: ["k2"],
     color: "green",
     words: [
       story("vegetables", say("How many tomatoes can you find?", "你能找到多少個番茄？"), 11, "Count the tomatoes"),
@@ -174,7 +175,7 @@ const levels = [
   },
   {
     focus: say("Numbers to 20", "20 以內的數"),
-    ages: ["5-6"],
+    ages: ["k2"],
     color: "lilac",
     words: [
       story("fruit-mix", say("How many strawberries can you find?", "你能找到多少粒士多啤梨？"), 13, "Count the strawberries"),
@@ -191,7 +192,7 @@ const levels = [
   },
   {
     focus: say("Numbers to 20", "20 以內的數"),
-    ages: ["5-6"],
+    ages: ["k2"],
     color: "peach",
     words: [
       story("night-sky", say("How many stars can you find?", "你能找到多少粒星星？"), 14, "Count the stars"),
@@ -210,10 +211,12 @@ const levels = [
 
 const levelsPerAge = 20;
 const colors = ["pink", "yellow", "blue", "green", "lilac", "peach"];
-const focusFor = { "3-4": say("Numbers under 10", "10 以內的數"), "5-6": say("Numbers to 20", "20 以內的數") };
+const focusFor = { k1: say("Numbers under 10", "10 以內的數"), k2: say("Numbers to 20", "20 以內的數") };
+// Who plays each set: K3 plays the K2 levels.
+const playersOf = { k1: ["k1"], k2: ["k2", "k3"] };
 
 // Each age's levels: the three made by hand above, then generated ones up to Level 20.
-export const mathLevels = ["3-4", "5-6"].flatMap((age) => {
+export const mathLevels = ["k1", "k2"].flatMap((age) => {
   const handMade = levels.filter((level) => level.ages[0] === age);
   return Array.from({ length: levelsPerAge }, (_, index) => {
     const number = index + 1;
@@ -225,7 +228,7 @@ export const mathLevels = ["3-4", "5-6"].flatMap((age) => {
       names: say(`Level ${number}`, `第 ${number} 關`),
       english: focusFor[age].en,
       focus: focusFor[age],
-      ages: [age],
+      ages: playersOf[age],
       // Each age's Level 1 is open from the start.
       first: number === 1,
       color,

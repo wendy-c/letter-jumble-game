@@ -301,12 +301,13 @@ function makers(random) {
   };
 }
 
-// A level's ten questions. The younger children's levels count up to 10 (more as they go on);
-// the older children's count to 20, with missing numbers and swaps too.
+// A level's ten questions. K1's levels count up to 10 (more as they go on); K2's (also played by
+// K3) count to 20, with missing numbers, swaps and turning grids too.
 export function generateLevel(age, level) {
-  const random = seededRandom(`daily-challenge:${age}:${level}`);
+  // Seeded by the set's old name ("3-4", "5-6"), so the levels stay the same as before K1-K3.
+  const random = seededRandom(`daily-challenge:${{ k1: "3-4", k2: "5-6" }[age]}:${level}`);
   const make = makers(random);
-  if (age === "3-4") {
+  if (age === "k1") {
     const n = Math.min(10, 4 + Math.ceil(level / 3));
     return [
       make.bond(n), make.count(n), make.frame(n), make.sum(n), make.difference(n),

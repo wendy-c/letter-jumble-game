@@ -12,7 +12,7 @@ describe("badges", () => {
   });
 
   it("lists each of a player's badges with its picture and whether it's earned", () => {
-    const shelves = badgeShelves({ name: "Ada", coins: 0, age: "3-4", badges: ["cvc/middle-sound"] });
+    const shelves = badgeShelves({ name: "Ada", coins: 0, age: "k1", badges: ["cvc/middle-sound"] });
     const cvc = shelves.find((shelf) => shelf.game.id === "cvc");
     expect(cvc.badges.map(({ key, image, earned }) => [key, image, earned])).toEqual([
       ["cvc/beginning-sound", "/images/badges/cvc/beginning-sound.svg", false],

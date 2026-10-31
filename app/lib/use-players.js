@@ -16,8 +16,29 @@ function isValidPlayer(player) {
   return typeof player?.name === "string" && player.name.length > 0 && isCount(player.coins);
 }
 
+// Players saved before K1-K3 have an age of "3-4" (now K1) or "5-6" (now K3), and their Daily
+// Challenge levels were named after those ages ("math-logic/3-4-level-2" is now K1's Level 2,
+// "math-logic/5-6-level-2" K2's), in their progress, dealt questions, answers, badges and unlocks.
+const oldAges = { "3-4": "k1", "5-6": "k3" };
+const renameLevel = (key) => key.replace("math-logic/3-4-level-", "math-logic/k1-level-").replace("math-logic/5-6-level-", "math-logic/k2-level-");
+const renameKeys = (saved) => (saved && typeof saved === "object" && !Array.isArray(saved)
+  ? Object.fromEntries(Object.entries(saved).map(([key, value]) => [renameLevel(key), value]))
+  : saved);
+function upgrade(player) {
+  return {
+    ...player,
+    age: oldAges[player.age] ?? player.age,
+    progress: renameKeys(player.progress),
+    decks: renameKeys(player.decks),
+    results: renameKeys(player.results),
+    badges: Array.isArray(player.badges) ? player.badges.map((badge) => (typeof badge === "string" ? renameLevel(badge) : badge)) : player.badges,
+    unlocks: Array.isArray(player.unlocks) ? player.unlocks.map((unlock) => (typeof unlock === "string" ? renameLevel(unlock) : unlock)) : player.unlocks,
+  };
+}
+
 // Keeps only the fields we understand. Players saved before ages existed have no `age` yet.
-function cleanPlayer(player) {
+function cleanPlayer(saved) {
+  const player = upgrade(saved);
   const cleaned = { name: player.name, coins: player.coins };
   if (isAge(player.age)) cleaned.age = player.age;
   if (player.progress && typeof player.progress === "object") {
@@ -126,7 +147,7 @@ export function usePlayers() {
     if (name.length > maxNameLength) return `Names can be up to ${maxNameLength} letters long.`;
     const existing = state.players.find((player) => sameName(player.name, name));
     if (existing) return `${existing.name} is already a player. Tap their name above.`;
-    if (!isAge(age)) return "Please choose how old you are.";
+    if (!isAge(age)) return "Please choose which class you’re in.";
 
     const coins = state.players.length === 0 ? takeLegacyCoins() : 0;
     setState((current) => ({ players: [...current.players, { name, coins, age }], current: name }));

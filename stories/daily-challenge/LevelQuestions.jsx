@@ -17,7 +17,7 @@ export default function LevelQuestions({ level: id, topic = null, limit = 10, la
     <section style={{ fontFamily: "Fredoka, sans-serif", color: "#3d2b63" }}>
       <h1 style={{ margin: "0 0 4px", fontSize: 30 }}>{name}</h1>
       <p style={{ margin: "0 0 20px", color: "#8a80a6" }}>
-        {level.ages && `Ages ${level.ages.join(", ")} · `}{level.focus?.[language] ?? level.english} · {Math.min(limit, level.words.length)} questions
+        {level.ages && `${level.ages.map((age) => age.toUpperCase()).join(", ")} · `}{level.focus?.[language] ?? level.english} · {Math.min(limit, level.words.length)} questions
       </p>
       <ol style={{ display: "grid", gridTemplateColumns: `repeat(2, ${cardWidth * scale}px)`, gap: "28px 24px", margin: 0, padding: 0, listStyle: "none" }}>
         {level.words.slice(0, limit).map((question, index) => (

@@ -3,9 +3,11 @@
 export const questionCountChoices = [5, 10, 15, 20];
 export const defaultQuestionCount = 10;
 
+// Kindergarten years: K1 (about 3-4 years old), K2 (4-5) and K3 (5-6).
 export const ageGroups = [
-  { id: "3-4", label: "3-4 years old" },
-  { id: "5-6", label: "5-6 years old" },
+  { id: "k1", label: "K1" },
+  { id: "k2", label: "K2" },
+  { id: "k3", label: "K3" },
 ];
 
 // The front page shows games under these headings, in this order, each with its icon (drawn by
@@ -31,9 +33,9 @@ export const games = [
     color: "yellow",
     picture: "/images/game-asset/animals/cat.svg",
     pattern: ["c", null, "t"],
-    note: "For age 3-4 - Beginning, middle and ending sounds",
+    note: "For K1-K3 - Beginning, middle and ending sounds",
     badge: "CVC SOUNDS",
-    ages: ["3-4"],
+    ages: ["k1", "k2", "k3"],
     questionCount: true,
   },
   {
@@ -42,9 +44,9 @@ export const games = [
     name: "Consonant Digraphs",
     color: "pink",
     picture: "/images/icons/digraphs-ch-sh-th.svg",
-    note: "For age 3-6 - ch, sh, th, ph, wh, ck and ng",
+    note: "For K1-K3 - ch, sh, th, ph, wh, ck and ng",
     badge: "DIGRAPHS",
-    ages: ["3-4", "5-6"],
+    ages: ["k1", "k2", "k3"],
     questionCount: true,
   },
   {
@@ -53,9 +55,9 @@ export const games = [
     name: "R & L Blends",
     color: "blue",
     picture: "/images/icons/blends-mixed.svg",
-    note: "For age 3-6 - br, cr, str, bl, cl, fl and more",
+    note: "For K1-K3 - br, cr, str, bl, cl, fl and more",
     badge: "BLENDS",
-    ages: ["3-4", "5-6"],
+    ages: ["k1", "k2", "k3"],
     questionCount: true,
   },
   {
@@ -64,9 +66,9 @@ export const games = [
     name: "Letter Jumble - Starters",
     color: "green",
     picture: "/images/icons/starters-pets-and-farm.svg",
-    note: "For age 5-6 - Cambridge Starters · 12 topics",
+    note: "For K2-K3 - Cambridge Starters · 12 topics",
     badge: "CAMBRIDGE STARTERS",
-    ages: ["5-6"],
+    ages: ["k2", "k3"],
     spellingGuide: true,
   },
   {
@@ -75,9 +77,9 @@ export const games = [
     name: "Letter Jumble - Movers",
     color: "lilac",
     picture: "/images/icons/starters-wild-animals.svg",
-    note: "For age 5-6 - Cambridge Movers · 8 topics",
+    note: "For K2-K3 - Cambridge Movers · 8 topics",
     badge: "CAMBRIDGE MOVERS",
-    ages: ["5-6"],
+    ages: ["k2", "k3"],
     spellingGuide: true,
   },
   {
@@ -87,9 +89,9 @@ export const games = [
     color: "green",
     picture: "/images/icons/chinese-animals-advanced.svg",
     pattern: ["單", "字"],
-    note: "For age 3-4 - Chinese characters · Cantonese",
+    note: "For K1-K2 - Chinese characters · Cantonese",
     badge: "中文認字",
-    ages: ["3-4"],
+    ages: ["k1", "k2"],
   },
   {
     id: "chinese-advanced",
@@ -98,9 +100,9 @@ export const games = [
     color: "blue",
     picture: "/images/icons/chinese-jobs.svg",
     pattern: ["詞", "語"],
-    note: "For age 5-6 - Chinese words · Cantonese",
+    note: "For K2-K3 - Chinese words · Cantonese",
     badge: "中文認字",
-    ages: ["5-6"],
+    ages: ["k2", "k3"],
   },
   {
     id: "measure-words",
@@ -109,9 +111,9 @@ export const games = [
     color: "yellow",
     picture: "/images/game-asset/food/apple.svg",
     pattern: ["一", "個"],
-    note: "For age 5-6 - Chinese measure words · Cantonese",
+    note: "For K3 - Chinese measure words · Cantonese",
     badge: "量詞配對",
-    ages: ["5-6"],
+    ages: ["k3"],
   },
   {
     id: "idioms",
@@ -119,9 +121,9 @@ export const games = [
     name: "成語",
     color: "peach",
     picture: "/images/icons/idioms.svg",
-    note: "For age 5-6 - Chinese idioms · Cantonese",
+    note: "For K3 - Chinese idioms · Cantonese",
     badge: "成語",
-    ages: ["5-6"],
+    ages: ["k3"],
   },
   {
     id: "math-logic",
@@ -129,7 +131,7 @@ export const games = [
     name: "Daily Challenge",
     color: "blue",
     picture: "/images/icons/math-logic.svg",
-    note: "For all ages - Count, add, take away and find patterns · a new level each day",
+    note: "For K1-K3 - Count, add, take away and find patterns · a new level each day",
     badge: "DAILY CHALLENGE",
   },
   {

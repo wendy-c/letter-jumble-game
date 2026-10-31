@@ -4,7 +4,7 @@ import PlayerMenu from "./PlayerMenu";
 export default {
   title: "Components/Header/PlayerMenu",
   component: PlayerMenu,
-  args: { player: { name: "Ada", coins: 37, age: "3-4" }, onSwitch: fn(), onBadges: fn(), onParentMode: fn(), onLanguage: fn(), onLogOut: fn() },
+  args: { player: { name: "Ada", coins: 37, age: "k1" }, onSwitch: fn(), onBadges: fn(), onParentMode: fn(), onLanguage: fn(), onLogOut: fn() },
   decorators: [(Story) => <div style={{ display: "flex", justifyContent: "flex-end", minHeight: 320 }}><Story /></div>],
 };
 

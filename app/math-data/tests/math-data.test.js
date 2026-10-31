@@ -9,21 +9,21 @@ const allQuestions = mathLevels.flatMap((level) => level.words);
 
 describe("Daily Challenge", () => {
   it("has twenty levels of ten questions for each age", () => {
-    ["3-4", "5-6"].forEach((age) => {
+    ["k1", "k2"].forEach((age) => {
       expect(levelsFor(age).map((level) => level.name)).toEqual(Array.from({ length: 20 }, (_, index) => `Level ${index + 1}`));
       levelsFor(age).forEach((level) => expect(level.words).toHaveLength(10));
     });
-    expect(mathLevels.map((level) => level.id).slice(0, 2)).toEqual(["3-4-level-1", "3-4-level-2"]);
-    expect(mathLevels.filter((level) => level.first).map((level) => level.id)).toEqual(["3-4-level-1", "5-6-level-1"]);
+    expect(mathLevels.map((level) => level.id).slice(0, 2)).toEqual(["k1-level-1", "k1-level-2"]);
+    expect(mathLevels.filter((level) => level.first).map((level) => level.id)).toEqual(["k1-level-1", "k2-level-1"]);
   });
 
   it("starts each age with the levels made by hand", () => {
-    expect(levelsFor("3-4").slice(0, 3).map((level) => level.words.map((question) => question.answer))).toEqual([
+    expect(levelsFor("k1").slice(0, 3).map((level) => level.words.map((question) => question.answer))).toEqual([
       ["4", "6", "2", "4", "2", "6", "bee", "5", "5", "4"],
       ["4", "8", "4", "8", "3", "8", "banana", "5", "6", "7"],
       ["3", "9", "3", "9", "3", "7", "triangle", "5", "7", "4"],
     ]);
-    expect(levelsFor("5-6").slice(0, 3).map((level) => level.words.map((question) => question.answer))).toEqual([
+    expect(levelsFor("k2").slice(0, 3).map((level) => level.words.map((question) => question.answer))).toEqual([
       ["11", "19", "green sweet | heart sweet | purple sweet | star sweet", "13", "16", "11", "4", "circle | star | triangle | square", "13", "8"],
       ["13", "17", "pig | cat | frog | duck", "14", "18", "14", "6", "8", "13", "9"],
       ["14", "15", "grapes | strawberry | apple | banana", "15", "15", "11", "8", "heart sweet | purple sweet | star sweet | green sweet", "12", "7"],
@@ -32,16 +32,16 @@ describe("Daily Challenge", () => {
 
   it("keeps answers to 10 for 3-4 year olds and to 20 for 5-6 year olds", () => {
     const biggest = (age) => Math.max(...levelsFor(age).flatMap((level) => level.words.map((question) => Number(question.answer)).filter(Number.isFinite)));
-    expect(biggest("3-4")).toBeLessThanOrEqual(10);
-    expect(biggest("5-6")).toBeLessThanOrEqual(20);
+    expect(biggest("k1")).toBeLessThanOrEqual(10);
+    expect(biggest("k2")).toBeLessThanOrEqual(20);
   });
 
   it("makes its later levels from question templates, getting harder", () => {
-    const level4 = levelsFor("3-4")[3].words.map((question) => question.answers[0]);
+    const level4 = levelsFor("k1")[3].words.map((question) => question.answers[0]);
     expect(level4[0]).toMatch(/^Number bond of \d+$/);
     expect(level4[1]).toMatch(/^Count the /);
     expect(level4[2]).toMatch(/^Make (5|10)$/);
-    const olderLast = levelsFor("5-6")[19].words.map((question) => question.answers[0]);
+    const olderLast = levelsFor("k2")[19].words.map((question) => question.answers[0]);
     expect(olderLast).toEqual(expect.arrayContaining(["Swap", expect.stringMatching(/^\d+ \+ \? = \d+$/), "Make 20"]));
   });
 
@@ -58,7 +58,7 @@ describe("Daily Challenge", () => {
       expect(question.prompt.en).toMatch(/[a-z]/);
       expect(question.prompt.zh).toMatch(/[一-鿿]/);
     });
-    const fruitStand = levelsFor("3-4")[0].words[2];
+    const fruitStand = levelsFor("k1")[0].words[2];
     expect(fruitStand.prompt).toEqual({
       en: "Mommy Pig wants 10 apples from Mr Fox’s fruit stand. How many more apples does his basket need?",
       zh: "豬媽媽到水果店買蘋果，狐狸店長的籃子裏差多少個蘋果？",
@@ -68,7 +68,7 @@ describe("Daily Challenge", () => {
   });
 
   it("names each question in the menu without giving the answer away", () => {
-    expect(levelsFor("3-4")[0].words.map((question) => question.answers[0])).toEqual([
+    expect(levelsFor("k1")[0].words.map((question) => question.answers[0])).toEqual([
       "Number bond of 6", "Find the triangles", "Mommy Pig buys apples", "2 + 2 = ?", "Number bond of 5", "4, 5, ?, 7, 8",
       "Pattern: butterfly, bee, bee, butterfly, bee, ?, butterfly", "8 − 3 = ?", "Seats on the bus", "7, 6, 5, ?, 3",
     ]);
@@ -76,10 +76,10 @@ describe("Daily Challenge", () => {
 
   it("gives 5-6 year olds turning-grid puzzles instead of rows of pictures", () => {
     const patterns = (age) => levelsFor(age).flatMap((level) => level.words).map((question) => question.visual?.type).filter((type) => type === "pattern" || type === "grids");
-    expect(new Set(patterns("5-6"))).toEqual(new Set(["grids"]));
-    expect(new Set(patterns("3-4"))).toEqual(new Set(["pattern"]));
+    expect(new Set(patterns("k2"))).toEqual(new Set(["grids"]));
+    expect(new Set(patterns("k1"))).toEqual(new Set(["pattern"]));
     // Level 1's: four sweets turning clockwise, the last grid's top left and bottom right to fill.
-    const sweets = levelsFor("5-6")[0].words[2];
+    const sweets = levelsFor("k2")[0].words[2];
     const file = (picture) => picture && picture.split("/").pop();
     expect(sweets.visual.grids.map((cells) => cells.map(file))).toEqual([
       ["candy-box.svg", "candy-dots.svg", "candy-star.svg", "candy-heart.svg"],
@@ -107,7 +107,7 @@ describe("Daily Challenge", () => {
   });
 
   it("opens each age's Level 1, and each later level the day after the one before is finished", () => {
-    const [one, two, three] = levelsFor("5-6");
+    const [one, two, three] = levelsFor("k2");
     const finishedLevel1 = { unlocks: [levelUnlockKey(two, "2026-10-30")] };
     expect(levelState(one, null, "2026-10-30")).toBe("open");
     expect(levelState(two, { unlocks: [] }, "2026-10-30")).toBe("locked");
@@ -119,7 +119,7 @@ describe("Daily Challenge", () => {
 
   it("writes today's date in the player's own time zone", () => {
     expect(today(new Date(2026, 0, 5, 23, 30))).toBe("2026-01-05");
-    expect(levelUnlockKey(levelsFor("3-4")[1], "2026-01-05")).toBe("math-logic/3-4-level-2@2026-01-05");
+    expect(levelUnlockKey(levelsFor("k1")[1], "2026-01-05")).toBe("math-logic/k1-level-2@2026-01-05");
   });
 });
 

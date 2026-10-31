@@ -49,16 +49,16 @@ afterEach(() => {
 const inOrder = (count) => [...Array(count).keys()];
 const animalsDeck = { "letter-jumble/animals": inOrder(13) };
 
-const ageFor = (gameName) => (/Letter Jumble/.test(gameName) ? "5-6" : "3-4");
+const ageFor = (gameName) => (/Letter Jumble/.test(gameName) ? "k3" : "k1");
 
 function storedPlayers() {
   return JSON.parse(window.localStorage.getItem(playersKey));
 }
 
-async function addPlayer(user, name, age = "5-6") {
+async function addPlayer(user, name, age = "k3") {
   const dialog = screen.getByRole("dialog", { name: whoIsPlaying });
   await user.type(within(dialog).getByRole("textbox"), name);
-  await user.click(within(dialog).getByRole("radio", { name: `${age} years old` }));
+  await user.click(within(dialog).getByRole("radio", { name: age.toUpperCase() }));
   await user.click(within(dialog).getByRole("button", { name: /Let.s play/ }));
 }
 
@@ -98,7 +98,7 @@ describe("Home", () => {
   });
 
   it("has Mochi, arms open, greet the player by name", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
     render(<GameApp />);
     expect(await screen.findByRole("heading", { level: 1, name: "Hi Ada! What shall we play today?" })).toBeInTheDocument();
     expect(document.querySelector(".mochi-greeting img")).toHaveAttribute("src", "/images/mochi/welcome.svg");
@@ -116,7 +116,7 @@ describe("Home", () => {
   });
 
   it("shows Mochi in her convertible by the road to the Rainbow Village; either opens the dragon game", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
     const user = userEvent.setup();
     const { unmount } = render(<GameApp />);
     expect(await screen.findByRole("heading", { level: 2, name: /Visit Mochi/ })).toBeInTheDocument();
@@ -148,7 +148,7 @@ describe("Home", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(screen.getByLabelText(coinsLabel(1))).toBeInTheDocument();
     expect(storedPlayers()).toEqual({
-      players: [{ name: "Ada", coins: 1, age: "5-6", decks: animalsDeck, results: { "letter-jumble/animals": [true] } }],
+      players: [{ name: "Ada", coins: 1, age: "k3", decks: animalsDeck, results: { "letter-jumble/animals": [true] } }],
       current: "Ada",
     });
     expect(sounds.correct).toHaveBeenCalledTimes(1);
@@ -214,7 +214,7 @@ describe("Home", () => {
   });
 
   it("shows the spelling guide when a grown-up has turned it on in Parent mode, not in the word menu", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "5-6", spellingGuide: true }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k3", spellingGuide: true }], current: "Ada" }));
     const user = userEvent.setup();
     render(<GameApp />);
     await openGame(user, "Letter Jumble - Movers", "Animals");
@@ -226,7 +226,7 @@ describe("Home", () => {
   });
 
   it("shows the spelling guide only in the Letter Jumble game it's turned on for", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "5-6", spellingGuide: ["starters"] }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k3", spellingGuide: ["starters"] }], current: "Ada" }));
     const user = userEvent.setup();
     render(<GameApp />);
     await openGame(user, "Letter Jumble - Movers", "Animals");
@@ -254,13 +254,13 @@ describe("players", () => {
     render(<GameApp />);
 
     await user.click(screen.getByRole("button", { name: /CVC Sounds/ }));
-    expect(within(screen.getByRole("radiogroup", { name: /How old/ })).getAllByRole("radio").map((radio) => radio.textContent))
-      .toEqual(["3-4 years old", "5-6 years old"]);
-    await addPlayer(user, "Mia", "3-4");
+    expect(within(screen.getByRole("radiogroup", { name: /Which class/ })).getAllByRole("radio").map((radio) => radio.textContent))
+      .toEqual(["K1", "K2", "K3"]);
+    await addPlayer(user, "Mia", "k1");
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("CVC Sounds");
     expect(screen.getByRole("button", { name: "Playing as Mia, 0 rainbow coins. Player options" })).toBeInTheDocument();
-    expect(storedPlayers()).toEqual({ players: [{ name: "Mia", coins: 0, age: "3-4" }], current: "Mia" });
+    expect(storedPlayers()).toEqual({ players: [{ name: "Mia", coins: 0, age: "k1" }], current: "Mia" });
   });
 
   it("shows a message instead of creating a blank or duplicate player", async () => {
@@ -280,13 +280,13 @@ describe("players", () => {
     await user.clear(within(dialog).getByRole("textbox"));
     await user.type(within(dialog).getByRole("textbox"), "Theo");
     await user.click(within(dialog).getByRole("button", { name: /Let.s play/ }));
-    expect(within(dialog).getByRole("alert")).toHaveTextContent("Please choose how old you are.");
+    expect(within(dialog).getByRole("alert")).toHaveTextContent("Please choose which class you’re in.");
     expect(storedPlayers().players).toHaveLength(1);
   });
 
   it("picks an existing player and shows their coins", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({
-      players: [{ name: "Ada", coins: 3, age: "5-6" }, { name: "Elly", coins: 8, age: "5-6" }],
+      players: [{ name: "Ada", coins: 3, age: "k3" }, { name: "Elly", coins: 8, age: "k3" }],
       current: null,
     }));
     const user = userEvent.setup();
@@ -305,7 +305,7 @@ describe("players", () => {
   });
 
   it("remembers the player, so entering another game doesn't ask again", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 2, age: "5-6" }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 2, age: "k3" }], current: "Ada" }));
     const user = userEvent.setup();
     render(<GameApp />);
 
@@ -333,8 +333,8 @@ describe("players", () => {
 
     expect(storedPlayers()).toEqual({
       players: [
-        { name: "Ada", coins: 1, age: "5-6", progress: { "letter-jumble/animals": 1 }, decks: animalsDeck, results: { "letter-jumble/animals": [true] } },
-        { name: "Elly", coins: 1, age: "5-6", progress: { "letter-jumble/animals": 1 }, decks: animalsDeck, results: { "letter-jumble/animals": [true] } },
+        { name: "Ada", coins: 1, age: "k3", progress: { "letter-jumble/animals": 1 }, decks: animalsDeck, results: { "letter-jumble/animals": [true] } },
+        { name: "Elly", coins: 1, age: "k3", progress: { "letter-jumble/animals": 1 }, decks: animalsDeck, results: { "letter-jumble/animals": [true] } },
       ],
       current: "Elly",
     });
@@ -350,7 +350,7 @@ describe("players", () => {
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("What shall we play today?");
     expect(screen.queryByRole("button", { name: /Player options/ })).not.toBeInTheDocument();
-    expect(storedPlayers()).toEqual({ players: [{ name: "Ada", coins: 0, age: "5-6", decks: animalsDeck }], current: null });
+    expect(storedPlayers()).toEqual({ players: [{ name: "Ada", coins: 0, age: "k3", decks: animalsDeck }], current: null });
 
     await user.click(screen.getByRole("button", { name: /CVC Sounds/ }));
     expect(screen.getByRole("dialog", { name: whoIsPlaying })).toBeInTheDocument();
@@ -359,7 +359,7 @@ describe("players", () => {
 
 describe("rainbow dragon", () => {
   it("asks who is playing, then spends their coins on Mochi", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 4, age: "3-4" }], current: null }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 4, age: "k1" }], current: null }));
     const user = userEvent.setup();
     render(<GameApp />);
 
@@ -372,14 +372,14 @@ describe("rainbow dragon", () => {
     await user.click(screen.getByRole("tab", { name: /Grooming/ }));
     await user.click(screen.getByRole("button", { name: /Bath, 3 rainbow coins/ }));
     expect(screen.getByLabelText(coinsLabel(1))).toBeInTheDocument();
-    expect(storedPlayers().players).toEqual([{ name: "Ada", coins: 1, age: "3-4" }]);
+    expect(storedPlayers().players).toEqual([{ name: "Ada", coins: 1, age: "k1" }]);
   });
 });
 
 describe("ages", () => {
   it("shows each age group only their own games, plus the dragon", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({
-      players: [{ name: "Ada", coins: 0, age: "3-4" }, { name: "Elly", coins: 0, age: "5-6" }],
+      players: [{ name: "Ada", coins: 0, age: "k1" }, { name: "Elly", coins: 0, age: "k3" }],
       current: "Ada",
     }));
     const user = userEvent.setup();
@@ -389,7 +389,7 @@ describe("ages", () => {
     await user.click(screen.getByRole("button", { name: /Player options/ }));
     await user.click(screen.getByRole("menuitem", { name: "Switch player" }));
     await user.click(within(screen.getByRole("list", { name: "Players" })).getByRole("button", { name: /Elly/ }));
-    expect(shownGames()).toEqual(["Consonant Digraphs", "R & L Blends", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 進階篇", "量詞配對", "成語", "Daily Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 進階篇", "量詞配對", "成語", "Daily Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
   });
 
   it("lists games under Phonics, Cambridge YLE training, 中文, Math and Visit Mochi, hiding empty headings", () => {
@@ -407,7 +407,7 @@ describe("ages", () => {
     ]);
     unmount();
 
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
     render(<GameApp />);
     expect(groups().map(([name]) => name)).toEqual(["Phonics", "中文", "Math", "Visit Mochi"]);
   });
@@ -422,23 +422,23 @@ describe("ages", () => {
     render(<GameApp />);
 
     await user.click(screen.getByRole("button", { name: /Letter Jumble - Movers/ }));
-    await addPlayer(user, "Mia", "3-4");
+    await addPlayer(user, "Mia", "k1");
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("What shall we play today?");
     expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "中文認字 · 入門篇", "Daily Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
   });
 
-  it("asks a player saved before ages existed how old they are", async () => {
+  it("asks a player saved before ages existed which class they are in", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 5 }], current: "Ada" }));
     const user = userEvent.setup();
     render(<GameApp />);
 
     await user.click(screen.getByRole("button", { name: /CVC Sounds/ }));
-    const dialog = screen.getByRole("dialog", { name: "How old is Ada?" });
-    await user.click(within(dialog).getByRole("radio", { name: "3-4 years old" }));
+    const dialog = screen.getByRole("dialog", { name: "Which class is Ada in?" });
+    await user.click(within(dialog).getByRole("radio", { name: "K1" }));
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("CVC Sounds");
-    expect(storedPlayers()).toEqual({ players: [{ name: "Ada", coins: 5, age: "3-4" }], current: "Ada" });
+    expect(storedPlayers()).toEqual({ players: [{ name: "Ada", coins: 5, age: "k1" }], current: "Ada" });
   });
 });
 
@@ -465,7 +465,7 @@ describe("progress", () => {
   it("offers a visit to Mochi when a topic is finished, without the confetti", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({
       players: [{
-        name: "Ada", coins: 0, age: "5-6", progress: { "letter-jumble/animals": 12 }, decks: animalsDeck,
+        name: "Ada", coins: 0, age: "k3", progress: { "letter-jumble/animals": 12 }, decks: animalsDeck,
         results: { "letter-jumble/animals": Array(12).fill(true) },
       }],
       current: "Ada",
@@ -489,7 +489,7 @@ describe("progress", () => {
   it("offers to try again, not a visit to Mochi, when some answers were wrong", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({
       players: [{
-        name: "Ada", coins: 0, age: "5-6", progress: { "letter-jumble/animals": 12 }, decks: animalsDeck,
+        name: "Ada", coins: 0, age: "k3", progress: { "letter-jumble/animals": 12 }, decks: animalsDeck,
         results: { "letter-jumble/animals": [false, ...Array(11).fill(true)] },
       }],
       current: "Ada",
@@ -514,7 +514,7 @@ describe("progress", () => {
   it("doesn't offer Mochi at the end of a topic when a grown-up has turned her off", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({
       players: [{
-        name: "Ada", coins: 0, age: "5-6", progress: { "letter-jumble/animals": 12 }, decks: animalsDeck,
+        name: "Ada", coins: 0, age: "k3", progress: { "letter-jumble/animals": 12 }, decks: animalsDeck,
         results: { "letter-jumble/animals": Array(12).fill(true) }, gameSettings: { dragon: false },
       }],
       current: "Ada",
@@ -535,7 +535,7 @@ describe("progress", () => {
   it("celebrates finishing a topic, then goes back to the topic list and starts it again next time", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({
       players: [{
-        name: "Ada", coins: 0, age: "5-6", progress: { "letter-jumble/animals": 12 }, decks: animalsDeck,
+        name: "Ada", coins: 0, age: "k3", progress: { "letter-jumble/animals": 12 }, decks: animalsDeck,
         results: { "letter-jumble/animals": Array(12).fill(true) },
       }],
       current: "Ada",
@@ -571,7 +571,7 @@ describe("progress", () => {
   it("praises finishing a Chinese topic in Chinese", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({
       players: [{
-        name: "Ada", coins: 0, age: "3-4", progress: { "chinese/clothes": 6 },
+        name: "Ada", coins: 0, age: "k1", progress: { "chinese/clothes": 6 },
         decks: { "chinese/clothes": inOrder(7) }, results: { "chinese/clothes": Array(6).fill(true) },
       }],
       current: "Ada",
@@ -596,7 +596,7 @@ describe("progress", () => {
       players: [{
         name: "Ada",
         coins: 0,
-        age: "3-4",
+        age: "k1",
         progress: { "cvc/middle-sound": 5 },
         decks: { "cvc/middle-sound": [...Array(10).keys()] },
       }],
@@ -628,7 +628,7 @@ describe("progress", () => {
 
 describe("chinese characters", () => {
   it("lets a 3-4 year old match a character to its picture and earn a coin", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
     const user = userEvent.setup();
     render(<GameApp />);
 
@@ -654,13 +654,13 @@ describe("chinese characters", () => {
   });
 
   it("isn't offered to 5-6 year olds", () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "k3" }], current: "Elly" }));
     render(<GameApp />);
     expect(shownGames()).not.toContain("中文認字 · 入門篇");
   });
 
   it("offers a food topic whose rounds show phrases under the character", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
     const user = userEvent.setup();
     render(<GameApp />);
 
@@ -678,7 +678,7 @@ describe("chinese characters", () => {
 });
 
 describe("routes", () => {
-  const seedPlayer = (age = "3-4") => window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age }], current: "Ada" }));
+  const seedPlayer = (age = "k1") => window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age }], current: "Ada" }));
 
   it("gives every game and topic its own address", async () => {
     seedPlayer();
@@ -722,7 +722,7 @@ describe("routes", () => {
     const dialog = await screen.findByRole("dialog", { name: whoIsPlaying });
     expect(currentPathname()).toBe("/");
     await user.type(within(dialog).getByRole("textbox"), "Mia");
-    await user.click(within(dialog).getByRole("radio", { name: "3-4 years old" }));
+    await user.click(within(dialog).getByRole("radio", { name: "K1" }));
     await user.click(within(dialog).getByRole("button", { name: /Let.s play/ }));
 
     expect(currentPathname()).toBe("/cvc");
@@ -730,10 +730,10 @@ describe("routes", () => {
   });
 
   it.each([
-    ["an unknown game", "/space-race", "/", "3-4"],
-    ["an unknown topic", "/cvc/backwards", "/cvc", "3-4"],
-    ["a game for another age", "/letter-jumble/animals", "/", "3-4"],
-    ["a topic under Mochi's den", "/dragon/anything", "/dragon", "3-4"],
+    ["an unknown game", "/space-race", "/", "k1"],
+    ["an unknown topic", "/cvc/backwards", "/cvc", "k1"],
+    ["a game for another age", "/letter-jumble/animals", "/", "k1"],
+    ["a topic under Mochi's den", "/dragon/anything", "/dragon", "k1"],
   ])("sends %s back up a level", async (label, from, to, age) => {
     seedPlayer(age);
     setPathname(from);
@@ -744,7 +744,7 @@ describe("routes", () => {
 
 describe("coins in the player chip", () => {
   it("shows the player's coins in their chip, with no link to anywhere", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 12, age: "3-4" }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 12, age: "k1" }], current: "Ada" }));
     render(<GameApp />);
     const chip = await screen.findByRole("button", { name: "Playing as Ada, 12 rainbow coins. Player options" });
     expect(chip.querySelector(".player-chip-coins")).toHaveTextContent("12");
@@ -759,7 +759,7 @@ describe("coins in the player chip", () => {
 
 describe("CVC shuffling", () => {
   const seed = (extra = {}) => window.localStorage.setItem(playersKey, JSON.stringify({
-    players: [{ name: "Ada", coins: 0, age: "3-4", ...extra }],
+    players: [{ name: "Ada", coins: 0, age: "k1", ...extra }],
     current: "Ada",
   }));
 
@@ -812,7 +812,7 @@ describe("CVC shuffling", () => {
 
 describe("chinese words for 5-6 year olds", () => {
   it("plays the jobs topic with whole words", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "k3" }], current: "Elly" }));
     const user = userEvent.setup();
     render(<GameApp />);
 
@@ -831,7 +831,7 @@ describe("chinese words for 5-6 year olds", () => {
 
   it("fits long words like 飛行服務員 on a wider card", () => {
     window.localStorage.setItem(playersKey, JSON.stringify({
-      players: [{ name: "Elly", coins: 0, age: "5-6", progress: { "chinese-advanced/jobs": 10 } }],
+      players: [{ name: "Elly", coins: 0, age: "k3", progress: { "chinese-advanced/jobs": 10 } }],
       current: "Elly",
     }));
     setPathname("/chinese-advanced/jobs");
@@ -840,13 +840,13 @@ describe("chinese words for 5-6 year olds", () => {
   });
 
   it("isn't offered to 3-4 year olds", () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
     render(<GameApp />);
     expect(shownGames()).not.toContain("中文認字 · 進階篇");
   });
 
   it("plays the home topic", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "k3" }], current: "Elly" }));
     setPathname("/chinese-advanced/home");
     const user = userEvent.setup();
     render(<GameApp />);
@@ -859,7 +859,7 @@ describe("chinese words for 5-6 year olds", () => {
 
 describe("breadcrumbs", () => {
   it("shows Home › game › topic, with the current page last", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "k3" }], current: "Elly" }));
     setPathname("/chinese-advanced/jobs");
     const user = userEvent.setup();
     render(<GameApp />);
@@ -878,7 +878,7 @@ describe("breadcrumbs", () => {
   });
 
   it("shows the trail in Mochi's den", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
     setPathname("/dragon");
     render(<GameApp />);
     const trail = await screen.findByRole("navigation", { name: "Breadcrumb" });
@@ -887,7 +887,7 @@ describe("breadcrumbs", () => {
 });
 
 describe("R & L Blends", () => {
-  const seed = () => window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "3-4" }], current: "Elly" }));
+  const seed = () => window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "k1" }], current: "Elly" }));
 
   it("has R Blends, L Blends and Mixed Blends, 10 words each, for 3-4 year olds", async () => {
     seed();
@@ -921,7 +921,7 @@ describe("R & L Blends", () => {
 });
 
 describe("Consonant Digraphs", () => {
-  const seed = () => window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "3-4" }], current: "Elly" }));
+  const seed = () => window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "k1" }], current: "Elly" }));
 
   it("has three modules of 10 words for 3-4 year olds", async () => {
     seed();
@@ -971,7 +971,7 @@ describe("Consonant Digraphs", () => {
 
 describe("Letter Jumble - Starters", () => {
   it("is offered to 5-6 year olds before Movers, with Pets and Farm and Wild Animals", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "k3" }], current: "Elly" }));
     const user = userEvent.setup();
     render(<GameApp />);
     expect(shownGames().indexOf("Letter Jumble - Starters")).toBe(shownGames().indexOf("Letter Jumble - Movers") - 1);
@@ -983,7 +983,7 @@ describe("Letter Jumble - Starters", () => {
   });
 
   it("spells a Starters word and earns a coin", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "k3" }], current: "Elly" }));
     const user = userEvent.setup();
     render(<GameApp />);
     await user.click(screen.getByRole("button", { name: /Letter Jumble - Starters/ }));
@@ -1000,14 +1000,14 @@ describe("Letter Jumble - Starters", () => {
   });
 
   it("isn't offered to 3-4 year olds", () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
     render(<GameApp />);
     expect(shownGames()).not.toContain("Letter Jumble - Starters");
   });
 
   it("shows the hyphen in T-shirt and only asks for its letters", async () => {
     const deck = { "starters/clothing-and-accessories": [7, ...[...Array(18).keys()].filter((index) => index !== 7)] };
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6", decks: deck }], current: "Elly" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "k3", decks: deck }], current: "Elly" }));
     setPathname("/starters/clothing-and-accessories");
     const user = userEvent.setup();
     render(<GameApp />);
@@ -1025,7 +1025,7 @@ describe("Letter Jumble - Starters", () => {
 
 describe("感受 (feelings)", () => {
   it("fills the gap in a sentence with a feeling, each choice showing Mochi or Tofu", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "k3" }], current: "Elly" }));
     setPathname("/chinese-advanced/feelings");
     const user = userEvent.setup();
     render(<GameApp />);
@@ -1044,7 +1044,7 @@ describe("感受 (feelings)", () => {
 
 describe("measure words", () => {
   it("deals 20 random questions for 5-6 year olds and plays one", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "k3" }], current: "Elly" }));
     const user = userEvent.setup();
     render(<GameApp />);
 
@@ -1065,7 +1065,7 @@ describe("measure words", () => {
   });
 
   it("isn't offered to 3-4 year olds", () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
     render(<GameApp />);
     expect(shownGames()).not.toContain("量詞配對");
   });
@@ -1073,7 +1073,7 @@ describe("measure words", () => {
 
 describe("成語", () => {
   it("fills the gap in an idiom for 5-6 year olds", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "k3" }], current: "Elly" }));
     const user = userEvent.setup();
     render(<GameApp />);
 
@@ -1093,7 +1093,7 @@ describe("成語", () => {
   });
 
   it("isn't offered to 3-4 year olds", () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
     render(<GameApp />);
     expect(shownGames()).not.toContain("成語");
   });
@@ -1102,7 +1102,7 @@ describe("成語", () => {
 describe("answers move around", () => {
   // Where 紅's picture sits, when it's the first question of a dealt hand.
   function redSpot(deck) {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4", decks: { "chinese/colours": deck } }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1", decks: { "chinese/colours": deck } }], current: "Ada" }));
     setPathname("/chinese/colours");
     const { unmount } = render(<GameApp />);
     const spot = [...document.querySelectorAll(".chinese-option")].findIndex((option) => option.dataset.character === "紅");
@@ -1130,14 +1130,14 @@ describe("answers move around", () => {
 describe("one try per question", () => {
   const seedClothes = (results, extra = {}) => window.localStorage.setItem(playersKey, JSON.stringify({
     players: [{
-      name: "Ada", coins: 0, age: "3-4", progress: { "chinese/clothes": 6 },
+      name: "Ada", coins: 0, age: "k1", progress: { "chinese/clothes": 6 },
       decks: { "chinese/clothes": inOrder(7) }, results: { "chinese/clothes": results }, ...extra,
     }],
     current: "Ada",
   }));
 
   it("shows the right picture and character after a wrong pick, with no coin and no second try", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
     setPathname("/chinese/colours");
     const user = userEvent.setup();
     render(<GameApp />);
@@ -1198,7 +1198,7 @@ describe("one try per question", () => {
   });
 
   it("only counts the first answer, so going back can't change the score", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
     setPathname("/chinese/colours");
     const user = userEvent.setup();
     render(<GameApp />);
@@ -1224,7 +1224,7 @@ describe("badges", () => {
 
   it("shows earned badges and a placeholder for every unfinished topic of the player's games", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({
-      players: [{ name: "Ada", coins: 0, age: "5-6", badges: ["letter-jumble/animals", "idioms/idioms"] }],
+      players: [{ name: "Ada", coins: 0, age: "k3", badges: ["letter-jumble/animals", "idioms/idioms"] }],
       current: "Ada",
     }));
     const user = userEvent.setup();
@@ -1232,8 +1232,8 @@ describe("badges", () => {
     const collection = await openBadges(user);
 
     expect(within(collection).getAllByRole("heading", { level: 2 }).map((heading) => heading.textContent))
-      .toEqual(["Consonant Digraphs", "R & L Blends", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 進階篇", "量詞配對", "成語", "Daily Challenge", "Rainbow Speed Quest"]);
-    expect(collection).toHaveTextContent("2 of 55 badges");
+      .toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 進階篇", "量詞配對", "成語", "Daily Challenge", "Rainbow Speed Quest"]);
+    expect(collection).toHaveTextContent("2 of 59 badges");
     expect(within(collection).getByRole("listitem", { name: "Animals: earned" })).toBeInTheDocument();
     expect(within(collection).getByRole("listitem", { name: "成語: earned" })).toBeInTheDocument();
     const movers = within(collection).getByRole("region", { name: "Letter Jumble - Movers" });
@@ -1254,7 +1254,7 @@ describe("badges", () => {
   });
 
   it("encourages a player with no badges yet", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
     const user = userEvent.setup();
     render(<GameApp />);
     const collection = await openBadges(user);
@@ -1265,7 +1265,7 @@ describe("badges", () => {
   it("doesn't award the same badge twice", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({
       players: [{
-        name: "Ada", coins: 0, age: "3-4", progress: { "chinese/clothes": 6 }, badges: ["chinese/clothes"],
+        name: "Ada", coins: 0, age: "k1", progress: { "chinese/clothes": 6 }, badges: ["chinese/clothes"],
         decks: { "chinese/clothes": inOrder(7) }, results: { "chinese/clothes": Array(6).fill(true) },
       }],
       current: "Ada",
@@ -1289,7 +1289,7 @@ describe("tour for a new family", () => {
   async function createFirstPlayer(user) {
     const welcome = await screen.findByRole("dialog", { name: "Welcome to Rainbow Academy!" });
     await user.type(within(welcome).getByRole("textbox"), "Ada");
-    await user.click(within(welcome).getByRole("radio", { name: "3-4 years old" }));
+    await user.click(within(welcome).getByRole("radio", { name: "K1" }));
     await user.click(within(welcome).getByRole("button", { name: /Let’s Start/ }));
   }
 
@@ -1357,11 +1357,11 @@ describe("welcome card", () => {
     await user.click(within(welcome).getByRole("button", { name: /Let’s Start/ }));
     expect(within(welcome).getByRole("alert")).toHaveTextContent("Please type a name.");
     await user.type(within(welcome).getByRole("textbox"), "Ada");
-    await user.click(within(welcome).getByRole("radio", { name: "3-4 years old" }));
+    await user.click(within(welcome).getByRole("radio", { name: "K1" }));
     await user.click(within(welcome).getByRole("button", { name: /Let’s Start/ }));
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(storedPlayers()).toEqual({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" });
+    expect(storedPlayers()).toEqual({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" });
     expect(JSON.parse(window.localStorage.getItem(siteKey))).toMatchObject({ language: "en" });
   });
 
@@ -1376,14 +1376,14 @@ describe("welcome card", () => {
     await user.click(within(chinese).getByRole("button", { name: /一起玩吧！/ }));
     expect(within(chinese).getByRole("alert")).toHaveTextContent("請輸入名字。");
     await user.type(within(chinese).getByRole("textbox"), "Ada");
-    await user.click(within(chinese).getByRole("radio", { name: "3-4 歲" }));
+    await user.click(within(chinese).getByRole("radio", { name: "K1（幼兒班）" }));
     await user.click(within(chinese).getByRole("button", { name: /一起玩吧！/ }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("今天玩甚麼？");
   });
 
   it("isn't shown to a family that already has players", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
     render(<GameApp />);
     await screen.findByRole("heading", { level: 1 });
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
@@ -1400,7 +1400,7 @@ describe("welcome card", () => {
   });
 
   it("opens from the logo, which also goes home; with players already, its button just closes it", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
     setPathname("/cvc");
     const user = userEvent.setup();
     render(<GameApp />);
@@ -1417,7 +1417,7 @@ describe("welcome card", () => {
 
 describe("site language", () => {
   it("switches the site's words from the player menu, but games keep their own language", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "5-6" }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k3" }], current: "Ada" }));
     const user = userEvent.setup();
     render(<GameApp />);
     await user.click(screen.getByRole("button", { name: /Player options/ }));
@@ -1443,7 +1443,7 @@ describe("how to play", () => {
   beforeEach(() => window.localStorage.setItem(siteKey, JSON.stringify({ language: "en", howToSeen: [] })));
 
   it("explains a game when its first topic starts, then from the ? beside the title", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "5-6" }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k3" }], current: "Ada" }));
     const user = userEvent.setup();
     render(<GameApp />);
     await user.click(screen.getByRole("button", { name: /Letter Jumble - Movers/ }));
@@ -1469,7 +1469,7 @@ describe("how to play", () => {
   });
 
   it("shows CVC Sounds' three numbered steps", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
     setPathname("/cvc/beginning-sound");
     render(<GameApp />);
     const howTo = await screen.findByRole("dialog", { name: "How to play" });
@@ -1483,7 +1483,7 @@ describe("how to play", () => {
   });
 
   it("has the ? only beside a module's title, not on a game's list of topics", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
     window.localStorage.setItem(siteKey, JSON.stringify({ language: "en", howToSeen: ["chinese"] }));
     setPathname("/chinese");
     const user = userEvent.setup();
@@ -1497,7 +1497,7 @@ describe("how to play", () => {
 
   it("explains both 中文認字 games in three numbered steps, without icons", async () => {
     const steps = ["讀一讀，按喇叭聽聽提示。", "按一按正確的圖畫。", "答對可得到彩虹金幣，全部答對更可得到徽章！"];
-    for (const [age, path, title] of [["3-4", "/chinese/colours", "中文認字 · 入門篇：玩法"], ["5-6", "/chinese-advanced/jobs", "中文認字 · 進階篇：玩法"]]) {
+    for (const [age, path, title] of [["k1", "/chinese/colours", "中文認字 · 入門篇：玩法"], ["k3", "/chinese-advanced/jobs", "中文認字 · 進階篇：玩法"]]) {
       window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age }], current: "Ada" }));
       setPathname(path);
       const { unmount } = render(<GameApp />);
@@ -1510,7 +1510,7 @@ describe("how to play", () => {
   });
 
   it("has an About this game info button, instead of ?, beside CVC Sounds", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
     setPathname("/cvc");
     const user = userEvent.setup();
     render(<GameApp />);
@@ -1526,7 +1526,7 @@ describe("how to play", () => {
   });
 
   it("explains Chinese games only in Chinese, and English games only in English, whatever the site's language", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
     setPathname("/chinese/colours");
     const { unmount } = render(<GameApp />);
     const chinese = await screen.findByRole("dialog", { name: "中文認字 · 入門篇：玩法" });
@@ -1548,7 +1548,7 @@ describe("how to play", () => {
 describe("shuffle questions", () => {
   it("deals a fresh hand from the whole list for a topic that plays only some of its words", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({
-      players: [{ name: "Ada", coins: 0, age: "3-4", decks: { "cvc/beginning-sound": inOrder(10) }, progress: { "cvc/beginning-sound": 4 }, results: { "cvc/beginning-sound": [true, false, true, true] } }],
+      players: [{ name: "Ada", coins: 0, age: "k1", decks: { "cvc/beginning-sound": inOrder(10) }, progress: { "cvc/beginning-sound": 4 }, results: { "cvc/beginning-sound": [true, false, true, true] } }],
       current: "Ada",
     }));
     setPathname("/cvc/beginning-sound");
@@ -1572,7 +1572,7 @@ describe("shuffle questions", () => {
   });
 
   it("shuffles every word of a topic that plays them all, labelled in the game's language", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4", decks: { "chinese/clothes": inOrder(7) } }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1", decks: { "chinese/clothes": inOrder(7) } }], current: "Ada" }));
     setPathname("/chinese/clothes");
     let calls = 0;
     Math.random.mockImplementation(() => ((calls += 1) * 0.37) % 1);
@@ -1587,7 +1587,7 @@ describe("shuffle questions", () => {
 });
 
 describe("Tofu and Rainbow Village", () => {
-  const seedPlayer = (extra) => window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4", ...extra }], current: "Ada" }));
+  const seedPlayer = (extra) => window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1", ...extra }], current: "Ada" }));
 
   it("starts in Mochi's den, whose road sign leads to the village and Tofu's house to save up for", async () => {
     seedPlayer({ coins: 37 });
@@ -1702,7 +1702,7 @@ describe("Tofu and Rainbow Village", () => {
 
 describe("parent mode", () => {
   const seedChildren = (extra = {}) => window.localStorage.setItem(playersKey, JSON.stringify({
-    players: [{ name: "Ada", coins: 0, age: "3-4", ...extra }, { name: "Elly", coins: 0, age: "5-6" }],
+    players: [{ name: "Ada", coins: 0, age: "k1", ...extra }, { name: "Elly", coins: 0, age: "k3" }],
     current: "Ada",
   }));
   const parentPage = () => screen.getByRole("region", { name: "Parent mode" });
@@ -1736,7 +1736,7 @@ describe("parent mode", () => {
       ["中文認字 · 進階篇", "false"], ["量詞配對", "false"], ["成語", "false"], ["Daily Challenge", "true"], ["Rainbow Speed Quest", "true"], ["Mochi the Rainbow Dragon", "true"],
     ]);
     expect(switches(/Elly/)).toEqual([
-      ["CVC Sounds", "false"], ["Consonant Digraphs", "true"], ["R & L Blends", "true"], ["Letter Jumble - Starters", "true"],
+      ["CVC Sounds", "true"], ["Consonant Digraphs", "true"], ["R & L Blends", "true"], ["Letter Jumble - Starters", "true"],
       ["Letter Jumble - Movers", "true"], ["中文認字 · 入門篇", "false"],
       ["中文認字 · 進階篇", "true"], ["量詞配對", "true"], ["成語", "true"], ["Daily Challenge", "true"], ["Rainbow Speed Quest", "true"], ["Mochi the Rainbow Dragon", "true"],
     ]);
@@ -1790,7 +1790,7 @@ describe("parent mode", () => {
   });
 
   it("deals the chosen number of questions", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4", questionCounts: { cvc: 15 } }], current: "Ada" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1", questionCounts: { cvc: 15 } }], current: "Ada" }));
     const user = userEvent.setup();
     render(<GameApp />);
     await user.click(screen.getByRole("button", { name: /CVC Sounds/ }));
@@ -1825,7 +1825,7 @@ describe("parent mode", () => {
 
     const ada = within(parentPage()).getByRole("region", { name: /Ada/ });
     const movers = within(ada).getByRole("switch", { name: /Letter Jumble - Movers/ });
-    expect(movers.closest(".parent-mode-setting")).toHaveTextContent("Off · for 5-6 years old");
+    expect(movers.closest(".parent-mode-setting")).toHaveTextContent("Off · for K2, K3");
     await user.click(movers);
     await user.click(within(parentPage()).getByRole("button", { name: /Done/ }));
 
@@ -1887,7 +1887,7 @@ describe("parent mode", () => {
 
 describe("shuffled questions", () => {
   it("deals every topic's words in a random order, kept until the topic is finished", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "k3" }], current: "Elly" }));
     let calls = 0;
     Math.random.mockImplementation(() => ((calls += 1) * 0.37) % 1);
     setPathname("/letter-jumble/animals");
@@ -1901,7 +1901,7 @@ describe("shuffled questions", () => {
 
   it("keeps a child's saved place when their words are first shuffled", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({
-      players: [{ name: "Elly", coins: 0, age: "5-6", progress: { "chinese-advanced/jobs": 4 } }],
+      players: [{ name: "Elly", coins: 0, age: "k3", progress: { "chinese-advanced/jobs": 4 } }],
       current: "Elly",
     }));
     setPathname("/chinese-advanced/jobs");
@@ -1912,8 +1912,8 @@ describe("shuffled questions", () => {
 
 
 describe("Daily Challenge", () => {
-  const level1 = "math-logic/3-4-level-1";
-  const seedPlayer = (extra = {}, age = "3-4") => window.localStorage.setItem(playersKey, JSON.stringify({
+  const level1 = "math-logic/k1-level-1";
+  const seedPlayer = (extra = {}, age = "k1") => window.localStorage.setItem(playersKey, JSON.stringify({
     players: [{ name: "Ada", coins: 0, age, ...extra }], current: "Ada",
   }));
   const inChinese = () => window.localStorage.setItem(siteKey, JSON.stringify({ language: "zh", howToSeen: games.map((game) => game.id), tutorialSeen: true }));
@@ -1929,7 +1929,7 @@ describe("Daily Challenge", () => {
     expect(screen.getByRole("button", { name: /Level 2 · / })).toHaveTextContent("Finish Level 1 to open");
     unmount();
 
-    seedPlayer({}, "5-6");
+    seedPlayer({}, "k3");
     setPathname("/math-logic");
     render(<GameApp />);
     expect(levelNames()).toHaveLength(20);
@@ -1938,11 +1938,11 @@ describe("Daily Challenge", () => {
 
   it("doesn't open a level that's still locked, or another age's, from its address", () => {
     seedPlayer();
-    setPathname("/math-logic/3-4-level-2");
+    setPathname("/math-logic/k1-level-2");
     const { unmount } = render(<GameApp />);
     expect(currentPathname()).toBe("/math-logic");
     unmount();
-    setPathname("/math-logic/5-6-level-1");
+    setPathname("/math-logic/k2-level-1");
     render(<GameApp />);
     expect(currentPathname()).toBe("/math-logic");
   });
@@ -1997,7 +1997,7 @@ describe("Daily Challenge", () => {
 
     const card = await screen.findByRole("dialog", { name: "Good try!" });
     expect(card).toHaveTextContent("Level 2 opens tomorrow!");
-    expect(storedPlayers().players[0].unlocks).toEqual([`math-logic/3-4-level-2@${today()}`]);
+    expect(storedPlayers().players[0].unlocks).toEqual([`math-logic/k1-level-2@${today()}`]);
     await user.click(within(card).getByRole("button", { name: /Back to all levels/ }));
     expect(screen.getByRole("button", { name: /Level 2 · / })).toBeDisabled();
     expect(screen.getByRole("button", { name: /Level 2 · / })).toHaveTextContent("Opens tomorrow");
@@ -2005,7 +2005,7 @@ describe("Daily Challenge", () => {
   });
 
   it("has the next level open on a later day", async () => {
-    seedPlayer({ unlocks: ["math-logic/3-4-level-2@2000-01-01"] });
+    seedPlayer({ unlocks: ["math-logic/k1-level-2@2000-01-01"] });
     const user = userEvent.setup();
     render(<GameApp />);
     await user.click(screen.getByRole("button", { name: /Daily Challenge/ }));
@@ -2028,7 +2028,7 @@ describe("Rainbow Speed Quest", () => {
   // With Math.random pinned, the first ten sums are dealt in order: 1 + 1 … 1 + 9, then 2 + 1.
   const answers = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "3"];
   const seedPlayer = (extra = {}) => window.localStorage.setItem(playersKey, JSON.stringify({
-    players: [{ name: "Ada", coins: 0, age: "3-4", ...extra }], current: "Ada",
+    players: [{ name: "Ada", coins: 0, age: "k1", ...extra }], current: "Ada",
   }));
 
   async function playRound(user, wrongAt = -1) {

@@ -26,10 +26,10 @@ function crumb(name) {
   cy.get('nav[aria-label="Breadcrumb"]').contains("a", name).click();
 }
 
-function addPlayer(name, age = "5-6") {
+function addPlayer(name, age = "k3") {
   cy.get('[role="dialog"]').should("contain.text", "playing?").within(() => {
     cy.get("input").type(name);
-    cy.contains('[role="radio"]', `${age} years old`).click();
+    cy.contains('[role="radio"]', age.toUpperCase()).click();
     cy.contains("button", "play!").click();
   });
 }
@@ -40,7 +40,7 @@ function addPlayer(name, age = "5-6") {
 function visitWithSpellingGuide() {
   visitLetterJumble({
     onBeforeLoad(win) {
-      win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "5-6", spellingGuide: true }], current: "Ada" }));
+      win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k3", spellingGuide: true }], current: "Ada" }));
     },
   }, null);
 }
@@ -63,7 +63,7 @@ function keepWordOrder() {
 function visitCvcMode(mode) {
   cy.visit("/");
   cy.contains("button", "CVC Sounds").click();
-  addPlayer("Ada", "3-4");
+  addPlayer("Ada", "k1");
   keepWordOrder();
   cy.contains("button", mode).click();
 }
@@ -112,7 +112,7 @@ describe("Movers spelling game", () => {
     cy.contains("button", "Check it").click();
     cy.get(".player-chip-coins").should("have.text", "1");
     storedPlayers().should("deep.equal", {
-      players: [{ name: "Ada", coins: 1, age: "5-6", decks: { "letter-jumble/animals": [...Array(13).keys()] }, results: { "letter-jumble/animals": [true] } }],
+      players: [{ name: "Ada", coins: 1, age: "k3", decks: { "letter-jumble/animals": [...Array(13).keys()] }, results: { "letter-jumble/animals": [true] } }],
       current: "Ada",
     });
 
@@ -127,7 +127,7 @@ describe("Movers spelling game", () => {
   it("starts from a previously saved rainbow coin count", () => {
     visitLetterJumble({
       onBeforeLoad(win) {
-        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 7, age: "5-6" }], current: "Ada" }));
+        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 7, age: "k3" }], current: "Ada" }));
       },
     }, null);
     cy.contains("button", "Animals").click();
@@ -312,7 +312,7 @@ describe("CVC sounds game", () => {
     cy.contains("h1", "What shall we play today?");
     cy.get("[data-game-name]").should("have.length", 12);
     cy.contains("button", "CVC Sounds").click();
-    addPlayer("Ada", "3-4");
+    addPlayer("Ada", "k1");
     cy.contains("h1", "CVC Sounds");
     cy.get(".category-card").should("have.length", 4);
     ["Beginning Sound", "Middle Sound", "Ending Sound", "Mixed Sounds"].forEach((mode) => {
@@ -428,8 +428,8 @@ describe("players", () => {
     cy.contains("h1", "What shall we play today?");
     storedPlayers().should("deep.equal", {
       players: [
-        { name: "Mia", coins: 1, age: "5-6", progress: { "letter-jumble/animals": 1 }, decks: { "letter-jumble/animals": [...Array(13).keys()] }, results: { "letter-jumble/animals": [true] } },
-        { name: "Theo", coins: 0, age: "5-6", decks: { "letter-jumble/animals": [...Array(13).keys()] } },
+        { name: "Mia", coins: 1, age: "k3", progress: { "letter-jumble/animals": 1 }, decks: { "letter-jumble/animals": [...Array(13).keys()] }, results: { "letter-jumble/animals": [true] } },
+        { name: "Theo", coins: 0, age: "k3", decks: { "letter-jumble/animals": [...Array(13).keys()] } },
       ],
       current: null,
     });
@@ -440,7 +440,7 @@ describe("ages", () => {
   it("shows a 3-4 year old the CVC game and the dragon, but not Letter Jumble", () => {
     cy.visit("/");
     cy.contains("button", "CVC Sounds").click();
-    addPlayer("Mia", "3-4");
+    addPlayer("Mia", "k1");
     crumb("Home");
     cy.get("[data-game-name]").should("have.length", 7);
     cy.get('[data-game-name*="CVC Sounds"]');
@@ -454,7 +454,7 @@ describe("rainbow dragon", () => {
   it("shows Mochi in 3D and spends coins on treats", () => {
     cy.visit("/", {
       onBeforeLoad(win) {
-        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 3, age: "3-4" }], current: "Ada" }));
+        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 3, age: "k1" }], current: "Ada" }));
       },
     });
     cy.get('button[aria-label="Mochi the Rainbow Dragon"]').click();
@@ -469,7 +469,7 @@ describe("rainbow dragon", () => {
     cy.get('button[aria-label="Apple, 1 rainbow coin"]', { timeout: 8000 }).should("be.enabled").click();
     cy.get(".player-chip-coins").should("have.text", "0");
     cy.contains("out of rainbow coins");
-    storedPlayers().should("deep.equal", { players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" });
+    storedPlayers().should("deep.equal", { players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" });
   });
 });
 
@@ -477,7 +477,7 @@ describe("chinese characters", () => {
   it("matches a character to its colour picture and earns a coin", () => {
     cy.visit("/", {
       onBeforeLoad(win) {
-        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
       },
     });
     cy.contains("button", "中文認字 · 入門篇").click();
@@ -507,7 +507,7 @@ describe("chinese characters", () => {
   it("shows everyday phrases for the food topic", () => {
     cy.visit("/", {
       onBeforeLoad(win) {
-        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
       },
     });
     cy.contains("button", "中文認字 · 入門篇").click();
@@ -531,7 +531,7 @@ describe("routes", () => {
   });
 
   it("opens a game and topic straight from their address, and the back button works", () => {
-    cy.visit("/cvc/middle-sound", seed("3-4"));
+    cy.visit("/cvc/middle-sound", seed("k1"));
     cy.contains("h1", "Middle Sound");
     cy.get(".letter-given").should("have.length", 2);
     crumb("CVC Sounds");
@@ -542,7 +542,7 @@ describe("routes", () => {
   });
 
   it("sends an address for another age group back to the picker", () => {
-    cy.visit("/letter-jumble", seed("3-4"));
+    cy.visit("/letter-jumble", seed("k1"));
     cy.location("pathname").should("eq", "/");
     cy.contains("h1", "What shall we play today?");
   });
@@ -552,7 +552,7 @@ describe("CVC shuffling", () => {
   it("deals 10 words in a random order", () => {
     cy.visit("/cvc/ending-sound", {
       onBeforeLoad(win) {
-        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
       },
     });
     cy.contains("01 / 10");
@@ -568,7 +568,7 @@ describe("chinese words for 5-6 year olds", () => {
   it("matches a job word to its picture", () => {
     cy.visit("/", {
       onBeforeLoad(win) {
-        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
+        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "k3" }], current: "Elly" }));
       },
     });
     cy.contains("button", "進階篇").click();
@@ -590,7 +590,7 @@ describe("chinese home topic", () => {
       onBeforeLoad(win) {
         // Opened straight from its address, the words are dealt while loading, so give the order.
         const decks = { "chinese-advanced/home": [...Array(20).keys()] };
-        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6", decks }], current: "Elly" }));
+        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "k3", decks }], current: "Elly" }));
       },
     });
     cy.contains(".chinese-character", "客廳");
@@ -606,7 +606,7 @@ describe("measure words", () => {
   it("plays a measure-word question and shows the breadcrumb trail", () => {
     cy.visit("/measure-words/measure-words", {
       onBeforeLoad(win) {
-        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "5-6" }], current: "Elly" }));
+        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "k3" }], current: "Elly" }));
       },
     });
     cy.get('nav[aria-label="Breadcrumb"] li').should("have.length", 3);
@@ -630,7 +630,7 @@ describe("parent mode", () => {
   it("opens straight from its own address, /parent", () => {
     cy.visit("/parent", {
       onBeforeLoad(win) {
-        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
       },
     });
     cy.contains("h1", "Parent mode");
@@ -647,7 +647,7 @@ describe("parent mode", () => {
   it("opens from the player menu after a grown-up maths question", () => {
     cy.visit("/", {
       onBeforeLoad(win) {
-        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
+        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
       },
     });
     cy.get("[data-game-name]").should("have.length", 7);
