@@ -123,7 +123,7 @@ app/
   components/GameApp.jsx               The app: routing, dealing, answers, scores, pop-ups
   components/                          One component per screen or piece (DragonDen, IdiomGame…)
   games-data.js                        The games, their ages and front-page headings
-  game-data.js, starters-data.js       Letter Jumble (Movers, Starters) words and pictures
+  cambridge-data/                      Letter Jumble words and pictures (movers-data.js, starters-data.js)
   phonics-data/                        CVC Sounds, Consonant Digraphs and R & L Blends words
   chinese-data/                        中文認字 topics and picture options, 量詞 and 成語
   math-data/                           Daily Challenge levels (and their generator), Rainbow Speed Quest

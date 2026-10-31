@@ -1,5 +1,5 @@
-import { categories } from "./game-data";
-import { starterCategories } from "./starters-data";
+import { categories } from "./cambridge-data/movers-data";
+import { starterCategories } from "./cambridge-data/starters-data";
 import { cvcModes } from "./phonics-data/cvc-data";
 import { digraphTopics } from "./phonics-data/digraphs-data";
 import { blendTopics } from "./phonics-data/blends-data";

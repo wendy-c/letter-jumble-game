@@ -1,5 +1,5 @@
 import { fn } from "storybook/test";
-import { categories } from "../game-data";
+import { categories } from "../cambridge-data/movers-data";
 import Breadcrumbs from "./Breadcrumbs";
 import GameHeading from "./GameHeading";
 import { HowToPlayButton } from "./HowToPlayDialog";

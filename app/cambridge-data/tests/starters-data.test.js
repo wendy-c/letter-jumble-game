@@ -1,8 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
-import { starterCategories } from "./starters-data";
+import { starterCategories } from "../starters-data";
 
-const publicDir = path.join(__dirname, "..", "public");
+const publicDir = path.join(__dirname, "..", "..", "..", "public");
 
 describe("Letter Jumble - Starters", () => {
   it("has the Pets and Farm and Wild Animals words", () => {

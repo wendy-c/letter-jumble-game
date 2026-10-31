@@ -1,4 +1,4 @@
-import { wordCategory } from "./game-data";
+import { wordCategory } from "./movers-data";
 
 // Letter Jumble - Starters: Cambridge Starters (YLE) vocabulary, played like Letter Jumble -
 // Movers. Pictures reuse the games' drawings where there is one.

@@ -1,10 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
-import { categories } from "./game-data";
-import { cvcModes } from "./phonics-data/cvc-data";
-import { games, gamesForAge, isGameForAge } from "./games-data";
+import { categories } from "../movers-data";
+import { cvcModes } from "../../phonics-data/cvc-data";
+import { games, gamesForAge, isGameForAge } from "../../games-data";
 
-const publicDir = path.join(__dirname, "..", "public");
+const publicDir = path.join(__dirname, "..", "..", "..", "public");
 
 describe("categories", () => {
   it("has eight topics, each with a unique id, colour and icon", () => {

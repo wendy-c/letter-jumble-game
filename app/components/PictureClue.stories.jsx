@@ -1,4 +1,4 @@
-import { categories } from "../game-data";
+import { categories } from "../cambridge-data/movers-data";
 import PictureClue from "./PictureClue";
 
 const animals = categories.find((topic) => topic.id === "animals");
