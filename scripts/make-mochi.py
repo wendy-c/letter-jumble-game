@@ -175,14 +175,13 @@ def heart(x, y, s, fill="#ff8fae"):
 
 
 def welcome():
-    # Sparkly open eyes, a big open smile with a tongue, rosy cheeks and arms open wide for a hug.
+    # Sparkly open eyes, a big open smile, rosy cheeks and arms open wide for a hug.
     eyes = ""
     for x in (72, 128):
         eyes += (f'<ellipse cx="{x}" cy="102" rx="10" ry="12" fill="{INK}" stroke="none"/>'
                  f'<circle cx="{x - 3.5}" cy="97" r="4.2" fill="#fff" stroke="none"/>'
                  f'<circle cx="{x + 3.5}" cy="107" r="2" fill="#fff" stroke="none"/>')
-    smile = (f'<path d="M82 137Q100 168 118 137Z" fill="#ff7f9f" stroke-width="3"/>'
-             f'<path d="M91 152q9-8 18 0q-9 7-18 0Z" fill="#ffc2d4" stroke="none"/>')
+    smile = f'<path d="M82 137Q100 168 118 137Z" fill="#ff7f9f" stroke-width="3"/>'
     face = (eyes + f'<ellipse cx="52" cy="124" rx="13" ry="8" fill="#ffb3c6" stroke="none"/>'
             f'<ellipse cx="148" cy="124" rx="13" ry="8" fill="#ffb3c6" stroke="none"/>' + snout(smile))
     return mochi(face, arms=arm(-1) + arm(1),
