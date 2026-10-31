@@ -50,7 +50,9 @@ describe("Mochi's den on phones", () => {
       cy.visit("/dragon", { onBeforeLoad: seedPlayer });
       cy.get(".dragon-canvas", { timeout: 20000 }).should("be.visible");
 
-      cy.get('.player-chip, .topbar a, nav[aria-label="Breadcrumb"] a, .how-to-open, .village-sign, .dragon-canvas').each(($element) => expectTappable($element[0]));
+      cy.get('.player-chip, .topbar a, nav[aria-label="Breadcrumb"] a, .village-sign, .dragon-canvas').each(($element) => expectTappable($element[0]));
+      // The "?" (how to play) is hidden on screens narrower than 450px, where its pictures are too small.
+      cy.get(".how-to-open").should(width < 450 ? "not.be.visible" : "be.visible");
 
       cy.get('[role="tab"]').each(($tab) => {
         cy.wrap($tab).click({ scrollBehavior: "center" }).should("have.attr", "aria-selected", "true");

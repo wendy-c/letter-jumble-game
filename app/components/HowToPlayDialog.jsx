@@ -32,25 +32,27 @@ const howTo = {
     en: ["Look at the picture and read what the idiom means.", "Tap the character that fills the gap.", reward.en],
     zh: ["看看圖畫，讀讀成語的意思。", "按一按正確的字，把成語填上。", reward.zh],
   },
-  dragon: {
-    en: [
-      "Spend rainbow coins on food, grooming and activities.",
-      "Tap the dragon for free cuddles and tricks, and drag sideways to turn her around.",
-      "Switch tabs to walk to another room.",
-      "Save up 100 coins to meet Mochi’s best friend, Tofu!",
-    ],
-    zh: [
-      "用彩虹金幣買小食、梳洗和玩遊戲。",
-      "按一按 Mochi，她會跟你玩，不用金幣；左右拖動可以讓她轉身。",
-      "換分頁，Mochi 會走到另一個房間。",
-      "儲夠 100 個金幣，就可以認識 Mochi 的好朋友 Tofu！",
-    ],
-  },
 };
 howTo["letter-jumble"] = howTo.starters;
+
+// Mochi's game is shown with pictures: annotated screenshots of her house and of Rainbow Village.
+const pictureSteps = {
+  dragon: [
+    {
+      picture: "/images/how-to/mochi-den.jpg",
+      en: "Interact with Mochi by collecting rainbow coins. Click on the road sign to visit the Rainbow Village.",
+      zh: "收集彩虹金幣，就可以跟 Mochi 玩。按一按路牌，就可以去彩虹村。",
+    },
+    {
+      picture: "/images/how-to/rainbow-village.jpg",
+      en: "Collect 100 coins to unlock Tofu!",
+      zh: "儲夠 100 個金幣，就可以解鎖 Tofu！",
+    },
+  ],
+};
 howTo["chinese-advanced"] = howTo.chinese;
 
-export const hasHowToPlay = (gameId) => gameId === "cvc" || Boolean(howTo[gameId]);
+export const hasHowToPlay = (gameId) => gameId === "cvc" || Boolean(howTo[gameId] || pictureSteps[gameId]);
 
 // CVC Sounds has its own simpler card: three numbered steps.
 const cvcSteps = [
@@ -147,13 +149,24 @@ export default function HowToPlayDialog({ game, language, onClose }) {
 
   return (
     <div className="player-overlay">
-      <div className="player-dialog how-to-dialog" role="dialog" aria-modal="true" aria-labelledby="how-to-title">
+      <div className={`player-dialog how-to-dialog${pictureSteps[game.id] ? " how-to-dialog-pictures" : ""}`} role="dialog" aria-modal="true" aria-labelledby="how-to-title">
         {game.id === "cvc" ? <CvcHowTo onClose={onClose} /> : (
         <div lang={language === "zh" ? "zh-Hant-HK" : "en"}>
           <h2 id="how-to-title">{titles[language](game.name)}</h2>
-          <ol className="how-to-numbered">
-            {steps.map((step) => <li key={step}>{step}</li>)}
-          </ol>
+          {pictureSteps[game.id] ? (
+            <ol className="how-to-pictures">
+              {pictureSteps[game.id].map((step) => (
+                <li key={step.picture}>
+                  <img src={step.picture} alt="" width="640" height={step.picture.includes("village") ? 543 : 433} />
+                  <p>{step[language]}</p>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <ol className="how-to-numbered">
+              {steps.map((step) => <li key={step}>{step}</li>)}
+            </ol>
+          )}
           <button className="reward-continue completion-button how-to-button" type="button" autoFocus onClick={onClose}>
             {buttons[language]} <span aria-hidden="true">→</span>
           </button>
@@ -165,9 +178,10 @@ export default function HowToPlayDialog({ game, language, onClose }) {
 }
 
 // A round "?" button beside a module's title (and the dragons' homes) that shows how to play.
-export function HowToPlayButton({ language, onClick }) {
+// `className` adds to its own (Mochi's is hidden on very narrow screens).
+export function HowToPlayButton({ language, onClick, className = "" }) {
   return (
-    <button className="how-to-open" type="button" aria-label={language === "zh" ? "玩法" : "How to play"} title={language === "zh" ? "玩法" : "How to play"} onClick={onClick}>
+    <button className={`how-to-open${className ? ` ${className}` : ""}`} type="button" aria-label={language === "zh" ? "玩法" : "How to play"} title={language === "zh" ? "玩法" : "How to play"} onClick={onClick}>
       <span aria-hidden="true">?</span>
     </button>
   );

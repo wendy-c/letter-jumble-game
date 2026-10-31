@@ -511,7 +511,10 @@ export default function GameApp() {
   const howToShown = gameHasHowTo && site.loaded && !welcomeOpen && !playerDialogOpen &&
     (howToOpen || (startingToPlay && !site.howToSeen.includes(selectedGame.id)));
   const gameLanguage = selectedGame ? howToLanguage(selectedGame.id, site.language) : site.language;
-  const howToButton = gameHasHowTo && <HowToPlayButton language={gameLanguage} onClick={() => setHowToOpen(true)} />;
+  // Mochi's "?" is hidden on very narrow screens, where her how-to's pictures would be too small.
+  const howToButton = gameHasHowTo && (
+    <HowToPlayButton language={gameLanguage} onClick={() => setHowToOpen(true)} className={selectedGame.id === "dragon" ? "how-to-open-wide-only" : ""} />
+  );
   // A game's list of topics shows "About this game" (an info button) where it has one; the "?"
   // is only beside a module's title (and in the dragons' homes).
   const aboutButton = selectedGame && hasAbout(selectedGame.id) && <AboutButton onClick={() => setAboutOpen(true)} />;

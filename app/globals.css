@@ -4203,6 +4203,49 @@ a:focus-visible {
   font-weight: 700;
 }
 
+/* How-to steps shown as pictures (Mochi's house and Rainbow Village), each with its words:
+   one under the other, or side by side where there's room. */
+.how-to-dialog-pictures {
+  width: min(100%, 860px);
+}
+
+.how-to-pictures {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.how-to-pictures img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 3px solid var(--line);
+  border-radius: 16px;
+}
+
+.how-to-pictures p {
+  margin: 8px 2px 0;
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+@media (min-width: 720px) {
+  .how-to-pictures {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 449.98px) {
+  .how-to-open-wide-only {
+    display: none;
+  }
+}
+
 
 /* ---------- The new family's tour ---------- */
 
