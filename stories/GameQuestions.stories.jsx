@@ -10,7 +10,7 @@ import { gameGroups, games } from "../app/games-data";
 function questionAsset(gameId, question) {
   if (gameId === "measure-words") return { picture: question.icon, label: `一${question.character}${question.noun}` };
   if (gameId === "idioms") return { picture: question.picture, label: question.idiom, wide: true };
-  // Math and Logic: its picture (or the right pattern piece), named as in the question menu.
+  // Daily Challenge: its picture (or the right pattern piece), named as in the question menu.
   if (gameId === "math-logic") {
     const right = question.options.find((option) => option.correct);
     return { picture: question.picture ?? right.picture ?? null, label: question.answers[0], note: `Answer: ${question.answer}`, wide: Boolean(question.picture) };

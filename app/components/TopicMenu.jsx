@@ -1,3 +1,5 @@
+import { useContext } from "react";
+import { LanguageContext } from "../i18n";
 import ChoiceCard from "./ChoiceCard";
 import GameFooter from "./GameFooter";
 import LetterPattern from "./LetterPattern";
@@ -8,8 +10,11 @@ function cardNote(isChinese, isMeasure, done, total) {
   return done > 0 ? `${done} of ${total} words learned` : `${total} words to learn`;
 }
 
-// `isLocked(topic)` says a topic can't be played yet (Math and Logic's later levels).
-export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false, isBlend = false, isChinese = false, isMeasure = false, isIdiom = false, isMath = false, isLocked = () => false, topics, progressFor = () => 0, breadcrumbs, onSelectTopic }) {
+// `lockFor(topic)` says whether a topic can be played: "open", "tomorrow" or "locked" (the Daily
+// Challenge's later levels open one a day).
+export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false, isBlend = false, isChinese = false, isMeasure = false, isIdiom = false, isMath = false, lockFor = () => "open", topics, progressFor = () => 0, breadcrumbs, onSelectTopic }) {
+  // The Daily Challenge's heading follows the site's language.
+  const inChinese = useContext(LanguageContext) === "zh";
   return (
     <section className="game-wrap category-menu mx-auto w-full max-w-6xl" aria-labelledby="game-title">
       <div className="menu-heading">
@@ -18,10 +23,14 @@ export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false
         {isMath ? (
           <>
             <div className="title-row">
-              <h1 id="game-title">Math and <span>Logic</span></h1>
+              {inChinese
+                ? <h1 id="game-title" lang="zh-Hant-HK">每日<span>大挑戰</span></h1>
+                : <h1 id="game-title">Daily <span>Challenge</span></h1>}
               {titleAction}
             </div>
-            <p className="heading-note">Everyone starts at Level 1. Finish a level to open the next one!</p>
+            <p className="heading-note">
+              {inChinese ? "每個人都由第一關開始。完成一關，第二天就可以玩下一關！" : "Everyone starts at Level 1. Finish a level, and the next one opens the day after!"}
+            </p>
           </>
         ) : isIdiom ? (
           <>
@@ -83,7 +92,8 @@ export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false
       </div>
       <div className={`category-grid${isCvc && !isDigraph && !isBlend ? " mode-grid" : ""}`}>
         {topics.map((topic, index) => {
-          const locked = isLocked(topic);
+          const lock = lockFor(topic);
+          const locked = lock !== "open";
           return (
             <ChoiceCard
               key={topic.id}
@@ -94,7 +104,7 @@ export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false
               number={index + 1}
               name={isMath ? `${topic.name} · ${topic.english}` : topic.name}
               note={isMath
-                ? (locked ? `Finish ${topics[index - 1].name} to open` : progressFor(topic) > 0 ? `${progressFor(topic)} of ${topic.words.length} questions done` : `${topic.words.length} questions`)
+                ? (lock === "tomorrow" ? "Opens tomorrow" : locked ? `Finish ${topics[index - 1].name} to open` : progressFor(topic) > 0 ? `${progressFor(topic)} of ${topic.words.length} questions done` : `${topic.words.length} questions`)
                 : cardNote(isIdiom ? "idiom" : isChinese, isMeasure, progressFor(topic), topic.wordsPerGame ?? topic.words.length)}
               locked={locked}
               onClick={() => onSelectTopic(topic)}

@@ -1,5 +1,5 @@
-// Math and Logic: six levels of ten questions. Levels 1-3 are about numbers under 10, levels 4-6
-// within 20. A level opens once the one before it has been finished. Every question is answered
+// Daily Challenge (每日大挑戰): six levels of ten questions. Levels 1-3 are about numbers under 10,
+// levels 4-6 within 20. A level opens the day after the one before it was finished. Every question is answered
 // by tapping one of the choices: numbers, or pictures for "what comes next?" patterns.
 // The pictures are drawn by scripts/draw-words.py.
 const art = "/images/game-asset/math";
@@ -202,10 +202,31 @@ export const mathLevels = levels.map((level, index) => ({
   words: level.words.map((question) => ({ ...question, category: `LEVEL ${index + 1}`, color: level.color })),
 }));
 
-// The unlock saved for a level once the level before it is finished.
-export const levelUnlockKey = (level) => `math-logic/${level.id}`;
-
-// Level 1 is always open; each later level opens when the one before it is finished.
-export function isLevelOpen(level, player) {
-  return level.id === mathLevels[0].id || Boolean(player?.unlocks?.includes(levelUnlockKey(level)));
+// Today as YYYY-MM-DD, in the player's own time zone.
+export function today(now = new Date()) {
+  return [now.getFullYear(), now.getMonth() + 1, now.getDate()].map((part) => String(part).padStart(2, "0")).join("-");
 }
+
+// The unlock saved, with the day, when the level before this one is finished: "math-logic/level-2@2026-10-31".
+export const levelUnlockKey = (level, day = today()) => `math-logic/${level.id}@${day}`;
+
+// The day the level before this one was finished, or null if it hasn't been yet.
+function earnedOn(level, player) {
+  const key = `math-logic/${level.id}`;
+  const unlock = player?.unlocks?.find((entry) => entry === key || entry.startsWith(`${key}@`));
+  return unlock ? unlock.split("@")[1] ?? "" : null;
+}
+
+// Whether a level can be played: "open"; "tomorrow" when the level before it was finished today
+// (one new level a day); or "locked" until the level before it is finished. Level 1 is always open.
+export function levelState(level, player, day = today()) {
+  if (level.id === mathLevels[0].id) return "open";
+  const earned = earnedOn(level, player);
+  if (earned === null) return "locked";
+  return earned < day ? "open" : "tomorrow";
+}
+
+export const isLevelOpen = (level, player, day = today()) => levelState(level, player, day) === "open";
+
+// Whether finishing the level before has already earned this one (today or before).
+export const isLevelEarned = (level, player) => earnedOn(level, player) !== null;

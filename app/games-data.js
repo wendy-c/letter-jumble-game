@@ -9,7 +9,7 @@ export const gameGroups = [
   { id: "phonics", name: "Phonics", icon: "/images/icons/group-phonics.svg" },
   { id: "cambridge", name: "Cambridge YLE training", icon: "/images/icons/group-cambridge.svg" },
   { id: "chinese", name: "中文", icon: "/images/icons/group-chinese.svg", lang: "zh-Hant-HK" },
-  { id: "challenge", name: "Challenge", icon: "/images/icons/group-challenge.svg" },
+  { id: "challenge", name: "Math", icon: "/images/icons/group-challenge.svg" },
   { id: "mochi", name: "Visit Mochi", icon: "/images/icons/group-mochi.svg" },
 ];
 
@@ -117,11 +117,11 @@ export const games = [
   {
     id: "math-logic",
     group: "challenge",
-    name: "Math and Logic",
+    name: "Daily Challenge",
     color: "blue",
     picture: "/images/icons/math-logic.svg",
-    note: "For all ages - Count, add, take away and find patterns · 6 levels",
-    badge: "MATH & LOGIC",
+    note: "For all ages - Count, add, take away and find patterns · a new level each day",
+    badge: "DAILY CHALLENGE",
   },
   {
     id: "dragon",

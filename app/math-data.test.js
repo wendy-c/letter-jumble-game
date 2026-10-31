@@ -1,10 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
-import { isLevelOpen, levelUnlockKey, mathLevels } from "./math-data";
+import { isLevelOpen, levelState, levelUnlockKey, mathLevels, today } from "./math-data";
 
 const publicDir = path.join(__dirname, "..", "public");
 
-describe("Math and Logic", () => {
+describe("Daily Challenge", () => {
   it("has six levels of ten questions", () => {
     expect(mathLevels.map((level) => [level.name, level.words.length])).toEqual([
       ["Level 1", 10], ["Level 2", 10], ["Level 3", 10], ["Level 4", 10], ["Level 5", 10], ["Level 6", 10],
@@ -53,11 +53,19 @@ describe("Math and Logic", () => {
     expect(files.filter((file) => !fs.existsSync(path.join(publicDir, file)))).toEqual([]);
   });
 
-  it("opens level 1 for everyone, and each later level once the one before is finished", () => {
+  it("opens level 1 for everyone, and each later level the day after the one before is finished", () => {
     const [one, two, three] = mathLevels;
-    expect(isLevelOpen(one, null)).toBe(true);
-    expect(isLevelOpen(two, { unlocks: [] })).toBe(false);
-    expect(isLevelOpen(two, { unlocks: [levelUnlockKey(two)] })).toBe(true);
-    expect(isLevelOpen(three, { unlocks: [levelUnlockKey(two)] })).toBe(false);
+    const finishedLevel1 = { unlocks: [levelUnlockKey(two, "2026-10-30")] };
+    expect(levelState(one, null, "2026-10-30")).toBe("open");
+    expect(levelState(two, { unlocks: [] }, "2026-10-30")).toBe("locked");
+    expect(levelState(two, finishedLevel1, "2026-10-30")).toBe("tomorrow");
+    expect(levelState(two, finishedLevel1, "2026-10-31")).toBe("open");
+    expect(levelState(three, finishedLevel1, "2026-10-31")).toBe("locked");
+    expect(isLevelOpen(two, finishedLevel1, "2026-11-02")).toBe(true);
+  });
+
+  it("writes today's date in the player's own time zone", () => {
+    expect(today(new Date(2026, 0, 5, 23, 30))).toBe("2026-01-05");
+    expect(levelUnlockKey(mathLevels[1], "2026-01-05")).toBe("math-logic/level-2@2026-01-05");
   });
 });

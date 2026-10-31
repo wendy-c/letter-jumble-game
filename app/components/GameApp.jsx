@@ -20,7 +20,7 @@ import IdiomGame from "./IdiomGame";
 import SentenceGame from "./SentenceGame";
 import MeasureWordGame from "./MeasureWordGame";
 import MathGame from "./MathGame";
-import { isLevelOpen, levelUnlockKey } from "../math-data";
+import { isLevelEarned, levelState, levelUnlockKey } from "../math-data";
 import PictureClue from "./PictureClue";
 import ParentMode from "./ParentMode";
 import PlayerDialog from "./PlayerDialog";
@@ -107,8 +107,8 @@ export default function GameApp() {
   const selectedGame = allowed ? routeGame : null;
   const gameTopics = topicsByGame[selectedGame?.id] ?? [];
   const isMath = selectedGame?.id === "math-logic";
-  // Math and Logic's levels open one by one; a level that isn't open yet goes back to the list.
-  const topicOpen = (topic) => !isMath || isLevelOpen(topic, currentPlayer);
+  // The Daily Challenge's levels open one a day; a level that isn't open yet goes back to the list.
+  const topicOpen = (topic) => !isMath || levelState(topic, currentPlayer) === "open";
   const routeTopic = (topicId && gameTopics.find((topic) => topic.id === topicId && topicOpen(topic))) || null;
   // The dragon game: "/dragon" is Rainbow Village once Tofu has moved in (Mochi's den before),
   // "/dragon/village" is always the village, and "/dragon/mochi" or "/dragon/tofu" is a dragon's
@@ -453,9 +453,9 @@ export default function GameApp() {
     const hasBadge = Boolean(currentPlayer?.badges?.includes(categoryKey));
     const newBadge = correct === count && !hasBadge;
     if (newBadge) awardBadge(categoryKey);
-    // Finishing a Math and Logic level opens the next one.
+    // Finishing a Daily Challenge level opens the next one, from tomorrow.
     const nextLevel = isMath ? gameTopics[gameTopics.indexOf(routeTopic) + 1] : null;
-    const opensLevel = Boolean(nextLevel) && !isLevelOpen(nextLevel, currentPlayer);
+    const opensLevel = Boolean(nextLevel) && !isLevelEarned(nextLevel, currentPlayer);
     if (opensLevel) unlock(levelUnlockKey(nextLevel));
     setCompletedTopic({
       name: selectedCategory.name, count, correct, hasBadge,
@@ -535,7 +535,7 @@ export default function GameApp() {
     <Breadcrumbs
       items={[
         { label: text.home, href: "/" },
-        { label: selectedGame.name, href: `/${selectedGame.id}` },
+        { label: text.gameNames[selectedGame.id] ?? selectedGame.name, href: `/${selectedGame.id}` },
         ...(routeTopic ? [{ label: routeTopic.name, href: `/${selectedGame.id}/${routeTopic.id}` }] : []),
         ...(dragonPlace && topicId && dragons[topicId] ? [{ label: dragons[topicId].house, href: `/dragon/${topicId}` }] : []),
       ]}
@@ -622,7 +622,7 @@ export default function GameApp() {
             isMeasure={isMeasure}
             isIdiom={isIdiom}
             isMath={isMath}
-            isLocked={(topic) => !topicOpen(topic)}
+            lockFor={(topic) => (isMath ? levelState(topic, currentPlayer) : "open")}
             topics={gameTopics}
             progressFor={(topic) => currentPlayer?.progress?.[`${selectedGame.id}/${topic.id}`] ?? 0}
             breadcrumbs={breadcrumbs}

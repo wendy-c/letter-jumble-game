@@ -50,7 +50,7 @@ function MathVisual({ visual, answer, solved }) {
   );
 }
 
-// One Math and Logic question: its picture (or, without one, its sum or pattern drawn large), the
+// One Daily Challenge question: its picture (or, without one, its sum or pattern drawn large), the
 // question, and the choices. There's one try: the pick is reported with `onAnswer(correct)`, and
 // the right answer fills the gap either way. Hearing the question read out is a hint.
 // The parent remounts this (key) for every new question.

@@ -1,4 +1,4 @@
-// Every Math and Logic question, one after another, exactly as a child sees it: the game's
+// Every Daily Challenge question, one after another, exactly as a child sees it: the game's
 // question card with its picture, question and choices, grouped by level. The choices can be
 // tapped to try them.
 import { fn } from "storybook/test";
@@ -31,7 +31,7 @@ function ChallengeQuestions({ levels }) {
 }
 
 export default {
-  title: "Challenge/Math and Logic",
+  title: "Challenge/Daily Challenge",
   component: ChallengeQuestions,
 };
 

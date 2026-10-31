@@ -36,13 +36,13 @@ const howTo = {
     en: [
       "Look at the picture and read the question. Tap the speaker to hear it.",
       "Tap the right answer: a number, or the picture that comes next.",
-      "Finish a level to open the next one!",
+      "Finish a level, and the next one opens the day after!",
       reward.en,
     ],
     zh: [
       "看看圖畫，讀讀題目，按喇叭聽聽題目。",
       "按一按正確的答案：一個數字，或下一個圖畫。",
-      "完成一個關卡，就可以玩下一關！",
+      "完成一個關卡，第二天就可以玩下一關！",
       reward.zh,
     ],
   },
