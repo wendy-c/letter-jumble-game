@@ -1,9 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
-import { chineseAdvancedTopics, chineseTopics } from "./chinese-data";
+import { chineseAdvancedTopics, chineseTopics } from "../chinese-data";
 
 const colours = chineseTopics.find((topic) => topic.id === "colours");
-const publicDir = path.join(__dirname, "..", "public");
+const publicDir = path.join(__dirname, "..", "..", "..", "public");
 
 describe("chineseTopics", () => {
   it("starts with the 13 colour characters, in order", () => {

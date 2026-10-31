@@ -1,6 +1,6 @@
 import { fn } from "storybook/test";
-import { cvcModes } from "../cvc-data";
-import { digraphTopics } from "../digraphs-data";
+import { cvcModes } from "../phonics-data/cvc-data";
+import { digraphTopics } from "../phonics-data/digraphs-data";
 import { getSpellingGuides } from "../lib/spelling";
 import AnswerPanel from "./AnswerPanel";
 

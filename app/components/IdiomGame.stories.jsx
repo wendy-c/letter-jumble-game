@@ -1,5 +1,5 @@
 import { fn } from "storybook/test";
-import { idiomTopics } from "../idioms-data";
+import { idiomTopics } from "../chinese-data/idioms-data";
 import IdiomGame from "./IdiomGame";
 
 const topic = idiomTopics[0];

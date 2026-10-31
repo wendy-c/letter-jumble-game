@@ -1,5 +1,5 @@
 import { fn } from "storybook/test";
-import { dragons } from "../dragon-data";
+import { dragons } from "../dragon-data/dragon-data";
 import DragonScene from "./DragonScene";
 
 const rooms = (dragon) => ["treat", "groom", "activity"].map((kind) => dragon.rooms[kind]);

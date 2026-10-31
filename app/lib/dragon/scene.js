@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { dragonActionsById } from "../../dragon-data";
+import { dragonActionsById } from "../../dragon-data/dragon-data";
 import { sounds } from "../sounds";
 
 const OUTLINE_COLOR = 0x4b2e22;

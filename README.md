@@ -124,10 +124,11 @@ app/
   components/                          One component per screen or piece (DragonDen, IdiomGame…)
   games-data.js                        The games, their ages and front-page headings
   game-data.js, starters-data.js       Letter Jumble (Movers, Starters) words and pictures
-  cvc-data.js                          CVC words and letter choices
-  chinese-data.js                      中文認字 topics, words, phrases and picture options
-  measure-words-data.js, idioms-data.js
-  dragon-data.js                       Mochi's treats, grooming and activities (cost, duration)
+  phonics-data/                        CVC Sounds, Consonant Digraphs and R & L Blends words
+  chinese-data/                        中文認字 topics and picture options, 量詞 and 成語
+  math-data/                           Daily Challenge levels (and their generator), Rainbow Speed Quest
+  dragon-data/dragon-data.js           Mochi's treats, grooming and activities (cost, duration)
+  */tests/                             Each data folder's tests
   badges.js                            All topics by game, and each topic's badge
   lib/use-players.js                   Players and everything saved about them
   lib/spelling.js                      Shuffles, scrambles and spelling helpers
@@ -140,8 +141,8 @@ cypress/e2e/                           End-to-end tests
 
 ## Adding content
 
-- **A word or topic:** add it to the game's data file. Each data file has a test that checks the
-  words and that every picture file exists.
+- **A word or topic:** add it to the game's data file. Each data file has a test (in its folder's
+  `tests/`) that checks the words and that every picture file exists.
   - Pictures are either an emoji or a path under `public/images/`.
   - A new topic needs an `id`, `name`, `icon` and `color` (`peach`, `lilac`, `blue`, `green`,
     `yellow` or `pink`).
@@ -158,5 +159,5 @@ cypress/e2e/                           End-to-end tests
 - **Rainbow Village:** `python3 scripts/make-village.py` redraws `public/images/village/`.
 - **Hand-drawn pictures:** `python3 scripts/draw-pictures.py` redraws the 地點 places and other
   pictures it lists. Faces go only on people and animals.
-- **A dragon's treats and activities:** add them to `dragon-data.js`. An action can reuse another's
+- **A dragon's treats and activities:** add them to `dragon-data/dragon-data.js`. An action can reuse another's
   animation (`animation`) or get its own in `lib/dragon/scene.js`.

@@ -1,6 +1,6 @@
 import { fn } from "storybook/test";
-import { mathLevels } from "../math-data";
-import { speedTopics } from "../speed-quest-data";
+import { mathLevels } from "../math-data/math-data";
+import { speedTopics } from "../math-data/speed-quest-data";
 import MathGame from "./MathGame";
 
 const level = (id) => mathLevels.find((item) => item.id === id);

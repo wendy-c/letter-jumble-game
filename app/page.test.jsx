@@ -1,5 +1,5 @@
 import { act, render, screen, waitFor, within } from "@testing-library/react";
-import { today } from "./math-data";
+import { today } from "./math-data/math-data";
 import userEvent from "@testing-library/user-event";
 import GameApp from "./components/GameApp";
 import { games } from "./games-data";

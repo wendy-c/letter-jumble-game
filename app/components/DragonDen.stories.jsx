@@ -1,5 +1,5 @@
 import { fn } from "storybook/test";
-import { dragons } from "../dragon-data";
+import { dragons } from "../dragon-data/dragon-data";
 import Breadcrumbs from "./Breadcrumbs";
 import DragonDen from "./DragonDen";
 

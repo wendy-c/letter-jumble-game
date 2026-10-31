@@ -1,7 +1,7 @@
 // Makes the Daily Challenge's later levels (4 to 20 for each age) from question templates, the
 // same every time (each level has its own seed). Their pictures are drawn by the game from small
 // pictures of things to count (`scene`), rather than one drawing per question.
-import { seededRandom } from "./lib/spelling";
+import { seededRandom } from "../lib/spelling";
 
 const art = "/images/game-asset";
 

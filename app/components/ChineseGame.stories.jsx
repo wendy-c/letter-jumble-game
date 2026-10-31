@@ -1,5 +1,5 @@
 import { fn } from "storybook/test";
-import { chineseAdvancedTopics, chineseTopics } from "../chinese-data";
+import { chineseAdvancedTopics, chineseTopics } from "../chinese-data/chinese-data";
 import ChineseGame from "./ChineseGame";
 
 const colours = chineseTopics.find((topic) => topic.id === "colours") ?? chineseTopics[0];

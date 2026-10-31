@@ -1,9 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
-import { isLevelOpen, levelState, levelUnlockKey, mathLevels, today } from "./math-data";
-import { speedTopics } from "./speed-quest-data";
+import { isLevelOpen, levelState, levelUnlockKey, mathLevels, today } from "../math-data";
+import { speedTopics } from "../speed-quest-data";
 
-const publicDir = path.join(__dirname, "..", "public");
+const publicDir = path.join(__dirname, "..", "..", "..", "public");
 const levelsFor = (age) => mathLevels.filter((level) => level.ages.includes(age));
 const allQuestions = mathLevels.flatMap((level) => level.words);
 

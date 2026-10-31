@@ -1,5 +1,5 @@
 import { fn } from "storybook/test";
-import { measureWordTopics } from "../measure-words-data";
+import { measureWordTopics } from "../chinese-data/measure-words-data";
 import MeasureWordGame from "./MeasureWordGame";
 
 const topic = measureWordTopics[0];

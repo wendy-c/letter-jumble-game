@@ -1,8 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
-import { blendTopics, blendWordsPerGame } from "./blends-data";
+import { blendTopics, blendWordsPerGame } from "../blends-data";
 
-const publicDir = path.join(__dirname, "..", "public");
+const publicDir = path.join(__dirname, "..", "..", "..", "public");
 const topic = (id) => blendTopics.find((candidate) => candidate.id === id);
 const question = (id, word) => topic(id).words.find((candidate) => candidate.word === word);
 

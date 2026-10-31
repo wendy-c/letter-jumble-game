@@ -1,7 +1,7 @@
 import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import DragonDen from "./DragonDen";
-import { dragonActionsById, dragons } from "../dragon-data";
+import { dragonActionsById, dragons } from "../dragon-data/dragon-data";
 import { sounds } from "../lib/sounds";
 
 jest.mock("../lib/sounds", () => ({ sounds: { coin: jest.fn() } }));

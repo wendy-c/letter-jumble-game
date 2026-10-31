@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import IdiomGame from "./IdiomGame";
-import { idiomTopics } from "../idioms-data";
+import { idiomTopics } from "../chinese-data/idioms-data";
 import { speakCantonese } from "../lib/speech";
 
 jest.mock("../lib/speech", () => ({ speakCantonese: jest.fn(), stopSpeaking: jest.fn() }));

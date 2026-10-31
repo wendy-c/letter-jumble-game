@@ -1,13 +1,13 @@
 import { categories } from "./game-data";
 import { starterCategories } from "./starters-data";
-import { cvcModes } from "./cvc-data";
-import { digraphTopics } from "./digraphs-data";
-import { blendTopics } from "./blends-data";
-import { chineseAdvancedTopics, chineseTopics } from "./chinese-data";
-import { measureWordTopics } from "./measure-words-data";
-import { idiomTopics } from "./idioms-data";
-import { mathLevels } from "./math-data";
-import { speedTopics } from "./speed-quest-data";
+import { cvcModes } from "./phonics-data/cvc-data";
+import { digraphTopics } from "./phonics-data/digraphs-data";
+import { blendTopics } from "./phonics-data/blends-data";
+import { chineseAdvancedTopics, chineseTopics } from "./chinese-data/chinese-data";
+import { measureWordTopics } from "./chinese-data/measure-words-data";
+import { idiomTopics } from "./chinese-data/idioms-data";
+import { mathLevels } from "./math-data/math-data";
+import { speedTopics } from "./math-data/speed-quest-data";
 import { gamesForPlayer } from "./games-data";
 
 // Every game's topics. Finishing a topic earns its badge, saved per player by

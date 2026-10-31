@@ -1,4 +1,4 @@
-import { cvcModes } from "./cvc-data";
+import { cvcModes } from "../cvc-data";
 
 const modeByName = Object.fromEntries(cvcModes.map((mode) => [mode.name, mode]));
 

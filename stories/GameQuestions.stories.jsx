@@ -3,7 +3,7 @@
 // border. Click a picture to copy its path.
 import { useState } from "react";
 import { topicsByGame } from "../app/badges";
-import { dragons } from "../app/dragon-data";
+import { dragons } from "../app/dragon-data/dragon-data";
 import { gameGroups, games } from "../app/games-data";
 
 // What a question shows: its picture and a short label, for each kind of game.

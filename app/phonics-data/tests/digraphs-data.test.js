@@ -1,8 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
-import { digraphTopics, digraphWordsPerGame } from "./digraphs-data";
+import { digraphTopics, digraphWordsPerGame } from "../digraphs-data";
 
-const publicDir = path.join(__dirname, "..", "public");
+const publicDir = path.join(__dirname, "..", "..", "..", "public");
 const topic = (id) => digraphTopics.find((candidate) => candidate.id === id);
 
 describe("Consonant Digraphs", () => {

@@ -1,5 +1,5 @@
 import { fn } from "storybook/test";
-import { chineseTopics } from "../chinese-data";
+import { chineseTopics } from "../chinese-data/chinese-data";
 import { categories } from "../game-data";
 import WordMenu from "./WordMenu";
 

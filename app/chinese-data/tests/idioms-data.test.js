@@ -1,9 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
-import { idiomTopics } from "./idioms-data";
+import { idiomTopics } from "../idioms-data";
 
 const topic = idiomTopics[0];
-const publicDir = path.join(__dirname, "..", "public");
+const publicDir = path.join(__dirname, "..", "..", "..", "public");
 
 describe("成語", () => {
   it("has all twenty idioms, each four characters long", () => {

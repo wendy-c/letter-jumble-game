@@ -3,8 +3,8 @@
 // choices can be tapped to try them.
 import { fn } from "storybook/test";
 import MathGame from "../app/components/MathGame";
-import { mathLevels } from "../app/math-data";
-import { speedTopics } from "../app/speed-quest-data";
+import { mathLevels } from "../app/math-data/math-data";
+import { speedTopics } from "../app/math-data/speed-quest-data";
 
 function LevelQuestions({ level, language, limit }) {
   const name = level.names?.[language] ?? level.name;

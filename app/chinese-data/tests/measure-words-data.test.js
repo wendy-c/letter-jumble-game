@@ -1,10 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
-import { measureWordTopics, measureWordsForTesting } from "./measure-words-data";
+import { measureWordTopics, measureWordsForTesting } from "../measure-words-data";
 
 const topic = measureWordTopics[0];
 const { measureWords, nounIcons, fits } = measureWordsForTesting;
-const publicDir = path.join(__dirname, "..", "public");
+const publicDir = path.join(__dirname, "..", "..", "..", "public");
 
 describe("measure words", () => {
   it("has a question for every pairing in the list, 20 per game", () => {
