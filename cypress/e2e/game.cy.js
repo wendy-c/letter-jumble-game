@@ -316,7 +316,7 @@ describe("CVC sounds game", () => {
     cy.contains("h1", "CVC Sounds");
     cy.get(".category-card").should("have.length", 4);
     ["Beginning Sound", "Middle Sound", "Ending Sound", "Mixed Sounds"].forEach((mode) => {
-      cy.contains(".category-card", mode).should("contain.text", "12");
+      cy.contains(".category-card", mode).should("contain.text", "10");
     });
     crumb("Home");
     cy.contains("h1", "What shall we play today?");
@@ -324,7 +324,7 @@ describe("CVC sounds game", () => {
 
   it("leaves only the beginning letter to fill in", () => {
     visitCvcMode("Beginning Sound");
-    cy.contains("01 / 12");
+    cy.contains("01 / 10");
     cy.get(".letter-slot").should("have.length", 1);
     cy.get(".letter-given").should("have.length", 2).then(($letters) => {
       expect([...$letters].map((letter) => letter.textContent)).to.deep.equal(["a", "t"]);
@@ -336,7 +336,7 @@ describe("CVC sounds game", () => {
     cy.get('.letter-tile[data-letter="c"]').click();
     cy.contains("button", "Check it").click();
     cy.get(".answer-toast").should("contain.text", "Amazing!");
-    cy.contains("02 / 12");
+    cy.contains("02 / 10");
   });
 
   it("offers every short vowel for the middle sound", () => {
@@ -371,7 +371,7 @@ describe("CVC sounds game", () => {
       cy.contains("button", "Next question").click();
     });
     cy.get('[role="dialog"]').should("not.exist");
-    cy.contains("02 / 12");
+    cy.contains("02 / 10");
     cy.get(".player-chip-coins").should("have.text", "0");
   });
 
@@ -549,17 +549,17 @@ describe("routes", () => {
 });
 
 describe("CVC shuffling", () => {
-  it("deals 12 words in a random order", () => {
+  it("deals 10 words in a random order", () => {
     cy.visit("/cvc/ending-sound", {
       onBeforeLoad(win) {
         win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4" }], current: "Ada" }));
       },
     });
-    cy.contains("01 / 12");
+    cy.contains("01 / 10");
     storedPlayers().then((stored) => {
       const deck = stored.players[0].decks["cvc/ending-sound"];
-      expect(deck).to.have.length(12);
-      expect(new Set(deck).size).to.eq(12);
+      expect(deck).to.have.length(10);
+      expect(new Set(deck).size).to.eq(10);
     });
   });
 });
@@ -639,7 +639,7 @@ describe("parent mode", () => {
       cy.get("#grown-up-answer").type(String(first * second));
     });
     cy.contains("button", "Continue").click();
-    cy.contains('[role="switch"]', "Mochi");
+    cy.contains(".parent-mode-title", "Mochi");
     cy.contains("button", "Done").click();
     cy.location("pathname").should("eq", "/");
   });
@@ -659,8 +659,8 @@ describe("parent mode", () => {
       cy.get("#grown-up-answer").type(String(first * second));
     });
     cy.contains("button", "Continue").click();
-    cy.contains('[role="switch"]', "Mochi").click();
-    cy.contains('[role="switch"]', "Letter Jumble").click();
+    cy.contains(".parent-mode-title", "Mochi").closest(".parent-mode-setting").find('[role="switch"]').click();
+    cy.contains(".parent-mode-title", "Letter Jumble").closest(".parent-mode-setting").find('[role="switch"]').click();
     cy.contains("button", "Done").click();
 
     cy.get("[data-game-name]").should("have.length", 5);

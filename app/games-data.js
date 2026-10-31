@@ -1,3 +1,8 @@
+// How many questions a round of CVC Sounds, Consonant Digraphs or R & L Blends deals: a parent
+// can choose for each child (in Parent mode).
+export const questionCountChoices = [5, 10, 15, 20];
+export const defaultQuestionCount = 10;
+
 export const ageGroups = [
   { id: "3-4", label: "3-4 years old" },
   { id: "5-6", label: "5-6 years old" },
@@ -14,7 +19,8 @@ export const gameGroups = [
 
 // `ages` limits a game to those age groups; games without it are for everyone. `group` is the
 // front-page heading it's listed under. A `spellingGuide` game can colour the vowel and consonant
-// teams in its words, when a parent turns that on for a child. On the front page each game shows its `picture` (with
+// teams in its words, and a `questionCount` game deals as many questions as a parent chooses,
+// when a parent sets that for a child. On the front page each game shows its `picture` (with
 // `pattern` letters as a little chip, where it has them).
 export const games = [
   {
@@ -27,6 +33,7 @@ export const games = [
     note: "For age 3-4 - Beginning, middle and ending sounds",
     badge: "CVC SOUNDS",
     ages: ["3-4"],
+    questionCount: true,
   },
   {
     id: "digraphs",
@@ -37,6 +44,7 @@ export const games = [
     note: "For age 3-6 - ch, sh, th, ph, wh, ck and ng",
     badge: "DIGRAPHS",
     ages: ["3-4", "5-6"],
+    questionCount: true,
   },
   {
     id: "blends",
@@ -47,6 +55,7 @@ export const games = [
     note: "For age 3-6 - br, cr, str, bl, cl, fl and more",
     badge: "BLENDS",
     ages: ["3-4", "5-6"],
+    questionCount: true,
   },
   {
     id: "starters",

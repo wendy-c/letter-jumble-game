@@ -80,7 +80,7 @@ export default function GameApp() {
 
   const {
     loaded, players, currentPlayer, createPlayer, setPlayerAge, selectPlayer, logOut, addCoin, spendCoins, saveProgress, saveDeck,
-    setGameEnabled, setSpellingGuide, awardBadge, saveResult, unlock,
+    setGameEnabled, setSpellingGuide, setQuestionCount, awardBadge, saveResult, unlock,
   } = usePlayers();
   const site = useSiteSettings();
   const text = textFor(site.language);
@@ -115,8 +115,13 @@ export default function GameApp() {
   const isDragonPlace = (place) => place === "village" || place === "mochi" || (place === "tofu" && tofuUnlocked) || (place === "park" && parkUnlocked);
   const categoryKey = routeTopic ? `${selectedGame.id}/${routeTopic.id}` : null;
   // Every topic plays its words in a shuffled order, saved per player so leaving and coming
-  // back continues the same order. Topics with `wordsPerGame` (CVC, 量詞) deal only that many.
-  const handSize = routeTopic ? Math.min(routeTopic.wordsPerGame ?? Infinity, routeTopic.words.length) : 0;
+  // back continues the same order. Topics with `wordsPerGame` (CVC, 量詞) deal only that many; in
+  // CVC Sounds, Digraphs and Blends a parent can choose how many (Parent mode).
+  const roundSize = (topic) => Math.min(
+    (selectedGame?.questionCount && currentPlayer?.questionCounts?.[selectedGame.id]) || topic.wordsPerGame || Infinity,
+    topic.words.length,
+  );
+  const handSize = routeTopic ? roundSize(routeTopic) : 0;
   const deck = routeTopic ? currentPlayer?.decks?.[categoryKey] : null;
   const validDeck = Boolean(deck) && deck.length === handSize && new Set(deck).size === handSize &&
     deck.every((index) => index < routeTopic.words.length);
@@ -550,6 +555,7 @@ export default function GameApp() {
             breadcrumbs={<Breadcrumbs items={[{ label: text.home, href: "/" }, { label: text.parentMode, href: "/parent" }]} />}
             onSetGameEnabled={setGameEnabled}
             onSetSpellingGuide={setSpellingGuide}
+            onSetQuestionCount={setQuestionCount}
             onDone={() => router.push("/")}
           />
         )
@@ -606,6 +612,7 @@ export default function GameApp() {
             isIdiom={isIdiom}
             topics={gameTopics}
             progressFor={(topic) => currentPlayer?.progress?.[`${selectedGame.id}/${topic.id}`] ?? 0}
+            roundSizeFor={roundSize}
             breadcrumbs={breadcrumbs}
             onSelectTopic={selectCategory}
           />

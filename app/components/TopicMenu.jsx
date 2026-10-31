@@ -8,7 +8,7 @@ function cardNote(isChinese, isMeasure, done, total) {
   return done > 0 ? `${done} of ${total} words learned` : `${total} words to learn`;
 }
 
-export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false, isBlend = false, isChinese = false, isMeasure = false, isIdiom = false, topics, progressFor = () => 0, breadcrumbs, onSelectTopic }) {
+export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false, isBlend = false, isChinese = false, isMeasure = false, isIdiom = false, topics, progressFor = () => 0, roundSizeFor = (topic) => topic.wordsPerGame ?? topic.words.length, breadcrumbs, onSelectTopic }) {
   return (
     <section className="game-wrap category-menu mx-auto w-full max-w-6xl" aria-labelledby="game-title">
       <div className="menu-heading">
@@ -82,7 +82,7 @@ export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false
               : <img src={topic.icon} alt="" width="40" height="40" />}
             number={index + 1}
             name={topic.name}
-            note={cardNote(isIdiom ? "idiom" : isChinese, isMeasure, progressFor(topic), topic.wordsPerGame ?? topic.words.length)}
+            note={cardNote(isIdiom ? "idiom" : isChinese, isMeasure, progressFor(topic), roundSizeFor(topic))}
             onClick={() => onSelectTopic(topic)}
           />
         ))}

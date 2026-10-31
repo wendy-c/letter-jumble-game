@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { ageGroups, games, isGameAvailable, isGameForAge } from "../games-data";
+import { useId, useState } from "react";
+import { ageGroups, defaultQuestionCount, games, isGameAvailable, isGameForAge, questionCountChoices } from "../games-data";
 import { isRightAnswer, makeGrownUpQuestion } from "../lib/grown-up-question";
 import { useText } from "../i18n";
 import GameFooter from "./GameFooter";
@@ -49,25 +49,55 @@ function GrownUpCheck({ onPass }) {
   );
 }
 
-// A switch with a title and a note, as used for every Parent mode setting.
-function SettingSwitch({ checked, title, note, onToggle }) {
+// One Parent mode setting: a title and a note, with an on/off switch named by the title.
+// `children` sit under the note (a game's arrow for its more settings).
+function SettingRow({ checked, title, note, onToggle, children = null }) {
+  const titleId = useId();
   return (
-    <button className="spelling-guide-toggle parent-game-toggle" type="button" role="switch" aria-checked={checked} onClick={onToggle}>
-      <span className="spelling-guide-toggle-copy">
-        <span className="spelling-guide-toggle-title">{title}</span>
-        <span className="spelling-guide-toggle-note">{note}</span>
+    <div className="parent-mode-setting">
+      <span className="parent-mode-copy">
+        <span className="parent-mode-title" id={titleId}>{title}</span>
+        <span className="parent-mode-note">{note}</span>
+        {children}
       </span>
-      <span className="toggle-track" aria-hidden="true"><span className="toggle-thumb" /></span>
-    </button>
+      <button className="parent-mode-switch" type="button" role="switch" aria-checked={checked} aria-labelledby={titleId} onClick={onToggle}>
+        <span className="toggle-track" aria-hidden="true"><span className="toggle-thumb" /></span>
+      </button>
+    </div>
   );
 }
 
-// A game's switch. The Letter Jumble games also have a spelling guide switch, under the game's.
-function GameSwitch({ game, enabled, suitsAge, onToggle, spellingGuide, onToggleSpellingGuide }) {
+// How many questions a round deals: 5, 10, 15 or 20.
+function QuestionCountChoice({ count, onChoose }) {
   const text = useText();
+  const titleId = useId();
+  return (
+    <div className="parent-mode-setting parent-mode-setting-choices">
+      <span className="parent-mode-copy">
+        <span className="parent-mode-title" id={titleId}>{text.questionsPerRound}</span>
+        <span className="parent-mode-note">{text.questionsPerRoundNote}</span>
+      </span>
+      <span className="parent-mode-choices" role="radiogroup" aria-labelledby={titleId}>
+        {questionCountChoices.map((choice) => (
+          <button key={choice} className="parent-mode-choice" type="button" role="radio" aria-checked={choice === count} onClick={() => onChoose(choice)}>
+            {choice}
+          </button>
+        ))}
+      </span>
+    </div>
+  );
+}
+
+// A game's switch. Games with more settings (the spelling guide, or how many questions a round
+// has) show an arrow under "On" that opens them.
+function GameSwitch({ game, enabled, suitsAge, onToggle, spellingGuide, onToggleSpellingGuide, questionCount, onSetQuestionCount }) {
+  const text = useText();
+  const optionsId = useId();
+  const [open, setOpen] = useState(false);
+  const hasOptions = Boolean(game.spellingGuide || game.questionCount);
   return (
     <li className={`parent-game${enabled ? "" : " parent-game-off"}`}>
-      <SettingSwitch
+      <SettingRow
         checked={enabled}
         title={game.name}
         note={<>
@@ -75,17 +105,33 @@ function GameSwitch({ game, enabled, suitsAge, onToggle, spellingGuide, onToggle
           {!suitsAge && text.forAges(game.ages.map((age) => text.ageGroup[age] ?? ageGroups.find((group) => group.id === age)?.label).join(", "))}
         </>}
         onToggle={onToggle}
-      />
-      {game.spellingGuide && (
-        <span className="parent-game-guide">
-          <SettingSwitch checked={spellingGuide} title={text.spellingGuide} note={text.spellingGuideNote} onToggle={onToggleSpellingGuide} />
-        </span>
+      >
+        {hasOptions && (
+          <button
+            className="parent-mode-expand"
+            type="button"
+            aria-expanded={open}
+            aria-controls={optionsId}
+            aria-label={text.moreSettings(game.name)}
+            onClick={() => setOpen((current) => !current)}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+          </button>
+        )}
+      </SettingRow>
+      {hasOptions && (
+        <div className="parent-game-options" id={optionsId} hidden={!open}>
+          {game.spellingGuide && (
+            <SettingRow checked={spellingGuide} title={text.spellingGuide} note={text.spellingGuideNote} onToggle={onToggleSpellingGuide} />
+          )}
+          {game.questionCount && <QuestionCountChoice count={questionCount} onChoose={onSetQuestionCount} />}
+        </div>
       )}
     </li>
   );
 }
 
-function ChildSettings({ player, onSetGameEnabled, onSetSpellingGuide }) {
+function ChildSettings({ player, onSetGameEnabled, onSetSpellingGuide, onSetQuestionCount }) {
   const text = useText();
   const ageLabel = player.age && (text.ageGroup[player.age] ?? ageGroups.find((group) => group.id === player.age)?.label);
   const onCount = games.filter((game) => isGameAvailable(game, player)).length;
@@ -111,6 +157,8 @@ function ChildSettings({ player, onSetGameEnabled, onSetSpellingGuide }) {
               onToggle={() => onSetGameEnabled(player.name, game.id, !enabled, suitsAge)}
               spellingGuide={Boolean(player.spellingGuide?.includes(game.id))}
               onToggleSpellingGuide={() => onSetSpellingGuide(player.name, game.id, !player.spellingGuide?.includes(game.id))}
+              questionCount={player.questionCounts?.[game.id] ?? defaultQuestionCount}
+              onSetQuestionCount={(count) => onSetQuestionCount(player.name, game.id, count)}
             />
           );
         })}
@@ -120,9 +168,10 @@ function ChildSettings({ player, onSetGameEnabled, onSetSpellingGuide }) {
 }
 
 // The parent mode page ("/parent"): a grown-up maths question, then each child's settings: which
-// games they can play, and whether their Letter Jumble games show the spelling guide.
+// games they can play, whether their Letter Jumble games show the spelling guide, and how many
+// questions a round of CVC Sounds, Digraphs or Blends has.
 // Leaving the page locks it again; "Done" locks it and goes home (`onDone`).
-export default function ParentMode({ players, breadcrumbs, onSetGameEnabled, onSetSpellingGuide, onDone }) {
+export default function ParentMode({ players, breadcrumbs, onSetGameEnabled, onSetSpellingGuide, onSetQuestionCount, onDone }) {
   const text = useText();
   const [unlocked, setUnlocked] = useState(false);
 
@@ -144,7 +193,7 @@ export default function ParentMode({ players, breadcrumbs, onSetGameEnabled, onS
             <p className="parent-intro">{text.parentIntro}</p>
             <div className="parent-children">
               {players.map((player) => (
-                <ChildSettings key={player.name} player={player} onSetGameEnabled={onSetGameEnabled} onSetSpellingGuide={onSetSpellingGuide} />
+                <ChildSettings key={player.name} player={player} onSetGameEnabled={onSetGameEnabled} onSetSpellingGuide={onSetSpellingGuide} onSetQuestionCount={onSetQuestionCount} />
               ))}
             </div>
             <button className="action-button check-button parent-done" type="button" onClick={onDone}>

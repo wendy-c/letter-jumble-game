@@ -596,17 +596,17 @@ describe("progress", () => {
         coins: 0,
         age: "3-4",
         progress: { "cvc/middle-sound": 5 },
-        decks: { "cvc/middle-sound": [...Array(12).keys()] },
+        decks: { "cvc/middle-sound": [...Array(10).keys()] },
       }],
       current: "Ada",
     }));
     const user = userEvent.setup();
     render(<GameApp />);
     await openGame(user, "CVC Sounds", "Middle Sound");
-    expect(screen.getByLabelText("Word 6 of 12")).toBeInTheDocument();
+    expect(screen.getByLabelText("Word 6 of 10")).toBeInTheDocument();
     await user.click(crumb("CVC Sounds"));
     await user.click(screen.getByRole("button", { name: /Beginning Sound/ }));
-    expect(screen.getByLabelText("Word 1 of 12")).toBeInTheDocument();
+    expect(screen.getByLabelText("Word 1 of 10")).toBeInTheDocument();
   });
 
   it("plays the correct-answer sound only for a correct answer", async () => {
@@ -761,7 +761,7 @@ describe("CVC shuffling", () => {
     current: "Ada",
   }));
 
-  it("deals 12 different words at random and keeps them when coming back", async () => {
+  it("deals 10 different words at random and keeps them when coming back", async () => {
     seed();
     let calls = 0;
     Math.random.mockImplementation(() => ((calls += 1) * 0.37) % 1);
@@ -769,38 +769,38 @@ describe("CVC shuffling", () => {
     render(<GameApp />);
 
     await user.click(screen.getByRole("button", { name: /CVC Sounds/ }));
-    expect(screen.getByRole("button", { name: /Beginning Sound/ })).toHaveTextContent("12 words to learn");
+    expect(screen.getByRole("button", { name: /Beginning Sound/ })).toHaveTextContent("10 words to learn");
     await user.click(screen.getByRole("button", { name: /Beginning Sound/ }));
 
     const deck = storedPlayers().players[0].decks["cvc/beginning-sound"];
-    expect(deck).toHaveLength(12);
-    expect(new Set(deck).size).toBe(12);
-    expect(deck).not.toEqual([...Array(12).keys()]);
-    expect(screen.getByLabelText("Word 1 of 12")).toBeInTheDocument();
+    expect(deck).toHaveLength(10);
+    expect(new Set(deck).size).toBe(10);
+    expect(deck).not.toEqual([...Array(10).keys()]);
+    expect(screen.getByLabelText("Word 1 of 10")).toBeInTheDocument();
 
     await user.click(crumb("CVC Sounds"));
     await user.click(screen.getByRole("button", { name: /Beginning Sound/ }));
     expect(storedPlayers().players[0].decks["cvc/beginning-sound"]).toEqual(deck);
   });
 
-  it("deals a fresh hand of words after finishing all 12", async () => {
+  it("deals a fresh hand of words after finishing all 10", async () => {
     seed({
-      progress: { "cvc/beginning-sound": 11 }, decks: { "cvc/beginning-sound": [...Array(12).keys()] },
-      results: { "cvc/beginning-sound": Array(11).fill(true) },
+      progress: { "cvc/beginning-sound": 9 }, decks: { "cvc/beginning-sound": [...Array(10).keys()] },
+      results: { "cvc/beginning-sound": Array(9).fill(true) },
     });
     setPathname("/cvc/beginning-sound");
     const user = userEvent.setup();
     render(<GameApp />);
 
-    // Word 12 of the original order is "bed".
-    expect(await screen.findByLabelText("Word 12 of 12")).toBeInTheDocument();
-    expect(screen.getByLabelText("Letter 2 of 3, e")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Letter b" }));
+    // Word 10 of the original order is "jam".
+    expect(await screen.findByLabelText("Word 10 of 10")).toBeInTheDocument();
+    expect(screen.getByLabelText("Letter 2 of 3, a")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Letter j" }));
     await user.click(screen.getByRole("button", { name: /Check it/ }));
     await nextQuestion();
 
     const praise = (await screen.findByRole("dialog", { name: "You did it!" }));
-    expect(praise).toHaveTextContent("12 / 12 right");
+    expect(praise).toHaveTextContent("10 / 10 right");
     await user.click(within(praise).getByRole("button", { name: /Back to all topics/ }));
     expect(currentPathname()).toBe("/cvc");
     expect(storedPlayers().players[0].decks).toBeUndefined();
@@ -1546,7 +1546,7 @@ describe("how to play", () => {
 describe("shuffle questions", () => {
   it("deals a fresh hand from the whole list for a topic that plays only some of its words", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({
-      players: [{ name: "Ada", coins: 0, age: "3-4", decks: { "cvc/beginning-sound": inOrder(12) }, progress: { "cvc/beginning-sound": 4 }, results: { "cvc/beginning-sound": [true, false, true, true] } }],
+      players: [{ name: "Ada", coins: 0, age: "3-4", decks: { "cvc/beginning-sound": inOrder(10) }, progress: { "cvc/beginning-sound": 4 }, results: { "cvc/beginning-sound": [true, false, true, true] } }],
       current: "Ada",
     }));
     setPathname("/cvc/beginning-sound");
@@ -1554,18 +1554,18 @@ describe("shuffle questions", () => {
     Math.random.mockImplementation(() => ((calls += 1) * 0.37) % 1);
     const user = userEvent.setup();
     render(<GameApp />);
-    expect(await screen.findByLabelText("Word 5 of 12")).toBeInTheDocument();
+    expect(await screen.findByLabelText("Word 5 of 10")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: /Browse/ }));
     await user.click(screen.getByRole("button", { name: /Shuffle questions/ }));
 
     const player = storedPlayers().players[0];
-    expect(player.decks["cvc/beginning-sound"]).toHaveLength(12);
-    expect(player.decks["cvc/beginning-sound"]).not.toEqual(inOrder(12));
-    expect(player.decks["cvc/beginning-sound"].some((index) => index >= 12)).toBe(true);
+    expect(player.decks["cvc/beginning-sound"]).toHaveLength(10);
+    expect(player.decks["cvc/beginning-sound"]).not.toEqual(inOrder(10));
+    expect(player.decks["cvc/beginning-sound"].some((index) => index >= 10)).toBe(true);
     expect(player.progress["cvc/beginning-sound"]).toBe(0);
     expect(player.results).toBeUndefined();
-    expect(screen.getByLabelText("Word 1 of 12")).toBeInTheDocument();
+    expect(screen.getByLabelText("Word 1 of 10")).toBeInTheDocument();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
@@ -1725,17 +1725,23 @@ describe("parent mode", () => {
     render(<GameApp />);
     await passGrownUpCheck(user);
 
+    // The spelling guide and question counts are folded away until a game's arrow is tapped.
     const switches = (name) => within(within(parentPage()).getByRole("region", { name })).getAllByRole("switch")
-      .map((toggle) => [toggle.querySelector(".spelling-guide-toggle-title").textContent, toggle.getAttribute("aria-checked")]);
+      .map((toggle) => [document.getElementById(toggle.getAttribute("aria-labelledby")).textContent, toggle.getAttribute("aria-checked")]);
     expect(switches(/Ada/)).toEqual([
-      ["CVC Sounds", "true"], ["Consonant Digraphs", "true"], ["R & L Blends", "true"], ["Letter Jumble - Starters", "false"], ["Spelling guide", "false"],
-      ["Letter Jumble - Movers", "false"], ["Spelling guide", "false"], ["中文認字 · 入門篇", "true"],
+      ["CVC Sounds", "true"], ["Consonant Digraphs", "true"], ["R & L Blends", "true"], ["Letter Jumble - Starters", "false"],
+      ["Letter Jumble - Movers", "false"], ["中文認字 · 入門篇", "true"],
       ["中文認字 · 進階篇", "false"], ["量詞配對", "false"], ["成語", "false"], ["Mochi the Rainbow Dragon", "true"],
     ]);
     expect(switches(/Elly/)).toEqual([
-      ["CVC Sounds", "false"], ["Consonant Digraphs", "true"], ["R & L Blends", "true"], ["Letter Jumble - Starters", "true"], ["Spelling guide", "false"],
-      ["Letter Jumble - Movers", "true"], ["Spelling guide", "false"], ["中文認字 · 入門篇", "false"],
+      ["CVC Sounds", "false"], ["Consonant Digraphs", "true"], ["R & L Blends", "true"], ["Letter Jumble - Starters", "true"],
+      ["Letter Jumble - Movers", "true"], ["中文認字 · 入門篇", "false"],
       ["中文認字 · 進階篇", "true"], ["量詞配對", "true"], ["成語", "true"], ["Mochi the Rainbow Dragon", "true"],
+    ]);
+    const ada = within(parentPage()).getByRole("region", { name: /Ada/ });
+    expect(within(ada).getAllByRole("button", { name: /More settings for/ }).map((button) => button.getAttribute("aria-label"))).toEqual([
+      "More settings for CVC Sounds", "More settings for Consonant Digraphs", "More settings for R & L Blends",
+      "More settings for Letter Jumble - Starters", "More settings for Letter Jumble - Movers",
     ]);
     expect(within(parentPage()).queryByRole("button", { name: /Focus/ })).not.toBeInTheDocument();
   });
@@ -1746,7 +1752,14 @@ describe("parent mode", () => {
     render(<GameApp />);
     await passGrownUpCheck(user);
     const elly = within(parentPage()).getByRole("region", { name: /Elly/ });
-    const guideFor = (name) => within(within(elly).getByRole("switch", { name: new RegExp(name) }).closest("li")).getByRole("switch", { name: /Spelling guide/ });
+    const guideFor = (name) => within(within(elly).getByRole("switch", { name }).closest("li")).getByRole("switch", { name: /Spelling guide/ });
+    // Folded away under the arrow below "On".
+    expect(within(within(elly).getByRole("switch", { name: "Letter Jumble - Starters" }).closest("li")).queryByRole("switch", { name: /Spelling guide/ })).not.toBeInTheDocument();
+    const arrow = within(elly).getByRole("button", { name: "More settings for Letter Jumble - Starters" });
+    expect(arrow).toHaveAttribute("aria-expanded", "false");
+    await user.click(arrow);
+    expect(arrow).toHaveAttribute("aria-expanded", "true");
+    await user.click(within(elly).getByRole("button", { name: "More settings for Letter Jumble - Movers" }));
     await user.click(guideFor("Letter Jumble - Starters"));
     expect(guideFor("Letter Jumble - Starters")).toHaveAttribute("aria-checked", "true");
     expect(guideFor("Letter Jumble - Movers")).toHaveAttribute("aria-checked", "false");
@@ -1755,6 +1768,34 @@ describe("parent mode", () => {
 
     await user.click(guideFor("Letter Jumble - Starters"));
     expect(storedPlayers().players.find((player) => player.name === "Elly").spellingGuide).toBeUndefined();
+  });
+
+  it("chooses how many questions a round of CVC Sounds, Digraphs or Blends has, 10 to begin with", async () => {
+    seedChildren();
+    const user = userEvent.setup();
+    render(<GameApp />);
+    await passGrownUpCheck(user);
+    const ada = within(parentPage()).getByRole("region", { name: /Ada/ });
+    await user.click(within(ada).getByRole("button", { name: "More settings for CVC Sounds" }));
+    const counts = within(ada).getByRole("radiogroup", { name: "Questions per round" });
+    expect(within(counts).getAllByRole("radio").map((radio) => [radio.textContent, radio.getAttribute("aria-checked")])).toEqual([
+      ["5", "false"], ["10", "true"], ["15", "false"], ["20", "false"],
+    ]);
+    await user.click(within(counts).getByRole("radio", { name: "5" }));
+    expect(storedPlayers().players.find((player) => player.name === "Ada").questionCounts).toEqual({ cvc: 5 });
+    await user.click(within(counts).getByRole("radio", { name: "10" }));
+    expect(storedPlayers().players.find((player) => player.name === "Ada").questionCounts).toBeUndefined();
+  });
+
+  it("deals the chosen number of questions", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "3-4", questionCounts: { cvc: 15 } }], current: "Ada" }));
+    const user = userEvent.setup();
+    render(<GameApp />);
+    await user.click(screen.getByRole("button", { name: /CVC Sounds/ }));
+    expect(screen.getByRole("button", { name: /Beginning Sound/ })).toHaveTextContent("15 words to learn");
+    await user.click(screen.getByRole("button", { name: /Beginning Sound/ }));
+    expect(screen.getByLabelText("Word 1 of 15")).toBeInTheDocument();
+    expect(storedPlayers().players[0].decks["cvc/beginning-sound"]).toHaveLength(15);
   });
 
   it("turning a game off hides it from that child only", async () => {
@@ -1782,7 +1823,7 @@ describe("parent mode", () => {
 
     const ada = within(parentPage()).getByRole("region", { name: /Ada/ });
     const movers = within(ada).getByRole("switch", { name: /Letter Jumble - Movers/ });
-    expect(movers).toHaveTextContent("Off · for 5-6 years old");
+    expect(movers.closest(".parent-mode-setting")).toHaveTextContent("Off · for 5-6 years old");
     await user.click(movers);
     await user.click(within(parentPage()).getByRole("button", { name: /Done/ }));
 

@@ -1184,42 +1184,6 @@ h1 span {
   margin-top: 25px;
 }
 
-.spelling-guide-toggle {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  border: 2px solid var(--line);
-  border-radius: 16px;
-  background: #fff;
-  padding: 10px 12px;
-  color: var(--ink);
-  cursor: pointer;
-  text-align: left;
-  transition: border-color 120ms ease;
-}
-
-.spelling-guide-toggle:hover {
-  border-color: var(--line-strong);
-}
-
-.spelling-guide-toggle-copy {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.spelling-guide-toggle-title {
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.spelling-guide-toggle-note {
-  color: var(--muted);
-  font-size: 11px;
-}
-
 .toggle-track {
   position: relative;
   display: block;
@@ -1243,11 +1207,11 @@ h1 span {
   transition: transform 160ms ease;
 }
 
-.spelling-guide-toggle[aria-checked="true"] .toggle-track {
+.parent-mode-switch[aria-checked="true"] .toggle-track {
   background: var(--magic);
 }
 
-.spelling-guide-toggle[aria-checked="true"] .toggle-thumb {
+.parent-mode-switch[aria-checked="true"] .toggle-thumb {
   transform: translateX(16px);
 }
 
@@ -3022,30 +2986,134 @@ h1 span {
 
 .parent-game {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  gap: 6px;
 }
 
-/* A Letter Jumble game's spelling guide switch, tucked under the game's own switch. */
-.parent-game-guide {
-  display: block;
-  width: 100%;
+/* One setting: its title and note, and a switch (or choices) on the right. */
+.parent-mode-setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  padding: 10px 12px;
+  color: var(--ink);
+}
+
+.parent-mode-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.parent-mode-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.parent-mode-note {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.parent-game-off .parent-mode-title {
+  color: var(--muted);
+}
+
+/* The switch itself: the whole track is a comfortable tap target. */
+.parent-mode-switch {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  border: 0;
+  background: none;
+  padding: 10px 0 10px 8px;
+  cursor: pointer;
+}
+
+/* The arrow under "On" that opens a game's more settings. */
+.parent-mode-expand {
+  display: grid;
+  width: 30px;
+  height: 22px;
+  place-items: center;
+  margin-top: 2px;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: var(--magic-soft);
+  color: var(--magic-dark);
+  cursor: pointer;
+}
+
+.parent-mode-expand svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3;
+  transition: transform 160ms ease;
+}
+
+.parent-mode-expand[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+
+/* A game's more settings, tucked under it. */
+.parent-game-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   padding-left: 24px;
 }
 
-.parent-game-guide .spelling-guide-toggle {
+.parent-game-options[hidden] {
+  display: none;
+}
+
+.parent-game-options .parent-mode-setting {
   border-style: dashed;
   padding-block: 6px;
 }
 
-.parent-game .parent-game-toggle {
-  flex: 1;
-  min-width: 0;
+/* Choices drop under their title when there isn't room beside it. */
+.parent-mode-setting-choices {
+  flex-wrap: wrap;
 }
 
-.parent-game-off .spelling-guide-toggle-title {
-  color: var(--muted);
+.parent-mode-setting-choices .parent-mode-copy {
+  flex: 1 1 150px;
+}
+
+.parent-mode-choices {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 4px;
+}
+
+.parent-mode-choice {
+  min-width: 38px;
+  height: 34px;
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.parent-mode-choice[aria-checked="true"] {
+  border-color: var(--magic);
+  background: var(--magic);
+  color: #fff;
 }
 
 .parent-warning {

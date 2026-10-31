@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ageGroups, games } from "../games-data";
+import { ageGroups, defaultQuestionCount, games, questionCountChoices } from "../games-data";
 
 export const playersStorageKey = "letter-jumble:players";
 // Coins saved before players existed; they're given to the first player created.
@@ -29,6 +29,13 @@ function cleanPlayer(player) {
   const guideGames = player.spellingGuide === true ? spellingGuideGames
     : Array.isArray(player.spellingGuide) ? [...new Set(player.spellingGuide.filter((id) => spellingGuideGames.includes(id)))] : [];
   if (guideGames.length > 0) cleaned.spellingGuide = guideGames;
+  // How many questions a parent chose for a game's rounds (only those that aren't the default).
+  if (player.questionCounts && typeof player.questionCounts === "object") {
+    const countGames = games.filter((game) => game.questionCount).map((game) => game.id);
+    const questionCounts = Object.fromEntries(Object.entries(player.questionCounts)
+      .filter(([id, count]) => countGames.includes(id) && questionCountChoices.includes(count) && count !== defaultQuestionCount));
+    if (Object.keys(questionCounts).length > 0) cleaned.questionCounts = questionCounts;
+  }
   if (player.gameSettings && typeof player.gameSettings === "object") {
     const gameSettings = Object.fromEntries(Object.entries(player.gameSettings).filter(([, on]) => typeof on === "boolean"));
     if (Object.keys(gameSettings).length > 0) cleaned.gameSettings = gameSettings;
@@ -160,6 +167,16 @@ export function usePlayers() {
     });
   }
 
+  // Parent settings: how many questions a round of one of a child's games deals.
+  function setQuestionCount(name, gameId, count) {
+    updatePlayer(name, (player) => {
+      const { questionCounts: old = {}, ...rest } = player;
+      const questionCounts = { ...old, [gameId]: count };
+      if (count === defaultQuestionCount) delete questionCounts[gameId];
+      return Object.keys(questionCounts).length > 0 ? { ...rest, questionCounts } : rest;
+    });
+  }
+
   function selectPlayer(name) {
     setState((current) => ({ ...current, current: name }));
   }
@@ -255,5 +272,6 @@ export function usePlayers() {
     saveProgress,
     setGameEnabled,
     setSpellingGuide,
+    setQuestionCount,
   };
 }
