@@ -4928,9 +4928,15 @@ a:focus-visible {
   gap: 6px;
 }
 
+/* Groups of things: each kind in its own row. */
+.math-groups {
+  flex-direction: column;
+}
+
 .math-group + .math-group {
-  border-left: 3px dashed var(--line);
-  padding-left: 14px;
+  width: 100%;
+  border-top: 3px dashed var(--line);
+  padding-top: 14px;
 }
 
 .math-thing {

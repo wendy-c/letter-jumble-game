@@ -1,8 +1,8 @@
 // Makes K3's twenty Daily Challenge levels, the same every time (each level has its own seed).
 // Every level has ten questions, in a mixed-up order: one count of shapes or leaves, two little
-// stories (things coming and going, a queue, swapping animals), two sums typed on a number pad,
-// two about numbers to 100 (runs with a gap, odd and even, putting in order), two logic puzzles
-// and one about everyday things (prices, coins, days of the week, the time).
+// stories (things coming and going, a queue, swapping animals), two sums or number bonds typed on
+// a number pad, two about numbers to 100 (runs with a gap, odd and even, putting in order), two
+// logic puzzles and one about everyday things (prices, coins, days of the week, the time).
 import { seededRandom } from "../lib/spelling";
 import { gridPattern } from "./math-generator";
 
@@ -269,6 +269,19 @@ function makers(random, level) {
       const parts = [between(2, 9), between(2, 9), between(1, 6)];
       while (parts[0] + parts[1] + parts[2] > 20) parts[0] -= 1;
       return pad(`${parts.join(" + ")} = ?`, parts[0] + parts[1] + parts[2]);
+    },
+    // A number bond to 20, no picture: the whole and one part, the other part typed in.
+    bond() {
+      const whole = between(11, 20);
+      const part = between(whole - 9, 9);
+      return question({
+        prompt: say("Type the missing number in the number bond.", "用數字鍵輸入數字組合中缺少的數字。"),
+        answer: whole - part,
+        title: `Number bond of ${whole}`,
+        visual: { type: "bond", whole, parts: random() < 0.5 ? [part, null] : [null, part] },
+        options: [{ label: String(whole - part), correct: true }],
+        input: "pad",
+      });
     },
     missing() {
       const total = between(11, 19);
@@ -553,7 +566,7 @@ export function generateK3Level(level) {
   const plan = [
     ["counting", random() < 0.5 ? "countShapes" : "countLeaves"],
     ...choose(["comeAndGo", "queue", "exchange"], 2).map((name) => ["story", name]),
-    ...choose(["add", "subtract", "threeNumbers", "missing"], 2).map((name) => ["sum", name]),
+    ...choose(["add", "subtract", "threeNumbers", "missing", "bond"], 2).map((name) => ["sum", name]),
     ...choose(["oddEven", "skipCount", "order"], 2).map((name) => ["numbers", name]),
     ...choose(["legsOrWheels", "oddOneOut", "shading", "mostRow", "turningGrid"], 2).map((name) => ["logic", name]),
     ["everyday", everyday],

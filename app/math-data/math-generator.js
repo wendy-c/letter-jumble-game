@@ -9,23 +9,44 @@ const art = "/images/game-asset";
 // when some of them go (for take-away questions).
 const things = {
   cat: { picture: `${art}/animals/cat.svg`, en: ["cat", "cats"], zh: "貓", unit: "隻", gone: ["run away", "跑走了"] },
-  duck: { picture: `${art}/animals/duck.svg`, en: ["duck", "ducks"], zh: "鴨子", unit: "隻", gone: ["swim away", "游走了"] },
-  frog: { picture: `${art}/animals/frog.svg`, en: ["frog", "frogs"], zh: "青蛙", unit: "隻", gone: ["hop away", "跳走了"] },
-  bee: { picture: `${art}/animals/bee.svg`, en: ["bee", "bees"], zh: "蜜蜂", unit: "隻", gone: ["fly away", "飛走了"] },
-  butterfly: { picture: `${art}/animals/butterfly.svg`, en: ["butterfly", "butterflies"], zh: "蝴蝶", unit: "隻", gone: ["fly away", "飛走了"] },
-  bird: { picture: `${art}/animals/bird.svg`, en: ["bird", "birds"], zh: "小鳥", unit: "隻", gone: ["fly away", "飛走了"] },
+  dog: { picture: `${art}/animals/dog.svg`, en: ["dog", "dogs"], zh: "狗", unit: "隻", gone: ["run away", "跑走了"] },
   rabbit: { picture: `${art}/animals/rabbit.svg`, en: ["rabbit", "rabbits"], zh: "兔子", unit: "隻", gone: ["hop away", "跳走了"] },
   pig: { picture: `${art}/animals/pig.svg`, en: ["pig", "pigs"], zh: "豬", unit: "隻", gone: ["run away", "跑走了"] },
+  sheep: { picture: `${art}/animals/sheep.svg`, en: ["sheep", "sheep"], zh: "綿羊", unit: "隻", gone: ["run away", "跑走了"] },
+  goat: { picture: `${art}/animals/goat.svg`, en: ["goat", "goats"], zh: "山羊", unit: "隻", gone: ["run away", "跑走了"] },
+  chicken: { picture: `${art}/animals/chicken.svg`, en: ["chicken", "chickens"], zh: "雞", unit: "隻", gone: ["run away", "跑走了"] },
+  duck: { picture: `${art}/animals/duck.svg`, en: ["duck", "ducks"], zh: "鴨子", unit: "隻", gone: ["swim away", "游走了"] },
+  bird: { picture: `${art}/animals/bird.svg`, en: ["bluebird", "bluebirds"], zh: "藍色小鳥", unit: "隻", gone: ["fly away", "飛走了"] },
+  parrot: { picture: `${art}/animals/parrot.svg`, en: ["parrot", "parrots"], zh: "鸚鵡", unit: "隻", gone: ["fly away", "飛走了"] },
+  swan: { picture: `${art}/animals/swan.svg`, en: ["swan", "swans"], zh: "天鵝", unit: "隻", gone: ["swim away", "游走了"] },
+  bee: { picture: `${art}/animals/bee.svg`, en: ["bee", "bees"], zh: "蜜蜂", unit: "隻", gone: ["fly away", "飛走了"] },
+  butterfly: { picture: `${art}/animals/butterfly.svg`, en: ["butterfly", "butterflies"], zh: "蝴蝶", unit: "隻", gone: ["fly away", "飛走了"] },
+  dragonfly: { picture: `${art}/animals/dragonfly.svg`, en: ["dragonfly", "dragonflies"], zh: "蜻蜓", unit: "隻", gone: ["fly away", "飛走了"] },
+  moth: { picture: `${art}/animals/moth.svg`, en: ["moth", "moths"], zh: "飛蛾", unit: "隻", gone: ["fly away", "飛走了"] },
+  frog: { picture: `${art}/animals/frog.svg`, en: ["frog", "frogs"], zh: "青蛙", unit: "隻", gone: ["hop away", "跳走了"] },
   apple: { picture: `${art}/math/apple.svg`, en: ["apple", "apples"], zh: "蘋果", unit: "個", gone: ["are eaten", "被吃掉了"] },
+  orange: { picture: `${art}/food/orange.svg`, en: ["orange", "oranges"], zh: "橙", unit: "個", gone: ["are eaten", "被吃掉了"] },
+  pear: { picture: `${art}/food/pear.svg`, en: ["pear", "pears"], zh: "啤梨", unit: "個", gone: ["are eaten", "被吃掉了"] },
   cake: { picture: `${art}/food/cake.svg`, en: ["cake", "cakes"], zh: "蛋糕", unit: "個", gone: ["are eaten", "被吃掉了"] },
-  ball: { picture: `${art}/starters/ball.svg`, en: ["ball", "balls"], zh: "球", unit: "個", gone: ["roll away", "滾走了"] },
+  ball: { picture: `${art}/starters/ball.svg`, en: ["beach ball", "beach balls"], zh: "沙灘球", unit: "個", gone: ["roll away", "滾走了"] },
+  football: { picture: `${art}/starters/football.svg`, en: ["football", "footballs"], zh: "足球", unit: "個", gone: ["roll away", "滾走了"] },
+  basketball: { picture: `${art}/starters/basketball.svg`, en: ["basketball", "basketballs"], zh: "籃球", unit: "個", gone: ["roll away", "滾走了"] },
   car: { picture: `${art}/starters/car.svg`, en: ["car", "cars"], zh: "汽車", unit: "架", gone: ["drive away", "開走了"] },
+  bus: { picture: `${art}/cvc/bus.svg`, en: ["bus", "buses"], zh: "巴士", unit: "架", gone: ["drive away", "開走了"] },
+  truck: { picture: `${art}/blends/truck.svg`, en: ["truck", "trucks"], zh: "貨車", unit: "架", gone: ["drive away", "開走了"] },
+  bike: { picture: `${art}/starters/bike.svg`, en: ["bike", "bikes"], zh: "單車", unit: "架", gone: ["are ridden away", "被騎走了"] },
   kite: { picture: `${art}/starters/kite.svg`, en: ["kite", "kites"], zh: "風箏", unit: "隻", gone: ["blow away", "被吹走了"] },
   teddy: { picture: `${art}/starters/teddy-bear.svg`, en: ["teddy bear", "teddy bears"], zh: "熊仔", unit: "隻", gone: ["are put away", "被收起了"] },
   cookie: { picture: `${art}/food/biscuit.svg`, en: ["cookie", "cookies"], zh: "曲奇", unit: "塊", gone: ["are eaten", "被吃掉了"] },
 };
-// Things that share a measure word, so two kinds can be counted together in Chinese.
-const families = [["cat", "duck", "frog", "bee", "butterfly", "bird", "rabbit", "pig"], ["apple", "cake", "ball"], ["teddy", "kite"], ["car"], ["cookie"]];
+// Kinds of things that belong together (pets, farm animals, birds, bugs, fruit, balls, vehicles,
+// toys), each sharing a measure word so they can be counted together in Chinese. A picture with
+// more than one kind of thing only ever mixes kinds from one of these.
+const categories = [
+  ["cat", "dog", "rabbit"], ["pig", "sheep", "goat", "chicken"], ["duck", "bird", "parrot", "swan"],
+  ["bee", "butterfly", "dragonfly", "moth"], ["apple", "orange", "pear"], ["ball", "football", "basketball"],
+  ["car", "bus", "truck", "bike"], ["teddy", "kite"],
+];
 // Things it makes sense to swap for each other.
 const swappable = ["apple", "cake", "cookie", "ball", "kite", "teddy"];
 
@@ -147,15 +168,20 @@ function makers(random) {
   // The smallest "big" number a level uses, so later levels don't ask easy sums.
   const low = (n) => Math.max(3, Math.ceil(n / 2));
   const pick = (list) => list[Math.floor(random() * list.length)];
-  // Two different things that share a measure word.
+  // A shuffle that comes out the same in every browser (sorting with a random comparator doesn't:
+  // each JavaScript engine sorts its own way).
+  const mix = (list) => list.map((item) => [random(), item]).sort((a, b) => a[0] - b[0]).map(([, item]) => item);
+  // Two different kinds of thing from one category.
   const twoThings = () => {
-    const family = pick(families.filter((list) => list.length > 1));
-    const first = pick(family);
-    return [things[first], things[pick(family.filter((id) => id !== first))]];
+    const category = pick(categories);
+    const first = pick(category);
+    return [things[first], things[pick(category.filter((id) => id !== first))]];
   };
 
   return {
-    bond(n) {
+    // A number bond, with a picture of its two parts (each kind in its own row) when the whole is
+    // at least `pictureFrom`.
+    bond(n, pictureFrom = 0) {
       const whole = between(low(n), n);
       const part = between(1, whole - 1);
       const [a, b] = twoThings();
@@ -166,18 +192,18 @@ function makers(random) {
         },
         answer: whole - part,
         title: `Number bond of ${whole}`,
-        scene: { type: "groups", groups: [{ picture: a.picture, count: part }, { picture: b.picture, count: whole - part }] },
+        scene: whole >= pictureFrom ? { type: "groups", groups: [{ picture: a.picture, count: part }, { picture: b.picture, count: whole - part }] } : null,
         visual: { type: "bond", whole, parts: [part, null] },
       });
     },
     count(n) {
-      const kinds = pick(families.filter((list) => list.length > 2));
-      const [target, ...others] = [...kinds].sort(() => random() - 0.5).slice(0, 3);
+      const kinds = pick(categories.filter((list) => list.length > 2));
+      const [target, ...others] = mix(kinds).slice(0, 3);
       const answer = between(Math.max(2, low(n) - 2), n);
-      const items = [
+      const items = mix([
         ...Array(answer).fill(things[target].picture),
         ...others.flatMap((id) => Array(between(1, 3)).fill(things[id].picture)),
-      ].sort(() => random() - 0.5);
+      ]);
       const thing = things[target];
       return question({
         prompt: { en: `How many ${thing.en[1]} can you find?`, zh: `你能找到多少${thing.unit}${thing.zh}？` },
@@ -246,9 +272,9 @@ function makers(random) {
     // way, then half turns with three cells to fill.
     grid(level) {
       const turn = level < 7 ? "clockwise" : level < 14 ? pick(["clockwise", "anticlockwise"]) : pick(["clockwise", "anticlockwise", "half"]);
-      const cells = [0, 1, 2, 3].sort(() => random() - 0.5);
+      const cells = mix([0, 1, 2, 3]);
       const blanks = cells.slice(0, level < 14 ? 2 : 3).sort();
-      const start = [0, 1, 2, 3].sort(() => random() - 0.5);
+      const start = mix([0, 1, 2, 3]);
       return gridPattern({ set: pick(Object.keys(gridSets)), turn, blanks, start });
     },
     pattern(level) {
@@ -280,7 +306,7 @@ function makers(random) {
       });
     },
     swap(n) {
-      const [x, y, z] = [...swappable].sort(() => random() - 0.5).slice(0, 3).map((id) => things[id]);
+      const [x, y, z] = mix(swappable).slice(0, 3).map((id) => things[id]);
       let first = between(2, 3);
       let second = between(2, 4);
       while (first * second > n) second -= 1;
@@ -301,10 +327,10 @@ function makers(random) {
   };
 }
 
-// A level's ten questions. K1's levels count up to 10 (more as they go on); K2's (also played by
-// K3) count to 20, with missing numbers, swaps and turning grids too.
+// A level's ten questions. K1's levels count up to 10 (more as they go on); K2's count to 20, with
+// missing numbers, swaps and turning grids too, and number bonds under 10 without a picture.
 export function generateLevel(age, level) {
-  // Seeded by the set's old name ("3-4", "5-6"), so the levels stay the same as before K1-K3.
+  // Seeded by the set's old name ("3-4", "5-6").
   const random = seededRandom(`daily-challenge:${{ k1: "3-4", k2: "5-6" }[age]}:${level}`);
   const make = makers(random);
   if (age === "k1") {
@@ -317,6 +343,6 @@ export function generateLevel(age, level) {
   const n = Math.min(20, 10 + Math.ceil(level / 2));
   return [
     make.count(Math.min(n, 15)), make.sequence(n, level), make.grid(level), make.sum(n), make.missingAddend(n),
-    make.frame(n), make.swap(n), make.difference(n), make.difference(n), make.bond(n),
+    make.frame(n), make.swap(n), make.difference(n), make.difference(n), make.bond(n, 10),
   ];
 }

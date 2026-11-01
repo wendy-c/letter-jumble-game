@@ -77,6 +77,31 @@ describe("Daily Challenge", () => {
     ]);
   });
 
+  it("draws number bonds for K1, but from K2 on only when the whole is 10 or more", () => {
+    const bonds = (age) => levelsFor(age).flatMap((level) => level.words).filter((question) => question.visual?.type === "bond");
+    bonds("k1").forEach((question) => expect(Boolean(question.picture || question.scene)).toBe(true));
+    const k2 = bonds("k2");
+    expect(k2.some((question) => question.visual.whole < 10)).toBe(true);
+    expect(k2.some((question) => question.visual.whole >= 10)).toBe(true);
+    k2.forEach((question) => expect(Boolean(question.scene)).toBe(question.visual.whole >= 10));
+    bonds("k3").forEach((question) => expect(question.scene).toBeNull());
+  });
+
+  it("only puts things of one kind together in a picture (bugs with bugs, vehicles with vehicles), each kind in its own group", () => {
+    const category = {};
+    [["cat", "dog", "rabbit"], ["pig", "sheep", "goat", "chicken"], ["duck", "bird", "parrot", "swan"], ["bee", "butterfly", "dragonfly", "moth"],
+      ["apple", "orange", "pear"], ["ball", "football", "basketball"], ["car", "bus", "truck", "bike"], ["teddy-bear", "kite"]]
+      .forEach((names, index) => names.forEach((name) => { category[name] = index; }));
+    const nameOf = (picture) => picture.split("/").pop().replace(".svg", "");
+    const generated = mathLevels.filter((level) => level.ages[0] !== "k3").flatMap((level) => level.words);
+    const mixed = generated.flatMap((question) => (
+      question.scene?.type === "groups" ? [question.scene.groups.map((group) => group.picture)]
+        : question.scene?.type === "count" ? [question.scene.items] : []
+    )).map((pictures) => [...new Set(pictures.map(nameOf))]).filter((names) => names.length > 1);
+    expect(mixed.length).toBeGreaterThan(50);
+    mixed.forEach((names) => expect(new Set(names.map((name) => category[name])).size).toBe(1));
+  });
+
   it("gives 5-6 year olds turning-grid puzzles instead of rows of pictures", () => {
     const patterns = (age) => levelsFor(age).flatMap((level) => level.words).map((question) => question.visual?.type).filter((type) => type === "pattern" || type === "grids");
     expect(new Set(patterns("k2"))).toEqual(new Set(["grids"]));
@@ -93,6 +118,35 @@ describe("Daily Challenge", () => {
     expect(sweets.options.filter((option) => option.correct).map((option) => option.cells.map(file)))
       .toEqual([["candy-dots.svg", "candy-heart.svg", "candy-box.svg", "candy-star.svg"]]);
     expect(sweets.options).toHaveLength(4);
+  });
+
+  it("makes the same levels in every browser, however its JavaScript sorts", () => {
+    const fingerprint = (levels) => JSON.stringify(levels.map((level) => level.words.map((question) => (
+      [question.answers[0], question.answer, question.scene, question.visual, question.options.map((option) => option.label)]
+    ))));
+    const original = Array.prototype.sort;
+    let other;
+    // A plain insertion sort: it calls the comparison in a different order from the usual one.
+    Array.prototype.sort = function insertionSort(compare = (a, b) => (String(a) < String(b) ? -1 : String(a) > String(b) ? 1 : 0)) {
+      const items = [...this];
+      for (let index = 1; index < items.length; index += 1) {
+        const item = items[index];
+        let place = index;
+        while (place > 0 && compare(items[place - 1], item) > 0) {
+          items[place] = items[place - 1];
+          place -= 1;
+        }
+        items[place] = item;
+      }
+      items.forEach((item, index) => { this[index] = item; });
+      return this;
+    };
+    try {
+      jest.isolateModules(() => { other = fingerprint(require("../math-data").mathLevels); });
+    } finally {
+      Array.prototype.sort = original;
+    }
+    expect(other).toBe(fingerprint(mathLevels));
   });
 
   it("has every picture it uses", () => {
@@ -155,10 +209,15 @@ describe("Daily Challenge for K3", () => {
     ].forEach((title) => expect(titles.some((text) => title.test(text))).toBe(true));
   });
 
-  it("has its sums typed on a number pad, with the right answer worked out", () => {
+  it("has its sums and number bonds typed on a number pad, with the right answer worked out", () => {
     const sums = k3.flatMap((level) => level.words).filter((question) => question.kind === "sum");
     sums.forEach((question) => {
       expect(question.input).toBe("pad");
+      if (question.visual.type === "bond") {
+        const part = question.visual.parts.find((value) => value !== null);
+        expect(Number(question.answer)).toBe(question.visual.whole - part);
+        return;
+      }
       const [left, right] = question.visual.text.split(" = ");
       const work = (text) => Function(`return ${text.replace(/−/g, "-")}`)();
       if (right === "?") expect(work(left)).toBe(Number(question.answer));
@@ -169,13 +228,25 @@ describe("Daily Challenge for K3", () => {
     expect(k3.flatMap((level) => level.words).filter((question) => question.input === "pad").every((question) => question.kind === "sum")).toBe(true);
   });
 
+  it("asks some number bonds to 20, without a picture", () => {
+    const bonds = k3.flatMap((level) => level.words).filter((question) => question.visual?.type === "bond");
+    expect(bonds.length).toBeGreaterThanOrEqual(4);
+    bonds.forEach((question) => {
+      expect(question.scene).toBeNull();
+      expect(question.picture).toBeNull();
+      expect(question.visual.whole).toBeLessThanOrEqual(20);
+    });
+  });
+
   it("asks about numbers to 100 going up and down, in twos (odd and even), fives, tens and ones", () => {
     const runs = k3.flatMap((level) => level.words).filter((question) => question.visual?.type === "sequence");
     const steps = new Set(runs.map((question) => {
       const [a, b, c] = question.visual.items;
       return a !== null && b !== null ? b - a : c - (a ?? b - (c - b));
     }));
-    [2, -2, 5, 10, 1].forEach((step) => expect(steps.has(step)).toBe(true));
+    [1, 2, 5, 10].forEach((size) => expect(steps.has(size) || steps.has(-size)).toBe(true));
+    expect([...steps].some((step) => step > 0) && [...steps].some((step) => step < 0)).toBe(true);
+    expect(steps.has(2) && steps.has(-2)).toBe(true);
     runs.forEach((question) => question.visual.items.filter((item) => item !== null).forEach((item) => {
       expect(item).toBeGreaterThanOrEqual(0);
       expect(item).toBeLessThanOrEqual(100);
