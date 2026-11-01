@@ -67,7 +67,7 @@ const pictureSteps = {
     {
       picture: "/images/how-to/mochi-den.jpg",
       en: "Interact with Mochi by collecting rainbow coins. Click on the road sign to visit the Rainbow Village.",
-      zh: "收集彩虹金幣，就可以跟 Mochi 玩。按一按路牌，就可以去彩虹村。",
+      zh: "收集彩虹金幣，就可以跟 Mochi 玩。按一按路牌，就可以去彩虹鎮。",
     },
     {
       picture: "/images/how-to/rainbow-village.jpg",
