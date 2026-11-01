@@ -10,6 +10,6 @@ export default {
 };
 
 export const SomeEarned = {
-  args: { player: { name: "Ada", age: "3-4", badges: ["cvc/beginning-sound", "cvc/middle-sound", "chinese/colours"] } },
+  args: { player: { name: "Ada", age: "k1", badges: ["cvc/beginning-sound", "cvc/middle-sound", "chinese/colours"] } },
 };
-export const NoneYet = { args: { player: { name: "Elly", age: "5-6" } } };
+export const NoneYet = { args: { player: { name: "Elly", age: "k3" } } };

@@ -2162,7 +2162,7 @@ h1 span {
 
 .age-choice {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
 }
 
@@ -4920,7 +4920,6 @@ a:focus-visible {
   padding: 16px;
 }
 
-.math-group,
 .math-count {
   display: flex;
   flex-wrap: wrap;
@@ -4928,9 +4927,22 @@ a:focus-visible {
   gap: 6px;
 }
 
+/* Its columns (5, or 10 for more than 10) are set by the game. */
+.math-group {
+  display: grid;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* Groups of things: each kind in its own row. */
+.math-groups {
+  flex-direction: column;
+}
+
 .math-group + .math-group {
-  border-left: 3px dashed var(--line);
-  padding-left: 14px;
+  width: 100%;
+  border-top: 3px dashed var(--line);
+  padding-top: 14px;
 }
 
 .math-thing {
@@ -4945,6 +4957,12 @@ a:focus-visible {
 
 .math-scene-many .math-thing img {
   width: clamp(24px, 6vw, 44px);
+}
+
+/* Rows of 10 fit a phone's width. */
+.math-group-tens .math-thing img,
+.math-scene-many .math-group-tens .math-thing img {
+  width: clamp(18px, 5.4vw, 38px);
 }
 
 /* Taken away: faded, with a cross. */
@@ -5224,4 +5242,482 @@ a:focus-visible {
     min-height: 60px;
     font-size: 26px;
   }
+}
+
+/* K3's Daily Challenge: shapes to count, a pile of leaves, things coming and going, a queue,
+   rows of things, a menu, coins, a week and a clock. */
+.math-shapes {
+  display: block;
+  height: auto;
+  aspect-ratio: 8 / 5;
+  stroke: var(--outline);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+
+.math-scatter {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 10;
+  background: #f4fbe9;
+}
+
+.math-scatter img {
+  position: absolute;
+  width: clamp(34px, 12%, 64px);
+  height: auto;
+}
+
+.math-steps {
+  gap: 8px;
+}
+
+.math-steps img {
+  width: clamp(20px, 5vw, 30px);
+  height: auto;
+}
+
+.math-steps-start {
+  display: flex;
+  max-width: 180px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 3px;
+}
+
+.math-steps-change {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.math-steps-arrow {
+  color: var(--muted);
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.math-steps-chip {
+  display: flex;
+  max-width: 110px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border: 3px solid;
+  border-radius: 14px;
+  padding: 4px 6px;
+}
+
+.math-steps-chip b {
+  width: 100%;
+  text-align: center;
+  font-size: 20px;
+}
+
+.math-steps-go {
+  border-color: #f4a3b4;
+  background: #fff0f3;
+  color: #d9436a;
+}
+
+.math-steps-go img {
+  opacity: 0.5;
+}
+
+.math-steps-come {
+  border-color: #9fdcc0;
+  background: #ecfaf2;
+  color: #2f8f55;
+}
+
+.math-queue {
+  flex-wrap: nowrap;
+  gap: 6px;
+}
+
+.math-queue-line {
+  display: flex;
+  min-width: 0;
+  align-items: flex-end;
+  gap: clamp(1px, 0.6vw, 4px);
+  border-bottom: 3px solid var(--line-strong);
+  padding-bottom: 4px;
+}
+
+.math-queue-person {
+  width: clamp(12px, 3.2vw, 22px);
+  height: auto;
+  flex: 0 1 auto;
+  min-width: 0;
+  fill: #cfc4e6;
+}
+
+.math-queue-hero {
+  width: clamp(30px, 8vw, 48px);
+  height: auto;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px var(--gold);
+  background: var(--gold-soft);
+}
+
+.math-queue-end {
+  flex: none;
+  border-radius: 999px;
+  background: var(--magic-soft);
+  padding: 4px 8px;
+  color: var(--magic-dark);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.math-rows {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.math-row {
+  display: flex;
+  align-items: center;
+  gap: clamp(2px, 1vw, 8px);
+}
+
+.math-row + .math-row {
+  border-top: 2px dashed var(--line);
+  padding-top: 6px;
+}
+
+.math-row img {
+  width: clamp(24px, 6.5vw, 40px);
+  height: auto;
+}
+
+.math-row-number {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--magic);
+  color: #fff;
+  font-weight: 700;
+}
+
+.math-menu {
+  flex-direction: column;
+  gap: 10px;
+}
+
+.math-menu-items,
+.math-menu-buyers {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.math-menu-buyers {
+  grid-template-columns: repeat(2, 1fr);
+  border-top: 3px dashed var(--line);
+  padding-top: 10px;
+}
+
+.math-menu-item,
+.math-menu-buyer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.math-menu-item {
+  flex-direction: column;
+}
+
+.math-menu img {
+  width: clamp(32px, 9vw, 48px);
+  height: auto;
+}
+
+.math-menu .math-menu-who {
+  width: clamp(38px, 10vw, 56px);
+  margin-right: 4px;
+}
+
+.math-price {
+  border-radius: 8px;
+  background: var(--gold-soft);
+  padding: 1px 8px;
+  color: var(--gold-deep);
+  font-size: 16px;
+}
+
+.math-coins {
+  gap: 20px;
+}
+
+.math-coin-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.math-coin-row img {
+  height: auto;
+}
+
+.math-coin-item img {
+  width: 64px;
+}
+
+.math-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin: 0;
+  list-style: none;
+}
+
+.math-week li {
+  display: grid;
+  aspect-ratio: 3 / 4;
+  place-items: center;
+  border: 3px solid var(--line-strong);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  font-size: clamp(12px, 3vw, 18px);
+  font-weight: 700;
+}
+
+.math-week .math-week-today {
+  border-color: var(--pink);
+  background: var(--pink-soft);
+  color: var(--pink-dark);
+}
+
+.math-clock {
+  width: min(220px, 60vw);
+  height: auto;
+}
+
+.math-clock-face {
+  fill: #fff;
+  stroke: var(--outline);
+  stroke-width: 6;
+}
+
+.math-clock text {
+  fill: var(--ink);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.math-clock-hour,
+.math-clock-minute {
+  stroke: var(--outline);
+  stroke-linecap: round;
+}
+
+.math-clock-hour {
+  stroke-width: 9;
+}
+
+.math-clock-minute {
+  stroke: var(--pink-dark);
+  stroke-width: 5;
+}
+
+.math-clock-pin {
+  fill: var(--outline);
+}
+
+/* Number cards, lettered groups of numbers, and shading pairs. */
+.math-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.math-sets {
+  display: grid;
+  width: 100%;
+  max-width: 460px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.math-set {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 3px solid var(--line-strong);
+  border-radius: 14px;
+  background: #fff;
+  padding: 8px 12px;
+  color: var(--ink);
+  font-size: clamp(16px, 4.2vw, 24px);
+  font-weight: 700;
+  white-space: pre;
+}
+
+.math-set-letter {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--magic);
+  color: #fff;
+  font-size: 16px;
+}
+
+.math-shading {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  justify-content: center;
+  gap: 12px 24px;
+}
+
+.math-shading-pair {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.math-shading-arrow {
+  color: var(--muted);
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.math-shade {
+  display: grid;
+  width: clamp(48px, 13vw, 72px);
+  aspect-ratio: 1;
+  grid-template-columns: repeat(2, 1fr);
+  border: 3px solid var(--outline);
+  border-radius: 4px;
+  background: var(--outline);
+  gap: 2px;
+}
+
+.math-shade-three {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.math-shade-cell {
+  background: #fff;
+}
+
+.math-shade-on {
+  background: var(--magic);
+}
+
+.math-shade-gap {
+  display: grid;
+  place-items: center;
+  border: 3px dashed var(--magic);
+  background: var(--magic-soft);
+  color: var(--magic);
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.math-shade-filled {
+  box-shadow: 0 0 0 4px rgb(143 211 182 / 60%);
+}
+
+.math-option .math-shade-small {
+  width: clamp(44px, 12vw, 60px);
+}
+
+/* Longer answers: times, days, rows of numbers. */
+.math-option-text {
+  padding: 6px 10px;
+  font-size: clamp(16px, 4vw, 22px);
+}
+
+/* The number pad for K3's sums. */
+.math-pad {
+  display: grid;
+  width: 100%;
+  max-width: 300px;
+  gap: 10px;
+  margin: 14px auto 0;
+}
+
+.math-pad-display {
+  display: grid;
+  height: 60px;
+  place-items: center;
+  border: 3px dashed var(--magic);
+  border-radius: 16px;
+  background: var(--magic-soft);
+  color: var(--magic);
+  font-size: 34px;
+  font-weight: 700;
+}
+
+.math-pad-right {
+  border-style: solid;
+  border-color: var(--mint);
+  background: #eafaf2;
+  color: #2f8f55;
+}
+
+.math-pad-wrong {
+  border-style: solid;
+  border-color: #f4a3b4;
+  background: #fff0f3;
+  color: #d9436a;
+}
+
+.math-pad-keys {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.math-pad-key {
+  height: 52px;
+  border: 3px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 4px 0 var(--line-strong);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.math-pad-key:active:not(:disabled) {
+  box-shadow: 0 1px 0 var(--line-strong);
+  transform: translateY(3px);
+}
+
+.math-pad-key:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.math-pad-ok {
+  border-color: var(--mint);
+  background: #eafaf2;
+  color: #2f8f55;
+}
+
+.math-pad-del {
+  color: var(--muted);
+}
+
+.math-shade-reveal {
+  width: 110px;
+  margin: 0 auto;
 }

@@ -2,8 +2,8 @@
 import { playersStorageKey } from "../app/lib/use-players";
 import { siteStorageKey } from "../app/lib/use-site-settings";
 
-export const ada = { name: "Ada", coins: 37, age: "3-4" };
-export const elly = { name: "Elly", coins: 120, age: "5-6" };
+export const ada = { name: "Ada", coins: 37, age: "k1" };
+export const elly = { name: "Elly", coins: 120, age: "k3" };
 
 const allGames = ["cvc", "digraphs", "blends", "starters", "letter-jumble", "chinese", "chinese-advanced", "measure-words", "idioms", "dragon"];
 

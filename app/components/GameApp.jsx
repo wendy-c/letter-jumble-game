@@ -20,6 +20,7 @@ import IdiomGame from "./IdiomGame";
 import SentenceGame from "./SentenceGame";
 import MeasureWordGame from "./MeasureWordGame";
 import MathGame from "./MathGame";
+import { track } from "@vercel/analytics";
 import { isLevelEarned, levelState, levelUnlockKey } from "../math-data/math-data";
 import { speedRecordBonus } from "../math-data/speed-quest-data";
 import PictureClue from "./PictureClue";
@@ -446,9 +447,11 @@ export default function GameApp() {
       const note = question.prompt[site.language] ?? question.prompt.en;
       // A turning-grid puzzle shows the right grid itself.
       if (right.cells) return { text: "", cells: right.cells, label: right.name?.[site.language], note };
+      // A shading puzzle shows the right shaded grid.
+      if (right.shade) return { text: "", shade: right.shade, size: right.size, label: right.name?.[site.language], note };
       if (right.picture) return { text: right.name?.[site.language] ?? right.label, picture: right.picture, note };
       const picture = typeof question.picture === "string" ? question.picture : question.picture?.[site.language];
-      return { text: right.label, picture, wide: Boolean(picture), note };
+      return { text: right.reveal?.[site.language] ?? right.name?.[site.language] ?? right.label, picture, wide: Boolean(picture), note };
     }
     if (isMeasure) return { text: question.answers[0], picture: question.icon };
     if (isIdiom) return { text: question.idiom, picture: question.picture, note: question.meaning };
@@ -480,6 +483,9 @@ export default function GameApp() {
     const nextLevel = isMath ? gameTopics[gameTopics.indexOf(routeTopic) + 1] : null;
     const opensLevel = Boolean(nextLevel) && !isLevelEarned(nextLevel, currentPlayer);
     if (opensLevel) unlock(levelUnlockKey(nextLevel));
+    // Analytics: a child reaching Daily Challenge Level 15 (finishing Level 14 earns it), once each,
+    // named for the level set: "k1-challenge", or "k2-challenge" (K2 and K3).
+    if (opensLevel && nextLevel.id.endsWith("-level-15")) track(`${nextLevel.id.split("-")[0]}-challenge`, { level: "15" });
     // A timed round with every answer right sets a record if it's the first or the fastest yet;
     // beating an earlier record earns a bonus.
     let speed = null;

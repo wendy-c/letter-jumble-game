@@ -1,7 +1,7 @@
 import { fn } from "storybook/test";
 import PlayerDialog, { NewPlayerForm } from "./PlayerDialog";
 
-const players = [{ name: "Ada", coins: 37, age: "3-4" }, { name: "Elly", coins: 120, age: "5-6" }];
+const players = [{ name: "Ada", coins: 37, age: "k1" }, { name: "Elly", coins: 120, age: "k3" }];
 
 export default {
   title: "Components/Players/PlayerDialog",

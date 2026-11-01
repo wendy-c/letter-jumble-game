@@ -8,7 +8,7 @@ const phones = [
 ];
 
 function seedPlayer(win, extra = {}) {
-  win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 50, age: "5-6", ...extra }], current: "Elly" }));
+  win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 50, age: "k3", ...extra }], current: "Elly" }));
   // Skip the welcome and how-to-play cards, as if they'd been seen before.
   win.localStorage.setItem("letter-jumble:site", JSON.stringify({ language: "en", howToSeen: ["dragon"] }));
   win.sessionStorage.setItem("letter-jumble:welcome-closed", "true");

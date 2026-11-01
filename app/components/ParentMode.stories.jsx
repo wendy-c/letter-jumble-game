@@ -2,7 +2,7 @@ import { expect, fn, userEvent, within } from "storybook/test";
 import Breadcrumbs from "./Breadcrumbs";
 import ParentMode from "./ParentMode";
 
-const players = [{ name: "Ada", coins: 37, age: "3-4" }, { name: "Elly", coins: 120, age: "5-6", gameSettings: { idioms: false } }];
+const players = [{ name: "Ada", coins: 37, age: "k1" }, { name: "Elly", coins: 120, age: "k3", gameSettings: { idioms: false } }];
 
 export default {
   title: "Components/Players/ParentMode",

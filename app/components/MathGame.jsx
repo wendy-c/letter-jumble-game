@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { speakCantonese, speakWord, stopSpeaking } from "../lib/speech";
+import { K3Scene, K3Visual, NumberPad, ShadeGrid } from "./MathScenes";
 
 // What the question shows besides its picture: a number bond, a sum, a run of numbers or a
 // pattern of pictures. The missing part shows "?" until it's answered, then the right answer.
-function MathVisual({ visual, answer, solved }) {
-  const fill = (value) => (value === null ? (solved ? answer : "?") : value);
+function MathVisual({ visual, answer, solved, typed = "" }) {
+  if (["cards", "sets", "shading"].includes(visual.type)) return <K3Visual visual={visual} answer={answer} solved={solved} />;
+  // A sum typed on the number pad shows what's typed in its gap.
+  const fill = (value) => (value === null ? (solved ? answer : typed || "?") : value);
   const missingClass = (value) => (value === null ? ` math-missing${solved ? " math-missing-filled" : ""}` : "");
 
   if (visual.type === "bond") {
@@ -71,7 +74,8 @@ function MathVisual({ visual, answer, solved }) {
 
 // A generated question's picture, made from small pictures of things: groups to add or take away
 // (taken-away ones are crossed out), a mix to count, a ten frame (or two) to fill, or a row of swaps.
-function MathScene({ scene }) {
+// K3's own pictures are drawn by K3Scene.
+function MathScene({ scene, language }) {
   const things = (picture, count, gone = 0) => Array.from({ length: count }, (_, index) => (
     <span key={index} className={`math-thing${index >= count - gone ? " math-thing-gone" : ""}`}>
       <img src={picture} alt="" width="40" height="40" />
@@ -81,7 +85,15 @@ function MathScene({ scene }) {
     const total = scene.groups.reduce((sum, group) => sum + group.count, 0);
     return (
       <div className={`math-scene math-groups${total > 12 ? " math-scene-many" : ""}`} aria-hidden="true">
-        {scene.groups.map((group, index) => <div className="math-group" key={index}>{things(group.picture, group.count, group.crossed)}</div>)}
+        {scene.groups.map((group, index) => {
+          // Each kind in its own group, wrapping at 5 a row (or 10, for more than 10).
+          const perRow = group.perRow ?? (group.count > 10 ? 10 : 5);
+          return (
+            <div className={`math-group${perRow === 10 ? " math-group-tens" : ""}`} key={index} style={{ gridTemplateColumns: `repeat(${Math.min(group.count, perRow)}, auto)` }}>
+              {things(group.picture, group.count, group.crossed)}
+            </div>
+          );
+        })}
       </div>
     );
   }
@@ -107,12 +119,13 @@ function MathScene({ scene }) {
       </div>
     );
   }
-  // Swaps: "1 [this] = 2 [that]", with the last row's count to find.
+  if (scene.type !== "swap") return <K3Scene scene={scene} language={language} />;
+  // Swaps: "1 [this] = 2 [that]", with the last row's count to find (of `fromCount` of this).
   return (
     <div className="math-scene math-swaps" aria-hidden="true">
       {scene.rows.map((row, index) => (
         <div key={index} className="math-swap-row">
-          <img src={row.from} alt="" width="40" height="40" />
+          {Array.from({ length: row.fromCount ?? 1 }, (_, item) => <img key={item} src={row.from} alt="" width="40" height="40" />)}
           <span className="math-swap-equals">=</span>
           {row.count === null
             ? <><span className="math-box math-missing">?</span><img src={row.to} alt="" width="40" height="40" /></>
@@ -151,6 +164,7 @@ function Timer({ startedAt, language }) {
 // pass `startedAt` to show a clock. The parent remounts this (key) for every new question.
 export default function MathGame({ topic, round, question, onAnswer, language = "en", startedAt = null }) {
   const [picked, setPicked] = useState(null);
+  const [typed, setTyped] = useState("");
   const [voiceMessage, setVoiceMessage] = useState("");
   const solved = picked !== null;
   const chinese = language === "zh";
@@ -174,6 +188,13 @@ export default function MathGame({ topic, round, question, onAnswer, language = 
     onAnswer(option.correct);
   }
 
+  // The number pad: the typed number is checked against the answer.
+  function submitTyped() {
+    if (solved || !typed) return;
+    setPicked(typed);
+    onAnswer(typed === question.answer);
+  }
+
   function speak() {
     if (chinese) speakCantonese(prompt, setVoiceMessage);
     else speakWord(prompt, setVoiceMessage);
@@ -191,8 +212,8 @@ export default function MathGame({ topic, round, question, onAnswer, language = 
         </div>
         <div className="math-stage">
           {picture ? <img className="math-picture" src={picture} alt="" width="512" height="320" />
-            : question.scene ? <MathScene scene={question.scene} />
-              : <MathVisual visual={visual} answer={question.answer} solved={solved} />}
+            : question.scene ? <MathScene scene={question.scene} language={language} />
+              : <MathVisual visual={visual} answer={question.answer} solved={solved} typed={typed} />}
         </div>
       </section>
 
@@ -218,13 +239,23 @@ export default function MathGame({ topic, round, question, onAnswer, language = 
 
         {hasPicture && question.visual && <MathVisual visual={visual} answer={question.answer} solved={solved} />}
 
+        {question.input === "pad" ? (
+          <NumberPad
+            value={solved ? picked : typed}
+            onChange={setTyped}
+            onSubmit={submitTyped}
+            disabled={solved}
+            language={language}
+            state={solved ? (picked === question.answer ? "right" : "wrong") : null}
+          />
+        ) : (
         <div className={`math-options${question.options.length === 3 ? " math-options-three" : ""}`} role="group" aria-label={chinese ? "選擇" : "Choices"}>
           {question.options.map((option) => {
             const wrong = picked === option.label && !option.correct;
             const isRight = solved && option.correct;
             return (
               <button
-                className={`math-option${option.picture || option.cells ? " math-option-picture" : ""}${wrong ? " chinese-option-wrong" : ""}${isRight ? " chinese-option-right" : ""}`}
+                className={`math-option${option.picture || option.cells || option.shade ? " math-option-picture" : ""}${nameOf(option).length > 5 && !option.picture && !option.cells && !option.shade ? " math-option-text" : ""}${wrong ? " chinese-option-wrong" : ""}${isRight ? " chinese-option-right" : ""}`}
                 type="button"
                 key={option.label}
                 aria-label={nameOf(option)}
@@ -235,11 +266,13 @@ export default function MathGame({ topic, round, question, onAnswer, language = 
                   <span className="math-grid math-grid-small" aria-hidden="true">
                     {option.cells.map((picture, index) => <span key={index} className="math-grid-cell"><img src={picture} alt="" width="28" height="28" /></span>)}
                   </span>
-                ) : option.picture ? <img src={option.picture} alt="" width="56" height="56" /> : option.label}
+                ) : option.shade ? <ShadeGrid size={option.size} shaded={option.shade} className="math-shade-small" />
+                  : option.picture ? <img src={option.picture} alt="" width="56" height="56" /> : nameOf(option)}
               </button>
             );
           })}
         </div>
+        )}
       </section>
     </div>
   );

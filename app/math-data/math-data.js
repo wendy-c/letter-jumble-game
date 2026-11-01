@@ -1,8 +1,11 @@
-// Daily Challenge (每日大挑戰): twenty levels of ten questions for each age, in English or Chinese
-// (the site's language): numbers under 10 for 3-4 year olds and to 20 for 5-6 year olds. Each age's
-// first three levels are made by hand here; the rest come from math-generator.js. A child starts
-// at Level 1 of their age, and a level opens the day after the one before it was finished. Every question is answered by tapping one of the choices: numbers, or
-// pictures for "what comes next?" patterns. The pictures are drawn by scripts/draw-words.py.
+// Daily Challenge (每日大挑戰): twenty levels of ten questions for each of K1, K2 and K3, in English
+// or Chinese (the site's language): numbers under 10 for K1, to 20 for K2 and to 100 for K3. K1's
+// and K2's first three levels are made by hand here, and the rest come from math-generator.js; all
+// of K3's come from k3-generator.js. A child starts at Level 1 of their set, and a level opens the
+// day after the one before it was finished. Most questions are answered by tapping one of the
+// choices (numbers, words, or pictures for patterns); K3's sums are typed on a number pad. The
+// pictures are drawn by scripts/draw-words.py.
+import { generateK3Level } from "./k3-generator";
 import { generateLevel, gridPattern } from "./math-generator";
 
 const art = "/images/game-asset/math";
@@ -101,7 +104,7 @@ function pattern(items, answer, choices) {
 const levels = [
   {
     focus: say("Numbers under 10", "10 以內的數"),
-    ages: ["3-4"],
+    ages: ["k1"],
     color: "pink",
     words: [
       bond(6, 2, "kittens", say("There are 6 kittens in the pen. 2 are calico cats. How many are tabby cats?", "圍欄裏有 6 隻小貓，其中 2 隻是三色貓。有多少隻是虎斑貓？")),
@@ -122,7 +125,7 @@ const levels = [
   },
   {
     focus: say("Numbers under 10", "10 以內的數"),
-    ages: ["3-4"],
+    ages: ["k1"],
     color: "yellow",
     words: [
       bond(7, 3, "ducks-chicks", say("There are 7 birds. 3 are ducks. How many are chicks?", "有 7 隻雀鳥，3 隻是鴨子。有多少隻是小雞？")),
@@ -139,7 +142,7 @@ const levels = [
   },
   {
     focus: say("Numbers under 10", "10 以內的數"),
-    ages: ["3-4"],
+    ages: ["k1"],
     color: "blue",
     words: [
       bond(9, 6, "balls", say("There are 9 balls. 6 are red. How many are blue?", "有 9 個球，6 個是紅色的。有多少個是藍色的？")),
@@ -156,7 +159,7 @@ const levels = [
   },
   {
     focus: say("Numbers to 20", "20 以內的數"),
-    ages: ["5-6"],
+    ages: ["k2"],
     color: "green",
     words: [
       story("vegetables", say("How many tomatoes can you find?", "你能找到多少個番茄？"), 11, "Count the tomatoes"),
@@ -174,7 +177,7 @@ const levels = [
   },
   {
     focus: say("Numbers to 20", "20 以內的數"),
-    ages: ["5-6"],
+    ages: ["k2"],
     color: "lilac",
     words: [
       story("fruit-mix", say("How many strawberries can you find?", "你能找到多少粒士多啤梨？"), 13, "Count the strawberries"),
@@ -191,7 +194,7 @@ const levels = [
   },
   {
     focus: say("Numbers to 20", "20 以內的數"),
-    ages: ["5-6"],
+    ages: ["k2"],
     color: "peach",
     words: [
       story("night-sky", say("How many stars can you find?", "你能找到多少粒星星？"), 14, "Count the stars"),
@@ -210,15 +213,32 @@ const levels = [
 
 const levelsPerAge = 20;
 const colors = ["pink", "yellow", "blue", "green", "lilac", "peach"];
-const focusFor = { "3-4": say("Numbers under 10", "10 以內的數"), "5-6": say("Numbers to 20", "20 以內的數") };
+const focusFor = {
+  k1: say("Numbers under 10", "10 以內的數"), k2: say("Numbers to 20", "20 以內的數"), k3: say("Numbers to 100", "100 以內的數"),
+};
 
-// Each age's levels: the three made by hand above, then generated ones up to Level 20.
-export const mathLevels = ["3-4", "5-6"].flatMap((age) => {
+const isTakeAway = (question) => /^\d+ − \d+ = \?$/.test(question.answers[0]);
+
+// K2's first three levels each have a take-away with no picture; they swap places with a take-away
+// with a picture from Levels 18, 19 and 20, so the early levels have pictures to count from.
+function tradeTakeAways(sets) {
+  [0, 1, 2].forEach((early) => {
+    const late = 17 + early;
+    const plain = sets[early].findIndex((question) => isTakeAway(question) && !question.picture && !question.scene);
+    const drawn = sets[late].findIndex((question) => isTakeAway(question) && question.scene);
+    [sets[early][plain], sets[late][drawn]] = [sets[late][drawn], sets[early][plain]];
+  });
+}
+
+// Each class's levels: K1's and K2's three made by hand above, then generated ones up to Level 20.
+export const mathLevels = ["k1", "k2", "k3"].flatMap((age) => {
   const handMade = levels.filter((level) => level.ages[0] === age);
-  return Array.from({ length: levelsPerAge }, (_, index) => {
+  const sets = Array.from({ length: levelsPerAge }, (_, index) => (index < handMade.length ? [...handMade[index].words]
+    : age === "k3" ? generateK3Level(index + 1) : generateLevel(age, index + 1)));
+  if (age === "k2") tradeTakeAways(sets);
+  return sets.map((words, index) => {
     const number = index + 1;
     const color = colors[index % colors.length];
-    const words = index < handMade.length ? handMade[index].words : generateLevel(age, number);
     return {
       id: `${age}-level-${number}`,
       name: `Level ${number}`,

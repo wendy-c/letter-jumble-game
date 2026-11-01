@@ -12,7 +12,7 @@ export const WithPlayer = {
   args: {
     children: (
       <>
-        <PlayerMenu player={{ name: "Ada", coins: 37, age: "3-4" }} onSwitch={fn()} onBadges={fn()} onParentMode={fn()} onLanguage={fn()} onLogOut={fn()} />
+        <PlayerMenu player={{ name: "Ada", coins: 37, age: "k1" }} onSwitch={fn()} onBadges={fn()} onParentMode={fn()} onLanguage={fn()} onLogOut={fn()} />
       </>
     ),
   },
