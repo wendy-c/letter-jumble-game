@@ -26,9 +26,9 @@ describe("Daily Challenge", () => {
       ["3", "9", "3", "9", "3", "7", "triangle", "5", "7", "4"],
     ]);
     expect(levelsFor("k2").slice(0, 3).map((level) => level.words.map((question) => question.answer))).toEqual([
-      ["11", "19", "green sweet | heart sweet | purple sweet | star sweet", "13", "16", "11", "4", "circle | star | triangle | square", "13", "8"],
-      ["13", "17", "pig | cat | frog | duck", "14", "18", "14", "6", "8", "13", "9"],
-      ["14", "15", "grapes | strawberry | apple | banana", "15", "15", "11", "8", "heart sweet | purple sweet | star sweet | green sweet", "12", "7"],
+      ["11", "19", "green sweet | heart sweet | purple sweet | star sweet", "13", "16", "11", "4", "circle | star | triangle | square", "10", "8"],
+      ["13", "17", "pig | cat | frog | duck", "14", "18", "14", "6", "8", "1", "9"],
+      ["14", "15", "grapes | strawberry | apple | banana", "15", "15", "11", "8", "heart sweet | purple sweet | star sweet | green sweet", "3", "7"],
     ]);
   });
 
@@ -90,7 +90,8 @@ describe("Daily Challenge", () => {
   it("only puts things of one kind together in a picture (bugs with bugs, vehicles with vehicles), each kind in its own group", () => {
     const category = {};
     [["cat", "dog", "rabbit"], ["pig", "sheep", "goat", "chicken"], ["duck", "bird", "parrot", "swan"], ["bee", "butterfly", "dragonfly", "moth"],
-      ["apple", "orange", "pear"], ["ball", "football", "basketball"], ["car", "bus", "truck", "bike"], ["teddy-bear", "kite"]]
+      ["apple", "orange", "pear"], ["ball", "football", "basketball"], ["car", "bus", "truck", "bike"], ["teddy-bear", "kite"],
+      ["circle", "circle-yellow", "circle-blue"], ["flower-red", "flower-yellow", "flower-blue"]]
       .forEach((names, index) => names.forEach((name) => { category[name] = index; }));
     const nameOf = (picture) => picture.split("/").pop().replace(".svg", "");
     const generated = mathLevels.filter((level) => level.ages[0] !== "k3").flatMap((level) => level.words);
@@ -102,10 +103,71 @@ describe("Daily Challenge", () => {
     mixed.forEach((names) => expect(new Set(names.map((name) => category[name])).size).toBe(1));
   });
 
-  it("gives 5-6 year olds turning-grid puzzles instead of rows of pictures", () => {
+  it("swaps only things of one kind, biggest first: snacks, fruit, farm animals or toys", () => {
+    const sets = [["cake", "chocolate", "biscuit", "sweet"], ["watermelon", "pineapple", "apple", "orange"],
+      ["horse", "cow", "goat", "chicken"], ["robot", "doll", "teddy-bear", "ball"]];
+    const nameOf = (picture) => picture.split("/").pop().replace(".svg", "");
+    const swaps = mathLevels.filter((level) => level.ages[0] !== "k3").flatMap((level) => level.words).filter((question) => question.scene?.type === "swap");
+    expect(swaps.length).toBeGreaterThan(10);
+    swaps.forEach((question) => {
+      const [first, second] = question.scene.rows;
+      const names = [first.from, first.to, second.to].map(nameOf);
+      const set = sets.find((list) => list.includes(names[0]));
+      expect(set).toBeDefined();
+      const places = names.map((name) => set.indexOf(name));
+      expect(places.every((place, index) => place >= 0 && (index === 0 || place > places[index - 1]))).toBe(true);
+    });
+  });
+
+  it("wraps K1's and K2's pictures of things to add at 5 a row; other groups at 5, or 10 when there are more than 10", () => {
+    const groups = (filter) => mathLevels.filter((level) => level.ages[0] !== "k3").flatMap((level) => level.words)
+      .filter((question) => question.scene?.type === "groups" && filter(question)).flatMap((question) => question.scene.groups);
+    const adding = groups((question) => /^\d+ \+ \d+ = \?$/.test(question.answers[0]));
+    expect(adding.length).toBeGreaterThan(20);
+    adding.forEach((group) => expect(group.perRow).toBe(5));
+    const takingAway = groups((question) => /^\d+ − \d+ = \?$/.test(question.answers[0]));
+    expect(takingAway.some((group) => group.count > 10)).toBe(true);
+    takingAway.forEach((group) => expect(group.perRow).toBeUndefined());
+  });
+
+  it("moves K2's take-aways without a picture from Levels 1-3 to Levels 18-20, and ones with a picture forward", () => {
+    const takeAways = (level) => level.words.filter((question) => /^\d+ − \d+ = \?$/.test(question.answers[0]));
+    const k2 = levelsFor("k2");
+    k2.slice(0, 3).forEach((level) => takeAways(level).forEach((question) => expect(Boolean(question.scene || question.picture)).toBe(true)));
+    expect(k2.slice(17).map((level) => takeAways(level).filter((question) => !question.scene && !question.picture).map((question) => question.answers[0])))
+      .toEqual([["15 − 2 = ?"], ["18 − 5 = ?"], ["19 − 7 = ?"]]);
+    k2.slice(3, 17).forEach((level) => takeAways(level).forEach((question) => expect(question.scene).toBeTruthy()));
+  });
+
+  it("puts numbers under 50 in order in some K2 levels, and asks for the different group (under 20) after Level 10", () => {
+    const k2 = levelsFor("k2");
+    const ordering = k2.flatMap((level) => level.words).filter((question) => question.visual?.type === "cards");
+    expect(ordering.length).toBeGreaterThanOrEqual(4);
+    ordering.forEach((question) => question.visual.numbers.forEach((number) => expect(number).toBeLessThan(50)));
+    k2.forEach((level, index) => {
+      const groups = level.words.filter((question) => question.visual?.type === "sets");
+      if (index + 1 <= 10) expect(groups).toEqual([]);
+      groups.forEach((question) => {
+        question.visual.sets.forEach((set) => set.numbers.forEach((number) => expect(number).toBeLessThan(20)));
+        const different = question.visual.sets.find((set) => set.letter === question.answer);
+        expect(question.visual.sets.filter((set) => set.numbers[0] % 2 === different.numbers[0] % 2)).toHaveLength(1);
+        expect(new Set(question.visual.sets.map((set) => set.numbers.join())).size).toBe(4);
+      });
+    });
+    expect(k2.slice(10).filter((level) => level.words.some((question) => question.visual?.type === "sets")).length).toBeGreaterThanOrEqual(5);
+  });
+
+  it("gives K2 turning-grid puzzles, and rows of pictures only before Level 10", () => {
     const patterns = (age) => levelsFor(age).flatMap((level) => level.words).map((question) => question.visual?.type).filter((type) => type === "pattern" || type === "grids");
-    expect(new Set(patterns("k2"))).toEqual(new Set(["grids"]));
+    expect(new Set(patterns("k2"))).toEqual(new Set(["grids", "pattern"]));
     expect(new Set(patterns("k1"))).toEqual(new Set(["pattern"]));
+    levelsFor("k2").forEach((level, index) => {
+      const rows = level.words.filter((question) => question.visual?.type === "pattern");
+      if (index + 1 >= 10) expect(rows).toEqual([]);
+      // The harder kinds only: no "A, B, A, B".
+      rows.forEach((question) => expect(question.answers[0]).not.toMatch(/^Pattern: (\w+), (?!\1)(\w+), \1, \2, \?$/));
+    });
+    expect(levelsFor("k2").slice(3, 9).filter((level) => level.words.some((question) => question.visual?.type === "pattern")).length).toBeGreaterThanOrEqual(3);
     // Level 1's: four sweets turning clockwise, the last grid's top left and bottom right to fill.
     const sweets = levelsFor("k2")[0].words[2];
     const file = (picture) => picture && picture.split("/").pop();
@@ -223,9 +285,40 @@ describe("Daily Challenge for K3", () => {
       if (right === "?") expect(work(left)).toBe(Number(question.answer));
       else expect(work(left.replace("?", question.answer))).toBe(Number(right));
       expect(Number(question.answer)).toBeGreaterThanOrEqual(0);
-      expect(Number(question.answer)).toBeLessThanOrEqual(20);
+      // Sums to 20, or to 20 + 20 with a picture.
+      expect(Number(question.answer)).toBeLessThanOrEqual(question.scene ? 40 : 20);
     });
     expect(k3.flatMap((level) => level.words).filter((question) => question.input === "pad").every((question) => question.kind === "sum")).toBe(true);
+  });
+
+  it("asks some sums with a picture of two kinds of thing, each up to 20, rows of 10 when there are more than 10", () => {
+    const drawn = k3.flatMap((level) => level.words).filter((question) => question.kind === "sum" && question.scene);
+    expect(drawn.length).toBeGreaterThanOrEqual(4);
+    expect(drawn.some((question) => question.scene.groups.some((group) => group.count > 10))).toBe(true);
+    drawn.forEach((question) => {
+      expect(question.scene.groups).toHaveLength(2);
+      question.scene.groups.forEach((group) => {
+        expect(group.count).toBeLessThanOrEqual(20);
+        // Left to the game: 5 a row, or 10 for more than 10.
+        expect(group.perRow).toBeUndefined();
+      });
+      expect(Number(question.answer)).toBe(question.scene.groups[0].count + question.scene.groups[1].count);
+    });
+  });
+
+  it("writes some clock times in words: o’clock and half past", () => {
+    const clocks = k3.flatMap((level) => level.words).filter((question) => question.scene?.type === "clock");
+    expect(clocks.some((question) => question.scene.minute === 30)).toBe(true);
+    clocks.forEach((question) => {
+      const names = question.options.map((option) => option.name);
+      expect(names.some((name) => / o’clock$|^half past /.test(name.en))).toBe(true);
+      names.filter((name) => / o’clock$/.test(name.en)).forEach((name) => expect(name.zh).toMatch(/^\d+ 點鐘$/));
+      names.filter((name) => /^half past /.test(name.en)).forEach((name) => expect(name.zh).toMatch(/^\d+ 點半$/));
+      const right = question.options.find((option) => option.correct);
+      const [hour, minute] = question.answer.split(":").map(Number);
+      expect([question.answer, `${hour} o’clock`, `half past ${hour}`]).toContain(right.name.en);
+      expect(minute === 30 ? right.name.en !== `${hour} o’clock` : right.name.en !== `half past ${hour}`).toBe(true);
+    });
   });
 
   it("asks some number bonds to 20, without a picture", () => {

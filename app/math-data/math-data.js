@@ -217,13 +217,28 @@ const focusFor = {
   k1: say("Numbers under 10", "10 以內的數"), k2: say("Numbers to 20", "20 以內的數"), k3: say("Numbers to 100", "100 以內的數"),
 };
 
+const isTakeAway = (question) => /^\d+ − \d+ = \?$/.test(question.answers[0]);
+
+// K2's first three levels each have a take-away with no picture; they swap places with a take-away
+// with a picture from Levels 18, 19 and 20, so the early levels have pictures to count from.
+function tradeTakeAways(sets) {
+  [0, 1, 2].forEach((early) => {
+    const late = 17 + early;
+    const plain = sets[early].findIndex((question) => isTakeAway(question) && !question.picture && !question.scene);
+    const drawn = sets[late].findIndex((question) => isTakeAway(question) && question.scene);
+    [sets[early][plain], sets[late][drawn]] = [sets[late][drawn], sets[early][plain]];
+  });
+}
+
 // Each class's levels: K1's and K2's three made by hand above, then generated ones up to Level 20.
 export const mathLevels = ["k1", "k2", "k3"].flatMap((age) => {
   const handMade = levels.filter((level) => level.ages[0] === age);
-  return Array.from({ length: levelsPerAge }, (_, index) => {
+  const sets = Array.from({ length: levelsPerAge }, (_, index) => (index < handMade.length ? [...handMade[index].words]
+    : age === "k3" ? generateK3Level(index + 1) : generateLevel(age, index + 1)));
+  if (age === "k2") tradeTakeAways(sets);
+  return sets.map((words, index) => {
     const number = index + 1;
     const color = colors[index % colors.length];
-    const words = index < handMade.length ? handMade[index].words : age === "k3" ? generateK3Level(number) : generateLevel(age, number);
     return {
       id: `${age}-level-${number}`,
       name: `Level ${number}`,

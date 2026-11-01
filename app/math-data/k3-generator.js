@@ -4,7 +4,8 @@
 // a number pad, two about numbers to 100 (runs with a gap, odd and even, putting in order), two
 // logic puzzles and one about everyday things (prices, coins, days of the week, the time).
 import { seededRandom } from "../lib/spelling";
-import { gridPattern } from "./math-generator";
+import { gridPattern, makers as k2Makers } from "./math-generator";
+import { differentGroup, numberOrder } from "./number-puzzles";
 
 const art = "/images/game-asset";
 const say = (en, zh) => ({ en, zh });
@@ -122,6 +123,8 @@ function makers(random, level) {
   const mix = (list) => list.map((item) => [random(), item]).sort((a, b) => a[0] - b[0]).map(([, item]) => item);
   const later = level > 10;
   const plural = (thing, count) => thing.en[count === 1 ? 0 : 1];
+  // K1's and K2's question makers, for pictures of things to add.
+  const pictures = k2Makers(random);
   // "2 dogs, 1 bird and 3 ants" / "2 隻狗、1 隻小鳥和 3 隻螞蟻".
   const listOf = (groups) => {
     const en = groups.map(({ thing, count }) => `${count} ${plural(thing, count)}`);
@@ -133,7 +136,8 @@ function makers(random, level) {
   return {
     // Overlapping and nested shapes in clusters; count one kind.
     countShapes() {
-      const target = pick(Object.keys(shapeNames));
+      // Circles, squares and triangles take turns.
+      const target = Object.keys(shapeNames)[Math.floor(level / 2) % 3];
       const colors = ["#ffb3c6", "#8cc8f2", "#ffd45e", "#8fe3a8", "#c9b3f2", "#ffc89a"];
       for (;;) {
         const shapes = [];
@@ -270,6 +274,13 @@ function makers(random, level) {
       while (parts[0] + parts[1] + parts[2] > 20) parts[0] -= 1;
       return pad(`${parts.join(" + ")} = ?`, parts[0] + parts[1] + parts[2]);
     },
+    // Two groups of things of one category to add (each up to 20), typed on the number pad. A group
+    // of more than 10 is split into rows of 10.
+    addPicture() {
+      const a = between(later ? 8 : 4, later ? 20 : 12);
+      const b = between(later ? 6 : 3, later ? 20 : 12);
+      return { ...pictures.sumOf(a, b), options: [{ label: String(a + b), correct: true }], input: "pad" };
+    },
     // A number bond to 20, no picture: the whole and one part, the other part typed in.
     bond() {
       const whole = between(11, 20);
@@ -301,37 +312,16 @@ function makers(random, level) {
       return run(first, step, odd ? say("odd", "單數") : say("even", "雙數"));
     },
     skipCount() {
-      const step = pick(later ? [5, -5, 10, -10, 1, -1] : [10, -10, 5, 1]);
+      // The steps take turns from level to level.
+      const steps = later ? [5, -5, 10, -10, 1, -1] : [10, -5, 1, 5, -10];
+      const step = steps[level % steps.length];
       let first = Math.abs(step) === 1 ? between(30, 95) : Math.abs(step) * between(1, 100 / Math.abs(step));
       while (first + step * 4 > 100 || first + step * 4 < 0) first -= step * 4;
       return run(first, step);
     },
     // Four numbers to put in order, smallest first (or biggest first).
     order() {
-      let numbers;
-      do {
-        const tens = mix([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-        numbers = [between(1, 9), between(1, 9), between(0, 9), between(1, 9)].map((ones, index) => tens[index] * 10 + ones);
-        // Later levels: two of them share a tens digit.
-        if (later) numbers[1] = Math.floor(numbers[0] / 10) * 10 + ((numbers[0] + between(1, 8)) % 10);
-      } while (new Set(numbers).size < 4);
-      const down = random() < 0.5;
-      const sorted = [...numbers].sort((a, b) => (down ? b - a : a - b));
-      const swap = (list, i, j) => { const copy = [...list]; [copy[i], copy[j]] = [copy[j], copy[i]]; return copy; };
-      const byOnes = [...numbers].sort((a, b) => (down ? -1 : 1) * ((a % 10) - (b % 10) || a - b));
-      const candidates = [sorted, swap(sorted, 0, 1), swap(sorted, 2, 3), byOnes, swap(sorted, 1, 2), [...sorted].reverse()];
-      const seen = new Set();
-      const choices = candidates.map((list) => list.join(", ")).filter((text) => !seen.has(text) && seen.add(text)).slice(0, 4);
-      const answer = sorted.join(", ");
-      return question({
-        prompt: down
-          ? say("Which row puts the numbers in order from biggest to smallest?", "哪一行把數字由大至小排列？")
-          : say("Which row puts the numbers in order from smallest to biggest?", "哪一行把數字由小至大排列？"),
-        answer,
-        title: down ? "Biggest to smallest" : "Smallest to biggest",
-        visual: { type: "cards", numbers },
-        options: textOptions(choices.map((text) => [text, say(text, text)]), answer),
-      });
+      return numberOrder(random, { sameTens: later });
     },
     // How many legs (or wheels) do they have altogether?
     legsOrWheels() {
@@ -357,24 +347,7 @@ function makers(random, level) {
     },
     // Four groups of numbers: three of odd numbers and one of even (or the other way round).
     oddOneOut() {
-      const oddOne = random() < 0.5;
-      // Each group in its own tens, so no two share a number.
-      const starts = mix([1, 2, 3, 4, 5, 6, 7, 8, 9]).slice(0, 4).map((tens) => tens * 10 + between(0, 1) * 2);
-      const groups = starts.map((start, index) => {
-        const odd = index === 0 ? oddOne : !oddOne;
-        return [0, 1, 2, 3].map((n) => start + (odd ? 1 : 0) + n * 2);
-      });
-      const letters = ["A", "B", "C", "D"];
-      const shown = mix(groups);
-      const answer = letters[shown.indexOf(groups[0])];
-      return question({
-        prompt: say("Which group of numbers is different from the others?", "哪一組數字跟其他的不同？"),
-        answer,
-        title: "The different group",
-        visual: { type: "sets", sets: shown.map((numbers, index) => ({ letter: letters[index], numbers })) },
-        options: textOptions(shown.map((numbers, index) => [letters[index], say(letters[index], letters[index]),
-          say(`${letters[index]}: ${numbers.join(", ")} (${oddOne ? "odd" : "even"} numbers)`, `${letters[index]}：${numbers.join("、")}（${oddOne ? "單數" : "雙數"}）`)]), answer),
-      });
+      return differentGroup(random);
     },
     // Pairs of grids: the shaded cells move the same way in each pair; finish the last pair.
     shading() {
@@ -510,7 +483,8 @@ function makers(random, level) {
     // A round clock at o'clock (or half past, later on): which digital time is it?
     clock() {
       const hour = between(1, 12);
-      const minute = later && random() < 0.5 ? 30 : 0;
+      // From Level 9, every other clock shows half past.
+      const minute = level >= 9 && level % 2 === 1 ? 30 : 0;
       const time = (h, m) => `${((h + 11) % 12) + 1}:${String(m).padStart(2, "0")}`;
       const answer = time(hour, minute);
       // Easy mistakes: reading the hands the wrong way round, the hour either side, the other half.
@@ -518,12 +492,20 @@ function makers(random, level) {
       const candidates = [answer, swapped, time(hour + 1, minute), time(hour - 1 + 12, minute), time(hour, 30 - minute)];
       const seen = new Set();
       const choices = candidates.filter((text) => !seen.has(text) && seen.add(text)).slice(0, 4);
+      // Some times on the hour or half hour are written in words: "11 o’clock", "half past 11".
+      const inWords = (text) => {
+        const [h, m] = text.split(":");
+        return m === "00" ? say(`${h} o’clock`, `${h} 點鐘`) : say(`half past ${h}`, `${h} 點半`);
+      };
+      const wordy = choices.filter((text) => /:(00|30)$/.test(text));
+      const written = new Set(wordy.filter(() => random() < 0.5));
+      if (written.size === 0) written.add(wordy[Math.floor(random() * wordy.length)]);
       return question({
         prompt: say("What time does the clock show?", "時鐘顯示的是甚麼時間？"),
         answer,
         title: "What time is it?",
         scene: { type: "clock", hour, minute },
-        options: textOptions(choices.map((text) => [text, say(text, text)]), answer),
+        options: textOptions(choices.map((text) => [text, written.has(text) ? inWords(text) : say(text, text)]), answer),
       });
     },
   };
@@ -560,16 +542,17 @@ function makers(random, level) {
 export function generateK3Level(level) {
   const random = seededRandom(`daily-challenge:k3:${level}`);
   const make = makers(random, level);
-  const choose = (names, count) => names.map((name) => [random(), name]).sort((a, b) => a[0] - b[0]).slice(0, count).map(([, name]) => name);
-  const everyday = ["clock", "menu", "week", "coins"][(level - 1) % 4];
+  // Each kind's makers take turns from level to level (`count` at a time), so every one of them
+  // comes up regularly.
+  const turn = (names, count) => Array.from({ length: count }, (_, index) => names[((level - 1) * count + index) % names.length]);
   // [kind of question, maker] for each of the ten.
   const plan = [
-    ["counting", random() < 0.5 ? "countShapes" : "countLeaves"],
-    ...choose(["comeAndGo", "queue", "exchange"], 2).map((name) => ["story", name]),
-    ...choose(["add", "subtract", "threeNumbers", "missing", "bond"], 2).map((name) => ["sum", name]),
-    ...choose(["oddEven", "skipCount", "order"], 2).map((name) => ["numbers", name]),
-    ...choose(["legsOrWheels", "oddOneOut", "shading", "mostRow", "turningGrid"], 2).map((name) => ["logic", name]),
-    ["everyday", everyday],
+    ["counting", turn(["countShapes", "countLeaves"], 1)[0]],
+    ...turn(["comeAndGo", "queue", "exchange"], 2).map((name) => ["story", name]),
+    ...turn(["add", "bond", "subtract", "addPicture", "threeNumbers", "missing"], 2).map((name) => ["sum", name]),
+    ...turn(["oddEven", "skipCount", "order"], 2).map((name) => ["numbers", name]),
+    ...turn(["legsOrWheels", "oddOneOut", "shading", "mostRow", "turningGrid"], 2).map((name) => ["logic", name]),
+    ["everyday", turn(["clock", "menu", "week", "coins"], 1)[0]],
   ];
   const questions = plan.map(([kind, name]) => ({ ...make[name](), kind }));
   return questions.map((item) => [random(), item]).sort((a, b) => a[0] - b[0]).map(([, item]) => item);

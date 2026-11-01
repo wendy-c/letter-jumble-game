@@ -4920,10 +4920,16 @@ a:focus-visible {
   padding: 16px;
 }
 
-.math-group,
 .math-count {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* Its columns (5, or 10 for more than 10) are set by the game. */
+.math-group {
+  display: grid;
   justify-content: center;
   gap: 6px;
 }
@@ -4951,6 +4957,12 @@ a:focus-visible {
 
 .math-scene-many .math-thing img {
   width: clamp(24px, 6vw, 44px);
+}
+
+/* Rows of 10 fit a phone's width. */
+.math-group-tens .math-thing img,
+.math-scene-many .math-group-tens .math-thing img {
+  width: clamp(18px, 5.4vw, 38px);
 }
 
 /* Taken away: faded, with a cross. */

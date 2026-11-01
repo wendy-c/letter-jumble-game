@@ -85,7 +85,15 @@ function MathScene({ scene, language }) {
     const total = scene.groups.reduce((sum, group) => sum + group.count, 0);
     return (
       <div className={`math-scene math-groups${total > 12 ? " math-scene-many" : ""}`} aria-hidden="true">
-        {scene.groups.map((group, index) => <div className="math-group" key={index}>{things(group.picture, group.count, group.crossed)}</div>)}
+        {scene.groups.map((group, index) => {
+          // Each kind in its own group, wrapping at 5 a row (or 10, for more than 10).
+          const perRow = group.perRow ?? (group.count > 10 ? 10 : 5);
+          return (
+            <div className={`math-group${perRow === 10 ? " math-group-tens" : ""}`} key={index} style={{ gridTemplateColumns: `repeat(${Math.min(group.count, perRow)}, auto)` }}>
+              {things(group.picture, group.count, group.crossed)}
+            </div>
+          );
+        })}
       </div>
     );
   }

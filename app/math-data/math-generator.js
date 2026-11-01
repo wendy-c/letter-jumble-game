@@ -2,6 +2,7 @@
 // same every time (each level has its own seed). Their pictures are drawn by the game from small
 // pictures of things to count (`scene`), rather than one drawing per question.
 import { seededRandom } from "../lib/spelling";
+import { differentGroup, numberOrder } from "./number-puzzles";
 
 const art = "/images/game-asset";
 
@@ -38,6 +39,25 @@ const things = {
   kite: { picture: `${art}/starters/kite.svg`, en: ["kite", "kites"], zh: "風箏", unit: "隻", gone: ["blow away", "被吹走了"] },
   teddy: { picture: `${art}/starters/teddy-bear.svg`, en: ["teddy bear", "teddy bears"], zh: "熊仔", unit: "隻", gone: ["are put away", "被收起了"] },
   cookie: { picture: `${art}/food/biscuit.svg`, en: ["cookie", "cookies"], zh: "曲奇", unit: "塊", gone: ["are eaten", "被吃掉了"] },
+  // The same thing in different colours.
+  pinkCircle: { picture: `${art}/math/circle.svg`, en: ["pink circle", "pink circles"], zh: "粉紅色圓形", unit: "個", gone: ["are rubbed out", "被擦掉了"] },
+  yellowCircle: { picture: `${art}/math/circle-yellow.svg`, en: ["yellow circle", "yellow circles"], zh: "黃色圓形", unit: "個", gone: ["are rubbed out", "被擦掉了"] },
+  blueCircle: { picture: `${art}/math/circle-blue.svg`, en: ["blue circle", "blue circles"], zh: "藍色圓形", unit: "個", gone: ["are rubbed out", "被擦掉了"] },
+  redFlower: { picture: `${art}/math/flower-red.svg`, en: ["red flower", "red flowers"], zh: "紅花", unit: "朵", gone: ["are picked", "被摘走了"] },
+  yellowFlower: { picture: `${art}/math/flower-yellow.svg`, en: ["yellow flower", "yellow flowers"], zh: "黃花", unit: "朵", gone: ["are picked", "被摘走了"] },
+  blueFlower: { picture: `${art}/math/flower-blue.svg`, en: ["blue flower", "blue flowers"], zh: "藍花", unit: "朵", gone: ["are picked", "被摘走了"] },
+};
+
+// Things only swapped, never counted.
+const swapThings = {
+  cow: { picture: `${art}/animals/cow.svg`, en: ["cow", "cows"], zh: "牛", unit: "頭" },
+  horse: { picture: `${art}/animals/horse.svg`, en: ["horse", "horses"], zh: "馬", unit: "匹" },
+  sweet: { picture: `${art}/food/sweet.svg`, en: ["sweet", "sweets"], zh: "糖果", unit: "粒" },
+  chocolate: { picture: `${art}/food/chocolate.svg`, en: ["chocolate bar", "chocolate bars"], zh: "朱古力", unit: "排" },
+  watermelon: { picture: `${art}/food/watermelon.svg`, en: ["watermelon", "watermelons"], zh: "西瓜", unit: "個" },
+  pineapple: { picture: `${art}/food/pineapple.svg`, en: ["pineapple", "pineapples"], zh: "菠蘿", unit: "個" },
+  robot: { picture: `${art}/starters/robot.svg`, en: ["robot", "robots"], zh: "機械人", unit: "個" },
+  doll: { picture: `${art}/starters/doll.svg`, en: ["doll", "dolls"], zh: "洋娃娃", unit: "個" },
 };
 // Kinds of things that belong together (pets, farm animals, birds, bugs, fruit, balls, vehicles,
 // toys), each sharing a measure word so they can be counted together in Chinese. A picture with
@@ -46,9 +66,15 @@ const categories = [
   ["cat", "dog", "rabbit"], ["pig", "sheep", "goat", "chicken"], ["duck", "bird", "parrot", "swan"],
   ["bee", "butterfly", "dragonfly", "moth"], ["apple", "orange", "pear"], ["ball", "football", "basketball"],
   ["car", "bus", "truck", "bike"], ["teddy", "kite"],
+  ["pinkCircle", "yellowCircle", "blueCircle"], ["redFlower", "yellowFlower", "blueFlower"],
 ];
-// Things it makes sense to swap for each other.
-const swappable = ["apple", "cake", "cookie", "ball", "kite", "teddy"];
+// Things to swap for each other, one kind at a time (snacks, fruit, farm animals, toys), biggest
+// first: a swap always gives more of a smaller thing for one of a bigger one.
+const swapSets = [
+  ["cake", "chocolate", "cookie", "sweet"], ["watermelon", "pineapple", "apple", "orange"],
+  ["horse", "cow", "goat", "chicken"], ["robot", "doll", "teddy", "ball"],
+];
+const swapThing = (id) => things[id] ?? swapThings[id];
 
 // Pattern pieces (the same pictures as the hand-made levels' patterns).
 const pieces = {
@@ -163,7 +189,7 @@ const question = ({ prompt, answer, title, scene = null, visual = null }) => ({
 });
 
 // One question maker per kind of question; `n` is the biggest number the level uses.
-function makers(random) {
+export function makers(random) {
   const between = (low, high) => low + Math.floor(random() * (high - low + 1));
   // The smallest "big" number a level uses, so later levels don't ask easy sums.
   const low = (n) => Math.max(3, Math.ceil(n / 2));
@@ -178,7 +204,24 @@ function makers(random) {
     return [things[first], things[pick(category.filter((id) => id !== first))]];
   };
 
+  // Two groups of things of one category (or one thing in two colours) to add, each in its own
+  // group; `perRow` is how many a row (left out: 5, or 10 for a group of more than 10).
+  function sumOf(a, b, perRow = null) {
+    const [x, y] = twoThings();
+    return question({
+      prompt: {
+        en: `${a} ${plural(x, a)} and ${b} ${plural(y, b)}. How many altogether?`,
+        zh: `${a} ${x.unit}${x.zh}和 ${b} ${y.unit}${y.zh}，一共有多少${x.unit}？`,
+      },
+      answer: a + b,
+      title: `${a} + ${b} = ?`,
+      scene: { type: "groups", groups: [{ picture: x.picture, count: a }, { picture: y.picture, count: b }].map((group) => (perRow ? { ...group, perRow } : group)) },
+      visual: { type: "equation", text: `${a} + ${b} = ?` },
+    });
+  }
+
   return {
+    sumOf,
     // A number bond, with a picture of its two parts (each kind in its own row) when the whole is
     // at least `pictureFrom`.
     bond(n, pictureFrom = 0) {
@@ -226,18 +269,8 @@ function makers(random) {
     sum(n) {
       const total = between(low(n), n);
       const a = between(1, total - 1);
-      const b = total - a;
-      const [x, y] = twoThings();
-      return question({
-        prompt: {
-          en: `${a} ${plural(x, a)} and ${b} ${plural(y, b)}. How many altogether?`,
-          zh: `${a} ${x.unit}${x.zh}和 ${b} ${y.unit}${y.zh}，一共有多少${x.unit}？`,
-        },
-        answer: a + b,
-        title: `${a} + ${b} = ?`,
-        scene: { type: "groups", groups: [{ picture: x.picture, count: a }, { picture: y.picture, count: b }] },
-        visual: { type: "equation", text: `${a} + ${b} = ?` },
-      });
+      // K1's and K2's groups wrap at 5 a row.
+      return sumOf(a, total - a, 5);
     },
     difference(n) {
       const a = between(low(n), n);
@@ -306,7 +339,8 @@ function makers(random) {
       });
     },
     swap(n) {
-      const [x, y, z] = mix(swappable).slice(0, 3).map((id) => things[id]);
+      const set = pick(swapSets);
+      const [x, y, z] = mix([0, 1, 2, 3]).slice(0, 3).sort((a, b) => a - b).map((index) => swapThing(set[index]));
       let first = between(2, 3);
       let second = between(2, 4);
       while (first * second > n) second -= 1;
@@ -328,7 +362,8 @@ function makers(random) {
 }
 
 // A level's ten questions. K1's levels count up to 10 (more as they go on); K2's count to 20, with
-// missing numbers, swaps and turning grids too, and number bonds under 10 without a picture.
+// missing numbers, swaps, turning grids and number puzzles too, and number bonds under 10 without a
+// picture.
 export function generateLevel(age, level) {
   // Seeded by the set's old name ("3-4", "5-6").
   const random = seededRandom(`daily-challenge:${{ k1: "3-4", k2: "5-6" }[age]}:${level}`);
@@ -341,8 +376,15 @@ export function generateLevel(age, level) {
     ];
   }
   const n = Math.min(20, 10 + Math.ceil(level / 2));
-  return [
+  const questions = [
     make.count(Math.min(n, 15)), make.sequence(n, level), make.grid(level), make.sum(n), make.missingAddend(n),
-    make.frame(n), make.swap(n), make.difference(n), make.difference(n), make.bond(n, 10),
+    make.frame(n), make.swap(n), make.difference(n),
   ];
+  // The ninth question: picture patterns (the harder kinds) before Level 10 and the different
+  // group (to 20) after it, with putting numbers (under 50) in order every third level; Level 10
+  // has a second take-away.
+  const ninth = level % 3 === 0 ? numberOrder(random, { max: 49 })
+    : level < 10 ? make.pattern(level + 8)
+      : level === 10 ? make.difference(n) : differentGroup(random, { max: 19 });
+  return [...questions, ninth, make.bond(n, 10)];
 }

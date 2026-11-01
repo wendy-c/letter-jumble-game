@@ -1948,7 +1948,7 @@ describe("Daily Challenge", () => {
 
   it("gives K3 sums to type on a number pad", async () => {
     const k3Level1 = "math-logic/k3-level-1";
-    seedPlayer({ decks: { [k3Level1]: inOrder(10) }, progress: { [k3Level1]: 7 } }, "k3");
+    seedPlayer({ decks: { [k3Level1]: inOrder(10) }, progress: { [k3Level1]: 9 } }, "k3");
     const user = userEvent.setup();
     render(<GameApp />);
     await user.click(screen.getByRole("button", { name: /Daily Challenge/ }));
@@ -1957,27 +1957,27 @@ describe("Daily Challenge", () => {
     const pad = screen.getByRole("group", { name: "Number pad" });
     expect(within(pad).getByRole("button", { name: "Check my answer" })).toBeDisabled();
     await user.click(within(pad).getByRole("button", { name: "1" }));
-    await user.click(within(pad).getByRole("button", { name: "8" }));
+    await user.click(within(pad).getByRole("button", { name: "3" }));
     await user.click(within(pad).getByRole("button", { name: "Rub out" }));
-    await user.click(within(pad).getByRole("button", { name: "7" }));
-    expect(pad.querySelector("output")).toHaveTextContent("17");
+    await user.click(within(pad).getByRole("button", { name: "2" }));
+    expect(pad.querySelector("output")).toHaveTextContent("12");
     await user.click(within(pad).getByRole("button", { name: "Check my answer" }));
-    expect(storedPlayers().players[0].results[k3Level1][7]).toBe(true);
+    expect(storedPlayers().players[0].results[k3Level1][9]).toBe(true);
   });
 
-  it("takes a typed answer from the keyboard too, and shows the right one when it's wrong", async () => {
+  it("takes a typed number bond answer from the keyboard too, and shows the right one when it's wrong", async () => {
     const k3Level1 = "math-logic/k3-level-1";
-    seedPlayer({ decks: { [k3Level1]: inOrder(10) }, progress: { [k3Level1]: 6 } }, "k3");
+    seedPlayer({ decks: { [k3Level1]: inOrder(10) }, progress: { [k3Level1]: 7 } }, "k3");
     const user = userEvent.setup();
     render(<GameApp />);
     await user.click(screen.getByRole("button", { name: /Daily Challenge/ }));
     await user.click(screen.getByRole("button", { name: /Level 1 · / }));
-    expect(document.querySelector(".math-equation")).toHaveTextContent("= 16");
+    expect(screen.getByRole("img", { name: "Number bond: 14 is 7 and ?" })).toBeInTheDocument();
     await user.keyboard("9");
-    expect(document.querySelector(".math-equation")).toHaveTextContent("8 +9= 16");
+    expect(screen.getByRole("img", { name: "Number bond: 14 is 7 and 9" })).toBeInTheDocument();
     await user.keyboard("{Enter}");
-    expect(screen.getByRole("dialog", { name: "The answer is…" })).toHaveTextContent("8");
-    expect(storedPlayers().players[0].results[k3Level1][6]).toBe(false);
+    expect(screen.getByRole("dialog", { name: "The answer is…" })).toHaveTextContent("7");
+    expect(storedPlayers().players[0].results[k3Level1][7]).toBe(false);
   });
 
   it("doesn't open a level that's still locked, or another age's, from its address", () => {

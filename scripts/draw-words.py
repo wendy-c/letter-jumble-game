@@ -2019,6 +2019,9 @@ pictures[MA + "circle"] = svg('<circle cx="64" cy="64" r="40" fill="#ff8fb7"/>')
 pictures[MA + "square"] = svg('<rect x="26" y="26" width="76" height="76" rx="6" fill="#8cc8f2"/>')
 pictures[MA + "triangle"] = svg('<path d="M64 20L108 100H20Z" fill="#ffd45e"/>')
 pictures[MA + "big-circle"] = svg('<circle cx="64" cy="64" r="46" fill="#8fe3a8"/>')
+# The same circle in other colours, for adding "pink circles and yellow circles".
+pictures[MA + "circle-yellow"] = svg('<circle cx="64" cy="64" r="40" fill="#ffd45e"/>')
+pictures[MA + "circle-blue"] = svg('<circle cx="64" cy="64" r="40" fill="#8cc8f2"/>')
 pictures[MA + "small-circle"] = svg('<circle cx="64" cy="64" r="20" fill="#8fe3a8"/>')
 for name, colour in (("flower-red", "#ff6f86"), ("flower-yellow", "#ffd45e"), ("flower-blue", "#8cc8f2")):
     pictures[MA + name] = svg('<path d="M64 80v40" stroke="#6cc28a" stroke-width="6"/>'
