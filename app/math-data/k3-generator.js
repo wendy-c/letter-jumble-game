@@ -423,7 +423,8 @@ function makers(random, level) {
     menu() {
       for (;;) {
         const ids = mix(Object.keys(foods)).slice(0, 4);
-        const prices = mix([3, 4, 5, 6, 7, 8, 9, 10, 12, 15]).slice(0, 4);
+        // Every price under $10.
+        const prices = mix([2, 3, 4, 5, 6, 7, 8, 9]).slice(0, 4);
         const buyers = mix(Object.keys(animals)).slice(0, 4);
         const picks = buyers.map(() => mix([0, 1, 2, 3]).slice(0, 2).sort());
         const totals = picks.map(([a, b]) => prices[a] + prices[b]);

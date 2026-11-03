@@ -12,7 +12,7 @@ export default {
   title: "Components/Math/LevelMap",
   component: LevelMap,
   args: {
-    title: "K1 Challenge", focus: "Numbers under 10", levels, breadcrumbs, mapKey: "storybook-map", onSelectLevel: fn(),
+    title: "K1 Challenge", levels, breadcrumbs, mapKey: "storybook-map", onSelectLevel: fn(),
     lockFor: (level) => (levels.indexOf(level) <= 6 ? "open" : "locked"),
     scoreFor: (level) => scores[levels.indexOf(level)] ?? null,
   },

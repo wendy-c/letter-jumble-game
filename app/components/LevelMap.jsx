@@ -77,7 +77,7 @@ const saveShown = (key, index) => {
 // `levels` are the class's 20 levels; `lockFor(level)` is "open" or "locked"; `scoreFor(level)` is
 // the best [right, out of] so far, or null; `progressFor(level)` how many questions of a level
 // being played are done. `mapKey` names whose map it is (child and class), for Mochi's walk.
-export default function LevelMap({ title, focus, levels, lockFor, scoreFor, progressFor = () => 0, mapKey, breadcrumbs, titleAction = null, onSelectLevel }) {
+export default function LevelMap({ title, levels, lockFor, scoreFor, progressFor = () => 0, mapKey, breadcrumbs, titleAction = null, onSelectLevel }) {
   const language = useLanguage() === "zh" ? "zh" : "en";
   const text = words[language];
   const open = levels.map((level) => lockFor(level) === "open");
@@ -110,7 +110,6 @@ export default function LevelMap({ title, focus, levels, lockFor, scoreFor, prog
           {titleAction}
         </div>
         <p className="heading-note" lang={language === "zh" ? "zh-Hant-HK" : undefined}>{text.note}</p>
-        {focus && <p className="level-map-focus">{focus}</p>}
       </div>
 
       <div className="level-map">

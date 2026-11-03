@@ -5918,17 +5918,6 @@ a:focus-visible {
   filter: drop-shadow(0 4px 2px rgb(75 46 34 / 18%));
 }
 
-.level-map-focus {
-  display: inline-block;
-  margin: 8px 0 0;
-  border-radius: 999px;
-  background: var(--magic-soft);
-  padding: 4px 12px;
-  color: var(--magic-dark);
-  font-size: 14px;
-  font-weight: 700;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .level-map-mochi {
     transition: none;

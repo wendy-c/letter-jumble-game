@@ -673,7 +673,6 @@ export default function GameApp() {
         ) : isMath ? (
           <LevelMap
             title={gameName(text, selectedGame, currentPlayer?.age)}
-            focus={gameTopics[0]?.focus?.[site.language] ?? gameTopics[0]?.english}
             levels={gameTopics}
             lockFor={(level) => levelState(level, currentPlayer)}
             scoreFor={(level) => currentPlayer?.scores?.[`${selectedGame.id}/${level.id}`] ?? null}

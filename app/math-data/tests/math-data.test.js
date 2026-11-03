@@ -382,6 +382,7 @@ describe("Daily Challenge for K3", () => {
       if (scene.type === "clock") expect(question.answer).toBe(`${scene.hour}:${String(scene.minute).padStart(2, "0")}`);
       if (scene.type === "coins") expect(question.answer).toBe(scene.coins.reduce((sum, coin) => sum + coin, 0) >= scene.item.price ? "yes" : "no");
       if (scene.type === "menu") {
+        scene.items.forEach((item) => expect(item.price).toBeLessThan(10));
         const totals = scene.buyers.map((buyer) => buyer.picks.reduce((sum, pick) => sum + scene.items[pick].price, 0));
         const best = /least/.test(question.prompt.en) ? Math.min(...totals) : Math.max(...totals);
         expect(totals.filter((total) => total === best)).toHaveLength(1);
