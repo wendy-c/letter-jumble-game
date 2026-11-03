@@ -2233,10 +2233,12 @@ pictures[MA + "lr-mirror-mole-right"] = wide(mirror_mole())
 pictures[MA + "lr-mirror-mole-left"] = wide(mirrored(mirror_mole()))
 
 # A bread roll, a Santa hat and a birthday cake (for comparing and for the calendar).
+# A round bread roll with a cross scored on top.
 pictures[MA + "bread-roll"] = svg(
-    '<ellipse cx="64" cy="70" rx="50" ry="34" fill="#f2b766"/>'
-    '<path d="M38 52q10 14 4 34M60 44q10 16 4 40M84 46q10 16 4 38" fill="none" stroke="#c98a55" stroke-width="5"/>'
-    '<path d="M30 60q10-18 30-22" fill="none" stroke="#ffe2b0" stroke-width="5"/>')
+    '<ellipse cx="64" cy="68" rx="52" ry="44" fill="#e8964f"/>'
+    '<ellipse cx="64" cy="64" rx="42" ry="34" fill="#f2ad68" stroke="none"/>'
+    '<path d="M44 46l40 38M84 46l-40 38" stroke="#f9d79a" stroke-width="11"/>'
+    '<path d="M28 54q8-18 26-22" fill="none" stroke="#ffe2b0" stroke-width="5" opacity=".9"/>')
 pictures[MA + "santa-hat"] = svg(
     '<path d="M22 96q10-62 54-70 26-4 34 26-20-10-30 4-10 16-6 40Z" fill="#ff5a5a"/>'
     '<circle cx="110" cy="56" r="11" fill="#ffffff"/>'

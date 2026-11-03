@@ -147,13 +147,20 @@ export function K3Scene({ scene, language }) {
     );
   }
   if (scene.type === "bags") {
-    // Two clear bags, A and B, with their bread rolls inside (rows of 5).
+    // Two clear plastic bags, A and B, tied at the neck, with their bread rolls settled at the bottom.
     return (
       <div className="math-scene math-bags" aria-hidden="true">
         {scene.bags.map((bag) => (
           <div key={bag.label} className="math-bag">
-            <span className="math-bag-tie" />
-            <div className="math-bag-inside">{Array.from({ length: bag.count }, (_, index) => small(scene.picture, index))}</div>
+            <div className="math-bag-body">
+              <svg className="math-bag-shape" viewBox="0 0 100 130" preserveAspectRatio="none">
+                <path className="math-bag-plastic" d="M42 22C20 30 6 52 6 82c0 30 18 44 44 44s44-14 44-44c0-30-14-52-36-60Z" />
+                <path className="math-bag-shine" d="M18 64c0-14 6-24 16-30M14 86v8" />
+                <path className="math-bag-plastic" d="M42 22l-6-14q14 4 14 10 0-6 14-10l-6 14Z" />
+                <rect className="math-bag-twist" x="41" y="16" width="18" height="7" rx="3" />
+              </svg>
+              <div className="math-bag-inside">{Array.from({ length: bag.count }, (_, index) => small(scene.picture, index))}</div>
+            </div>
             <b className="math-bag-label">{bag.label}</b>
           </div>
         ))}

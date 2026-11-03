@@ -285,7 +285,7 @@ function makers(random, level) {
       return question({
         prompt: say("Compare the bags. How many more or fewer bread rolls does bag A have than bag B?", "比較兩袋麵包。A袋麵包比B袋麵包……"),
         answer,
-        title: "Bag A and bag B",
+        title: "Bags of bread rolls",
         scene: { type: "bags", picture: `${art}/math/bread-roll.svg`, bags: [{ label: "A", count: a }, { label: "B", count: b }] },
         options: choices.map((choice) => ({ ...choice, correct: choice.label === answer })),
       });
@@ -302,7 +302,7 @@ function makers(random, level) {
       return question({
         prompt: say(`Which card has ${more} more beans than card C?`, `哪一張卡比C卡多${more}粒豆？`),
         answer: letter,
-        title: `${more} more beans than C`,
+        title: "More or less beans",
         scene: { type: "beanCards", picture: `${art}/starters/bean.svg`, cards },
         options: textOptions(["A", "B", "D"].map((name) => [name, say(name, name), say(`${name}: ${counts[name]} beans`, `${name}：${counts[name]} 粒豆`)]), letter),
       });
