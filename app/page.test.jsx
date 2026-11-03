@@ -8,9 +8,12 @@ import GameApp from "./components/GameApp";
 import { games } from "./games-data";
 import { currentPathname, setPathname } from "../test/mock-navigation";
 import { sounds } from "./lib/sounds";
+import { makeTransferCode, readTransferCode, reloadHome } from "./lib/record-transfer";
 
 jest.mock("./lib/sounds", () => ({ sounds: { correct: jest.fn(), oops: jest.fn(), coin: jest.fn(), sparkle: jest.fn() } }));
 jest.mock("./lib/speech", () => ({ speakWord: jest.fn(), speakCantonese: jest.fn(), stopSpeaking: jest.fn() }));
+// Loading game records from another browser reloads the page; here it's only noted.
+jest.mock("./lib/record-transfer", () => ({ ...jest.requireActual("./lib/record-transfer"), reloadHome: jest.fn() }));
 // After a right answer, the next question comes straight away (no 1-second wait in tests), and the
 // toast stays up so tests can see it.
 jest.mock("./lib/timing", () => ({ answerToastTime: 60000, nextQuestionPause: 0, mochiDriveTime: 0 }));
@@ -1804,6 +1807,109 @@ describe("parent mode", () => {
     await user.click(within(parentPage()).getByRole("button", { name: /Continue/ }));
   }
 
+  describe("moving game records to another browser", () => {
+    const transfer = () => within(parentPage()).getByRole("region", { name: "Transfer game records to another browser" });
+    // A code from "another browser" with these players in it.
+    const codeFor = (players) => {
+      const saved = { [playersKey]: JSON.stringify({ players, current: players[0].name }), [siteKey]: JSON.stringify({ language: "zh", howToSeen: [], tutorialSeen: true }) };
+      const keys = Object.keys(saved);
+      return makeTransferCode({ length: keys.length, key: (index) => keys[index], getItem: (key) => saved[key] });
+    };
+
+    it("explains the steps, and makes a code of this browser's game records to copy", async () => {
+      seedChildren({ coins: 37, badges: ["cvc/beginning-sound"] });
+      const user = userEvent.setup();
+      render(<GameApp />);
+      await passGrownUpCheck(user);
+      expect(transfer()).toHaveTextContent("In this browser: tap “Generate”, then “Copy” to copy your code.");
+      expect(transfer()).toHaveTextContent("Loading a code replaces all the game records in this browser");
+
+      await user.click(within(transfer()).getByRole("button", { name: "Generate" }));
+      const code = within(transfer()).getByLabelText("Your code").value;
+      expect(code).toMatch(/^RAINBOW1-/);
+      const { players } = readTransferCode(code);
+      expect(players.map((player) => [player.name, player.coins, player.badges])).toEqual([["Ada", 37, ["cvc/beginning-sound"]], ["Elly", 0, undefined]]);
+
+      await user.click(within(transfer()).getByRole("button", { name: "Copy" }));
+      expect(within(transfer()).getByRole("button", { name: "Copied!" })).toBeInTheDocument();
+      expect(await navigator.clipboard.readText()).toBe(code);
+    });
+
+    it("loads a code from another browser only after showing what it replaces this browser's records with", async () => {
+      seedChildren();
+      const user = userEvent.setup();
+      render(<GameApp />);
+      await passGrownUpCheck(user);
+      await user.click(within(transfer()).getByLabelText("Paste the code here"));
+      await user.paste(codeFor([{ name: "Mia", coins: 12, age: "k2", badges: ["cvc/beginning-sound"] }]));
+      await user.click(within(transfer()).getByRole("button", { name: "Load" }));
+
+      const confirm = within(transfer()).getByRole("alertdialog", { name: "Replace this browser’s game records with these children?" });
+      expect(confirm).toHaveTextContent("Mia (K2) · 12 rainbow coins");
+      // Nothing's replaced until it's confirmed.
+      expect(storedPlayers().players.map((player) => player.name)).toEqual(["Ada", "Elly"]);
+
+      await user.click(within(confirm).getByRole("button", { name: "Yes, replace them" }));
+      expect(JSON.parse(window.localStorage.getItem(playersKey))).toEqual({ players: [{ name: "Mia", coins: 12, age: "k2", badges: ["cvc/beginning-sound"] }], current: "Mia" });
+      expect(JSON.parse(window.localStorage.getItem(siteKey)).language).toBe("zh");
+      expect(reloadHome).toHaveBeenCalledTimes(1);
+    });
+
+    it("keeps this browser's records when the loading is cancelled", async () => {
+      seedChildren();
+      const user = userEvent.setup();
+      render(<GameApp />);
+      await passGrownUpCheck(user);
+      await user.click(within(transfer()).getByLabelText("Paste the code here"));
+      await user.paste(codeFor([{ name: "Mia", coins: 12, age: "k2" }]));
+      await user.click(within(transfer()).getByRole("button", { name: "Load" }));
+      await user.click(within(transfer()).getByRole("button", { name: "Cancel" }));
+      expect(within(transfer()).queryByRole("alertdialog")).not.toBeInTheDocument();
+      expect(storedPlayers().players.map((player) => player.name)).toEqual(["Ada", "Elly"]);
+      expect(reloadHome).not.toHaveBeenCalled();
+    });
+
+    it("says what's wrong with a code that can't be loaded", async () => {
+      seedChildren();
+      const user = userEvent.setup();
+      render(<GameApp />);
+      await passGrownUpCheck(user);
+      const box = within(transfer()).getByLabelText("Paste the code here");
+      await user.click(within(transfer()).getByRole("button", { name: "Load" }));
+      expect(within(transfer()).getByRole("alert")).toHaveTextContent("Paste a code first.");
+      await user.click(box);
+      await user.paste("RAINBOW1-not really a code");
+      await user.click(within(transfer()).getByRole("button", { name: "Load" }));
+      expect(within(transfer()).getByRole("alert")).toHaveTextContent("That code doesn’t look right.");
+      // Half a code (cut off when copying) doesn't load either.
+      await user.clear(box);
+      await user.click(box);
+      await user.paste(codeFor([{ name: "Mia", coins: 12, age: "k2" }]).slice(0, 40));
+      await user.click(within(transfer()).getByRole("button", { name: "Load" }));
+      expect(within(transfer()).getByRole("alert")).toHaveTextContent("That code doesn’t look right.");
+      expect(storedPlayers().players.map((player) => player.name)).toEqual(["Ada", "Elly"]);
+    });
+
+    it("lets a new browser go from the welcome card to Parent mode to load its records", async () => {
+      // A new browser: no players, and the welcome card not yet closed this visit.
+      window.sessionStorage.clear();
+      const user = userEvent.setup();
+      render(<GameApp />);
+      const welcome = await screen.findByRole("dialog", { name: "Welcome to Rainbow Academy!" });
+      await user.click(within(welcome).getByRole("button", { name: "Already playing in another browser? Bring your game records here" }));
+      expect(currentPathname()).toBe("/parent");
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+      await user.type(within(parentPage()).getByLabelText(/What is/), "99");
+      await user.click(within(parentPage()).getByRole("button", { name: /Continue/ }));
+      await user.click(within(transfer()).getByLabelText("Paste the code here"));
+      await user.paste(codeFor([{ name: "Mia", coins: 12, age: "k2" }]));
+      await user.click(within(transfer()).getByRole("button", { name: "Load" }));
+      await user.click(within(transfer()).getByRole("button", { name: "Yes, replace them" }));
+      expect(storedPlayers().players.map((player) => player.name)).toEqual(["Mia"]);
+      expect(reloadHome).toHaveBeenCalledTimes(1);
+    });
+  });
+
   it("lists every game for each child, with only their age's games on to begin with", async () => {
     seedChildren();
     const user = userEvent.setup();
@@ -1933,7 +2039,9 @@ describe("parent mode", () => {
 
     await user.type(within(parentPage()).getByLabelText(/What is/), "99");
     await user.click(within(parentPage()).getByRole("button", { name: /Continue/ }));
-    expect(within(parentPage()).getAllByRole("region")).toHaveLength(2);
+    // Each child's settings, and moving game records to another browser.
+    expect(within(parentPage()).getAllByRole("region").map((region) => region.getAttribute("aria-labelledby")))
+      .toEqual(["parent-child-Ada", "parent-child-Elly", "record-transfer-title"]);
 
     // Done locks it again and goes home.
     await user.click(within(parentPage()).getByRole("button", { name: /Done/ }));

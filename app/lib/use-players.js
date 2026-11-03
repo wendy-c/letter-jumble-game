@@ -92,12 +92,18 @@ function cleanPlayer(saved) {
   return cleaned;
 }
 
+// The players saved as `text` (what's stored under playersStorageKey), tidied up, and who's playing.
+// Throws if it isn't JSON.
+export function readPlayersText(text) {
+  const stored = JSON.parse(text ?? "null");
+  const players = Array.isArray(stored?.players) ? stored.players.filter(isValidPlayer).map(cleanPlayer) : [];
+  const current = players.some((player) => player.name === stored?.current) ? stored.current : null;
+  return { players, current };
+}
+
 function readStoredState() {
   try {
-    const stored = JSON.parse(window.localStorage.getItem(playersStorageKey) ?? "null");
-    const players = Array.isArray(stored?.players) ? stored.players.filter(isValidPlayer).map(cleanPlayer) : [];
-    const current = players.some((player) => player.name === stored?.current) ? stored.current : null;
-    return { players, current };
+    return readPlayersText(window.localStorage.getItem(playersStorageKey));
   } catch {
     return emptyState;
   }

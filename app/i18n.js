@@ -9,7 +9,7 @@ const strings = {
   en: {
     home: "Home",
     homeLink: "Rainbow Academy home",
-    footer: "Every word is a little bit of magic!",
+    footer: "Learn, Play, Shine!",
 
     playerOptions: (name, coins) => `Playing as ${name}, ${coins} rainbow ${coins === 1 ? "coin" : "coins"}. Player options`,
     switchPlayer: "Switch player",
@@ -72,6 +72,34 @@ const strings = {
     off: "Off",
     forAges: (ages) => ` · for ${ages}`,
     lockParentMode: "Done — lock parent mode",
+
+    // Moving game records to another browser (in Parent mode).
+    transferTitle: "Transfer game records to another browser",
+    transferIntro: "Game records (every child, with their rainbow coins, badges, scores and progress) are saved in this browser only. To carry on in another browser, or on another phone, tablet or computer:",
+    transferSteps: [
+      "In this browser: tap “Generate”, then “Copy” to copy your code.",
+      "Send the code to yourself, for example by message or email.",
+      "In the other browser: open Rainbow Academy, then Parent mode (from the welcome card, or a player’s menu). Paste the code into “Load game records from another browser”, tap “Load” and check what will be loaded.",
+    ],
+    transferSendTitle: "Copy this browser’s game records",
+    transferGenerate: "Generate",
+    transferCodeLabel: "Your code",
+    transferCopy: "Copy",
+    transferCopied: "Copied!",
+    transferLoadTitle: "Load game records from another browser",
+    transferWarning: "Loading a code replaces all the game records in this browser: its children, coins, badges, scores and progress. This can’t be undone.",
+    transferPasteLabel: "Paste the code here",
+    transferLoad: "Load",
+    transferProblems: {
+      empty: "Paste a code first.",
+      invalid: "That code doesn’t look right. Copy the whole code again, from “RAINBOW1-” to the end, and paste it here.",
+      noPlayers: "That code has no children in it, so there’s nothing to load.",
+    },
+    transferConfirm: "Replace this browser’s game records with these children?",
+    transferChild: (name, age, coins) => `${name}${age ? ` (${age})` : ""} · ${coins} rainbow coins`,
+    transferConfirmNote: "Everything saved in this browser now will be gone. The home page opens once they’re loaded.",
+    transferReplace: "Yes, replace them",
+    transferCancel: "Cancel",
   },
   zh: {
     home: "主頁",
@@ -151,6 +179,33 @@ const strings = {
     off: "關閉",
     forAges: (ages) => ` · 適合 ${ages}`,
     lockParentMode: "完成，鎖上家長模式",
+
+    transferTitle: "把遊戲紀錄轉移到另一個瀏覽器",
+    transferIntro: "遊戲紀錄（每位孩子的彩虹金幣、徽章、分數和進度）只儲存在這個瀏覽器。如想在另一個瀏覽器，或另一部手機、平板或電腦繼續玩：",
+    transferSteps: [
+      "在這個瀏覽器：按「產生」，再按「複製」複製代碼。",
+      "把代碼傳給自己，例如用訊息或電郵。",
+      "在另一個瀏覽器：打開 Rainbow Academy，進入家長模式（從歡迎卡，或玩家選單）。把代碼貼在「從另一個瀏覽器載入遊戲紀錄」，按「載入」，再確認要載入的內容。",
+    ],
+    transferSendTitle: "複製這個瀏覽器的遊戲紀錄",
+    transferGenerate: "產生",
+    transferCodeLabel: "你的代碼",
+    transferCopy: "複製",
+    transferCopied: "已複製！",
+    transferLoadTitle: "從另一個瀏覽器載入遊戲紀錄",
+    transferWarning: "載入代碼會取代這個瀏覽器的所有遊戲紀錄：包括孩子、金幣、徽章、分數和進度，而且不能復原。",
+    transferPasteLabel: "在這裏貼上代碼",
+    transferLoad: "載入",
+    transferProblems: {
+      empty: "請先貼上代碼。",
+      invalid: "這個代碼好像不正確。請由「RAINBOW1-」開始，再複製整個代碼，然後貼在這裏。",
+      noPlayers: "這個代碼沒有任何孩子的紀錄，所以沒有東西可以載入。",
+    },
+    transferConfirm: "用這些孩子的紀錄取代這個瀏覽器的遊戲紀錄？",
+    transferChild: (name, age, coins) => `${name}${age ? `（${age}）` : ""} · ${coins} 個彩虹金幣`,
+    transferConfirmNote: "這個瀏覽器現有的紀錄會全部消失。載入後會打開主頁。",
+    transferReplace: "確定取代",
+    transferCancel: "取消",
   },
 };
 

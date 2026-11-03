@@ -12,6 +12,7 @@ const text = {
     ],
     motto: "Learn, Play, Shine!",
     button: "Let’s Start",
+    transfer: "Already playing in another browser? Bring your game records here",
   },
   zh: {
     title: "歡迎來到 Rainbow Academy！",
@@ -22,14 +23,16 @@ const text = {
     ],
     motto: "學中玩，玩中學，每個孩子都能發光發亮！",
     button: "一起玩吧！",
+    transfer: "已經在其他瀏覽器玩過？把遊戲紀錄搬過來",
   },
 };
 
 // What Rainbow Academy is, in the site's language (English unless it's changed in the player
 // menu). A new family (no players yet) sees it on arriving, with a form to create their first
-// player: "Let's Start" creates them. Opened from the
-// logo when there are players already, the button just closes it.
-export default function WelcomeDialog({ language, onCreate = null, onClose }) {
+// player: "Let's Start" creates them, or `onTransfer` takes them to Parent mode to load game records
+// from another browser instead. Opened from the logo when there are players already, the button
+// just closes it.
+export default function WelcomeDialog({ language, onCreate = null, onTransfer = null, onClose }) {
   const copy = text[language];
   const siteText = useText();
 
@@ -62,6 +65,9 @@ export default function WelcomeDialog({ language, onCreate = null, onClose }) {
                 submitLabel={<>{copy.button} <span aria-hidden="true">→</span></>}
                 submitClassName="reward-continue completion-button welcome-button"
               />
+              {onTransfer && (
+                <button className="welcome-transfer" type="button" onClick={onTransfer}>{copy.transfer}</button>
+              )}
             </div>
           ) : (
             <button className="reward-continue completion-button welcome-button" type="button" autoFocus onClick={onClose}>

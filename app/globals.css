@@ -5923,3 +5923,142 @@ a:focus-visible {
     transition: none;
   }
 }
+
+/* Parent mode: moving game records to another browser. */
+.record-transfer {
+  margin-top: 28px;
+  border-top: 3px dashed var(--line);
+  padding-top: 22px;
+}
+
+.record-transfer h3 {
+  margin: 0 0 8px;
+  color: var(--ink);
+  font-size: 20px;
+}
+
+.record-transfer h4 {
+  margin: 0 0 10px;
+  color: var(--ink);
+  font-size: 16px;
+}
+
+.record-transfer-steps {
+  margin: 0 0 18px;
+  padding-left: 22px;
+  list-style: decimal;
+  color: var(--ink);
+  line-height: 1.55;
+}
+
+.record-transfer-part {
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+  margin-top: 14px;
+  border-radius: 18px;
+  background: var(--magic-soft);
+  padding: 16px;
+}
+
+.record-transfer-label {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.record-transfer-code {
+  box-sizing: border-box;
+  width: 100%;
+  border: 2px solid var(--line-strong);
+  border-radius: 12px;
+  background: #fff;
+  padding: 10px 12px;
+  color: var(--ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  word-break: break-all;
+  resize: vertical;
+}
+
+.record-transfer-button,
+.record-transfer-replace,
+.record-transfer-cancel {
+  width: auto;
+  min-height: 44px;
+  padding: 0 22px;
+}
+
+.record-transfer-warning {
+  margin: 0;
+  border-left: 5px solid var(--gold);
+  border-radius: 10px;
+  background: var(--gold-soft);
+  padding: 10px 12px;
+  color: var(--gold-deep);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.record-transfer-problem {
+  margin: 0;
+  color: #d9436a;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.record-transfer-confirm {
+  width: 100%;
+  box-sizing: border-box;
+  border: 3px solid #f4a3b4;
+  border-radius: 16px;
+  background: #fff;
+  padding: 14px 16px;
+  color: var(--ink);
+}
+
+.record-transfer-confirm p {
+  margin: 0 0 8px;
+}
+
+.record-transfer-confirm ul {
+  margin: 0 0 10px;
+  padding-left: 20px;
+}
+
+.record-transfer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.record-transfer-replace {
+  background: linear-gradient(180deg, #ff8fa3, #f06a8a);
+}
+
+.record-transfer-cancel {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 4px 0 var(--line-strong);
+}
+
+/* On the welcome card: for a family moving from another browser. */
+.welcome-transfer {
+  margin-top: 12px;
+  border: 0;
+  background: none;
+  color: var(--magic-dark);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.record-transfer-button {
+  background: linear-gradient(180deg, #a48bf0, var(--magic));
+  box-shadow: 0 4px 0 var(--magic-dark);
+}
+
+.record-transfer-replace {
+  box-shadow: 0 4px 0 #c9478a;
+}

@@ -2,6 +2,7 @@ import { useId, useState } from "react";
 import { ageGroups, defaultQuestionCount, games, isGameAvailable, isGameForAge, questionCountChoices } from "../games-data";
 import { isRightAnswer, makeGrownUpQuestion } from "../lib/grown-up-question";
 import { gameName, useText } from "../i18n";
+import RecordTransfer from "./RecordTransfer";
 import GameFooter from "./GameFooter";
 
 function GrownUpCheck({ onPass }) {
@@ -172,7 +173,8 @@ function ChildSettings({ player, onSetGameEnabled, onSetSpellingGuide, onSetQues
 
 // The parent mode page ("/parent"): a grown-up maths question, then each child's settings: which
 // games they can play, whether their Letter Jumble games show the spelling guide, and how many
-// questions a round of CVC Sounds, Digraphs or Blends has.
+// questions a round of CVC Sounds, Digraphs or Blends has. Below them, a way to move the game
+// records to another browser (RecordTransfer).
 // Leaving the page locks it again; "Done" locks it and goes home (`onDone`).
 export default function ParentMode({ players, breadcrumbs, onSetGameEnabled, onSetSpellingGuide, onSetQuestionCount, onDone }) {
   const text = useText();
@@ -190,7 +192,11 @@ export default function ParentMode({ players, breadcrumbs, onSetGameEnabled, onS
         {!unlocked ? (
           <GrownUpCheck onPass={() => setUnlocked(true)} />
         ) : players.length === 0 ? (
-          <p className="parent-intro">{text.noChildren}</p>
+          <>
+            <p className="parent-intro">{text.noChildren}</p>
+            {/* A new browser starts here, to load records from another one. */}
+            <RecordTransfer />
+          </>
         ) : (
           <>
             <p className="parent-intro">{text.parentIntro}</p>
@@ -199,6 +205,7 @@ export default function ParentMode({ players, breadcrumbs, onSetGameEnabled, onS
                 <ChildSettings key={player.name} player={player} onSetGameEnabled={onSetGameEnabled} onSetSpellingGuide={onSetSpellingGuide} onSetQuestionCount={onSetQuestionCount} />
               ))}
             </div>
+            <RecordTransfer />
             <button className="action-button check-button parent-done" type="button" onClick={onDone}>
               {text.lockParentMode} <img className="inline-icon" src="/images/icons/menu-parent.svg" alt="" width="20" height="20" />
             </button>

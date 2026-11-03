@@ -860,6 +860,7 @@ export default function GameApp() {
         <WelcomeDialog
           language={site.language}
           onCreate={players.length === 0 ? createFirstPlayer : null}
+          onTransfer={players.length === 0 ? () => { closeWelcome(); router.push("/parent"); } : null}
           onClose={closeWelcome}
         />
       )}
