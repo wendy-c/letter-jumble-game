@@ -217,14 +217,15 @@ function makers(random, level) {
         scene: { type: "groups", groups: [{ picture: thing.picture, count: start }] },
       });
     },
-    // A queue of animals, asked about in turn (from level to level) four ways: how many altogether
-    // with so many in front and behind; how many are in front of the 5th in line; how many are behind
-    // the 6th of 9; and (later levels) how many altogether with a place from each end.
+    // A queue of animals, asked about in turn (from level to level) five ways: how many altogether
+    // with so many in front and behind; how many are in front of the 5th in line; what place is one
+    // with 4 in front of it; how many are behind the 6th of 9; and (later levels) how many altogether
+    // with a place from each end.
     queue() {
       const hero = animals[pick(Object.keys(animals))];
       const front = between(2, later ? 7 : 5);
       const behind = between(2, later ? 7 : 5);
-      const asks = ["total", "inFront", "behind", later ? "places" : "total"];
+      const asks = ["total", "inFront", "position", "behind", later ? "places" : "total"];
       const ask = asks[Math.floor((level - 1) / 2) % asks.length];
       const ordinal = (n) => `${n}${n === 1 ? "st" : n === 2 ? "nd" : n === 3 ? "rd" : "th"}`;
       const total = front + behind + 1;
@@ -241,17 +242,26 @@ function makers(random, level) {
           `There are ${total} animals in a line. The ${hero.en} is ${ordinal(front + 1)} from the front. How many animals are behind it?`,
           `隊伍裏有 ${total} 隻動物，${hero.zh}由前面數起排第 ${front + 1}。${hero.zh}後面有多少隻動物？`,
         ),
+        position: say(
+          `There are ${front} animals in front of the ${hero.en}. The ${hero.en} is…`,
+          `${hero.zh}前面有 ${front} 隻動物。${hero.zh}……`,
+        ),
         places: say(
           `The ${hero.en} is in a line. It is ${ordinal(front + 1)} from the front and ${ordinal(behind + 1)} from the back. How many animals are in the line?`,
           `${hero.zh}在排隊。由前面數起，${hero.zh}排第 ${front + 1}；由後面數起，排第 ${behind + 1}。隊伍裏一共有多少隻動物？`,
         ),
       };
-      const answers = { total, inFront: front, behind, places: total };
+      const answers = { total, inFront: front, position: front + 1, behind, places: total };
+      // Places to choose from: the right one, and the easy slips (one or two short, or two too many).
+      const placeChoices = [front + 1, front, front - 1, front + 3];
       return question({
         prompt: prompts[ask],
         answer: answers[ask],
         title: `The ${hero.en}’s line`,
         scene: { type: "queue", picture: hero.picture, front, behind, ask },
+        ...(ask === "position" && {
+          options: textOptions(placeChoices.map((place) => [String(place), say(`${ordinal(place)} in line`, `排第 ${place}`)]), String(front + 1)),
+        }),
       });
     },
     // Comparing two lots of things (every other level), taking turns: bags of bread rolls, cards of

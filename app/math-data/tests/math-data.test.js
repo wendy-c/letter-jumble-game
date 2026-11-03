@@ -364,7 +364,7 @@ describe("Daily Challenge for K3", () => {
         expect(scene.groups[0].crossed).toBeUndefined();
       }
       if (scene.type === "queue") {
-        const answers = { total: scene.front + scene.behind + 1, places: scene.front + scene.behind + 1, inFront: scene.front, behind: scene.behind };
+        const answers = { total: scene.front + scene.behind + 1, places: scene.front + scene.behind + 1, inFront: scene.front, position: scene.front + 1, behind: scene.behind };
         expect(Number(question.answer)).toBe(answers[scene.ask]);
       }
       if (scene.type === "swap") expect(Number(question.answer)).toBe(scene.rows[0].count * scene.rows[1].count * scene.rows[2].fromCount);
@@ -373,11 +373,11 @@ describe("Daily Challenge for K3", () => {
     });
   });
 
-  it("asks about a queue four ways, in turn: how many altogether, how many in front, how many behind, and (later) from each end", () => {
+  it("asks about a queue five ways, in turn: how many altogether, how many in front, what place, how many behind, and (later) from each end", () => {
     const queues = k3.flatMap((level, index) => level.words.filter((question) => question.scene?.type === "queue").map((question) => [index + 1, question]));
     expect(queues.map(([level, question]) => [level, question.scene.ask])).toEqual([
-      [1, "total"], [3, "inFront"], [5, "behind"], [7, "total"], [9, "total"],
-      [11, "inFront"], [13, "behind"], [15, "places"], [17, "total"], [19, "inFront"],
+      [1, "total"], [3, "inFront"], [5, "position"], [7, "behind"], [9, "total"],
+      [11, "total"], [13, "inFront"], [15, "position"], [17, "behind"], [19, "places"],
     ]);
     const asked = (ask) => queues.map(([, question]) => question).find((question) => question.scene.ask === ask);
     const inFront = asked("inFront");
@@ -387,6 +387,14 @@ describe("Daily Challenge for K3", () => {
     expect(behind.prompt.en).toMatch(new RegExp(`^There are ${behind.scene.front + behind.scene.behind + 1} animals in a line\\.`));
     expect(behind.prompt.en).toMatch(/How many animals are behind it\?$/);
     expect(asked("places").prompt.en).toMatch(/from the front and \d+(st|nd|rd|th) from the back/);
+    // "There are 4 animals in front of the panda. The panda is…" 5th, 4th, 3rd or 7th in line.
+    const position = asked("position");
+    const place = position.scene.front + 1;
+    expect(position.prompt.en).toMatch(new RegExp(`^There are ${position.scene.front} animals in front of the (\\w+)\\. The \\1 is…$`));
+    expect(position.options.map((option) => Number(option.label))).toEqual([place, place - 1, place - 2, place + 2]);
+    const right = position.options.find((option) => option.correct).name;
+    expect(right.en).toMatch(new RegExp(`^${place}(st|nd|rd|th) in line$`));
+    expect(right.zh).toBe(`排第 ${place}`);
   });
 
   it("checks the everyday questions: the clock, the days, the coins and who spent most", () => {
