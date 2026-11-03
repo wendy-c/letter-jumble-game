@@ -1,11 +1,11 @@
 // A big tappable card used for both game choices and topic/mode choices. A `locked` card can't be
-// tapped yet and shows a padlock.
-export default function ChoiceCard({ className = "", color, icon, number, name, note, onClick, locked = false }) {
+// tapped yet and shows a padlock; `tag` (e.g. "★ Full score") sits top right.
+export default function ChoiceCard({ className = "", color, icon, tag = null, name, note, onClick, locked = false }) {
   return (
     <button className={`category-card${className ? ` ${className}` : ""} category-${color}${locked ? " category-card-locked" : ""}`} type="button" onClick={onClick} disabled={locked}>
       <span className="category-card-top">
         <span className="category-card-icon" aria-hidden="true">{icon}</span>
-        <span className="category-card-number">{String(number).padStart(2, "0")}</span>
+        {tag && <span className="category-card-tag">{tag}</span>}
       </span>
       <span className="category-card-name">{name}</span>
       <span className="category-card-bottom">

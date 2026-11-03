@@ -305,14 +305,16 @@ button {
   line-height: 1;
 }
 
-.category-card-number {
+/* On a module finished with every answer right. */
+.category-card-tag {
   border-radius: 20px;
-  background: rgb(255 255 255 / 70%);
-  padding: 4px 8px;
-  color: var(--magic-dark);
-  font-size: 10px;
+  background: var(--gold-soft);
+  padding: 4px 10px;
+  color: var(--gold-deep);
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 1px;
+  white-space: nowrap;
+  box-shadow: 0 2px 0 #f2d58a;
 }
 
 .letter-pattern {
@@ -5928,7 +5930,7 @@ a:focus-visible {
 .record-transfer {
   margin-top: 28px;
   border-top: 3px dashed var(--line);
-  padding-top: 22px;
+  padding: 22px 0px;
 }
 
 .record-transfer h3 {
@@ -6061,4 +6063,146 @@ a:focus-visible {
 
 .record-transfer-replace {
   box-shadow: 0 4px 0 #c9478a;
+}
+
+/* K3: two clear bags of bread rolls, and four cards of beans, to compare. */
+.math-bags {
+  gap: 24px;
+}
+
+.math-bag {
+  position: relative;
+  display: grid;
+  justify-items: center;
+}
+
+.math-bag-tie {
+  width: 30px;
+  height: 10px;
+  border: 3px solid var(--outline);
+  border-bottom: 0;
+  border-radius: 12px 12px 0 0;
+  background: #ffb3d1;
+}
+
+.math-bag-inside {
+  display: grid;
+  min-width: 120px;
+  min-height: 70px;
+  align-content: end;
+  grid-template-columns: repeat(5, auto);
+  justify-content: center;
+  gap: 3px;
+  border: 3px solid #9fd0f5;
+  border-radius: 14px 14px 22px 22px;
+  background: rgb(207 233 255 / 45%);
+  padding: 10px 8px;
+}
+
+.math-bag-inside img,
+.math-bean-card-beans img {
+  width: clamp(18px, 5vw, 28px);
+  height: auto;
+}
+
+.math-bag-label {
+  margin-top: 6px;
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--magic);
+  color: #fff;
+}
+
+.math-bean-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.math-bean-card {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  border: 3px solid var(--line-strong);
+  border-radius: 14px;
+  background: #fff;
+  padding: 8px 4px;
+}
+
+.math-bean-card-beans {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 2px;
+}
+
+/* K3: a month's calendar with pictures on special days. */
+.math-calendar {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+}
+
+.math-calendar-month {
+  color: var(--pink-dark);
+  font-size: 18px;
+}
+
+.math-calendar-grid {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+.math-calendar-weekday {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.math-calendar-day {
+  position: relative;
+  display: grid;
+  min-height: 30px;
+  place-items: start center;
+  border-radius: 6px;
+  background: var(--magic-soft);
+  padding-top: 2px;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.math-calendar-marked {
+  background: var(--gold-soft);
+}
+
+.math-calendar-day img {
+  width: 60%;
+  height: auto;
+}
+
+.math-calendar-key {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 14px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.math-calendar-key span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.math-calendar-key img {
+  width: 22px;
+  height: auto;
 }

@@ -2161,6 +2161,95 @@ pictures["../icons/group-challenge"] = svg(
     '<path d="M38 20h52v26a26 26 0 0 1-52 0Z" fill="#ffd45e"/><path d="M38 28H22q0 22 18 26M90 28h16q0 22-18 26" fill="none" stroke-width="5"/>'
     '<path d="M58 72h12v18H58Z" fill="#ffd45e"/><rect x="40" y="90" width="48" height="16" rx="4" fill="#c98a55"/>' + label(64, 46, "?", 28, "#ffffff"))
 
+# ---------- The Challenge's left-or-right, comparing and calendar pictures ----------
+ADA_HAIR, ADA_SHIRT = "#5a3a2a", "#ffa3c7"
+ELLY_HAIR, ELLY_SHIRT = "#a8683a", "#ffe27a"
+
+
+def flower5(x, y, r, fill):
+    return ("".join(f'<circle cx="{x + r * math.cos(math.radians(a)):.1f}" cy="{y + r * math.sin(math.radians(a)):.1f}" r="{r * .8:.1f}" fill="{fill}" stroke-width="1.5"/>'
+                    for a in range(-90, 270, 72)) + f'<circle cx="{x}" cy="{y}" r="{r * .6:.1f}" fill="#ffd45e" stroke-width="1.5"/>')
+
+
+def mirrored(body):
+    """The same picture flipped left to right (for a 256-wide picture)."""
+    return f'<g transform="translate(256 0) scale(-1 1)">{body}</g>'
+
+
+# Ada walking away down a path, holding hands with her cat (on her left) and her dog (on her
+# right); we see all three from behind. The other picture is the same flipped.
+def walk_away():
+    ground = ('<rect x="0" y="0" width="256" height="160" fill="#eaf6ff" stroke="none"/>'
+              '<path d="M0 74h256v86H0Z" fill="#c9eed9" stroke="none"/>'
+              '<path d="M104 74h48l44 86H60Z" fill="#f5e1bd" stroke="none"/>'
+              '<circle cx="30" cy="60" r="16" fill="#8fd36f"/><rect x="27" y="72" width="6" height="12" fill="#c98a55"/>'
+              '<circle cx="226" cy="58" r="18" fill="#8fd36f"/><rect x="223" y="72" width="6" height="12" fill="#c98a55"/>')
+    girl = (kid(128, 70, 1.15, arms=[[(-11, 17), (-28, 38)], [(11, 17), (28, 38)]], hair=ADA_HAIR, shirt=ADA_SHIRT, shorts="#8cc8f2", back=True)
+            + at(128, 70, 1.15, f'<path d="M-14-2q-3 18 0 30q4 4 7 0 4 4 7 0 4 4 7 0 4 4 7 0q3-12 0-30Z" fill="{ADA_HAIR}"/>'
+                                 '<path d="M-6 6v16M0 8v18M6 6v16" fill="none" stroke="#7a5240" stroke-width="2"/>' + flower5(10, -9, 3.4, "#ff8fb7")))
+    cat = (limb("M60 142q-16-4-12-26", "#ffc27a", 9)
+           + '<ellipse cx="74" cy="128" rx="15" ry="19" fill="#ffc27a"/>'
+           + '<path d="M66 116q8 4 16 0M64 126q10 4 20 0" fill="none" stroke="#e0a060" stroke-width="3"/>'
+           + '<path d="M63 96l-2-16 10 9ZM85 96l2-16-10 9Z" fill="#ffc27a"/><circle cx="74" cy="102" r="13" fill="#ffc27a"/>'
+           + limb([(84, 118), (95, 114)], "#ffc27a", 9) + '<circle cx="96" cy="114" r="5" fill="#ffc27a" stroke-width="3"/>'
+           + '<ellipse cx="68" cy="148" rx="6" ry="4" fill="#ffc27a" stroke-width="3"/><ellipse cx="80" cy="148" rx="6" ry="4" fill="#ffc27a" stroke-width="3"/>')
+    dog = (limb("M200 140q14-6 12-24", "#d9a066", 9) + '<path d="M214 112l6-4M216 120l7-1" stroke-width="2.5"/>'
+           + '<ellipse cx="184" cy="128" rx="17" ry="20" fill="#d9a066"/>'
+           + '<circle cx="184" cy="101" r="14" fill="#d9a066"/>'
+           + '<ellipse cx="171" cy="104" rx="6" ry="11" fill="#9a6a3a"/><ellipse cx="197" cy="104" rx="6" ry="11" fill="#9a6a3a"/>'
+           + limb([(172, 118), (161, 114)], "#d9a066", 9) + '<circle cx="160" cy="114" r="5" fill="#d9a066" stroke-width="3"/>'
+           + '<ellipse cx="177" cy="149" rx="6" ry="4" fill="#d9a066" stroke-width="3"/><ellipse cx="191" cy="149" rx="6" ry="4" fill="#d9a066" stroke-width="3"/>')
+    return ground + cat + dog + girl
+
+
+pictures[MA + "lr-walk-cat-left"] = wide(walk_away())
+pictures[MA + "lr-walk-cat-right"] = wide(mirrored(walk_away()))
+
+
+# Elly looking in a mirror: the back of her head in front, and her face in the mirror, with a mole
+# on her right cheek. (She faces away from us, so her right is on our right, in the mirror too.)
+# The other picture is the same flipped.
+def mirror_mole():
+    room = '<rect x="0" y="0" width="256" height="160" fill="#f6efff" stroke="none"/><path d="M0 128h256v32H0Z" fill="#e6dcf6" stroke="none"/>'
+    frame = '<ellipse cx="128" cy="70" rx="58" ry="64" fill="#ffb3d1"/>'
+    glass = '<clipPath id="mirror-glass"><ellipse cx="128" cy="70" rx="49" ry="55"/></clipPath><ellipse cx="128" cy="70" rx="49" ry="55" fill="#dff1ff"/>'
+    face = person(128, 52, 1.3, ELLY_HAIR, ELLY_SHIRT, "long")
+    specs = f'<g stroke="#ff9a3c">{glasses(128, 52, 1.3)}</g>'
+    mole = '<circle cx="146" cy="59" r="2.8" fill="#4b2e22" stroke="none"/>'
+    clip = flower5(104, 30, 4, "#ffd45e")
+    shine = '<path d="M92 40q6-14 20-20" fill="none" stroke="#ffffff" stroke-width="5" opacity=".8"/>'
+    reflection = f'<g clip-path="url(#mirror-glass)">{face}{specs}{mole}{clip}</g>' + shine
+    # Elly from behind, close to us: shoulders, the back of her bob, her glasses' arms by her ears.
+    back = ('<g transform="translate(0 20)">' + f'<path d="M88 160q0-26 40-26t40 26Z" fill="{ELLY_SHIRT}"/>'
+            f'<circle cx="104" cy="128" r="6" fill="{SKIN}" stroke-width="3"/><circle cx="152" cy="128" r="6" fill="{SKIN}" stroke-width="3"/>'
+            '<path d="M100 124h8M148 124h8" stroke="#ff9a3c" stroke-width="3"/>'
+            f'<path d="M102 132q-6-40 26-40t26 40q-26 8-52 0Z" fill="{ELLY_HAIR}"/>'
+            '<path d="M120 102q8-4 16 0" fill="none" stroke-width="2.5"/>'
+            + flower5(108, 104, 4, "#ffd45e") + "</g>")
+    return room + frame + glass + reflection + back
+
+
+pictures[MA + "lr-mirror-mole-right"] = wide(mirror_mole())
+pictures[MA + "lr-mirror-mole-left"] = wide(mirrored(mirror_mole()))
+
+# A bread roll, a Santa hat and a birthday cake (for comparing and for the calendar).
+pictures[MA + "bread-roll"] = svg(
+    '<ellipse cx="64" cy="70" rx="50" ry="34" fill="#f2b766"/>'
+    '<path d="M38 52q10 14 4 34M60 44q10 16 4 40M84 46q10 16 4 38" fill="none" stroke="#c98a55" stroke-width="5"/>'
+    '<path d="M30 60q10-18 30-22" fill="none" stroke="#ffe2b0" stroke-width="5"/>')
+pictures[MA + "santa-hat"] = svg(
+    '<path d="M22 96q10-62 54-70 26-4 34 26-20-10-30 4-10 16-6 40Z" fill="#ff5a5a"/>'
+    '<circle cx="110" cy="56" r="11" fill="#ffffff"/>'
+    '<rect x="14" y="88" width="84" height="22" rx="11" fill="#ffffff"/>')
+pictures[MA + "birthday-cake"] = svg(
+    '<rect x="18" y="64" width="92" height="46" rx="8" fill="#ffd3e6"/>'
+    '<path d="M18 74q12 12 23 0t23 0 23 0 23 0V68q0-6-6-6H24q-6 0-6 6Z" fill="#ffffff"/>'
+    '<rect x="10" y="106" width="108" height="10" rx="5" fill="#c9b6f5"/>'
+    + "".join(f'<rect x="{x - 4}" y="38" width="8" height="24" rx="3" fill="{c}"/><path d="M{x} 22q-7 8 0 14 7-6 0-14Z" fill="#ffd45e" stroke-width="2.5"/>'
+              for x, c in ((40, "#8cc8f2"), (64, "#8fe3a8"), (88, "#ffb86b")))
+    + '<circle cx="38" cy="90" r="4" fill="#ff8fb7" stroke="none"/><circle cx="64" cy="94" r="4" fill="#8cc8f2" stroke="none"/><circle cx="90" cy="90" r="4" fill="#ffd45e" stroke="none"/>')
+
+
 # ---------- Magic E (a_e, i_e, o_e, u_e) ----------
 ME = "magic-e/"
 

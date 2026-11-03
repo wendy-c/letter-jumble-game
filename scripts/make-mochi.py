@@ -107,15 +107,32 @@ def fairy_wing(side):
                    for dx, dy, rx, ry, angle in [(34, -22, 36, 20, -30), (26, 14, 26, 14, 20)])
 
 
-def tofu(face, extras_front="", tilt=0):
-    parts = [fairy_wing(-1), fairy_wing(1),
+def tofu_arm_up(side):
+    # An outlined yellow arm raised in a wave (`side` -1 is the picture's left): the upper arm out
+    # from behind her shoulder, then, in front, the forearm up to a paw beside her ear, with little
+    # wave lines. Returns (behind, in_front).
+    sx, sy = 100 + side * 40, 178
+    ex, ey = 100 + side * 84, 156
+    hx, hy = 100 + side * 100, 102
+    upper = f"M{sx} {sy}Q{ex - side * 8} {ey + 14} {ex} {ey}"
+    fore = f"M{ex} {ey}Q{ex + side * 10} {ey - 26} {hx} {hy}"
+    outline = lambda d: f'<path d="{d}" fill="none" stroke-width="26"/><path d="{d}" fill="none" stroke="{TOFU}" stroke-width="19"/>'
+    paw = (f'<circle cx="{hx}" cy="{hy}" r="14" fill="{TOFU}"/>'
+           f'<circle cx="{hx}" cy="{hy + 2}" r="5" fill="{TOFU_EAR}" stroke="none"/>'
+           + "".join(f'<circle cx="{hx + dx}" cy="{hy + dy}" r="2.4" fill="{TOFU_EAR}" stroke="none"/>' for dx, dy in [(-6, -6), (0, -8), (6, -6)]))
+    waves = f'<path d="M{hx - side * 6} {hy - 26}q{side * 10} -6 18 2M{hx - side * 10} {hy - 36}q{side * 16} -10 30 4" fill="none" stroke-width="3"/>'
+    return outline(upper), outline(fore) + f'<circle cx="{ex}" cy="{ey}" r="9.5" fill="{TOFU}" stroke="none"/>' + paw + waves
+
+
+def tofu(face, extras_front="", tilt=0, arms=""):
+    parts = [fairy_wing(-1), fairy_wing(1), arms,
              f'<path d="M48 196 Q50 152 100 150 Q150 152 152 196Z" fill="{TOFU}"/>',
              f'<ellipse cx="100" cy="186" rx="22" ry="12" fill="#fffcf0" stroke-width="2.5"/>',
              f'<g transform="rotate({tilt} 100 120)">', tofu_ear(-1), tofu_ear(1),
              f'<ellipse cx="100" cy="106" rx="64" ry="57" fill="{TOFU}"/>', horn(), face, "</g>"]
     return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="-16 -48 236 246">\n'
             f'<g stroke="{INK}" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">\n'
-            + "\n".join(parts) + extras_front + "\n</g>\n</svg>\n")
+            + "\n".join(part for part in parts if part) + extras_front + "\n</g>\n</svg>\n")
 
 
 def mochi(face, extras_behind="", extras_front="", tilt=0, arms=""):
@@ -353,6 +370,14 @@ drawn = feelings()
 for name, picture in drawn.items():
     with open(os.path.join(FEELINGS, f"{name}.svg"), "w") as f:
         f.write(picture)
+# For the Challenge's left-or-right questions: Tofu facing us with one arm up. Her left arm is on
+# the picture's right.
+MATH = os.path.join(ROOT, "public/images/game-asset/math")
+waving = lambda side: tofu(open_eyes() + cheeks() + snout(mouth("smile")), arms=tofu_arm_up(side)[0],
+                           extras_front=tofu_arm_up(side)[1] + sparkle(100 - side * 84, 6, 7, "#ffb3d9") + sparkle(100 - side * 104, 60, 6))
+for arm_side, picture_side in (("left", 1), ("right", -1)):
+    with open(os.path.join(MATH, f"lr-tofu-{arm_side}-arm.svg"), "w") as f:
+        f.write(waving(picture_side))
 # The 感受 topic's icon: Mochi, cheerful.
 with open(os.path.join(ROOT, "public/images/icons/chinese-feelings.svg"), "w") as f:
     f.write(drawn["cheerful"])

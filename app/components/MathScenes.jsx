@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 
 // K3's Daily Challenge pictures, drawn from the question's data: shapes to count, a pile of leaves,
-// a queue, rows of things, a menu with prices, coins, a week and a clock.
+// a queue, rows of things, bags and cards of things to compare, a menu with prices, coins, a week, a
+// calendar and a clock.
 // Also its puzzles (number cards, groups of numbers, shading pairs) and the number pad for sums.
 
 const say = (language, en, zh) => (language === "zh" ? zh : en);
@@ -143,6 +144,61 @@ export function K3Scene({ scene, language }) {
           <li key={index} className={index === scene.today ? "math-week-today" : ""}>{day[language] ?? day.en}</li>
         ))}
       </ol>
+    );
+  }
+  if (scene.type === "bags") {
+    // Two clear bags, A and B, with their bread rolls inside (rows of 5).
+    return (
+      <div className="math-scene math-bags" aria-hidden="true">
+        {scene.bags.map((bag) => (
+          <div key={bag.label} className="math-bag">
+            <span className="math-bag-tie" />
+            <div className="math-bag-inside">{Array.from({ length: bag.count }, (_, index) => small(scene.picture, index))}</div>
+            <b className="math-bag-label">{bag.label}</b>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  if (scene.type === "beanCards") {
+    return (
+      <div className="math-scene math-bean-cards" aria-hidden="true">
+        {scene.cards.map((card) => (
+          <div key={card.letter} className="math-bean-card">
+            <b className="math-set-letter">{card.letter}</b>
+            <div className="math-bean-card-beans">{Array.from({ length: card.count }, (_, index) => small(scene.picture, index))}</div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  if (scene.type === "calendar") {
+    // A month: the days of the week across the top, the dates under them (from `firstDay`, 0 being
+    // Sunday), and a picture on each marked day, explained underneath.
+    const weekdays = language === "zh" ? ["日", "一", "二", "三", "四", "五", "六"] : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const markOn = (day) => scene.marks.find((mark) => mark.day === day);
+    return (
+      <div className="math-scene math-calendar" aria-hidden="true">
+        <b className="math-calendar-month">{scene.month[language] ?? scene.month.en}</b>
+        <div className="math-calendar-grid">
+          {weekdays.map((day) => <span key={day} className="math-calendar-weekday">{day}</span>)}
+          {Array.from({ length: scene.firstDay }, (_, index) => <span key={`blank-${index}`} />)}
+          {Array.from({ length: scene.days }, (_, index) => {
+            const mark = markOn(index + 1);
+            return (
+              <span key={index} className={`math-calendar-day${mark ? " math-calendar-marked" : ""}`}>
+                {index + 1}
+                {mark && <img src={mark.picture} alt="" width="22" height="22" />}
+              </span>
+            );
+          })}
+        </div>
+        <div className="math-calendar-key">
+          {scene.marks.map((mark) => (
+            <span key={mark.day}>{small(mark.picture, "key")} {mark.name[language] ?? mark.name.en}</span>
+          ))}
+        </div>
+      </div>
     );
   }
   if (scene.type === "clock") {

@@ -352,7 +352,9 @@ describe("Daily Challenge for K3", () => {
     const stories = k3.flatMap((level) => level.words).filter((question) => question.kind === "story");
     stories.forEach((question) => {
       const { scene } = question;
-      if (scene.type === "groups") {
+      if (scene.type === "groups" && /^The difference between/.test(question.answers[0])) {
+        expect(Number(question.answer)).toBe(Math.abs(scene.groups[0].count - scene.groups[1].count));
+      } else if (scene.type === "groups") {
         // "There are 9 cars… 2 drive away, then 3 more drive away (or 3 drive in)…"
         const [start, first, second] = question.prompt.en.match(/\d+/g).map(Number);
         const more = question.prompt.en.includes(`then ${second} more `);
@@ -363,7 +365,8 @@ describe("Daily Challenge for K3", () => {
       }
       if (scene.type === "queue") expect(Number(question.answer)).toBe(scene.front + scene.behind + 1);
       if (scene.type === "swap") expect(Number(question.answer)).toBe(scene.rows[0].count * scene.rows[1].count * scene.rows[2].fromCount);
-      expect(Number(question.answer)).toBeGreaterThan(0);
+      // (Bags and bean cards are answered in words or letters, checked with the comparing questions.)
+      if (/^\d+$/.test(question.answer)) expect(Number(question.answer)).toBeGreaterThan(0);
     });
   });
 
@@ -416,14 +419,74 @@ describe("Daily Challenge for K3", () => {
     });
   });
 
-  it("makes each shading puzzle's pairs follow one move that only the right choice finishes", () => {
-    const shading = k3.flatMap((level) => level.words).filter((question) => question.visual?.type === "shading");
-    expect(shading.length).toBeGreaterThan(0);
-    shading.forEach((question) => {
+  it("has just two shading puzzles, a 2 × 2 in Level 5 and a 3 × 3 in Level 15, each with one example pair", () => {
+    const shading = k3.flatMap((level, index) => level.words.filter((question) => question.visual?.type === "shading").map((question) => [index + 1, question]));
+    expect(shading.map(([level, question]) => [level, question.visual.size])).toEqual([[5, 2], [15, 3]]);
+    shading.forEach(([, question]) => {
       expect(question.options).toHaveLength(4);
       expect(question.options.filter((option) => option.correct).map((option) => option.label)).toEqual([question.answer]);
-      expect(question.visual.pairs).toHaveLength(3);
+      expect(question.visual.pairs).toHaveLength(1);
     });
+  });
+
+  it("compares two lots of things every other level: bags of bread rolls, cards of beans and two groups", () => {
+    const comparing = k3.map((level) => level.words.find((question) => question.scene?.type === "bags" || question.scene?.type === "beanCards" || /^The difference between/.test(question.answers[0])));
+    expect(comparing.map((question, index) => (question ? index + 1 : null)).filter(Boolean)).toEqual([2, 4, 6, 8, 10, 12, 14, 16, 18, 20]);
+    comparing.filter(Boolean).forEach((question) => {
+      if (question.scene.type === "bags") {
+        const [a, b] = question.scene.bags.map((bag) => bag.count);
+        expect(question.answer).toBe(`${a > b ? "more" : "fewer"}-${Math.abs(a - b)}`);
+        expect(question.options.find((option) => option.correct).name).toEqual(a > b ? { en: `${a - b} more`, zh: `多${a - b}個` } : { en: `${b - a} fewer`, zh: `少${b - a}個` });
+        expect(question.options).toHaveLength(4);
+      } else if (question.scene.type === "beanCards") {
+        const count = (letter) => question.scene.cards.find((card) => card.letter === letter).count;
+        const more = Number(question.prompt.en.match(/has (\d+) more/)[1]);
+        expect(count(question.answer)).toBe(count("C") + more);
+        expect(question.scene.cards.filter((card) => card.count === count("C") + more)).toHaveLength(1);
+        expect(question.options.map((option) => option.label)).toEqual(["A", "B", "D"]);
+      } else {
+        const [a, b] = question.scene.groups.map((group) => group.count);
+        expect(Number(question.answer)).toBe(Math.abs(a - b));
+      }
+    });
+  });
+
+  it("asks about a December calendar in Levels 5, 10, 15 and 20: Grandma’s birthday on the 9th (a Wednesday), Christmas on the 25th (a Friday)", () => {
+    const asked = k3.flatMap((level, index) => level.words.filter((question) => question.scene?.type === "calendar").map((question) => [index + 1, question.answers[0], question.answer]));
+    expect(asked).toEqual([
+      [5, "Christmas: what date?", "25"], [10, "Christmas: what day?", "Friday"],
+      [15, "Grandma’s birthday: what date?", "9"], [20, "Grandma’s birthday: what day?", "Wednesday"],
+    ]);
+    const { scene } = k3[4].words.find((question) => question.scene?.type === "calendar");
+    expect(scene.marks.map((mark) => [mark.day, mark.name.en])).toEqual([[9, "Grandma’s birthday"], [25, "Christmas"]]);
+    // The 9th and the 25th fall on those days when the month starts on a Tuesday.
+    expect(["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][(9 - 1 + scene.firstDay) % 7]).toBe("Wednesday");
+    expect(k3[4].words.find((question) => question.scene?.type === "calendar").options.map((option) => option.name.zh)).toContain("12月25日");
+  });
+});
+
+describe("Left or right", () => {
+  const leftRight = (age) => levelsFor(age).flatMap((level, index) => level.words
+    .filter((question) => / left or right\?$/.test(question.answers[0])).map((question) => [index + 1, question]));
+
+  it("asks a few K2 and K3 levels left-or-right questions about Ada and her pets, Elly’s mirror and Tofu’s arm", () => {
+    expect(leftRight("k2").map(([level, question]) => [level, question.answers[0]])).toEqual([
+      [5, "Ada’s cat: left or right?"], [9, "Elly’s mole: left or right?"], [13, "Tofu’s arm: left or right?"], [17, "Ada’s cat: left or right?"],
+    ]);
+    expect(leftRight("k3").map(([level]) => level)).toEqual([3, 8, 12, 18]);
+    expect(leftRight("k1")).toEqual([]);
+  });
+
+  it("shows the picture for the right answer, with both sides to choose from", () => {
+    const both = [...leftRight("k2"), ...leftRight("k3")].map(([, question]) => question);
+    expect(new Set(both.map((question) => question.answer))).toEqual(new Set(["left", "right"]));
+    both.forEach((question) => {
+      expect(question.picture).toMatch(new RegExp(`-${question.answer}(-arm)?\\.svg$`));
+      expect(question.options.map((option) => option.label)).toEqual(["left", "right"]);
+      expect(question.options.find((option) => option.correct).label).toBe(question.answer);
+    });
+    const tofu = both.find((question) => question.answers[0].startsWith("Tofu"));
+    expect(tofu.options.map((option) => option.name.zh)).toEqual(["左手", "右手"]);
   });
 });
 

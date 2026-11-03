@@ -2,6 +2,7 @@
 // same every time (each level has its own seed). Their pictures are drawn by the game from small
 // pictures of things to count (`scene`), rather than one drawing per question.
 import { seededRandom } from "../lib/spelling";
+import { leftRight, leftRightScenes } from "./left-right";
 import { differentGroup, numberOrder } from "./number-puzzles";
 
 const art = "/images/game-asset";
@@ -220,8 +221,24 @@ export function makers(random) {
     });
   }
 
+  // Two groups of things of one category, each in its own group: how many more of one than the
+  // other? (`a` and `b` differ.)
+  function differenceOf(a, b) {
+    const [x, y] = twoThings();
+    return question({
+      prompt: {
+        en: `${a} ${plural(x, a)} and ${b} ${plural(y, b)}. What is the difference between the number of ${x.en[1]} and the number of ${y.en[1]}?`,
+        zh: `${a} ${x.unit}${x.zh}和 ${b} ${y.unit}${y.zh}。${x.zh}和${y.zh}的數量相差多少？`,
+      },
+      answer: Math.abs(a - b),
+      title: `The difference between ${a} and ${b}`,
+      scene: { type: "groups", groups: [{ picture: x.picture, count: a }, { picture: y.picture, count: b }] },
+    });
+  }
+
   return {
     sumOf,
+    differenceOf,
     // A number bond, with a picture of its two parts (each kind in its own row) when the whole is
     // at least `pictureFrom`.
     bond(n, pictureFrom = 0) {
@@ -362,8 +379,8 @@ export function makers(random) {
 }
 
 // A level's ten questions. K1's levels count up to 10 (more as they go on); K2's count to 20, with
-// missing numbers, swaps, turning grids and number puzzles too, and number bonds under 10 without a
-// picture.
+// missing numbers, swaps, turning grids, number puzzles and left-or-right pictures too, and number
+// bonds under 10 without a picture.
 export function generateLevel(age, level) {
   // Seeded by the set's old name ("3-4", "5-6").
   const random = seededRandom(`daily-challenge:${{ k1: "3-4", k2: "5-6" }[age]}:${level}`);
@@ -376,9 +393,13 @@ export function generateLevel(age, level) {
     ];
   }
   const n = Math.min(20, 10 + Math.ceil(level / 2));
+  // A few levels have a left-or-right picture instead of a ten frame.
+  const leftRightLevels = [5, 9, 13, 17];
+  const sixth = () => (leftRightLevels.includes(level)
+    ? leftRight(random, leftRightScenes[leftRightLevels.indexOf(level) % leftRightScenes.length]) : make.frame(n));
   const questions = [
     make.count(Math.min(n, 15)), make.sequence(n, level), make.grid(level), make.sum(n), make.missingAddend(n),
-    make.frame(n), make.swap(n), make.difference(n),
+    sixth(), make.swap(n), make.difference(n),
   ];
   // The ninth question: picture patterns (the harder kinds) before Level 10 and the different
   // group (to 20) after it, with putting numbers (under 50) in order every third level; Level 10

@@ -1,10 +1,12 @@
 // Makes K3's twenty Daily Challenge levels, the same every time (each level has its own seed).
 // Every level has ten questions, in a mixed-up order: one count of shapes or leaves, two little
-// stories (things coming and going, a queue, swapping animals), two sums or number bonds typed on
-// a number pad, two about numbers to 100 (runs with a gap, odd and even, putting in order), two
-// logic puzzles and one about everyday things (prices, coins, days of the week, the time).
+// stories (things coming and going, a queue, swapping animals, comparing two lots of things), two
+// sums or number bonds typed on a number pad, two about numbers to 100 (runs with a gap, odd and
+// even, putting in order), two logic puzzles (now and then a left-or-right picture or a shading
+// puzzle) and one about everyday things (prices, coins, days of the week, the time, a calendar).
 import { seededRandom } from "../lib/spelling";
 import { gridPattern, makers as k2Makers } from "./math-generator";
+import { leftRight, leftRightScenes } from "./left-right";
 import { differentGroup, numberOrder } from "./number-puzzles";
 
 const art = "/images/game-asset";
@@ -238,6 +240,56 @@ function makers(random, level) {
         scene: { type: "queue", picture: hero.picture, front, behind, places },
       });
     },
+    // Comparing two lots of things (every other level), taking turns: bags of bread rolls, cards of
+    // beans, or two groups.
+    compare() {
+      return this[["compareBags", "compareCards", "compareGroups"][Math.floor(level / 2) % 3]]();
+    },
+    // Two clear bags of bread rolls, A and B: how many more (or fewer) does A have?
+    compareBags() {
+      const a = between(later ? 7 : 5, later ? 14 : 10);
+      let b = between(2, a + 3);
+      while (b === a) b = between(2, a + 3);
+      const more = a > b;
+      const gap = Math.abs(a - b);
+      const option = (isMore, count) => ({
+        label: `${isMore ? "more" : "fewer"}-${count}`,
+        name: isMore ? say(`${count} more`, `多${count}個`) : say(`${count} fewer`, `少${count}個`),
+      });
+      const choices = [option(more, gap), option(!more, gap), option(more, gap + 1), option(!more, gap > 1 ? gap - 1 : gap + 2)];
+      const answer = choices[0].label;
+      return question({
+        prompt: say("Compare the bags. How many more or fewer bread rolls does bag A have than bag B?", "比較兩袋麵包。A袋麵包比B袋麵包……"),
+        answer,
+        title: "Bag A and bag B",
+        scene: { type: "bags", picture: `${art}/math/bread-roll.svg`, bags: [{ label: "A", count: a }, { label: "B", count: b }] },
+        options: choices.map((choice) => ({ ...choice, correct: choice.label === answer })),
+      });
+    },
+    // Four cards of beans, A to D: which has so many more beans than card C?
+    compareCards() {
+      const more = between(2, later ? 5 : 4);
+      const onC = between(2, 6);
+      const used = new Set([onC, onC + more]);
+      const others = mix(Array.from({ length: 12 }, (_, index) => index + 1).filter((count) => !used.has(count))).slice(0, 2);
+      const [letter, ...rest] = mix(["A", "B", "D"]);
+      const counts = { C: onC, [letter]: onC + more, [rest[0]]: others[0], [rest[1]]: others[1] };
+      const cards = ["A", "B", "C", "D"].map((name) => ({ letter: name, count: counts[name] }));
+      return question({
+        prompt: say(`Which card has ${more} more beans than card C?`, `哪一張卡比C卡多${more}粒豆？`),
+        answer: letter,
+        title: `${more} more beans than C`,
+        scene: { type: "beanCards", picture: `${art}/starters/bean.svg`, cards },
+        options: textOptions(["A", "B", "D"].map((name) => [name, say(name, name), say(`${name}: ${counts[name]} beans`, `${name}：${counts[name]} 粒豆`)]), letter),
+      });
+    },
+    // Two groups of things: what's the difference between how many there are?
+    compareGroups() {
+      const a = between(2, later ? 14 : 9);
+      let b = between(2, later ? 14 : 9);
+      while (Math.abs(a - b) < 2) b = between(2, later ? 14 : 9);
+      return pictures.differenceOf(a, b);
+    },
     // A chain of swaps: 1 goat for 3 chickens, 1 cow for 2 goats, so 1 cow for 6 chickens.
     exchange() {
       const [big, middle, small] = pick(swapChains).map((id) => farm[id]);
@@ -351,7 +403,7 @@ function makers(random, level) {
     oddOneOut() {
       return differentGroup(random, { max: level <= 5 ? 30 : level <= 15 ? 50 : 80 });
     },
-    // Pairs of grids: the shaded cells move the same way in each pair; finish the last pair.
+    // A pair of grids showing how the shading moves, then a grid to move the same way.
     shading() {
       const size = later ? 3 : 2;
       const shaded = later ? 2 : 1;
@@ -362,12 +414,13 @@ function makers(random, level) {
       for (;;) {
         const cellsOf = () => mix(Array.from({ length: size * size }, (_, index) => index)).slice(0, shaded).sort((a, b) => a - b);
         const figures = [];
-        while (figures.length < 4) {
+        while (figures.length < 2) {
           const cells = cellsOf();
           if (!figures.some((other) => key(other) === key(cells))) figures.push(cells);
         }
-        const examples = figures.slice(0, 3);
-        const last = figures[3];
+        // One example pair, then the one to finish.
+        const examples = figures.slice(0, 1);
+        const last = figures[1];
         const answer = apply(move, last);
         // Every other move must give a different answer and be ruled out by an example.
         const fair = names.filter((name) => name !== move).every((name) => (
@@ -380,7 +433,7 @@ function makers(random, level) {
         const seen = new Set();
         const choices = candidates.filter((cells) => !seen.has(key(cells)) && seen.add(key(cells))).slice(0, 4);
         return question({
-          prompt: say("Look at how each picture changes. Which picture goes in the empty box?", "看看每對圖形怎樣變化。空格裏應該是哪一個圖形？"),
+          prompt: say("Look at how the first picture changes. Which picture goes in the empty box?", "看看第一個圖形怎樣變化。空格裏應該是哪一個圖形？"),
           answer: key(answer),
           title: "How the shading moves",
           visual: { type: "shading", size, pairs: examples.map((cells) => [cells, apply(move, cells)]), last },
@@ -483,6 +536,38 @@ function makers(random, level) {
         options: textOptions([...new Set(choices)].map((index) => [days[index][0], say(days[index][0], days[index][1])]), days[day][0]),
       });
     },
+    // A December calendar with Grandma's birthday (a cake, on the 9th) and Christmas (a Santa hat, on
+    // the 25th): what day of the week or what date is one of them? (Each level asks a different one.)
+    calendar() {
+      const firstDay = 2;
+      const marks = {
+        birthday: { day: 9, picture: `${art}/math/birthday-cake.svg`, name: say("Grandma’s birthday", "嫲嫲生日") },
+        christmas: { day: 25, picture: `${art}/math/santa-hat.svg`, name: say("Christmas", "聖誕節") },
+      };
+      const asks = [["birthday", "weekday"], ["christmas", "date"], ["christmas", "weekday"], ["birthday", "date"]];
+      const [which, what] = asks[Math.floor(level / 5) % asks.length];
+      const { day, name } = marks[which];
+      const scene = { type: "calendar", month: say("December", "十二月"), firstDay, days: 31, marks: Object.values(marks) };
+      if (what === "weekday") {
+        const weekday = (day - 1 + firstDay) % 7;
+        const choices = [weekday, (weekday + 1) % 7, (weekday + 6) % 7, (weekday + 3) % 7];
+        return question({
+          prompt: say(`Look at the calendar. What day of the week is ${name.en}?`, `看看月曆。${name.zh}是星期幾？`),
+          answer: days[weekday][0],
+          title: `${name.en}: what day?`,
+          scene,
+          options: textOptions(choices.map((index) => [days[index][0], say(days[index][0], days[index][1])]), days[weekday][0]),
+        });
+      }
+      const dates = [day, day - 1, day + 1, day - 7];
+      return question({
+        prompt: say(`Look at the calendar. What date is ${name.en}?`, `看看月曆。${name.zh}是幾月幾日？`),
+        answer: String(day),
+        title: `${name.en}: what date?`,
+        scene,
+        options: textOptions(dates.map((date) => [String(date), say(`${date} December`, `12月${date}日`)]), String(day)),
+      });
+    },
     // A round clock at o'clock (or half past, later on): which digital time is it?
     clock() {
       const hour = between(1, 12);
@@ -548,15 +633,21 @@ export function generateK3Level(level) {
   // Each kind's makers take turns from level to level (`count` at a time), so every one of them
   // comes up regularly.
   const turn = (names, count) => Array.from({ length: count }, (_, index) => names[((level - 1) * count + index) % names.length]);
+  // The logic puzzles: two a level, taking turns, except that Level 5 has a 2 × 2 shading puzzle and
+  // Level 15 a 3 × 3 one, and a few levels have a left-or-right picture.
+  const logic = turn(["legsOrWheels", "oddOneOut", "mostRow", "turningGrid"], 2);
+  if (level === 5 || level === 15) logic[1] = "shading";
+  const leftRightLevels = [3, 8, 12, 18];
+  if (leftRightLevels.includes(level)) logic[1] = `leftRight:${leftRightScenes[leftRightLevels.indexOf(level) % leftRightScenes.length]}`;
   // [kind of question, maker] for each of the ten.
   const plan = [
     ["counting", turn(["countShapes", "countLeaves"], 1)[0]],
-    ...turn(["comeAndGo", "queue", "exchange"], 2).map((name) => ["story", name]),
+    ...turn(["comeAndGo", "queue", "exchange", "compare"], 2).map((name) => ["story", name]),
     ...turn(["add", "bond", "subtract", "addPicture", "threeNumbers", "missing"], 2).map((name) => ["sum", name]),
     ...turn(["oddEven", "skipCount", "order"], 2).map((name) => ["numbers", name]),
-    ...turn(["legsOrWheels", "oddOneOut", "shading", "mostRow", "turningGrid"], 2).map((name) => ["logic", name]),
-    ["everyday", turn(["clock", "menu", "week", "coins"], 1)[0]],
+    ...logic.map((name) => ["logic", name]),
+    ["everyday", turn(["clock", "menu", "week", "coins", "calendar"], 1)[0]],
   ];
-  const questions = plan.map(([kind, name]) => ({ ...make[name](), kind }));
+  const questions = plan.map(([kind, name]) => ({ ...(name.startsWith("leftRight:") ? leftRight(random, name.split(":")[1]) : make[name]()), kind }));
   return questions.map((item) => [random(), item]).sort((a, b) => a[0] - b[0]).map(([, item]) => item);
 }
