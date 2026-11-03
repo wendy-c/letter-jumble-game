@@ -1,3 +1,7 @@
+// Getting every answer in a topic (or a Challenge level) right earns its badge, and this many rainbow
+// coins on top, each time.
+export const perfectScoreBonus = 5;
+
 // How many questions a round of CVC Sounds, Consonant Digraphs or R & L Blends deals: a parent
 // can choose for each child (in Parent mode).
 export const questionCountChoices = [5, 10, 15, 20];
@@ -139,11 +143,12 @@ export const games = [
   {
     id: "math-logic",
     group: "challenge",
-    name: "Daily Challenge",
+    // Named for the child's class ("K1 Challenge", K1大挑戰): see gameName in i18n.js.
+    name: "Challenge",
     color: "blue",
     picture: "/images/icons/math-logic.svg",
-    note: "For K1-K3 - Count, add, take away and find patterns · a new level each day",
-    badge: "DAILY CHALLENGE",
+    note: "For K1-K3 - Count, add, take away and find patterns · 20 levels on a map",
+    badge: "CHALLENGE",
   },
   {
     id: "speed-quest",

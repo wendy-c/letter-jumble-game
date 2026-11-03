@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 
 const reward = {
-  en: "A right answer earns a rainbow coin, and getting a whole topic right earns its badge!",
-  zh: "答對可得到彩虹金幣，全部答對更可得到徽章！",
+  en: "A right answer earns a rainbow coin. Get a whole topic right to earn its badge and 5 bonus coins!",
+  zh: "答對可得到彩虹金幣，全部答對更可得到徽章和額外 5 個彩虹金幣！",
 };
 
 // The phonics games that fill a gap in a word (Consonant Digraphs, R & L Blends, Magic E).
@@ -22,7 +22,7 @@ const howTo = {
     zh: ["看看圖畫，需要提示就按喇叭。", "按次序按字母，把格子填滿。", "按「Check it」。", reward.zh],
   },
   chinese: {
-    en: ["Read it, and tap the speaker for a hint.", "Tap the right picture.", "A right answer earns a rainbow coin, and getting them all right earns a badge!"],
+    en: ["Read it, and tap the speaker for a hint.", "Tap the right picture.", "A right answer earns a rainbow coin. Get them all right to earn a badge and 5 bonus coins!"],
     zh: ["讀一讀，按喇叭聽聽提示。", "按一按正確的圖畫。", reward.zh],
   },
   "measure-words": {
@@ -37,13 +37,13 @@ const howTo = {
     en: [
       "Look at the picture and read the question. Tap the speaker to hear it.",
       "Tap the right answer: a number, or the picture that comes next.",
-      "Finish a level, and the next one opens the day after!",
+      "Finish a level, and Mochi moves on to the next one on the map!",
       reward.en,
     ],
     zh: [
       "看看圖畫，讀讀題目，按喇叭聽聽題目。",
       "按一按正確的答案：一個數字，或下一個圖畫。",
-      "完成一個關卡，第二天就可以玩下一關！",
+      "完成一個關卡，Mochi 就會走到地圖上的下一關！",
       reward.zh,
     ],
   },

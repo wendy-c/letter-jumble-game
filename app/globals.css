@@ -5026,6 +5026,20 @@ a:focus-visible {
   font-weight: 700;
 }
 
+/* The bonus coins for a perfect score. */
+.completion-bonus {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px auto 0;
+  border-radius: 999px;
+  background: var(--gold-soft);
+  padding: 6px 14px;
+  color: var(--gold-deep);
+  font-size: 14px;
+  font-weight: 700;
+}
+
 .completion-next-level {
   margin: 12px auto 0;
   border-radius: 999px;
@@ -5753,4 +5767,170 @@ a:focus-visible {
 .village-place-label,
 .tofu-unlock-button img {
   pointer-events: none;
+}
+
+/* The Challenge's level map: Rainbow Village's grass, a winding path and level tiles along it,
+   with Mochi standing on the furthest level open. */
+.level-map {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  aspect-ratio: 400 / 660;
+  margin: 8px auto 0;
+  overflow: hidden;
+  border: 3px solid #fff;
+  border-radius: 28px;
+  background: linear-gradient(180deg, #eaf6ff 0%, #d8f1df 14%, #c9eed9 60%, #b8e6cc 100%);
+  box-shadow: 0 0 0 2px #cfe9d8, 0 6px 0 #cfe9d8, 0 16px 24px rgb(90 60 160 / 12%);
+}
+
+.level-map-land {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.level-map-rainbow {
+  fill: none;
+  stroke: #ffb3d1;
+  stroke-width: 10;
+  opacity: 0.7;
+  filter: drop-shadow(0 8px 0 #ffe27a) drop-shadow(0 8px 0 #8cc8f2);
+}
+
+.level-map-tree rect {
+  fill: #c98a55;
+}
+
+.level-map-tree circle {
+  fill: #8fd36f;
+  stroke: #5cb87a;
+  stroke-width: 2;
+}
+
+.level-map-path {
+  fill: none;
+  stroke: #f5e1bd;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 26;
+}
+
+.level-map-path-stones {
+  fill: none;
+  stroke: #ffffff;
+  stroke-dasharray: 2 16;
+  stroke-linecap: round;
+  stroke-width: 7;
+  opacity: 0.8;
+}
+
+.level-map-levels {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.level-map-levels li {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translate(-50%, -50%);
+}
+
+.level-tile {
+  --tile-size: clamp(46px, 14vw, 66px);
+  display: grid;
+  width: var(--tile-size);
+  aspect-ratio: 1;
+  place-items: center;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: var(--pink-soft);
+  box-shadow: 0 4px 0 var(--line-strong), 0 0 0 3px var(--line);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: clamp(18px, 5vw, 26px);
+  font-weight: 700;
+  transition: transform 140ms ease;
+}
+
+.level-tile:hover:not(:disabled) {
+  transform: translateY(-3px);
+}
+
+.level-tile.category-yellow { background: #fff3c4; }
+.level-tile.category-blue { background: #dcefff; }
+.level-tile.category-green { background: #d9f6e5; }
+.level-tile.category-lilac { background: #ece3ff; }
+.level-tile.category-peach { background: #ffe6d9; }
+
+.level-tile-locked {
+  background: #f1eef7 !important;
+  box-shadow: 0 4px 0 #e2ddea, 0 0 0 3px #ece8f3;
+  cursor: default;
+}
+
+.level-tile-locked img {
+  opacity: 0.55;
+}
+
+/* The level Mochi is on: a gentle glow. */
+.level-tile-next {
+  box-shadow: 0 4px 0 var(--line-strong), 0 0 0 4px var(--gold), 0 0 18px 4px rgb(255 201 74 / 55%);
+}
+
+.level-tile-perfect {
+  box-shadow: 0 4px 0 #e0b84a, 0 0 0 3px var(--gold);
+}
+
+.level-tile-score {
+  margin-top: 3px;
+  border-radius: 999px;
+  background: #fff;
+  padding: 1px 8px;
+  color: var(--magic-dark);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 2px 0 var(--line);
+}
+
+.level-tile-score-perfect {
+  background: var(--gold-soft);
+  color: var(--gold-deep);
+}
+
+/* Mochi stands just above her tile (half a tile up from its middle). */
+.level-map-mochi {
+  position: absolute;
+  z-index: 2;
+  width: clamp(34px, 10vw, 52px);
+  height: auto;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - clamp(23px, 7vw, 33px)));
+  transition: left 420ms ease-in-out, top 420ms ease-in-out;
+  filter: drop-shadow(0 4px 2px rgb(75 46 34 / 18%));
+}
+
+.level-map-focus {
+  display: inline-block;
+  margin: 8px 0 0;
+  border-radius: 999px;
+  background: var(--magic-soft);
+  padding: 4px 12px;
+  color: var(--magic-dark);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .level-map-mochi {
+    transition: none;
+  }
 }

@@ -1,5 +1,5 @@
 import { badgeShelves } from "../badges";
-import { useText } from "../i18n";
+import { gameName, useText } from "../i18n";
 import BadgeMedal from "./BadgeMedal";
 import GameFooter from "./GameFooter";
 import { formatTime } from "./MathGame";
@@ -27,7 +27,7 @@ export default function BadgeCollection({ player, breadcrumbs }) {
 
       {shelves.map(({ game, badges }) => (
         <section className="badge-shelf" key={game.id} aria-labelledby={`badge-shelf-${game.id}`}>
-          <h2 id={`badge-shelf-${game.id}`}>{game.name}</h2>
+          <h2 id={`badge-shelf-${game.id}`}>{gameName(text, game, player.age)}</h2>
           <ul className="badge-grid">
             {badges.map(({ key, topic, image, earned, record }) => {
               const time = record === undefined ? null : record === null ? text.noRecordYet : text.fastestTime(formatTime(record));

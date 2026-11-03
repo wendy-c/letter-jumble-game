@@ -1,4 +1,5 @@
 import { createContext, useContext } from "react";
+import { ageGroups } from "./games-data";
 
 // The site's own words (menus, the home page, badges, Parent mode…) in English and 繁體中文.
 // Words inside a game stay in that game's language, so they aren't here.
@@ -37,8 +38,8 @@ const strings = {
     noGames: (name) => `No games are turned on for ${name} yet. Ask a grown-up to choose some in Parent mode.`,
     groups: { phonics: "Phonics", cambridge: "Cambridge YLE training", chinese: "中文", challenge: "Math", mochi: "Visit Mochi" },
     gameNotes: {},
-    // Game names that change with the site's language.
-    gameNames: {},
+    // Game names that change with the site's language, or (as functions) with the child's class.
+    gameNames: { "math-logic": (label) => (label ? `${label} Challenge` : "Challenge") },
 
     badgesTitle: (name) => `${name}’s badges`,
     badgeCount: (earned, total) => `${earned} of ${total} badges`,
@@ -114,11 +115,11 @@ const strings = {
       "chinese-advanced": "K2-K3 · 認識詞語 · 廣東話",
       "measure-words": "K3 · 量詞 · 廣東話",
       idioms: "K3 · 成語 · 廣東話",
-      "math-logic": "K1-K3 · 數一數、加減和找規律 · 每天一個新關卡",
+      "math-logic": "K1-K3 · 數一數、加減和找規律 · 地圖上的 20 個關卡",
       "speed-quest": "加減速算，每次都嘗試打破自己的紀錄！",
       dragon: "用彩虹幣買零食，跟Mochi玩",
     },
-    gameNames: { "math-logic": "每日大挑戰", "speed-quest": "彩虹速算站" },
+    gameNames: { "math-logic": (label) => `${label ?? ""}大挑戰`, "speed-quest": "彩虹速算站" },
 
     badgesTitle: (name) => `${name} 的徽章`,
     badgeCount: (earned, total) => `${earned} / ${total} 個徽章`,
@@ -181,4 +182,11 @@ export function useText() {
 
 export function useLanguage() {
   return useContext(LanguageContext);
+}
+
+// A game's name in the site's words (`text`), for a child in class `age` ("k1"): the Challenge is
+// named for the class ("K1 Challenge", K1大挑戰), or just "Challenge" before anyone is playing.
+export function gameName(text, game, age = null) {
+  const name = text.gameNames[game.id] ?? game.name;
+  return typeof name === "function" ? name(ageGroups.find((group) => group.id === age)?.label ?? null) : name;
 }

@@ -1,5 +1,5 @@
 import { gameGroups } from "../games-data";
-import { useText } from "../i18n";
+import { gameName, useText } from "../i18n";
 import GameCard from "./GameCard";
 import GameFooter from "./GameFooter";
 import MochiDriveCard from "./MochiDriveCard";
@@ -7,7 +7,8 @@ import MochiGreeting from "./MochiGreeting";
 
 // The front page: Mochi says hello, then the player's games under headings (Phonics, Cambridge YLE
 // training, 中文, Math and Visit Mochi). A heading with none of their games isn't shown.
-export default function GamePicker({ games, playerName = null, onSelectGame, emptyMessage }) {
+// `playerAge` names the Challenge for the child's class.
+export default function GamePicker({ games, playerName = null, playerAge = null, onSelectGame, emptyMessage }) {
   const text = useText();
   const shelves = gameGroups
     .map((group) => ({ group, games: games.filter((game) => game.group === group.id) }))
@@ -27,7 +28,7 @@ export default function GamePicker({ games, playerName = null, onSelectGame, emp
             {shelfGames.map((game) => (
               game.id === "dragon"
                 ? <MochiDriveCard key={game.id} game={game} note={text.gameNotes[game.id] ?? game.note} onSelect={() => onSelectGame(game)} />
-                : <GameCard key={game.id} game={{ ...game, name: text.gameNames[game.id] ?? game.name }} note={text.gameNotes[game.id] ?? game.note} onSelect={() => onSelectGame(game)} />
+                : <GameCard key={game.id} game={{ ...game, name: gameName(text, game, playerAge) }} note={text.gameNotes[game.id] ?? game.note} onSelect={() => onSelectGame(game)} />
             ))}
           </div>
         </section>

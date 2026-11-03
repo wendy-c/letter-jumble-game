@@ -1,8 +1,8 @@
 // Daily Challenge (每日大挑戰): twenty levels of ten questions for each of K1, K2 and K3, in English
 // or Chinese (the site's language): numbers under 10 for K1, to 20 for K2 and to 100 for K3. K1's
 // and K2's first three levels are made by hand here, and the rest come from math-generator.js; all
-// of K3's come from k3-generator.js. A child starts at Level 1 of their set, and a level opens the
-// day after the one before it was finished. Most questions are answered by tapping one of the
+// of K3's come from k3-generator.js. A child starts at Level 1 of their set, and a level opens as
+// soon as the one before it is finished. Most questions are answered by tapping one of the
 // choices (numbers, words, or pictures for patterns); K3's sums are typed on a number pad. The
 // pictures are drawn by scripts/draw-words.py.
 import { generateK3Level } from "./k3-generator";
@@ -260,27 +260,25 @@ export function today(now = new Date()) {
   return [now.getFullYear(), now.getMonth() + 1, now.getDate()].map((part) => String(part).padStart(2, "0")).join("-");
 }
 
-// The unlock saved, with the day, when the level before this one is finished: "math-logic/level-2@2026-10-31".
+// The unlock saved when the level before this one is finished, with the day it was:
+// "math-logic/k1-level-2@2026-10-31".
 export const levelUnlockKey = (level, day = today()) => `math-logic/${level.id}@${day}`;
 
-// The day the level before this one was finished, or null if it hasn't been yet.
+// The day the level before this one was finished ("" for an unlock saved without one), or null if
+// it hasn't been yet.
 function earnedOn(level, player) {
   const key = `math-logic/${level.id}`;
   const unlock = player?.unlocks?.find((entry) => entry === key || entry.startsWith(`${key}@`));
   return unlock ? unlock.split("@")[1] ?? "" : null;
 }
 
-// Whether a level can be played: "open"; "tomorrow" when the level before it was finished today
-// (one new level a day); or "locked" until the level before it is finished. Each age's Level 1 is
-// always open.
-export function levelState(level, player, day = today()) {
-  if (level.first) return "open";
-  const earned = earnedOn(level, player);
-  if (earned === null) return "locked";
-  return earned < day ? "open" : "tomorrow";
+// Whether a level can be played: "open", or "locked" until the level before it is finished. Each
+// class's Level 1 is always open.
+export function levelState(level, player) {
+  return level.first || earnedOn(level, player) !== null ? "open" : "locked";
 }
 
-export const isLevelOpen = (level, player, day = today()) => levelState(level, player, day) === "open";
+export const isLevelOpen = (level, player) => levelState(level, player) === "open";
 
-// Whether finishing the level before has already earned this one (today or before).
+// Whether finishing the level before has already earned this one.
 export const isLevelEarned = (level, player) => earnedOn(level, player) !== null;

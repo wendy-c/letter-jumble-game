@@ -230,15 +230,17 @@ describe("Daily Challenge", () => {
     expect([...new Set(files)].filter((file) => !fs.existsSync(path.join(publicDir, file)))).toEqual([]);
   });
 
-  it("opens each age's Level 1, and each later level the day after the one before is finished", () => {
+  it("opens each class's Level 1, and each later level as soon as the one before is finished", () => {
     const [one, two, three] = levelsFor("k2");
-    const finishedLevel1 = { unlocks: [levelUnlockKey(two, "2026-10-30")] };
-    expect(levelState(one, null, "2026-10-30")).toBe("open");
-    expect(levelState(two, { unlocks: [] }, "2026-10-30")).toBe("locked");
-    expect(levelState(two, finishedLevel1, "2026-10-30")).toBe("tomorrow");
-    expect(levelState(two, finishedLevel1, "2026-10-31")).toBe("open");
-    expect(levelState(three, finishedLevel1, "2026-10-31")).toBe("locked");
-    expect(isLevelOpen(two, finishedLevel1, "2026-11-02")).toBe(true);
+    const finishedLevel1 = { unlocks: [levelUnlockKey(two, today())] };
+    expect(levelState(one, null)).toBe("open");
+    expect(levelState(two, { unlocks: [] })).toBe("locked");
+    // The same day: no waiting until tomorrow.
+    expect(levelState(two, finishedLevel1)).toBe("open");
+    expect(levelState(three, finishedLevel1)).toBe("locked");
+    expect(isLevelOpen(two, finishedLevel1)).toBe(true);
+    // An unlock saved before the days were added still counts.
+    expect(isLevelOpen(two, { unlocks: [`math-logic/${two.id}`] })).toBe(true);
   });
 
   it("writes today's date in the player's own time zone", () => {

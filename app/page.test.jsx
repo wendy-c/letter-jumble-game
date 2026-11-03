@@ -97,7 +97,7 @@ describe("Home", () => {
   it("starts on the game picker", () => {
     render(<GameApp />);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("What shall we play today?");
-    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語", "Daily Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語", "Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
   });
 
   it("has Mochi, arms open, greet the player by name", async () => {
@@ -394,12 +394,12 @@ describe("ages", () => {
     }));
     const user = userEvent.setup();
     render(<GameApp />);
-    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "中文認字 · 入門篇", "Daily Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "中文認字 · 入門篇", "K1 Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
 
     await user.click(screen.getByRole("button", { name: /Player options/ }));
     await user.click(screen.getByRole("menuitem", { name: "Switch player" }));
     await user.click(within(screen.getByRole("list", { name: "Players" })).getByRole("button", { name: /Elly/ }));
-    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 進階篇", "量詞配對", "成語", "Daily Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 進階篇", "量詞配對", "成語", "K3 Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
   });
 
   it("lists games under Phonics, Cambridge YLE training, 中文, Math and Visit Mochi, hiding empty headings", () => {
@@ -412,7 +412,7 @@ describe("ages", () => {
       ["Phonics", ["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E"]],
       ["Cambridge YLE training", ["Letter Jumble - Starters", "Letter Jumble - Movers"]],
       ["中文", ["中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語"]],
-      ["Math", ["Daily Challenge", "Rainbow Speed Quest"]],
+      ["Math", ["Challenge", "Rainbow Speed Quest"]],
       ["Visit Mochi", ["Mochi the Rainbow Dragon"]],
     ]);
     unmount();
@@ -424,7 +424,7 @@ describe("ages", () => {
 
   it("shows every game to visitors before anyone is playing", () => {
     render(<GameApp />);
-    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語", "Daily Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語", "Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
   });
 
   it("stays on the picker when the chosen game isn't for the new player's age", async () => {
@@ -435,7 +435,7 @@ describe("ages", () => {
     await addPlayer(user, "Mia", "k1");
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("What shall we play today?");
-    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "中文認字 · 入門篇", "Daily Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "中文認字 · 入門篇", "K1 Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
   });
 
   it("asks a player saved before ages existed which class they are in", async () => {
@@ -1292,7 +1292,7 @@ describe("badges", () => {
     const collection = await openBadges(user);
 
     expect(within(collection).getAllByRole("heading", { level: 2 }).map((heading) => heading.textContent))
-      .toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 進階篇", "量詞配對", "成語", "Daily Challenge", "Rainbow Speed Quest"]);
+      .toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 進階篇", "量詞配對", "成語", "K3 Challenge", "Rainbow Speed Quest"]);
     expect(collection).toHaveTextContent("2 of 64 badges");
     expect(within(collection).getByRole("listitem", { name: "Animals: earned" })).toBeInTheDocument();
     expect(within(collection).getByRole("listitem", { name: "成語: earned" })).toBeInTheDocument();
@@ -1531,7 +1531,7 @@ describe("how to play", () => {
       "Look at the picture, tap the speaker if you need a hint.",
       "Tap the letters in spelling order to fill the boxes.",
       "Tap “Check it”.",
-      "A right answer earns a rainbow coin, and getting a whole topic right earns its badge!",
+      "A right answer earns a rainbow coin. Get a whole topic right to earn its badge and 5 bonus coins!",
     ]);
     await user.click(within(howTo).getByRole("button", { name: /Got it/ }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
@@ -1571,7 +1571,7 @@ describe("how to play", () => {
   });
 
   it("explains both 中文認字 games in three numbered steps, without icons", async () => {
-    const steps = ["讀一讀，按喇叭聽聽提示。", "按一按正確的圖畫。", "答對可得到彩虹金幣，全部答對更可得到徽章！"];
+    const steps = ["讀一讀，按喇叭聽聽提示。", "按一按正確的圖畫。", "答對可得到彩虹金幣，全部答對更可得到徽章和額外 5 個彩虹金幣！"];
     for (const [age, path, title] of [["k1", "/chinese/colours", "中文認字 · 入門篇：玩法"], ["k3", "/chinese-advanced/jobs", "中文認字 · 進階篇：玩法"]]) {
       window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age }], current: "Ada" }));
       setPathname(path);
@@ -1816,12 +1816,12 @@ describe("parent mode", () => {
     expect(switches(/Ada/)).toEqual([
       ["CVC Sounds", "true"], ["Consonant Digraphs", "true"], ["R & L Blends", "true"], ["Magic E", "true"], ["Letter Jumble - Starters", "false"],
       ["Letter Jumble - Movers", "false"], ["中文認字 · 入門篇", "true"],
-      ["中文認字 · 進階篇", "false"], ["量詞配對", "false"], ["成語", "false"], ["Daily Challenge", "true"], ["Rainbow Speed Quest", "true"], ["Mochi the Rainbow Dragon", "true"],
+      ["中文認字 · 進階篇", "false"], ["量詞配對", "false"], ["成語", "false"], ["K1 Challenge", "true"], ["Rainbow Speed Quest", "true"], ["Mochi the Rainbow Dragon", "true"],
     ]);
     expect(switches(/Elly/)).toEqual([
       ["CVC Sounds", "true"], ["Consonant Digraphs", "true"], ["R & L Blends", "true"], ["Magic E", "true"], ["Letter Jumble - Starters", "true"],
       ["Letter Jumble - Movers", "true"], ["中文認字 · 入門篇", "false"],
-      ["中文認字 · 進階篇", "true"], ["量詞配對", "true"], ["成語", "true"], ["Daily Challenge", "true"], ["Rainbow Speed Quest", "true"], ["Mochi the Rainbow Dragon", "true"],
+      ["中文認字 · 進階篇", "true"], ["量詞配對", "true"], ["成語", "true"], ["K3 Challenge", "true"], ["Rainbow Speed Quest", "true"], ["Mochi the Rainbow Dragon", "true"],
     ]);
     const ada = within(parentPage()).getByRole("region", { name: /Ada/ });
     expect(within(ada).getAllByRole("button", { name: /More settings for/ }).map((button) => button.getAttribute("aria-label"))).toEqual([
@@ -1894,7 +1894,7 @@ describe("parent mode", () => {
     expect(within(ada).getByRole("switch", { name: /Mochi/ })).toHaveAttribute("aria-checked", "false");
     await user.click(within(parentPage()).getByRole("button", { name: /Done/ }));
 
-    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "中文認字 · 入門篇", "Daily Challenge", "Rainbow Speed Quest"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "中文認字 · 入門篇", "K1 Challenge", "Rainbow Speed Quest"]);
     expect(storedPlayers().players.find((player) => player.name === "Elly").gameSettings).toBeUndefined();
     act(() => setPathname("/dragon"));
     await waitFor(() => expect(currentPathname()).toBe("/"));
@@ -1912,7 +1912,7 @@ describe("parent mode", () => {
     await user.click(movers);
     await user.click(within(parentPage()).getByRole("button", { name: /Done/ }));
 
-    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "Letter Jumble - Movers", "中文認字 · 入門篇", "Daily Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "Letter Jumble - Movers", "中文認字 · 入門篇", "K1 Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
     await user.click(screen.getByRole("button", { name: /Letter Jumble - Movers/ }));
     expect(currentPathname()).toBe("/letter-jumble");
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Letter Jumble");
@@ -1994,36 +1994,40 @@ describe("shuffled questions", () => {
 });
 
 
-describe("Daily Challenge", () => {
+describe("Challenge", () => {
   const level1 = "math-logic/k1-level-1";
   const seedPlayer = (extra = {}, age = "k1") => window.localStorage.setItem(playersKey, JSON.stringify({
     players: [{ name: "Ada", coins: 0, age, ...extra }], current: "Ada",
   }));
   const inChinese = () => window.localStorage.setItem(siteKey, JSON.stringify({ language: "zh", howToSeen: games.map((game) => game.id), tutorialSeen: true }));
-  const levelNames = () => screen.getAllByRole("button", { name: /Level \d+ · / }).map((level) => [level.textContent.match(/Level \d+/)[0], level.disabled]);
+  // The map's level tiles: [name, locked?].
+  const levelNames = () => screen.getAllByRole("button", { name: /^Level \d+ · / }).map((level) => [level.getAttribute("aria-label").match(/Level \d+/)[0], level.disabled]);
+  const tile = (number) => screen.getByRole("button", { name: new RegExp(`^Level ${number} · `) });
 
-  it("gives each age twenty levels of its own, with only Level 1 open to begin with", async () => {
+  it("gives each class twenty levels of its own on a map, named for the class, with only Level 1 open to begin with", async () => {
     seedPlayer();
     const user = userEvent.setup();
     const { unmount } = render(<GameApp />);
-    await user.click(screen.getByRole("button", { name: /Daily Challenge/ }));
+    await user.click(screen.getByRole("button", { name: /K1 Challenge/ }));
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("K1 Challenge");
     expect(levelNames()).toEqual(Array.from({ length: 20 }, (_, index) => [`Level ${index + 1}`, index > 0]));
-    expect(screen.getByRole("button", { name: /Level 1 · / })).toHaveTextContent("Numbers under 10");
-    expect(screen.getByRole("button", { name: /Level 2 · / })).toHaveTextContent("Finish Level 1 to open");
+    expect(tile(1)).toHaveAccessibleName("Level 1 · Numbers under 10 · Mochi is here");
+    expect(tile(2)).toHaveAccessibleName("Level 2 · locked: finish Level 1 to open");
     unmount();
 
     seedPlayer({}, "k2");
     setPathname("/math-logic");
     const { unmount: unmountK2 } = render(<GameApp />);
     expect(levelNames()).toHaveLength(20);
-    expect(screen.getByRole("button", { name: /Level 1 · / })).toHaveTextContent("Numbers to 20");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("K2 Challenge");
+    expect(tile(1)).toHaveAccessibleName(/Numbers to 20/);
     unmountK2();
 
     seedPlayer({}, "k3");
     setPathname("/math-logic");
     render(<GameApp />);
     expect(levelNames()).toHaveLength(20);
-    expect(screen.getByRole("button", { name: /Level 1 · / })).toHaveTextContent("Numbers to 100");
+    expect(tile(1)).toHaveAccessibleName(/Numbers to 100/);
   });
 
   it("gives K3 sums to type on a number pad", async () => {
@@ -2031,8 +2035,8 @@ describe("Daily Challenge", () => {
     seedPlayer({ decks: { [k3Level1]: inOrder(10) }, progress: { [k3Level1]: 0 } }, "k3");
     const user = userEvent.setup();
     render(<GameApp />);
-    await user.click(screen.getByRole("button", { name: /Daily Challenge/ }));
-    await user.click(screen.getByRole("button", { name: /Level 1 · / }));
+    await user.click(screen.getByRole("button", { name: /K3 Challenge/ }));
+    await user.click(tile(1));
     expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent("Type the answer on the number pad.");
     const pad = screen.getByRole("group", { name: "Number pad" });
     expect(within(pad).getByRole("button", { name: "Check my answer" })).toBeDisabled();
@@ -2050,8 +2054,8 @@ describe("Daily Challenge", () => {
     seedPlayer({ decks: { [k3Level1]: inOrder(10) }, progress: { [k3Level1]: 4 } }, "k3");
     const user = userEvent.setup();
     render(<GameApp />);
-    await user.click(screen.getByRole("button", { name: /Daily Challenge/ }));
-    await user.click(screen.getByRole("button", { name: /Level 1 · / }));
+    await user.click(screen.getByRole("button", { name: /K3 Challenge/ }));
+    await user.click(tile(1));
     expect(screen.getByRole("img", { name: "Number bond: 14 is 7 and ?" })).toBeInTheDocument();
     await user.keyboard("9");
     expect(screen.getByRole("img", { name: "Number bond: 14 is 7 and 9" })).toBeInTheDocument();
@@ -2075,8 +2079,8 @@ describe("Daily Challenge", () => {
     seedPlayer({ decks: { [level1]: inOrder(10) }, progress: { [level1]: 5 } });
     const user = userEvent.setup();
     render(<GameApp />);
-    await user.click(screen.getByRole("button", { name: /Daily Challenge/ }));
-    await user.click(screen.getByRole("button", { name: /Level 1 · / }));
+    await user.click(screen.getByRole("button", { name: /K1 Challenge/ }));
+    await user.click(tile(1));
     expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent("Which number is missing?");
     expect(screen.getByRole("list", { name: "4, 5, ?, 7, 8" })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "6" }));
@@ -2091,9 +2095,9 @@ describe("Daily Challenge", () => {
     inChinese();
     const user = userEvent.setup();
     render(<GameApp />);
-    await user.click(screen.getByRole("button", { name: /每日大挑戰/ }));
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("每日大挑戰");
-    await user.click(screen.getByRole("button", { name: /第 1 關 · / }));
+    await user.click(screen.getByRole("button", { name: /K1大挑戰/ }));
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("K1大挑戰");
+    await user.click(screen.getByRole("button", { name: /^第 1 關 · / }));
     expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent("豬媽媽到水果店買蘋果，狐狸店長的籃子裏差多少個蘋果？");
     expect(document.querySelector(".math-picture")).toHaveAttribute("src", "/images/game-asset/math/fruit-stand.svg");
   });
@@ -2102,30 +2106,55 @@ describe("Daily Challenge", () => {
     seedPlayer({ decks: { [level1]: inOrder(10) }, progress: { [level1]: 6 } });
     const user = userEvent.setup();
     render(<GameApp />);
-    await user.click(screen.getByRole("button", { name: /Daily Challenge/ }));
-    await user.click(screen.getByRole("button", { name: /Level 1 · / }));
+    await user.click(screen.getByRole("button", { name: /K1 Challenge/ }));
+    await user.click(tile(1));
     await user.click(screen.getByRole("button", { name: "dragonfly" }));
     const reveal = screen.getByRole("dialog", { name: "The answer is…" });
     expect(reveal).toHaveTextContent("bee");
     expect(storedPlayers().players[0].results[level1][6]).toBe(false);
   });
 
-  it("opens the next level the day after a level is finished, even with some answers wrong", async () => {
+  it("opens the next level straight away when a level is finished, even with some answers wrong, and puts the score on its tile", async () => {
     seedPlayer({ decks: { [level1]: inOrder(10) }, progress: { [level1]: 9 }, results: { [level1]: [false, ...Array(8).fill(true)] } });
     const user = userEvent.setup();
     render(<GameApp />);
-    await user.click(screen.getByRole("button", { name: /Daily Challenge/ }));
-    await user.click(screen.getByRole("button", { name: /Level 1 · / }));
+    await user.click(screen.getByRole("button", { name: /K1 Challenge/ }));
+    await user.click(tile(1));
     await user.click(screen.getByRole("button", { name: "4" }));
     await nextQuestion();
 
     const card = await screen.findByRole("dialog", { name: "Good try!" });
-    expect(card).toHaveTextContent("Level 2 opens tomorrow!");
+    expect(card).toHaveTextContent("Level 2 is open now!");
+    expect(card).not.toHaveTextContent("bonus");
     expect(storedPlayers().players[0].unlocks).toEqual([`math-logic/k1-level-2@${today()}`]);
-    await user.click(within(card).getByRole("button", { name: /Back to all levels/ }));
-    expect(screen.getByRole("button", { name: /Level 2 · / })).toBeDisabled();
-    expect(screen.getByRole("button", { name: /Level 2 · / })).toHaveTextContent("Opens tomorrow");
-    expect(screen.getByRole("button", { name: /Level 3 · / })).toHaveTextContent("Finish Level 2 to open");
+    expect(storedPlayers().players[0].scores).toEqual({ [level1]: [9, 10] });
+    await user.click(within(card).getByRole("button", { name: /Back to the map/ }));
+    // Mochi starts where she was, on Level 1, then walks on to Level 2.
+    expect(tile(1)).toHaveAccessibleName("Level 1 · 9 of 10 right · Mochi is here");
+    expect(tile(1).closest("li")).toHaveTextContent("9/10");
+    expect(tile(2)).toBeEnabled();
+    await waitFor(() => expect(tile(2)).toHaveAccessibleName(/Mochi is here/));
+    expect(tile(1)).toHaveAccessibleName("Level 1 · 9 of 10 right");
+    expect(tile(3)).toHaveAccessibleName("Level 3 · locked: finish Level 2 to open");
+  });
+
+  it("gives a level's badge and 5 bonus coins for getting every answer right, and keeps the best score", async () => {
+    seedPlayer({ coins: 3, decks: { [level1]: inOrder(10) }, progress: { [level1]: 9 }, results: { [level1]: Array(9).fill(true) }, scores: { [level1]: [7, 10] } });
+    const user = userEvent.setup();
+    render(<GameApp />);
+    await user.click(screen.getByRole("button", { name: /K1 Challenge/ }));
+    await user.click(tile(1));
+    await user.click(screen.getByRole("button", { name: "4" }));
+    await nextQuestion();
+
+    const card = await screen.findByRole("dialog", { name: "You did it!" });
+    expect(card).toHaveTextContent("+5 bonus rainbow coins for getting them all right!");
+    // 3, then 1 for the right answer and 5 for them all.
+    expect(storedPlayers().players[0].coins).toBe(9);
+    expect(storedPlayers().players[0].badges).toEqual([level1]);
+    expect(storedPlayers().players[0].scores).toEqual({ [level1]: [10, 10] });
+    await user.click(within(card).getByRole("button", { name: /Back to the map/ }));
+    expect(tile(1).closest("li")).toHaveTextContent("★ 10/10");
   });
 
   it("tells analytics when a child reaches Level 15, and not for other levels", async () => {
@@ -2139,8 +2168,8 @@ describe("Daily Challenge", () => {
       });
       const user = userEvent.setup();
       const view = render(<GameApp />);
-      await user.click(screen.getByRole("button", { name: /Daily Challenge/ }));
-      await user.click(screen.getByRole("button", { name: new RegExp(`Level ${number} · `) }));
+      await user.click(screen.getByRole("button", { name: /K1 Challenge/ }));
+      await user.click(tile(number));
       await user.click(within(screen.getByRole("group", { name: "Choices" })).getAllByRole("button")[0]);
       if (screen.queryByRole("dialog", { name: "The answer is…" })) await user.click(screen.getByRole("button", { name: /Next question/ }));
       await nextQuestion();
@@ -2156,21 +2185,21 @@ describe("Daily Challenge", () => {
     expect(track).toHaveBeenCalledWith("k1-challenge", { level: "15" });
   });
 
-  it("has the next level open on a later day", async () => {
-    seedPlayer({ unlocks: ["math-logic/k1-level-2@2000-01-01"] });
+  it("has a level opened today ready to play, with no waiting for tomorrow", async () => {
+    seedPlayer({ unlocks: [`math-logic/k1-level-2@${today()}`] });
     const user = userEvent.setup();
     render(<GameApp />);
-    await user.click(screen.getByRole("button", { name: /Daily Challenge/ }));
-    expect(screen.getByRole("button", { name: /Level 2 · / })).toBeEnabled();
-    expect(screen.getByRole("button", { name: /Level 3 · / })).toBeDisabled();
+    await user.click(screen.getByRole("button", { name: /K1 Challenge/ }));
+    expect(tile(2)).toBeEnabled();
+    expect(tile(3)).toBeDisabled();
   });
 
-  it("is called 每日大挑戰 under 數學 in Chinese", () => {
+  it("is called K1大挑戰 (for a K1 child) under 數學 in Chinese", () => {
     seedPlayer();
     inChinese();
     render(<GameApp />);
     const heading = screen.getByRole("heading", { level: 2, name: /數學/ });
-    expect(heading.closest("section")).toHaveTextContent("每日大挑戰");
+    expect(heading.closest("section")).toHaveTextContent("K1大挑戰");
     expect(heading.closest("section")).toHaveTextContent("彩虹速算站");
   });
 });
@@ -2204,7 +2233,8 @@ describe("Rainbow Speed Quest", () => {
     expect(card).toHaveTextContent(/Your time: \d+:\d\d/);
     expect(card).toHaveTextContent("That’s your first record!");
     expect(storedPlayers().players[0].records[key]).toBeGreaterThanOrEqual(0);
-    expect(storedPlayers().players[0].coins).toBe(10);
+    // A coin for each sum, and 5 for getting them all right.
+    expect(storedPlayers().players[0].coins).toBe(15);
   });
 
   it("gives 10 bonus coins for beating a record", async () => {
@@ -2216,7 +2246,8 @@ describe("Rainbow Speed Quest", () => {
     expect(card).toHaveTextContent("New record!");
     expect(card).toHaveTextContent("+10 rainbow coins for beating your record!");
     expect(storedPlayers().players[0].records[key]).toBeLessThan(999999);
-    expect(storedPlayers().players[0].coins).toBe(20);
+    // 10 sums, 5 for them all right and 10 for the record.
+    expect(storedPlayers().players[0].coins).toBe(25);
   });
 
   it("keeps the record when a sum was wrong", async () => {

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { badgeImage, topicsByGame } from "../badges";
-import { games, gamesForPlayer, isGameAvailable } from "../games-data";
+import { games, gamesForPlayer, isGameAvailable, perfectScoreBonus } from "../games-data";
 import AnswerPanel from "./AnswerPanel";
 import AnswerRevealDialog, { chineseRevealLabels } from "./AnswerRevealDialog";
 import BadgeCollection from "./BadgeCollection";
@@ -17,6 +17,7 @@ import GameFooter from "./GameFooter";
 import GameHeading from "./GameHeading";
 import GamePicker from "./GamePicker";
 import IdiomGame from "./IdiomGame";
+import LevelMap from "./LevelMap";
 import SentenceGame from "./SentenceGame";
 import MeasureWordGame from "./MeasureWordGame";
 import MathGame from "./MathGame";
@@ -38,7 +39,7 @@ import { sounds } from "../lib/sounds";
 import { usePlayers } from "../lib/use-players";
 import { useSiteSettings } from "../lib/use-site-settings";
 import HowToPlayDialog, { AboutButton, AboutDialog, HowToPlayButton, hasAbout, hasHowToPlay, howToLanguage } from "./HowToPlayDialog";
-import { LanguageContext, textFor } from "../i18n";
+import { LanguageContext, gameName, textFor } from "../i18n";
 import Tutorial from "./Tutorial";
 import WelcomeDialog from "./WelcomeDialog";
 
@@ -84,7 +85,7 @@ export default function GameApp() {
   const { gameId, topicId } = parsePath(pathname);
 
   const {
-    loaded, players, currentPlayer, createPlayer, setPlayerAge, selectPlayer, logOut, addCoin, saveRecord, spendCoins, saveProgress, saveDeck,
+    loaded, players, currentPlayer, createPlayer, setPlayerAge, selectPlayer, logOut, addCoin, saveRecord, saveScore, spendCoins, saveProgress, saveDeck,
     setGameEnabled, setSpellingGuide, setQuestionCount, awardBadge, saveResult, unlock,
   } = usePlayers();
   const site = useSiteSettings();
@@ -481,14 +482,19 @@ export default function GameApp() {
     const count = selectedCategory.words.length;
     const correct = selectedCategory.words.filter((_, index) => results[index] === true).length;
     const hasBadge = Boolean(currentPlayer?.badges?.includes(categoryKey));
-    const newBadge = correct === count && !hasBadge;
+    const perfect = correct === count;
+    const newBadge = perfect && !hasBadge;
     if (newBadge) awardBadge(categoryKey);
-    // Finishing a Daily Challenge level opens the next one, from tomorrow.
+    // Every answer right earns bonus coins too, each time.
+    if (perfect) addCoin(perfectScoreBonus);
+    // The best score shows on a Challenge level's tile on the map.
+    saveScore(categoryKey, correct, count);
+    // Finishing a Challenge level opens the next one straight away.
     const nextLevel = isMath ? gameTopics[gameTopics.indexOf(routeTopic) + 1] : null;
     const opensLevel = Boolean(nextLevel) && !isLevelEarned(nextLevel, currentPlayer);
     if (opensLevel) unlock(levelUnlockKey(nextLevel));
-    // Analytics: a child reaching Daily Challenge Level 15 (finishing Level 14 earns it), once each,
-    // named for the level set: "k1-challenge", or "k2-challenge" (K2 and K3).
+    // Analytics: a child reaching Challenge Level 15 (finishing Level 14 earns it), once each,
+    // named for the class: "k1-challenge", "k2-challenge" or "k3-challenge".
     if (opensLevel && nextLevel.id.endsWith("-level-15")) track(`${nextLevel.id.split("-")[0]}-challenge`, { level: "15" });
     // A timed round with every answer right sets a record if it's the first or the fastest yet;
     // beating an earlier record earns a bonus.
@@ -503,7 +509,7 @@ export default function GameApp() {
       speed = { time, best, newRecord, bonus };
     }
     setCompletedTopic({
-      name: selectedCategory.name, count, correct, hasBadge,
+      name: selectedCategory.name, count, correct, hasBadge, bonus: perfect ? perfectScoreBonus : 0,
       badge: newBadge ? { name: routeTopic.name, image: badgeImage(selectedGame.id, routeTopic.id) } : null,
       nextLevel: opensLevel ? nextLevel.name : null,
       speed,
@@ -585,7 +591,7 @@ export default function GameApp() {
     <Breadcrumbs
       items={[
         { label: text.home, href: "/" },
-        { label: text.gameNames[selectedGame.id] ?? selectedGame.name, href: `/${selectedGame.id}` },
+        { label: gameName(text, selectedGame, currentPlayer?.age), href: `/${selectedGame.id}` },
         ...(routeTopic ? [{ label: routeTopic.name, href: `/${selectedGame.id}/${routeTopic.id}` }] : []),
         ...(dragonPlace && topicId && dragons[topicId] ? [{ label: dragons[topicId].house, href: `/dragon/${topicId}` }] : []),
       ]}
@@ -633,6 +639,7 @@ export default function GameApp() {
           <GamePicker
             games={gamesForPlayer(currentPlayer)}
             playerName={currentPlayer?.name ?? null}
+            playerAge={currentPlayer?.age ?? null}
             onSelectGame={requestGame}
             emptyMessage={currentPlayer && text.noGames(currentPlayer.name)}
           />
@@ -663,6 +670,18 @@ export default function GameApp() {
               onGoToVillage={() => router.push("/dragon/village")}
             />
           )
+        ) : isMath ? (
+          <LevelMap
+            title={gameName(text, selectedGame, currentPlayer?.age)}
+            focus={gameTopics[0]?.focus?.[site.language] ?? gameTopics[0]?.english}
+            levels={gameTopics}
+            lockFor={(level) => levelState(level, currentPlayer)}
+            scoreFor={(level) => currentPlayer?.scores?.[`${selectedGame.id}/${level.id}`] ?? null}
+            progressFor={(level) => currentPlayer?.progress?.[`${selectedGame.id}/${level.id}`] ?? 0}
+            mapKey={`letter-jumble:level-map:${currentPlayer?.name ?? ""}:${currentPlayer?.age ?? ""}`}
+            breadcrumbs={breadcrumbs}
+            onSelectLevel={selectCategory}
+          />
         ) : (
           <TopicMenu
             titleAction={aboutButton || null}
@@ -673,9 +692,7 @@ export default function GameApp() {
             isChinese={isChinese}
             isMeasure={isMeasure}
             isIdiom={isIdiom}
-            isMath={isMath}
             isSpeed={isSpeed}
-            lockFor={(topic) => (isMath ? levelState(topic, currentPlayer) : "open")}
             recordFor={(topic) => currentPlayer?.records?.[`${selectedGame.id}/${topic.id}`] ?? null}
             topics={gameTopics}
             progressFor={(topic) => currentPlayer?.progress?.[`${selectedGame.id}/${topic.id}`] ?? 0}
@@ -848,7 +865,7 @@ export default function GameApp() {
         />
       )}
       {howToShown && (
-        <HowToPlayDialog game={{ ...selectedGame, name: text.gameNames[selectedGame.id] ?? selectedGame.name }} language={gameLanguage} onClose={closeHowTo} />
+        <HowToPlayDialog game={{ ...selectedGame, name: gameName(text, selectedGame, currentPlayer?.age) }} language={gameLanguage} onClose={closeHowTo} />
       )}
       {aboutOpen && selectedGame && hasAbout(selectedGame.id) && (
         <AboutDialog game={selectedGame} onClose={() => setAboutOpen(false)} />
@@ -871,6 +888,7 @@ export default function GameApp() {
           correct={completedTopic.correct}
           hasBadge={completedTopic.hasBadge}
           badge={completedTopic.badge}
+          bonus={completedTopic.bonus}
           text={inChinese ? chineseCompletionText : isSpeed ? speedCompletionText[site.language] : isMath ? mathCompletionText[site.language] : undefined}
           nextLevel={completedTopic.nextLevel}
           speed={completedTopic.speed}

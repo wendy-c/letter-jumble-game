@@ -1,7 +1,7 @@
 import { useId, useState } from "react";
 import { ageGroups, defaultQuestionCount, games, isGameAvailable, isGameForAge, questionCountChoices } from "../games-data";
 import { isRightAnswer, makeGrownUpQuestion } from "../lib/grown-up-question";
-import { useText } from "../i18n";
+import { gameName, useText } from "../i18n";
 import GameFooter from "./GameFooter";
 
 function GrownUpCheck({ onPass }) {
@@ -90,8 +90,10 @@ function QuestionCountChoice({ count, onChoose }) {
 
 // A game's switch. Games with more settings (the spelling guide, or how many questions a round
 // has) show an arrow under "On" that opens them.
-function GameSwitch({ game, enabled, suitsAge, onToggle, spellingGuide, onToggleSpellingGuide, questionCount, onSetQuestionCount }) {
+function GameSwitch({ game, age, enabled, suitsAge, onToggle, spellingGuide, onToggleSpellingGuide, questionCount, onSetQuestionCount }) {
   const text = useText();
+  // In the site's language, and the Challenge named for this child's class.
+  const name = gameName(text, game, age);
   const optionsId = useId();
   const [open, setOpen] = useState(false);
   const hasOptions = Boolean(game.spellingGuide || game.questionCount);
@@ -99,7 +101,7 @@ function GameSwitch({ game, enabled, suitsAge, onToggle, spellingGuide, onToggle
     <li className={`parent-game${enabled ? "" : " parent-game-off"}`}>
       <SettingRow
         checked={enabled}
-        title={game.name}
+        title={name}
         note={<>
           {enabled ? text.on : text.off}
           {!suitsAge && text.forAges(game.ages.map((age) => text.ageGroup[age] ?? ageGroups.find((group) => group.id === age)?.label).join(", "))}
@@ -112,7 +114,7 @@ function GameSwitch({ game, enabled, suitsAge, onToggle, spellingGuide, onToggle
             type="button"
             aria-expanded={open}
             aria-controls={optionsId}
-            aria-label={text.moreSettings(game.name)}
+            aria-label={text.moreSettings(name)}
             onClick={() => setOpen((current) => !current)}
           >
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
@@ -152,6 +154,7 @@ function ChildSettings({ player, onSetGameEnabled, onSetSpellingGuide, onSetQues
             <GameSwitch
               key={game.id}
               game={game}
+              age={player.age}
               enabled={enabled}
               suitsAge={suitsAge}
               onToggle={() => onSetGameEnabled(player.name, game.id, !enabled, suitsAge)}

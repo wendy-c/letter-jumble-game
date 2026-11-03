@@ -14,6 +14,7 @@ const englishCompletionText = {
   tryAgain: "Try again",
   visitMochi: "Visit Mochi",
   badge: (topicName) => `New badge! ${topicName} is in your badge collection.`,
+  bonus: (coins) => `+${coins} bonus rainbow coins for getting them all right!`,
 };
 
 export const chineseCompletionText = {
@@ -28,23 +29,24 @@ export const chineseCompletionText = {
   tryAgain: "再試一次",
   visitMochi: "探望 Mochi",
   badge: (topicName) => `你得到「${topicName}」徽章！`,
+  bonus: (coins) => `全部答對，額外獎勵 ${coins} 個彩虹金幣！`,
 };
 
-// The Daily Challenge's texts, in English and Chinese (it follows the site's language).
+// The Challenge's texts, in English and Chinese (it follows the site's language).
 export const mathCompletionText = {
   en: {
     ...englishCompletionText,
     kicker: "LEVEL COMPLETE",
     message: (topicName) => `You got every ${topicName} question right. Mochi is so proud of you!`,
     tryMessage: (topicName) => `Get every ${topicName} question right to earn its badge. Try again!`,
-    button: "Back to all levels",
-    nextLevel: (levelName) => `${levelName} opens tomorrow!`,
+    button: "Back to the map",
+    nextLevel: (levelName) => `${levelName} is open now!`,
   },
   zh: {
     ...chineseCompletionText,
     kicker: "完成關卡",
-    button: "返回所有關卡",
-    nextLevel: (levelName) => `明天就可以玩${levelName}！`,
+    button: "返回地圖",
+    nextLevel: (levelName) => `${levelName}已經開放！`,
   },
 };
 
@@ -77,11 +79,12 @@ export const speedCompletionText = {
 // Continuing goes back to the topic list. With full marks, `onVisitMochi` (when the player can
 // visit her) adds a button to go and spend the coins on Mochi; otherwise `onTryAgain` adds a
 // "Try again" button that plays the topic again from the start.
-// `nextLevel` (Daily Challenge) names the level that finishing this one opens, from tomorrow.
+// `bonus` is the extra coins a perfect score earned. `nextLevel` (the Challenge) names the level
+// that finishing this one opened.
 // `speed` (Rainbow Speed Quest) is { time, best, newRecord, bonus }: the round's time in
 // milliseconds (null when it wasn't timed from the start), the record before it, and whether it set
 // a new one (earning `bonus` coins when it beat an earlier record).
-export default function CompletionDialog({ topicName, count, correct = count, badge = null, hasBadge = false, text = englishCompletionText, onDone, onVisitMochi = null, onTryAgain = null, nextLevel = null, speed = null }) {
+export default function CompletionDialog({ topicName, count, correct = count, badge = null, hasBadge = false, bonus = 0, text = englishCompletionText, onDone, onVisitMochi = null, onTryAgain = null, nextLevel = null, speed = null }) {
   const perfect = correct === count;
   const tryAgain = !perfect && onTryAgain;
   return (
@@ -101,6 +104,11 @@ export default function CompletionDialog({ topicName, count, correct = count, ba
           <p className="reward-coin-earned completion-message">
             {perfect ? text.message(topicName) : hasBadge ? text.practiseMessage() : text.tryMessage(topicName)}
           </p>
+          {bonus > 0 && (
+            <p className="completion-bonus">
+              <img src="/images/rainbow-coin.svg" alt="" width="22" height="22" /> {text.bonus(bonus)}
+            </p>
+          )}
           {nextLevel && <p className="completion-next-level">{text.nextLevel(nextLevel)}</p>}
           {speed && speed.time !== null && (
             <div className="completion-speed">

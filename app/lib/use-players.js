@@ -79,6 +79,12 @@ function cleanPlayer(saved) {
     const records = Object.fromEntries(Object.entries(player.records).filter(([, time]) => Number.isFinite(time) && time > 0));
     if (Object.keys(records).length > 0) cleaned.records = records;
   }
+  // Best scores, as [right, out of], e.g. { "math-logic/k1-level-3": [8, 10] }.
+  if (player.scores && typeof player.scores === "object") {
+    const isScore = (score) => Array.isArray(score) && score.length === 2 && score.every(Number.isInteger) && score[0] >= 0 && score[0] <= score[1] && score[1] > 0;
+    const scores = Object.fromEntries(Object.entries(player.scores).filter(([, score]) => isScore(score)));
+    if (Object.keys(scores).length > 0) cleaned.scores = scores;
+  }
   if (Array.isArray(player.badges)) {
     const badges = [...new Set(player.badges.filter((badge) => typeof badge === "string" && badge.length > 0))];
     if (badges.length > 0) cleaned.badges = badges;
@@ -227,6 +233,16 @@ export function usePlayers() {
     updatePlayer(state.current, (player) => ({ ...player, records: { ...player.records, [key]: time } }));
   }
 
+  // Saves the current player's score for finishing a topic ("<game>/<topic>"), if it's their best.
+  function saveScore(key, correct, count) {
+    if (!state.current) return;
+    updatePlayer(state.current, (player) => {
+      const best = player.scores?.[key];
+      if (best && best[0] >= correct) return player;
+      return { ...player, scores: { ...player.scores, [key]: [correct, count] } };
+    });
+  }
+
   // Takes coins from the current player. Returns false (and spends nothing) if they can't afford it.
   function spendCoins(amount) {
     const player = state.players.find((candidate) => candidate.name === state.current);
@@ -302,6 +318,7 @@ export function usePlayers() {
     logOut,
     addCoin,
     saveRecord,
+    saveScore,
     spendCoins,
     saveProgress,
     setGameEnabled,
