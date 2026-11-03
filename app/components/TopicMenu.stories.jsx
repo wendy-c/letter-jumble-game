@@ -1,5 +1,5 @@
 import { fn } from "storybook/test";
-import { topicsByGame } from "../badges";
+import { badgeImage, topicsByGame } from "../badges";
 import Breadcrumbs from "./Breadcrumbs";
 import { AboutButton, HowToPlayButton } from "./HowToPlayDialog";
 import TopicMenu from "./TopicMenu";
@@ -19,6 +19,10 @@ export const ConsonantDigraphs = { args: { isCvc: true, isDigraph: true, topics:
 export const Blends = { args: { isCvc: true, isBlend: true, topics: topicsByGame.blends, breadcrumbs: crumbs("R & L Blends", "/blends") } };
 export const LetterJumbleMovers = {
   args: { topics: topicsByGame["letter-jumble"], progressFor: (topic) => (topic.id === "animals" ? 4 : 0), breadcrumbs: crumbs("Letter Jumble - Movers", "/movers"), titleAction: <HowToPlayButton language="en" onClick={fn()} /> },
+};
+// Animals and Home finished with every answer right: their badges show on their cards.
+export const WithBadges = {
+  args: { ...LetterJumbleMovers.args, badgeFor: (topic) => (["animals", "home-and-environment"].includes(topic.id) ? badgeImage("letter-jumble", topic.id) : null) },
 };
 export const Chinese = { args: { isChinese: true, topics: topicsByGame.chinese, breadcrumbs: crumbs("中文認字 · 入門篇", "/chinese") } };
 export const MeasureWords = { args: { isChinese: true, isMeasure: true, topics: topicsByGame["measure-words"], breadcrumbs: crumbs("量詞配對", "/measure-words") } };

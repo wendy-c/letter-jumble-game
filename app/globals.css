@@ -305,16 +305,11 @@ button {
   line-height: 1;
 }
 
-/* On a module finished with every answer right. */
-.category-card-tag {
-  border-radius: 20px;
-  background: var(--gold-soft);
-  padding: 4px 10px;
-  color: var(--gold-deep);
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-  box-shadow: 0 2px 0 #f2d58a;
+/* On a module finished with every answer right: its badge. */
+.category-card-badge {
+  width: 52px;
+  height: 52px;
+  filter: drop-shadow(0 2px 2px rgb(75 46 34 / 18%));
 }
 
 .letter-pattern {

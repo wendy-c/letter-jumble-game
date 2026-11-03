@@ -697,7 +697,7 @@ export default function GameApp() {
             isMeasure={isMeasure}
             isIdiom={isIdiom}
             isSpeed={isSpeed}
-            perfectFor={(topic) => Boolean(currentPlayer?.badges?.includes(`${selectedGame.id}/${topic.id}`))}
+            badgeFor={(topic) => (currentPlayer?.badges?.includes(`${selectedGame.id}/${topic.id}`) ? badgeImage(selectedGame.id, topic.id) : null)}
             recordFor={(topic) => currentPlayer?.records?.[`${selectedGame.id}/${topic.id}`] ?? null}
             topics={gameTopics}
             progressFor={(topic) => currentPlayer?.progress?.[`${selectedGame.id}/${topic.id}`] ?? 0}

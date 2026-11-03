@@ -17,9 +17,9 @@ function speedNote(record, chinese) {
   return chinese ? `紀錄：${formatTime(record)}` : `Record: ${formatTime(record)}`;
 }
 
-// `perfectFor(topic)` says whether the child has finished a topic with every answer right (its
-// card gets a "Full score" tag).
-export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false, isBlend = false, isMagicE = false, isChinese = false, isMeasure = false, isIdiom = false, isSpeed = false, perfectFor = () => false, recordFor = () => null, topics, progressFor = () => 0, roundSizeFor = (topic) => topic.wordsPerGame ?? topic.words.length, breadcrumbs, onSelectTopic }) {
+// `badgeFor(topic)` is the picture of a topic's badge once the child has finished it with every
+// answer right (shown on its card), or null.
+export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false, isBlend = false, isMagicE = false, isChinese = false, isMeasure = false, isIdiom = false, isSpeed = false, badgeFor = () => null, recordFor = () => null, topics, progressFor = () => 0, roundSizeFor = (topic) => topic.wordsPerGame ?? topic.words.length, breadcrumbs, onSelectTopic }) {
   // Rainbow Speed Quest's heading follows the site's language. (The Challenge has its own map:
   // LevelMap.)
   const inChinese = useContext(LanguageContext) === "zh";
@@ -118,7 +118,7 @@ export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false
               icon={topic.pattern
                 ? <LetterPattern letters={topic.pattern} />
                 : <img src={topic.icon} alt="" width="40" height="40" />}
-              tag={perfectFor(topic) ? (inChinese || isChinese || isMeasure || isIdiom ? "★ 全對" : "★ Full score") : null}
+              badge={badgeFor(topic) && { image: badgeFor(topic), label: inChinese || isChinese || isMeasure || isIdiom ? "全對徽章" : "Full score badge" }}
               name={isSpeed ? `${topic.name} · ${topic.english}` : topic.name}
               note={isSpeed ? speedNote(recordFor(topic), inChinese)
                 : cardNote(isIdiom ? "idiom" : isChinese, isMeasure, progressFor(topic), roundSizeFor(topic))}

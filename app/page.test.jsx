@@ -1324,14 +1324,14 @@ describe("badges", () => {
     expect(within(collection).getByRole("region", { name: "CVC Sounds" })).not.toHaveTextContent(/Fastest|No record/);
   });
 
-  it("tags a module finished with every answer right on its game's list", async () => {
+  it("shows a module's badge on its card once it's been finished with every answer right", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k3", badges: ["letter-jumble/animals"] }], current: "Ada" }));
     const user = userEvent.setup();
     render(<GameApp />);
     await user.click(screen.getByRole("button", { name: /Letter Jumble - Movers/ }));
     const card = (name) => screen.getAllByRole("button").find((button) => button.querySelector(".category-card-name")?.textContent === name);
-    expect(card("Animals")).toHaveTextContent("★ Full score");
-    expect(card("Body and Face")).not.toHaveTextContent("Full score");
+    expect(within(card("Animals")).getByRole("img", { name: "Full score badge" })).toHaveAttribute("src", "/images/badges/letter-jumble/animals.svg");
+    expect(within(card("Body and Face")).queryByRole("img", { name: "Full score badge" })).toBeNull();
     // No numbers on the cards any more.
     expect(document.querySelector(".category-card-number")).toBeNull();
   });
