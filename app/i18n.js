@@ -49,6 +49,11 @@ const strings = {
     noRecordYet: "No record yet",
     collectThemAll: "COLLECT THEM ALL",
 
+    // Rainbow Village's note: what to save up for next.
+    villageMeetTofu: (cost) => `Save up ${cost} rainbow coins to meet Mochi’s best friend, Tofu.`,
+    villageOpenPark: (cost) => `Save up ${cost} rainbow coins to open the park, where Mochi and Tofu play together.`,
+    villageWhoToVisit: "Who shall we visit today?",
+
     forGrownUps: "FOR GROWN-UPS",
     grownUpsOnly: "Grown-ups only! Answer this to manage each child’s games.",
     whatIs: "What is",
@@ -102,6 +107,7 @@ const strings = {
       cvc: "K1-K3 · 開頭、中間和結尾的音",
       digraphs: "K1-K3 · ch、sh、th、ph、wh、ck 和 ng",
       blends: "K1-K3 · br、cr、str、bl、cl、fl 等混合音",
+      "magic-e": "K1-K3 · a_e、i_e、o_e 和 u_e：cake、kite、bone、cube",
       starters: "K2-K3 · 劍橋 Starters · 12 個主題",
       "letter-jumble": "K2-K3 · 劍橋 Movers · 8 個主題",
       chinese: "K1-K2 · 認識中文字 · 廣東話",
@@ -122,6 +128,10 @@ const strings = {
     fastestTime: (time) => `最快紀錄：${time}`,
     noRecordYet: "還沒有紀錄",
     collectThemAll: "快來集齊一套",
+
+    villageMeetTofu: (cost) => `儲夠 ${cost} 個彩虹金幣，就可以認識 Mochi 的好朋友 Tofu。`,
+    villageOpenPark: (cost) => `儲夠 ${cost} 個彩虹金幣，就可以打開公園，讓 Mochi 和 Tofu 一起玩。`,
+    villageWhoToVisit: "今天去探望誰？",
 
     forGrownUps: "家長專用",
     grownUpsOnly: "家長專用！答對這條題目，就可以管理孩子的遊戲。",

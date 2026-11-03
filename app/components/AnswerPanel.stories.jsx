@@ -1,11 +1,13 @@
 import { fn } from "storybook/test";
 import { cvcModes } from "../phonics-data/cvc-data";
 import { digraphTopics } from "../phonics-data/digraphs-data";
+import { magicETopics } from "../phonics-data/magic-e-data";
 import { getSpellingGuides } from "../lib/spelling";
 import AnswerPanel from "./AnswerPanel";
 
 const cvc = cvcModes[0].words[0];
 const digraph = digraphTopics[0].words[0];
+const flute = magicETopics[4].words.find((question) => question.word === "flute");
 
 export default {
   title: "Components/Spelling/AnswerPanel",
@@ -28,3 +30,8 @@ export const Cvc = {
 export const Digraph = {
   args: { isCvc: true, isDigraph: true, answer: digraph.answers[0], blanks: [digraph.missing], gapLength: digraph.gapLength ?? 2, tiles: digraph.choices },
 };
+// Magic E: the vowel's and the e's boxes under one arch, and pairs to tap (flute: f l _ t _).
+export const MagicE = {
+  args: { isCvc: true, isMagicE: true, answer: flute.answers[0], blanks: [flute.missing], tiles: flute.choices },
+};
+export const MagicEFilled = { args: { ...MagicE.args, placed: [3] } };

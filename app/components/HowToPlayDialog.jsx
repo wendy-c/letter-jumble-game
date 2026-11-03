@@ -5,7 +5,7 @@ const reward = {
   zh: "答對可得到彩虹金幣，全部答對更可得到徽章！",
 };
 
-// The phonics games that fill a gap in a word (Consonant Digraphs, R & L Blends).
+// The phonics games that fill a gap in a word (Consonant Digraphs, R & L Blends, Magic E).
 const fillTheGap = (en, zh) => ({
   en: ["Look at the picture, tap the speaker if you need a hint.", en, "Tap “Check it”.", reward.en],
   zh: ["看看圖畫，需要提示就按喇叭。", zh, "按「Check it」。", reward.zh],
@@ -16,6 +16,7 @@ const fillTheGap = (en, zh) => ({
 const howTo = {
   digraphs: fillTheGap("Tap the two letters (like sh) that fill the gap.", "按兩個字母（例如 sh）填入空格。"),
   blends: fillTheGap("Tap the blend (like br or str) that fills the gap.", "按一按正確的混合音（例如 br 或 str），填入空格。"),
+  "magic-e": fillTheGap("Tap the vowel and magic e (like a_e) that fill both gaps.", "按一按正確的元音和魔法 e（例如 a_e），填入兩個空格。"),
   starters: {
     en: ["Look at the picture, tap the speaker if you need a hint.", "Tap the letters in spelling order to fill the boxes.", "Tap “Check it”.", reward.en],
     zh: ["看看圖畫，需要提示就按喇叭。", "按次序按字母，把格子填滿。", "按「Check it」。", reward.zh],

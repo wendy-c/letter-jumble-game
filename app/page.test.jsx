@@ -97,7 +97,7 @@ describe("Home", () => {
   it("starts on the game picker", () => {
     render(<GameApp />);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("What shall we play today?");
-    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語", "Daily Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語", "Daily Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
   });
 
   it("has Mochi, arms open, greet the player by name", async () => {
@@ -118,7 +118,7 @@ describe("Home", () => {
     expect(document.querySelector(".mochi-drive-mochi")).toHaveAttribute("src", "/images/mochi/cloudmobile.svg");
   });
 
-  it("shows Mochi in her convertible by the road to the Rainbow Village; either opens the dragon game", async () => {
+  it("shows Mochi in her convertible by the road to the Rainbow Village; anywhere on the card opens the dragon game", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
     const user = userEvent.setup();
     const { unmount } = render(<GameApp />);
@@ -128,8 +128,15 @@ describe("Home", () => {
     unmount();
 
     setPathname("/");
-    render(<GameApp />);
+    const { unmount: unmount2 } = render(<GameApp />);
     await user.click(await screen.findByRole("button", { name: "Mochi the Rainbow Dragon" }));
+    expect(currentPathname()).toBe("/dragon");
+    unmount2();
+
+    // The road and the flowers too, not just the car and the sign.
+    setPathname("/");
+    render(<GameApp />);
+    await user.click(await screen.findByText("Spend coins on treats and cuddles"));
     expect(currentPathname()).toBe("/dragon");
   });
 
@@ -387,12 +394,12 @@ describe("ages", () => {
     }));
     const user = userEvent.setup();
     render(<GameApp />);
-    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "中文認字 · 入門篇", "Daily Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "中文認字 · 入門篇", "Daily Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
 
     await user.click(screen.getByRole("button", { name: /Player options/ }));
     await user.click(screen.getByRole("menuitem", { name: "Switch player" }));
     await user.click(within(screen.getByRole("list", { name: "Players" })).getByRole("button", { name: /Elly/ }));
-    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 進階篇", "量詞配對", "成語", "Daily Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 進階篇", "量詞配對", "成語", "Daily Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
   });
 
   it("lists games under Phonics, Cambridge YLE training, 中文, Math and Visit Mochi, hiding empty headings", () => {
@@ -402,7 +409,7 @@ describe("ages", () => {
     ]);
     const { unmount } = render(<GameApp />);
     expect(groups()).toEqual([
-      ["Phonics", ["CVC Sounds", "Consonant Digraphs", "R & L Blends"]],
+      ["Phonics", ["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E"]],
       ["Cambridge YLE training", ["Letter Jumble - Starters", "Letter Jumble - Movers"]],
       ["中文", ["中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語"]],
       ["Math", ["Daily Challenge", "Rainbow Speed Quest"]],
@@ -417,7 +424,7 @@ describe("ages", () => {
 
   it("shows every game to visitors before anyone is playing", () => {
     render(<GameApp />);
-    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語", "Daily Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 入門篇", "中文認字 · 進階篇", "量詞配對", "成語", "Daily Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
   });
 
   it("stays on the picker when the chosen game isn't for the new player's age", async () => {
@@ -428,7 +435,7 @@ describe("ages", () => {
     await addPlayer(user, "Mia", "k1");
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("What shall we play today?");
-    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "中文認字 · 入門篇", "Daily Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "中文認字 · 入門篇", "Daily Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
   });
 
   it("asks a player saved before ages existed which class they are in", async () => {
@@ -889,6 +896,56 @@ describe("breadcrumbs", () => {
   });
 });
 
+describe("Magic E", () => {
+  const seed = () => window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "k1" }], current: "Elly" }));
+
+  it("has a game for each long vowel and a mixed one, for every class", async () => {
+    seed();
+    const user = userEvent.setup();
+    render(<GameApp />);
+    await user.click(screen.getByRole("button", { name: /Magic E/ }));
+    expect(currentPathname()).toBe("/magic-e");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Magic E");
+    expect(screen.getAllByRole("button").filter((button) => button.classList.contains("category-card")).map((card) => card.querySelector(".category-card-name").textContent))
+      .toEqual(["Long A · a_e", "Long I · i_e", "Long O · o_e", "Long U · u_e", "Mixed Magic E"]);
+  });
+
+  it("shows the word with its vowel and e missing under one arch, and fills both with the right pair", async () => {
+    seed();
+    const user = userEvent.setup();
+    render(<GameApp />);
+    await user.click(screen.getByRole("button", { name: /Magic E/ }));
+    await user.click(screen.getByRole("button", { name: /Long A/ }));
+
+    // With the order pinned, the first word is "bake": b, a gap, k, and a gap for the e.
+    expect(screen.getByText("Which vowel and magic e fill the gaps?")).toBeInTheDocument();
+    expect(screen.getByLabelText("Gap: a vowel and a magic e")).toBeInTheDocument();
+    expect(screen.getByLabelText("Letter 2 of 4, empty")).toBeInTheDocument();
+    expect(screen.getByLabelText("Letter 4 of 4, empty")).toBeInTheDocument();
+    const choices = within(screen.getByLabelText("Magic e choices")).getAllByRole("button");
+    expect(choices.map((choice) => choice.getAttribute("aria-label"))).toEqual(["Letter a, magic e", "Letter i, magic e", "Letter o, magic e", "Letter u, magic e"]);
+
+    await user.click(screen.getByRole("button", { name: "Letter a, magic e" }));
+    expect(screen.getByLabelText("Letter 2 of 4, a")).toBeInTheDocument();
+    expect(screen.getByLabelText("Letter 4 of 4, e")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /Check it/ }));
+    expect(screen.getByRole("status")).toHaveTextContent("!");
+    expect(storedPlayers().players[0].results).toEqual({ "magic-e/a-e": [true] });
+  });
+
+  it("marks a wrong pair, and both of its boxes", async () => {
+    seed();
+    const user = userEvent.setup();
+    render(<GameApp />);
+    await user.click(screen.getByRole("button", { name: /Magic E/ }));
+    await user.click(screen.getByRole("button", { name: /Long A/ }));
+    await user.click(screen.getByRole("button", { name: "Letter i, magic e" }));
+    await user.click(screen.getByRole("button", { name: /Check it/ }));
+    expect(screen.getByLabelText("Letter 2 of 4, i")).toHaveClass("slot-wrong");
+    expect(screen.getByLabelText("Letter 4 of 4, e")).toHaveClass("slot-wrong");
+  });
+});
+
 describe("R & L Blends", () => {
   const seed = () => window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "k1" }], current: "Elly" }));
 
@@ -1235,8 +1292,8 @@ describe("badges", () => {
     const collection = await openBadges(user);
 
     expect(within(collection).getAllByRole("heading", { level: 2 }).map((heading) => heading.textContent))
-      .toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 進階篇", "量詞配對", "成語", "Daily Challenge", "Rainbow Speed Quest"]);
-    expect(collection).toHaveTextContent("2 of 59 badges");
+      .toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 進階篇", "量詞配對", "成語", "Daily Challenge", "Rainbow Speed Quest"]);
+    expect(collection).toHaveTextContent("2 of 64 badges");
     expect(within(collection).getByRole("listitem", { name: "Animals: earned" })).toBeInTheDocument();
     expect(within(collection).getByRole("listitem", { name: "成語: earned" })).toBeInTheDocument();
     const movers = within(collection).getByRole("region", { name: "Letter Jumble - Movers" });
@@ -1276,7 +1333,7 @@ describe("badges", () => {
     const user = userEvent.setup();
     render(<GameApp />);
     const collection = await openBadges(user);
-    expect(collection).toHaveTextContent("0 of 38 badges");
+    expect(collection).toHaveTextContent("0 of 43 badges");
     expect(collection).toHaveTextContent("Get every answer in a topic right to earn its badge!");
   });
 
@@ -1643,6 +1700,14 @@ describe("Tofu and Rainbow Village", () => {
       .toEqual([" Home", "Mochi the Rainbow Dragon", "Tofu’s House"]);
   });
 
+  it("says what to save up for in the site's language", async () => {
+    seedPlayer({ unlocks: ["tofu"] });
+    window.localStorage.setItem(siteKey, JSON.stringify({ language: "zh", howToSeen: games.map((game) => game.id), tutorialSeen: true }));
+    setPathname("/dragon");
+    render(<GameApp />);
+    expect(await screen.findByText("儲夠 100 個彩虹金幣，就可以打開公園，讓 Mochi 和 Tofu 一起玩。")).toHaveAttribute("lang", "zh-Hant-HK");
+  });
+
   it("starts at Rainbow Village once Tofu has moved in, with the park locked", async () => {
     seedPlayer({ unlocks: ["tofu"] });
     setPathname("/dragon");
@@ -1749,18 +1814,18 @@ describe("parent mode", () => {
     const switches = (name) => within(within(parentPage()).getByRole("region", { name })).getAllByRole("switch")
       .map((toggle) => [document.getElementById(toggle.getAttribute("aria-labelledby")).textContent, toggle.getAttribute("aria-checked")]);
     expect(switches(/Ada/)).toEqual([
-      ["CVC Sounds", "true"], ["Consonant Digraphs", "true"], ["R & L Blends", "true"], ["Letter Jumble - Starters", "false"],
+      ["CVC Sounds", "true"], ["Consonant Digraphs", "true"], ["R & L Blends", "true"], ["Magic E", "true"], ["Letter Jumble - Starters", "false"],
       ["Letter Jumble - Movers", "false"], ["中文認字 · 入門篇", "true"],
       ["中文認字 · 進階篇", "false"], ["量詞配對", "false"], ["成語", "false"], ["Daily Challenge", "true"], ["Rainbow Speed Quest", "true"], ["Mochi the Rainbow Dragon", "true"],
     ]);
     expect(switches(/Elly/)).toEqual([
-      ["CVC Sounds", "true"], ["Consonant Digraphs", "true"], ["R & L Blends", "true"], ["Letter Jumble - Starters", "true"],
+      ["CVC Sounds", "true"], ["Consonant Digraphs", "true"], ["R & L Blends", "true"], ["Magic E", "true"], ["Letter Jumble - Starters", "true"],
       ["Letter Jumble - Movers", "true"], ["中文認字 · 入門篇", "false"],
       ["中文認字 · 進階篇", "true"], ["量詞配對", "true"], ["成語", "true"], ["Daily Challenge", "true"], ["Rainbow Speed Quest", "true"], ["Mochi the Rainbow Dragon", "true"],
     ]);
     const ada = within(parentPage()).getByRole("region", { name: /Ada/ });
     expect(within(ada).getAllByRole("button", { name: /More settings for/ }).map((button) => button.getAttribute("aria-label"))).toEqual([
-      "More settings for CVC Sounds", "More settings for Consonant Digraphs", "More settings for R & L Blends",
+      "More settings for CVC Sounds", "More settings for Consonant Digraphs", "More settings for R & L Blends", "More settings for Magic E",
       "More settings for Letter Jumble - Starters", "More settings for Letter Jumble - Movers",
     ]);
     expect(within(parentPage()).queryByRole("button", { name: /Focus/ })).not.toBeInTheDocument();
@@ -1829,7 +1894,7 @@ describe("parent mode", () => {
     expect(within(ada).getByRole("switch", { name: /Mochi/ })).toHaveAttribute("aria-checked", "false");
     await user.click(within(parentPage()).getByRole("button", { name: /Done/ }));
 
-    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "中文認字 · 入門篇", "Daily Challenge", "Rainbow Speed Quest"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "中文認字 · 入門篇", "Daily Challenge", "Rainbow Speed Quest"]);
     expect(storedPlayers().players.find((player) => player.name === "Elly").gameSettings).toBeUndefined();
     act(() => setPathname("/dragon"));
     await waitFor(() => expect(currentPathname()).toBe("/"));
@@ -1847,7 +1912,7 @@ describe("parent mode", () => {
     await user.click(movers);
     await user.click(within(parentPage()).getByRole("button", { name: /Done/ }));
 
-    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Letter Jumble - Movers", "中文認字 · 入門篇", "Daily Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
+    expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "Letter Jumble - Movers", "中文認字 · 入門篇", "Daily Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
     await user.click(screen.getByRole("button", { name: /Letter Jumble - Movers/ }));
     expect(currentPathname()).toBe("/letter-jumble");
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Letter Jumble");
@@ -1896,7 +1961,7 @@ describe("parent mode", () => {
   });
 
   it("tells a child with no games to ask a grown-up", () => {
-    seedChildren({ gameSettings: { cvc: false, digraphs: false, blends: false, chinese: false, "math-logic": false, "speed-quest": false, dragon: false } });
+    seedChildren({ gameSettings: { cvc: false, digraphs: false, blends: false, "magic-e": false, chinese: false, "math-logic": false, "speed-quest": false, dragon: false } });
     render(<GameApp />);
     expect(shownGames()).toEqual([]);
     expect(screen.getByText(/No games are turned on for Ada yet/)).toBeInTheDocument();

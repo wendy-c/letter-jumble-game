@@ -66,7 +66,8 @@ function mixAnswers(question, random) {
   return {
     ...question,
     ...(question.options && { options: shuffled(question.options, random) }),
-    ...(question.choices && (question.missing !== 1 || question.gapLength) && { choices: shuffled(question.choices, random) }),
+    // (CVC's middle vowels and Magic E's pairs stay in a, e, i, o, u order.)
+    ...(question.choices && !question.magicE && (question.missing !== 1 || question.gapLength) && { choices: shuffled(question.choices, random) }),
   };
 }
 
@@ -174,9 +175,10 @@ export default function GameApp() {
 
   const isDigraph = selectedGame?.id === "digraphs";
   const isBlend = selectedGame?.id === "blends";
+  const isMagicE = selectedGame?.id === "magic-e";
   // Phonics games fill a gap in a shown word (one letter for CVC, two for a digraph, two or three
-  // for a blend).
-  const isCvc = selectedGame?.id === "cvc" || isDigraph || isBlend;
+  // for a blend, and a vowel with the e at the end for Magic E).
+  const isCvc = selectedGame?.id === "cvc" || isDigraph || isBlend || isMagicE;
   const isChinese = Boolean(selectedGame?.id.startsWith("chinese"));
   const isMeasure = selectedGame?.id === "measure-words";
   const isIdiom = selectedGame?.id === "idioms";
@@ -193,8 +195,10 @@ export default function GameApp() {
   const tiles = puzzle ? puzzle.choices ?? scramble(answerLetters.replaceAll("-", ""), round, seededRandom(`${dealSeed}:${round}:tiles`)) : [];
   // How many letters each gap holds: two for a digraph, otherwise one.
   const gapLength = puzzle?.gapLength ?? 1;
+  // What fills a gap: its letters, or for Magic E the vowel and the e as a pair ("a_e").
+  const gapAnswer = (blank) => (puzzle?.magicE ? `${answerLetters[blank]}_e` : answerLetters.slice(blank, blank + gapLength));
   const complete = Boolean(puzzle) && placed.length === blanks.length &&
-    placed.every((tile, slotIndex) => tile !== null && tiles[tile] === answerLetters.slice(blanks[slotIndex], blanks[slotIndex] + gapLength));
+    placed.every((tile, slotIndex) => tile !== null && tiles[tile] === gapAnswer(blanks[slotIndex]));
   const allPlaced = placed.every((tile) => tile !== null);
   // The spelling guide is a parent setting for each child and Letter Jumble game (in Parent mode).
   const showSpellingGuide = Boolean(selectedGame?.spellingGuide && currentPlayer?.spellingGuide?.includes(selectedGame.id));
@@ -665,6 +669,7 @@ export default function GameApp() {
             isCvc={isCvc}
             isDigraph={isDigraph}
             isBlend={isBlend}
+            isMagicE={isMagicE}
             isChinese={isChinese}
             isMeasure={isMeasure}
             isIdiom={isIdiom}
@@ -798,6 +803,7 @@ export default function GameApp() {
               isCvc={isCvc}
               isDigraph={isDigraph}
               isBlend={isBlend}
+              isMagicE={isMagicE}
               answer={answer}
               round={round}
               blanks={blanks}

@@ -61,6 +61,17 @@ export const games = [
     questionCount: true,
   },
   {
+    id: "magic-e",
+    group: "phonics",
+    name: "Magic E",
+    color: "lilac",
+    picture: "/images/icons/magic-e-mixed.svg",
+    note: "For K1-K3 - a_e, i_e, o_e and u_e: cake, kite, bone, cube",
+    badge: "MAGIC E",
+    ages: ["k1", "k2", "k3"],
+    questionCount: true,
+  },
+  {
     id: "starters",
     group: "cambridge",
     name: "Letter Jumble - Starters",

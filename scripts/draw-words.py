@@ -2164,6 +2164,203 @@ pictures["../icons/group-challenge"] = svg(
     '<path d="M38 20h52v26a26 26 0 0 1-52 0Z" fill="#ffd45e"/><path d="M38 28H22q0 22 18 26M90 28h16q0 22-18 26" fill="none" stroke-width="5"/>'
     '<path d="M58 72h12v18H58Z" fill="#ffd45e"/><rect x="40" y="90" width="48" height="16" rx="4" fill="#c98a55"/>' + label(64, 46, "?", 28, "#ffffff"))
 
+# ---------- Magic E (a_e, i_e, o_e, u_e) ----------
+ME = "magic-e/"
+
+
+def arrow_to(x1, y1, x2, y2, colour="#ff6f6f"):
+    """A short arrow from (x1, y1) pointing at (x2, y2)."""
+    a = math.atan2(y2 - y1, x2 - x1)
+    hx, hy = x2 - 10 * math.cos(a), y2 - 10 * math.sin(a)
+    left = (hx + 7 * math.cos(a + math.pi / 2), hy + 7 * math.sin(a + math.pi / 2))
+    right = (hx + 7 * math.cos(a - math.pi / 2), hy + 7 * math.sin(a - math.pi / 2))
+    return (f'<path d="M{x1} {y1}L{hx:.1f} {hy:.1f}" stroke="{colour}" stroke-width="6"/>'
+            f'<path d="M{x2} {y2}L{left[0]:.1f} {left[1]:.1f}L{right[0]:.1f} {right[1]:.1f}Z" fill="{colour}" stroke-width="3"/>')
+
+
+# Long a
+pictures[ME + "bake"] = svg(
+    '<path d="M64 8q-6 8 0 14t0 14M48 12q-6 8 0 14M80 12q-6 8 0 14" fill="none" stroke="#c9b6f5" stroke-width="4"/>'
+    '<rect x="16" y="38" width="96" height="80" rx="8" fill="#e6e1f0"/><path d="M16 54h96" stroke-width="4"/>'
+    '<circle cx="30" cy="46" r="4" fill="#ff8fa3" stroke-width="2.5"/><circle cx="44" cy="46" r="4" fill="#ffd45e" stroke-width="2.5"/>'
+    '<rect x="28" y="64" width="72" height="44" rx="6" fill="#ffc46b"/>'
+    '<path d="M40 98q0-18 24-18t24 18Z" fill="#e0a060"/><path d="M50 88q4-4 8 0M66 86q4-4 8 0" fill="none" stroke-width="2.5"/>'
+    '<path d="M36 98h56" stroke-width="4"/>')
+pictures[ME + "date"] = svg(
+    '<rect x="14" y="22" width="100" height="94" rx="10" fill="#ffffff"/><path d="M14 32q0-10 10-10h80q10 0 10 10v14H14Z" fill="#ff6f6f"/>'
+    '<path d="M38 14v16M90 14v16" stroke-width="6"/>'
+    + "".join(f'<rect x="{24 + c * 20}" y="{54 + r * 18}" width="12" height="10" rx="2" fill="#e8ddfa" stroke="none"/>' for r in range(3) for c in range(4))
+    + '<circle cx="70" cy="77" r="13" fill="none" stroke="#ff6f6f" stroke-width="4"/>')
+pictures[ME + "gate"] = svg(
+    '<path d="M4 112h120v12H4Z" fill="#8fe3a8"/>'
+    '<rect x="12" y="30" width="14" height="86" rx="3" fill="#c98a55"/><rect x="102" y="30" width="14" height="86" rx="3" fill="#c98a55"/>'
+    '<circle cx="19" cy="26" r="7" fill="#c98a55"/><circle cx="109" cy="26" r="7" fill="#c98a55"/>'
+    + "".join(f'<path d="M{x} {54 - abs(x - 64) * 0.25:.0f}V108" stroke="#ffffff" stroke-width="10"/><path d="M{x} {54 - abs(x - 64) * 0.25:.0f}V108" fill="none" stroke-width="2"/>' for x in (36, 50, 64, 78, 92))
+    + '<path d="M28 64h72M28 98h72" stroke-width="5"/><path d="M28 64h72M28 98h72" stroke="#ffffff" stroke-width="2"/>')
+pictures[ME + "late"] = svg(
+    kid(62, 44, 0.9, arms=[[(-11, 17), (-24, 8)], [(11, 17), (24, 30)]], legs=[[(-6, 42), (-20, 58)], [(6, 42), (16, 64)]], facing=1)
+    + '<circle cx="100" cy="26" r="18" fill="#ffffff"/><path d="M100 26V14M100 26l8 5" stroke-width="3.5"/>'
+    + '<path d="M86 12l-6-6M114 12l6-6" stroke-width="4"/>'
+    + '<path d="M10 70h16M6 84h20M14 98h12" stroke="#c9b6f5" stroke-width="4"/>')
+pictures[ME + "make"] = svg(
+    '<path d="M12 116h104" stroke-width="5"/>'
+    '<path d="M30 112V62l26-24 26 24v50Z" fill="#ffd3a0"/><path d="M22 66l34-32 34 32" fill="none" stroke="#ff6f6f" stroke-width="9"/>'
+    '<circle cx="56" cy="76" r="9" fill="#4b2e22" stroke="none"/><path d="M48 96h16" stroke-width="5"/>'
+    '<g transform="rotate(35 100 58)"><rect x="96" y="44" width="8" height="56" rx="3" fill="#c98a55"/>'
+    '<rect x="84" y="34" width="32" height="14" rx="4" fill="#9aa5b8"/></g>'
+    + burst(108, 28, 8, 15, (-120, -80, -40)) + sparkle(18, 28, 7, "#ffd45e")
+)
+pictures[ME + "name"] = svg(
+    '<rect x="8" y="26" width="112" height="78" rx="10" fill="#ffffff"/><path d="M8 36q0-10 10-10h92q10 0 10 10v22H8Z" fill="#ff6f6f"/>'
+    + label(64, 51, "HELLO", 20, "#ffffff")
+    + label(64, 90, "Amy", 26, "#6f50d0") + '<path d="M26 96h76" stroke="#d6c5f5" stroke-width="3"/>')
+pictures[ME + "rake"] = svg(
+    '<path d="M92 8 52 92" stroke-width="10"/><path d="M92 8 52 92" stroke="#c98a55" stroke-width="5"/>'
+    '<path d="M20 86q30 16 64 12" fill="none" stroke-width="7"/><path d="M20 86q30 16 64 12" fill="none" stroke="#9aa5b8" stroke-width="3"/>'
+    + "".join(f'<path d="M{x} {y}l-2 14" stroke-width="4"/>' for x, y in ((24, 90), (36, 95), (48, 98), (60, 99), (72, 99), (84, 98)))
+    + "".join(f'<g transform="rotate({r} {x} {y})"><path d="M{x} {y - 9}q9 9 0 18q-9-9 0-18Z" fill="{c}" stroke-width="2.5"/></g>'
+              for x, y, r, c in ((22, 116, 40, "#ff8f6f"), (42, 118, -30, "#ffd45e"), (64, 117, 60, "#e0a060"), (90, 116, -50, "#ff8f6f"), (108, 112, 20, "#ffd45e")))
+)
+pictures[ME + "tape"] = svg(
+    '<path d="M14 108q0-16 16-20h56q24 0 30 20Z" fill="#ff8fa3"/><rect x="10" y="104" width="110" height="12" rx="5" fill="#ff6f86"/>'
+    '<circle cx="54" cy="62" r="30" fill="#cfe9ff"/><circle cx="54" cy="62" r="13" fill="#ffffff"/>'
+    '<circle cx="54" cy="62" r="22" fill="none" stroke="#9fd0f5" stroke-width="3"/>'
+    '<path d="M84 62h26v10H84Z" fill="#cfe9ff" stroke-width="3"/><path d="M110 58l6 4-6 4 6 4-6 4" fill="#9aa5b8" stroke-width="2.5"/>'
+)
+pictures[ME + "wave"] = svg(
+    '<path d="M4 120V84q14-60 64-62 36 0 48 30-20-14-38-4-16 10-10 30 4 12 20 12 14 0 28-8v42Z" fill="#8cc8f2"/>'
+    '<path d="M34 50q20-24 50-22" fill="none" stroke="#ffffff" stroke-width="5"/>'
+    '<path d="M4 104q20-8 40 0t40 0 40 0V124H4Z" fill="#6fb3e6"/>'
+    '<circle cx="112" cy="40" r="4" fill="#ffffff" stroke-width="2.5"/><circle cx="104" cy="30" r="3" fill="#ffffff" stroke-width="2"/>')
+
+# Long i
+pictures[ME + "bite"] = svg(
+    '<path d="M64 30q-36-16-44 18-6 40 24 62 10 6 20 0 10 6 20 0 18-12 24-32-6-2-8-8-8-2-8-10-6-4-6-12 0-8 6-12-12-10-28-6Z" fill="#ff6f6f"/>'
+    '<path d="M64 30q2-14 10-22" fill="none" stroke-width="4"/><path d="M70 18q14-12 26-4-12 10-26 4Z" fill="#8fe3a8" stroke-width="3"/>'
+    '<path d="M38 50q4-10 12-12" fill="none" stroke="#ffffff" stroke-width="5"/>'
+    '<path d="M108 68q-8-2-8-8-8-2-8-10-6-4-6-12 0-8 6-12" fill="none" stroke="#fff6c8" stroke-width="4"/>')
+pictures[ME + "dive"] = svg(
+    '<path d="M0 98q16-8 32 0t32 0 32 0 32 0V128H0Z" fill="#8cc8f2"/>'
+    '<path d="M50 96q-6-14 4-22M70 96q8-12-2-22" fill="none" stroke="#ffffff" stroke-width="4"/>'
+    + '<g transform="rotate(150 64 56)">' + kid(64, 40, 0.75, arms=[[(-11, 17), (-6, -12)], [(11, 17), (6, -12)]], legs=[[(-6, 42), (-4, 64)], [(6, 42), (4, 64)]]) + '</g>')
+pictures[ME + "five"] = svg(
+    '<path d="M14 18h100v92H14Z" fill="#ffb3d1"/>' + label(64, 96, "5", 80, "#ffffff"))
+pictures[ME + "hike"] = svg(
+    '<path d="M0 104 40 40l26 34 18-22 44 52Z" fill="#c9e7b4"/><path d="M32 52l8-12 8 10Z" fill="#ffffff" stroke-width="3"/>'
+    '<path d="M0 104h128v24H0Z" fill="#8fe3a8"/>'
+    + kid(70, 46, 0.85, arms=[[(-11, 17), (-20, 34)], [(11, 17), (22, 30)]], legs=[[(-6, 42), (-14, 62)], [(6, 42), (12, 62)]], facing=1)
+    + '<rect x="40" y="56" width="16" height="24" rx="5" fill="#ff8f6f"/>'
+    + '<path d="M90 70l6 50" stroke="#c98a55" stroke-width="5"/>')
+pictures[ME + "pine"] = svg(
+    '<rect x="56" y="98" width="16" height="24" rx="3" fill="#c98a55"/>'
+    '<path d="M64 6 34 46h14L24 74h16L14 102h100L88 74h16L80 46h14Z" fill="#4f9e6a"/>'
+    '<path d="M50 60l6-4M74 84l8-4M44 88l6-2M76 52l6 4" fill="none" stroke="#8fe3a8" stroke-width="3"/>')
+pictures[ME + "ride"] = svg(
+    asset("starters/bike", 4, 30, 120)
+    + kid(58, 34, 0.75, arms=[[(-11, 17), (24, 22)], [(11, 17), (30, 22)]], legs=[[(-6, 42), (14, 52), (10, 70)], [(6, 42), (24, 54), (22, 72)]], facing=1))
+pictures[ME + "wipe"] = svg(
+    '<path d="M6 96h116v10H6Z" fill="#c98a55"/><path d="M14 106v18M114 106v18" stroke-width="6"/>'
+    + limb([(124, 30), (96, 54), (74, 72)], SKIN, 14)
+    + '<path d="M44 84q4-16 30-16t30 12l-2 10H42Z" fill="#8fe3a8"/><path d="M54 80h40M50 86h50" fill="none" stroke="#5cb87a" stroke-width="3"/>'
+    '<circle cx="74" cy="70" r="8" fill="#ffe2c4" stroke-width="3"/>'
+    '<path d="M10 86q8-12 22-12M14 74q8-10 18-10" fill="none" stroke="#c9b6f5" stroke-width="4"/>'
+    + sparkle(24, 50, 7, "#cfe9ff") + sparkle(40, 34, 5, "#cfe9ff")
+)
+# Long o
+pictures[ME + "bone"] = svg(
+    '<path d="M38 52 90 76" stroke-width="22"/><path d="M38 52 90 76" stroke="#fff6e6" stroke-width="14"/>'
+    '<circle cx="30" cy="38" r="12" fill="#fff6e6"/><circle cx="20" cy="56" r="12" fill="#fff6e6"/>'
+    '<circle cx="108" cy="72" r="12" fill="#fff6e6"/><circle cx="98" cy="90" r="12" fill="#fff6e6"/>'
+    '<path d="M38 52 90 76" stroke="#fff6e6" stroke-width="14"/>')
+pictures[ME + "cone"] = svg(
+    '<rect x="16" y="104" width="96" height="14" rx="4" fill="#ff8f4f"/>'
+    '<path d="M54 12h20l26 92H28Z" fill="#ff8f4f"/>'
+    '<path d="M48 38h32l5 18H43ZM38 72h52l5 18H33Z" fill="#ffffff" stroke-width="3"/>')
+pictures[ME + "hope"] = svg(
+    kid(58, 36, 1.2, arms=[[(-11, 17), (-3, 26)], [(11, 17), (3, 26)]])
+    + '<path d="M58 70l-5-9q2-5 5-2 3-3 5 2Z" fill="#ffe2c4" stroke-width="2.5"/>'
+    + '<path d="M102 10l4 9 10 1-7 7 2 10-9-5-9 5 2-10-7-7 10-1Z" fill="#ffd45e" stroke-width="3"/>'
+    + sparkle(22, 20, 6, "#ffb3d9") + sparkle(110, 56, 5, "#cfe9ff")
+)
+pictures[ME + "joke"] = svg(
+    person(40, 78, 1.1, "#8b5a3c", "#8fe3a8", "short").replace('fill="#4b2e22" stroke="none"/><circle', 'fill="#4b2e22" stroke="none"/><circle', 1)
+    + '<path d="M60 6h58q8 0 8 8v26q0 8-8 8H82l-12 12 2-12h-12q-8 0-8-8V14q0-8 8-8Z" fill="#fff6c8"/>'
+    + label(89, 34, "Ha ha!", 18, "#ff6f86"))
+pictures[ME + "note"] = svg(
+    '<path d="M20 18h88v84l-20 20H20Z" fill="#ffe27a"/><path d="M88 122v-20h20Z" fill="#f2c94c"/>'
+    '<path d="M34 46h60M34 62h60M34 78h40" stroke="#c98a55" stroke-width="4"/>'
+    '<circle cx="64" cy="18" r="7" fill="#ff6f6f"/>')
+pictures[ME + "pole"] = svg(
+    '<rect x="40" y="114" width="40" height="10" rx="3" fill="#9aa5b8"/>'
+    '<path d="M60 20v96" stroke-width="10"/><path d="M60 20v96" stroke="#d6d0e0" stroke-width="5"/>'
+    '<circle cx="60" cy="16" r="6" fill="#ffd45e"/>'
+    '<path d="M64 24h40l-10 12 10 12H64Z" fill="#ff8fa3"/>'
+    + arrow_to(108, 96, 70, 78))
+pictures[ME + "rope"] = svg(
+    "".join(f'<ellipse cx="60" cy="{78 - i * 10}" rx="{40 - i * 3}" ry="{16 - i}" fill="none" stroke-width="12"/><ellipse cx="60" cy="{78 - i * 10}" rx="{40 - i * 3}" ry="{16 - i}" fill="none" stroke="#e0b07a" stroke-width="7"/>' for i in range(4))
+    + limb("M96 86q20 10 24 30", "#e0b07a", 12)
+    + '<path d="M50 94l6-6M70 94l6-6M30 88l6-6M88 88l6-6" stroke="#b98250" stroke-width="2.5"/>')
+pictures[ME + "rose"] = svg(
+    '<path d="M64 62v58" stroke-width="8"/><path d="M64 62v58" stroke="#5cb87a" stroke-width="4"/>'
+    '<path d="M64 96q-26-14-30 4 18 8 30-4ZM64 84q24-14 30 2-16 10-30-2Z" fill="#8fe3a8" stroke-width="3"/>'
+    '<path d="M64 16q-30 0-30 26 0 24 30 24t30-24q0-26-30-26Z" fill="#ff6f86"/>'
+    '<path d="M64 26q-16 4-14 18 2 12 14 12 10 0 12-10M64 26q14 2 16 14M54 34q8-6 16 2-2 10-10 8" fill="none" stroke-width="3"/>')
+pictures[ME + "vote"] = svg(
+    '<rect x="18" y="58" width="92" height="62" rx="6" fill="#8cc8f2"/><path d="M42 58h44" stroke-width="6"/>'
+    + label(64, 100, "VOTE", 20, "#ffffff")
+    + '<g transform="rotate(-8 64 34)"><rect x="46" y="10" width="36" height="46" rx="3" fill="#ffffff"/>'
+    '<path d="M54 32l6 6 12-14" fill="none" stroke="#3fae6a" stroke-width="5"/></g>'
+    '<path d="M86 30q14-4 18 8l-6 18-16 2Z" fill="#ffe2c4"/>')
+
+# Long u
+pictures[ME + "cube"] = svg(
+    '<path d="M64 12 112 36 64 60 16 36Z" fill="#ffe27a"/><path d="M16 36 64 60v56L16 92Z" fill="#8cc8f2"/>'
+    '<path d="M112 36 64 60v56l48-24Z" fill="#ffb3d1"/>')
+pictures[ME + "cute"] = svg(
+    '<path d="M30 52 26 20l26 18ZM98 52l4-32-26 18Z" fill="#ffd3a0"/><path d="M32 42l-2-14 12 9ZM96 42l2-14-12 9Z" fill="#ffb3c6" stroke="none"/>'
+    '<ellipse cx="64" cy="70" rx="42" ry="38" fill="#ffd3a0"/>'
+    + eye(48, 66, 1.8) + eye(80, 66, 1.8) + cheek(38, 82, 1.3) + cheek(90, 82, 1.3)
+    + '<path d="M60 80h8l-4 5Z" fill="#ff8fa3" stroke-width="2"/><path d="M58 88q6 6 12 0" fill="none" stroke-width="2.5"/>'
+    + '<path d="M20 82h-14M22 90l-14 4M108 82h14M106 90l14 4" stroke-width="2.5"/>'
+    + '<path d="M108 18c-6-4-8-8-5-11 2-2 5-1 5 1 0-2 3-3 5-1 3 3 1 7-5 11Z" fill="#ff6f86" stroke-width="2"/>'
+    + '<path d="M18 112c-5-3-7-7-4-9 2-2 4-1 4 1 0-2 2-3 4-1 3 2 1 6-4 9Z" fill="#ff6f86" stroke-width="2"/>')
+pictures[ME + "flute"] = svg(
+    '<g transform="rotate(-30 64 64)"><rect x="4" y="56" width="120" height="16" rx="8" fill="#d6d0e0"/>'
+    + "".join(f'<circle cx="{x}" cy="64" r="3" fill="{INK}" stroke="none"/>' for x in (40, 54, 68, 82, 96))
+    + '<path d="M22 56v16M112 56v16" stroke-width="3"/></g>'
+    + '<path d="M18 30V14l14-4v14" fill="none" stroke-width="3.5"/><ellipse cx="14" cy="30" rx="5" ry="4" fill="#b79cf2" stroke-width="2.5"/><ellipse cx="28" cy="24" rx="5" ry="4" fill="#ff8fa3" stroke-width="2.5"/>'
+    + sparkle(108, 106, 7, "#8cc8f2"))
+pictures[ME + "huge"] = svg(
+    asset("math/legs-elephant", 4, 8, 110) + asset("animals/mouse", 96, 92, 30) + down_arrow(52).replace("4h10v13h8", "-2h10v13h8").replace("31", "25").replace("17h8", "11h8"))
+pictures[ME + "mute"] = svg(
+    '<path d="M14 48h20l28-24v80L34 80H14Z" fill="#8cc8f2"/>'
+    '<path d="M80 46l32 36M112 46 80 82" stroke="#ff6f6f" stroke-width="8"/>')
+pictures[ME + "tube"] = svg(
+    '<g transform="rotate(-35 64 64)"><path d="M14 52h78l14 6v12l-14 6H14l-4-12Z" fill="#ffffff"/>'
+    '<path d="M14 52v24" stroke-width="4"/><path d="M10 56l-4 4 4 4-4 4 4 4" fill="none" stroke-width="3"/>'
+    '<rect x="106" y="56" width="14" height="16" rx="3" fill="#ff6f6f"/>'
+    '<path d="M30 58h44v12H30Z" fill="#8cc8f2" stroke-width="3"/></g>'
+    '<path d="M108 30q12-4 14 6-2 6-10 4" fill="#cfe9ff" stroke-width="3"/>')
+
+# Each module's icon: its pattern with the magic e's arch, and the game's own picture (Mixed).
+def magic_e_icon(vowel, fill):
+    return svg(
+        f'<rect x="8" y="14" width="112" height="100" rx="18" fill="{fill}"/>'
+        '<path d="M34 54q30-36 60 0" fill="none" stroke-width="5"/><path d="M34 54q30-36 60 0" fill="none" stroke="#ffffff" stroke-width="2"/>'
+        + label(34, 96, vowel, 46) + label(94, 96, "e", 46, "#6f50d0")
+        + '<path d="M58 88h12" stroke-width="4"/>' + sparkle(106, 26, 8))
+
+
+for vowel, fill in (("a", "#ffb3d1"), ("i", "#ffe27a"), ("o", "#8cc8f2"), ("u", "#8fe3a8")):
+    pictures[f"../icons/magic-e-{vowel}"] = magic_e_icon(vowel, fill)
+pictures["../icons/magic-e-mixed"] = svg(
+    '<rect x="8" y="14" width="112" height="100" rx="18" fill="#c9b6f5"/>'
+    '<path d="M30 58q34-40 68 0" fill="none" stroke-width="5"/><path d="M30 58q34-40 68 0" fill="none" stroke="#ffffff" stroke-width="2"/>'
+    + label(30, 98, "?", 46) + label(98, 98, "e", 46, "#6f50d0")
+    + '<path d="M54 90h20" stroke-width="4"/>'
+    + '<path d="M86 34 118 6" stroke-width="7"/><path d="M86 34 118 6" stroke="#4b2e22" stroke-width="2"/>' + sparkle(112, 30, 9) + sparkle(96, 8, 5, "#ffffff"))
+
+
 # ---------- Interface icons ----------
 UI = "../icons/ui-"
 pictures[UI + "shuffle"] = svg(

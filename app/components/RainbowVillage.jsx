@@ -1,3 +1,4 @@
+import { useLanguage, useText } from "../i18n";
 import GameFooter from "./GameFooter";
 
 // The places in the village picture: `left` and `bottom` (in percent, so the picture scales on
@@ -46,16 +47,15 @@ export default function RainbowVillage({
   breadcrumbs, onVisit, tofuUnlocked, coins, unlockCost, onUnlockTofu,
   parkUnlocked = false, parkUnlockCost = 100, onUnlockPark = () => {}, titleAction = null,
 }) {
+  const text = useText();
+  const language = useLanguage();
   // What each place still to unlock needs: Tofu's house first, then the park.
   const toUnlock = {
     tofu: !tofuUnlocked && { unlockName: "Tofu", cost: unlockCost, onUnlock: onUnlockTofu },
     park: tofuUnlocked && !parkUnlocked && { unlockName: "the park", cost: parkUnlockCost, onUnlock: onUnlockPark },
   };
-  const note = !tofuUnlocked
-    ? `Save up ${unlockCost} rainbow coins to meet Mochi’s best friend, Tofu.`
-    : !parkUnlocked
-      ? `Save up ${parkUnlockCost} rainbow coins to open the park, where Mochi and Tofu play together.`
-      : "Who shall we visit today?";
+  // In the site's language.
+  const note = !tofuUnlocked ? text.villageMeetTofu(unlockCost) : !parkUnlocked ? text.villageOpenPark(parkUnlockCost) : text.villageWhoToVisit;
 
   return (
     <section className="game-wrap village-wrap mx-auto w-full max-w-6xl" aria-labelledby="game-title">
@@ -66,7 +66,7 @@ export default function RainbowVillage({
           <h1 id="game-title">Rainbow <span>Village</span></h1>
           {titleAction}
         </div>
-        <p className="heading-note">{note}</p>
+        <p className="heading-note" lang={language === "zh" ? "zh-Hant-HK" : undefined}>{note}</p>
       </div>
 
       <div className="village-map">

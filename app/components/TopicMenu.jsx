@@ -27,7 +27,7 @@ function speedNote(record, chinese) {
 
 // `lockFor(topic)` says whether a topic can be played: "open", "tomorrow" or "locked" (the Daily
 // Challenge's later levels open one a day).
-export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false, isBlend = false, isChinese = false, isMeasure = false, isIdiom = false, isMath = false, isSpeed = false, lockFor = () => "open", recordFor = () => null, topics, progressFor = () => 0, roundSizeFor = (topic) => topic.wordsPerGame ?? topic.words.length, breadcrumbs, onSelectTopic }) {
+export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false, isBlend = false, isMagicE = false, isChinese = false, isMeasure = false, isIdiom = false, isMath = false, isSpeed = false, lockFor = () => "open", recordFor = () => null, topics, progressFor = () => 0, roundSizeFor = (topic) => topic.wordsPerGame ?? topic.words.length, breadcrumbs, onSelectTopic }) {
   // The Daily Challenge's heading follows the site's language.
   const inChinese = useContext(LanguageContext) === "zh";
   return (
@@ -87,6 +87,14 @@ export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false
             </div>
             <p className="heading-note" lang="zh-Hant-HK">選一個主題，齊玩認字遊戲！</p>
           </>
+        ) : isMagicE ? (
+          <>
+            <div className="title-row">
+              <h1 id="game-title">Magic <span>E</span></h1>
+              {titleAction}
+            </div>
+            <p className="heading-note">Add a magic e and the vowel says its name. Find the pair that’s missing!</p>
+          </>
         ) : isBlend ? (
           <>
             <div className="title-row">
@@ -121,7 +129,7 @@ export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false
           </>
         )}
       </div>
-      <div className={`category-grid${isCvc && !isDigraph && !isBlend ? " mode-grid" : ""}`}>
+      <div className={`category-grid${isCvc && !isDigraph && !isBlend && !isMagicE ? " mode-grid" : ""}`}>
         {topics.map((topic, index) => {
           const lock = lockFor(topic);
           const locked = lock !== "open";

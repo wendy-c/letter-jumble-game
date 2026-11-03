@@ -4466,6 +4466,8 @@ a:focus-visible {
   border-radius: 26px;
   background: linear-gradient(180deg, #fdeefa 0%, #fff6fb 52%, #c9eed9 52%, #b8e6cc 100%);
   box-shadow: 0 0 0 2px var(--card-shadow), 0 6px 0 var(--card-shadow), 0 16px 24px rgb(90 60 160 / 12%);
+  /* The whole card takes Mochi to her game. */
+  cursor: pointer;
 }
 
 /* The road, with a dashed white line down the middle. */
@@ -5737,4 +5739,79 @@ a:focus-visible {
   background: transparent;
   color: var(--soft-text);
   font-weight: 600;
+}
+
+/* Magic E: the vowel's box and the e's box are one gap, joined by an arch from one to the other. */
+.magic-e-gap {
+  position: relative;
+  display: flex;
+  gap: var(--slot-gap);
+}
+
+/* Room above the word for the arch. */
+.letter-slots-magic-e {
+  padding-top: calc(var(--slot-size) * 0.55);
+}
+
+.magic-e-arch {
+  position: absolute;
+  overflow: visible;
+  fill: none;
+  pointer-events: none;
+  stroke: var(--magic);
+  stroke-linecap: round;
+  stroke-width: 3;
+}
+
+.magic-e-arch path {
+  vector-effect: non-scaling-stroke;
+}
+
+.magic-e-gap > .magic-e-arch {
+  top: calc(var(--slot-size) * -0.5);
+  right: calc(var(--slot-size) * 0.5);
+  left: calc(var(--slot-size) * 0.5);
+  /* (An svg doesn't stretch between left and right by itself.) */
+  width: calc(100% - var(--slot-size));
+  height: calc(var(--slot-size) * 0.5);
+}
+
+/* A pair to tap ("a_e"): the vowel and the e, with the arch over them. */
+.letter-tile-pair {
+  width: 64px;
+  height: 54px;
+}
+
+.magic-e-pair {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  padding-top: 8px;
+  line-height: 1;
+}
+
+.magic-e-pair > .magic-e-arch {
+  top: -2px;
+  left: 0;
+  width: 100%;
+  height: 10px;
+  stroke-width: 2.5;
+}
+
+/* Mochi's game (dens, the park and Rainbow Village): pictures and words that aren't buttons don't
+   take taps, so a tap always reaches the dragon, a button or nothing, and pictures can't be dragged
+   away by mistake. (The speech bubble already lets taps through.) */
+.dragon-backdrop,
+.dragon-fallback,
+.dragon-action-icon,
+.dragon-action-label,
+.dragon-action-cost,
+.dragon-tab-icon,
+.dragon-hint,
+.village-sign svg,
+.village-scene,
+.village-place img,
+.village-place-label,
+.tofu-unlock-button img {
+  pointer-events: none;
 }
