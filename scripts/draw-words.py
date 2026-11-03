@@ -1992,10 +1992,10 @@ pictures[MA + "swap-fruit"] = wide(
     + equals_row(130, melon(), 0, apple(), unknown=True))
 pictures[MA + "towers"] = wide('<path d="M10 140h236" stroke="#c98a55" stroke-width="6"/>' + "".join(at(x, 136, 1.1, tower(h)) for x, h in ((44, 2), (104, 4), (164, 6)))
                                + label(220, 120, "?", 40, "#ff6f9f"))
+# All 15 ducks in the pond: the picture shows how many there were, not how many walk out.
 pictures[MA + "ducks-pond"] = wide(
-    scene("#eaf6ff", "#bfe8c8", 60) + '<ellipse cx="96" cy="108" rx="90" ry="44" fill="#9fd8f5"/>'
-    + "".join(asset("animals/duck", 18 + (i % 5) * 32, 74 + (i // 5) * 34, 38) for i in range(9))
-    + "".join(asset("animals/duck", 190 + (i % 2) * 30, 64 + (i // 2) * 30, 34) for i in range(6)))
+    scene("#eaf6ff", "#bfe8c8", 60) + '<ellipse cx="128" cy="106" rx="118" ry="50" fill="#9fd8f5"/>'
+    + "".join(asset("animals/duck", 30 + (i % 5) * 38 + (i // 5 % 2) * 12, 62 + (i // 5) * 28, 38) for i in range(15)))
 
 # Level 6
 pictures[MA + "night-sky"] = wide('<rect x="2" y="2" width="252" height="156" rx="12" fill="#5b4a72"/>'
@@ -2029,7 +2029,6 @@ for name, colour in (("flower-red", "#ff6f86"), ("flower-yellow", "#ffd45e"), ("
                               + '<circle cx="64" cy="56" r="12" fill="#fff6c8"/>')
 for name, angle in (("arrow-up", 0), ("arrow-right", 90), ("arrow-down", 180), ("arrow-left", 270)):
     pictures[MA + name] = svg(f'<path d="M64 14l38 40H78v58H50V54H26Z" fill="#c9b6f5" transform="rotate({angle} 64 64)"/>')
-pictures[MA + "banana"] = svg(at(64, 64, 3.0, banana()))
 pictures[MA + "grapes"] = svg(at(64, 64, 3.6, grapes()))
 
 # Sweets, a star and a strawberry for the 5-6 year olds' turning-grid puzzles.

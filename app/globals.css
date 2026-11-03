@@ -5248,8 +5248,8 @@ a:focus-visible {
   }
 }
 
-/* K3's Daily Challenge: shapes to count, a pile of leaves, things coming and going, a queue,
-   rows of things, a menu, coins, a week and a clock. */
+/* K3's Daily Challenge: shapes to count, a pile of leaves, a queue, rows of things, a menu, coins,
+   a week and a clock. */
 .math-shapes {
   display: block;
   height: auto;
@@ -5270,69 +5270,6 @@ a:focus-visible {
   position: absolute;
   width: clamp(34px, 12%, 64px);
   height: auto;
-}
-
-.math-steps {
-  gap: 8px;
-}
-
-.math-steps img {
-  width: clamp(20px, 5vw, 30px);
-  height: auto;
-}
-
-.math-steps-start {
-  display: flex;
-  max-width: 180px;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 3px;
-}
-
-.math-steps-change {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.math-steps-arrow {
-  color: var(--muted);
-  font-size: 24px;
-  font-weight: 700;
-}
-
-.math-steps-chip {
-  display: flex;
-  max-width: 110px;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  border: 3px solid;
-  border-radius: 14px;
-  padding: 4px 6px;
-}
-
-.math-steps-chip b {
-  width: 100%;
-  text-align: center;
-  font-size: 20px;
-}
-
-.math-steps-go {
-  border-color: #f4a3b4;
-  background: #fff0f3;
-  color: #d9436a;
-}
-
-.math-steps-go img {
-  opacity: 0.5;
-}
-
-.math-steps-come {
-  border-color: #9fdcc0;
-  background: #ecfaf2;
-  color: #2f8f55;
 }
 
 .math-queue {

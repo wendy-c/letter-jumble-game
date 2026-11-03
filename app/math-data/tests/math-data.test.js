@@ -222,7 +222,7 @@ describe("Daily Challenge", () => {
       ...(question.scene?.type === "frame" ? [question.scene.picture] : []),
       ...(question.scene?.type === "swap" ? question.scene.rows.flatMap((row) => [row.from, row.to]) : []),
       ...(question.scene?.type === "scatter" ? question.scene.items.map((item) => item.picture) : []),
-      ...(["steps", "queue"].includes(question.scene?.type) ? [question.scene.picture] : []),
+      ...(question.scene?.type === "queue" ? [question.scene.picture] : []),
       ...(question.scene?.type === "rows" ? question.scene.rows.flat() : []),
       ...(question.scene?.type === "menu" ? [...question.scene.items, ...question.scene.buyers].map((item) => item.picture) : []),
       ...(question.scene?.type === "coins" ? [...question.scene.coins.map((value) => `/images/game-asset/math/coin-${value}.svg`), question.scene.item.picture] : []),
@@ -350,7 +350,15 @@ describe("Daily Challenge for K3", () => {
     const stories = k3.flatMap((level) => level.words).filter((question) => question.kind === "story");
     stories.forEach((question) => {
       const { scene } = question;
-      if (scene.type === "steps") expect(Number(question.answer)).toBe(scene.changes.reduce((sum, change) => sum + change, scene.start));
+      if (scene.type === "groups") {
+        // "There are 9 cars… 2 drive away, then 3 more drive away (or 3 drive in)…"
+        const [start, first, second] = question.prompt.en.match(/\d+/g).map(Number);
+        const more = question.prompt.en.includes(`then ${second} more `);
+        expect(Number(question.answer)).toBe(start - first + (more ? -second : second));
+        // The picture shows only how many there were to begin with.
+        expect(scene.groups).toEqual([expect.objectContaining({ count: start })]);
+        expect(scene.groups[0].crossed).toBeUndefined();
+      }
       if (scene.type === "queue") expect(Number(question.answer)).toBe(scene.front + scene.behind + 1);
       if (scene.type === "swap") expect(Number(question.answer)).toBe(scene.rows[0].count * scene.rows[1].count * scene.rows[2].fromCount);
       expect(Number(question.answer)).toBeGreaterThan(0);

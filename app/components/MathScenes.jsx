@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
 // K3's Daily Challenge pictures, drawn from the question's data: shapes to count, a pile of leaves,
-// things coming and going, a queue, rows of things, a menu with prices, coins, a week and a clock.
+// a queue, rows of things, a menu with prices, coins, a week and a clock.
 // Also its puzzles (number cards, groups of numbers, shading pairs) and the number pad for sums.
 
 const say = (language, en, zh) => (language === "zh" ? zh : en);
@@ -77,24 +77,6 @@ export function K3Scene({ scene, language }) {
           <img key={index} src={item.picture} alt="" width="40" height="40"
             style={{ left: `${item.x}%`, top: `${item.y}%`, transform: `translate(-50%, -50%) rotate(${item.rotate}deg)` }} />
         ))}
-      </div>
-    );
-  }
-  if (scene.type === "steps") {
-    return (
-      <div className="math-scene math-steps" aria-hidden="true">
-        <div className="math-steps-start">{Array.from({ length: scene.start }, (_, index) => small(scene.picture, index))}</div>
-        {scene.changes.map((change, index) => (
-          <div key={index} className="math-steps-change">
-            <span className="math-steps-arrow">→</span>
-            <span className={`math-steps-chip ${change < 0 ? "math-steps-go" : "math-steps-come"}`}>
-              <b>{change < 0 ? `−${-change}` : `+${change}`}</b>
-              {Array.from({ length: Math.abs(change) }, (_, item) => small(scene.picture, item))}
-            </span>
-          </div>
-        ))}
-        <span className="math-steps-arrow">→</span>
-        <span className="math-box math-missing">?</span>
       </div>
     );
   }

@@ -31,7 +31,7 @@ export const questionTypes = [
   { id: "rows", name: "The row with the most", about: "Which row has the most food, toys or animals?", match: (q) => q.scene?.type === "rows" },
   { id: "legs", name: "Legs and wheels", about: "How many legs or wheels altogether?", match: (q) => /^Count the (legs|wheels)$/.test(title(q)) },
   { id: "stories", name: "Story problems", about: "Things come and go, queues, and little stories with a picture.",
-    match: (q) => ["steps", "queue"].includes(q.scene?.type) || (Boolean(q.picture) && !q.visual) },
+    match: (q) => q.kind === "story" || q.scene?.type === "queue" || (Boolean(q.picture) && !q.visual) },
   { id: "money", name: "Money", about: "Who spent the most, and is there enough money?", match: (q) => ["menu", "coins"].includes(q.scene?.type) },
   { id: "days", name: "Days of the week", about: "So many days before or after a day.", match: (q) => q.scene?.type === "week" },
   { id: "clock", name: "Telling the time", about: "Read the round clock.", match: (q) => q.scene?.type === "clock" },

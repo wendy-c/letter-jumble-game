@@ -81,7 +81,7 @@ const pieces = {
   butterfly: [`${art}/animals/butterfly.svg`, "蝴蝶"],
   bee: [`${art}/animals/bee.svg`, "蜜蜂"],
   apple: [`${art}/food/apple.svg`, "蘋果"],
-  banana: [`${art}/math/banana.svg`, "香蕉"],
+  banana: [`${art}/food/banana.svg`, "香蕉"],
   grapes: [`${art}/math/grapes.svg`, "提子"],
   circle: [`${art}/math/circle.svg`, "圓形"],
   square: [`${art}/math/square.svg`, "正方形"],
@@ -111,7 +111,7 @@ const gridSets = {
     [`${art}/animals/frog.svg`, "frog", "青蛙"], [`${art}/animals/pig.svg`, "pig", "豬"]],
   shapes: [[`${art}/math/circle.svg`, "circle", "圓形"], [`${art}/math/square.svg`, "square", "正方形"],
     [`${art}/math/triangle.svg`, "triangle", "三角形"], [`${art}/math/star.svg`, "star", "星形"]],
-  fruit: [[`${art}/food/apple.svg`, "apple", "蘋果"], [`${art}/math/banana.svg`, "banana", "香蕉"],
+  fruit: [[`${art}/food/apple.svg`, "apple", "蘋果"], [`${art}/food/banana.svg`, "banana", "香蕉"],
     [`${art}/math/grapes.svg`, "grapes", "提子"], [`${art}/food/strawberry.svg`, "strawberry", "士多啤梨"]],
 };
 

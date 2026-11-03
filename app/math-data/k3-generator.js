@@ -87,7 +87,7 @@ const wheeled = {
 
 // Things for the "which row has the most …?" puzzle, by kind.
 const kinds = {
-  food: { en: "food", zh: "食物", items: ["food/burger", "food/fries", "food/ice-cream", "food/pie", "food/bread", "food/apple", "math/banana", "food/cake"] },
+  food: { en: "food", zh: "食物", items: ["food/burger", "food/fries", "food/ice-cream", "food/pie", "food/bread", "food/apple", "food/banana", "food/cake"] },
   toys: { en: "toys", zh: "玩具", items: ["starters/ball", "starters/kite", "starters/teddy-bear", "starters/doll", "starters/robot"] },
   animals: { en: "animals", zh: "動物", items: ["animals/cat", "animals/dog", "animals/duck", "animals/pig", "animals/rabbit", "animals/frog"] },
 };
@@ -195,7 +195,8 @@ function makers(random, level) {
         scene: { type: "scatter", items },
       });
     },
-    // Some leave, then more leave or arrive.
+    // Some leave, then more leave or arrive. The picture shows only how many there are to begin
+    // with; what happens next is in the question.
     comeAndGo() {
       const thing = movers[pick(Object.keys(movers))];
       const start = between(later ? 12 : 8, later ? 20 : 14);
@@ -211,7 +212,7 @@ function makers(random, level) {
         ),
         answer,
         title: `${thing.en[1][0].toUpperCase()}${thing.en[1].slice(1)} ${placeEn}`,
-        scene: { type: "steps", picture: thing.picture, start, changes: [-first, arrives ? second : -second] },
+        scene: { type: "groups", groups: [{ picture: thing.picture, count: start }] },
       });
     },
     // How many in a queue: some in front and some behind, or a place from each end.
