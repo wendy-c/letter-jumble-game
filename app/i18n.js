@@ -54,6 +54,12 @@ const strings = {
     villageMeetTofu: (cost) => `Save up ${cost} rainbow coins to meet Mochi’s best friend, Tofu.`,
     villageOpenPark: (cost) => `Save up ${cost} rainbow coins to open the park, where Mochi and Tofu play together.`,
     villageWhoToVisit: "Who shall we visit today?",
+    // The note under each den's heading (Mochi's, Tofu's, the park).
+    denNotes: {
+      mochi: "Spend rainbow coins on yummy treats and pampering.",
+      tofu: "Tofu is a little shy. She loves books, science and baking.",
+      park: "Mochi and Tofu love playing together in the park.",
+    },
 
     forGrownUps: "FOR GROWN-UPS",
     grownUpsOnly: "Grown-ups only! Answer this to manage each child’s games.",
@@ -161,6 +167,11 @@ const strings = {
     villageMeetTofu: (cost) => `儲夠 ${cost} 個彩虹金幣，就可以認識 Mochi 的好朋友 Tofu。`,
     villageOpenPark: (cost) => `儲夠 ${cost} 個彩虹金幣，就可以打開公園，讓 Mochi 和 Tofu 一起玩。`,
     villageWhoToVisit: "今天去探望誰？",
+    denNotes: {
+      mochi: "用彩虹金幣買好吃的零食，好好照顧 Mochi。",
+      tofu: "Tofu 有點害羞。她喜歡看書、科學和焗蛋糕。",
+      park: "Mochi 和 Tofu 最喜歡一起在公園玩。",
+    },
 
     forGrownUps: "家長專用",
     grownUpsOnly: "家長專用！答對這條題目，就可以管理孩子的遊戲。",

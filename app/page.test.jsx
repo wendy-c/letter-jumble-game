@@ -1715,6 +1715,14 @@ describe("Tofu and Rainbow Village", () => {
       .toEqual([" Home", "Mochi the Rainbow Dragon", "Tofu’s House"]);
   });
 
+  it("shows each den's note in the site's language", async () => {
+    seedPlayer({ unlocks: ["tofu"] });
+    window.localStorage.setItem(siteKey, JSON.stringify({ language: "zh", howToSeen: games.map((game) => game.id), tutorialSeen: true }));
+    setPathname("/dragon/tofu");
+    render(<GameApp />);
+    expect(await screen.findByText("Tofu 有點害羞。她喜歡看書、科學和焗蛋糕。")).toHaveAttribute("lang", "zh-Hant-HK");
+  });
+
   it("says what to save up for in the site's language", async () => {
     seedPlayer({ unlocks: ["tofu"] });
     window.localStorage.setItem(siteKey, JSON.stringify({ language: "zh", howToSeen: games.map((game) => game.id), tutorialSeen: true }));

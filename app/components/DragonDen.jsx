@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { useLanguage, useText } from "../i18n";
 import { sounds } from "../lib/sounds";
 import DragonScene from "./DragonScene";
 import GameFooter from "./GameFooter";
@@ -38,6 +39,9 @@ function ActionButton({ action, coins, busy, onUse }) {
 // in the corner of the room goes to Rainbow Village (`onGoToVillage`).
 export default function DragonDen({ dragon, coins, onSpendCoins, breadcrumbs, onGoToVillage, titleAction = null }) {
   const { idleMessage, actions: dragonActions, petActions } = dragon;
+  // The note under the heading is in the site's language.
+  const text = useText();
+  const language = useLanguage();
   const sections = dragon.sections ? allSections.filter(({ kind }) => dragon.sections.includes(kind)) : allSections;
   const [command, setCommand] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -103,7 +107,7 @@ export default function DragonDen({ dragon, coins, onSpendCoins, breadcrumbs, on
             </h1>
             {titleAction}
           </div>
-          <p className="heading-note">{dragon.note}</p>
+          <p className="heading-note" lang={language === "zh" ? "zh-Hant-HK" : undefined}>{text.denNotes[dragon.id] ?? dragon.note}</p>
         </div>
       </div>
 
