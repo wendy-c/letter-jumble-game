@@ -76,7 +76,7 @@ const strings = {
   zh: {
     home: "主頁",
     homeLink: "Rainbow Academy 主頁",
-    footer: "每個字都是小小的魔法！",
+    footer: "學中玩，玩中學，每個孩子都能發光發亮！",
 
     playerOptions: (name, coins) => `${name} 正在玩，有 ${coins} 個彩虹金幣。玩家選項`,
     switchPlayer: "轉換玩家",
@@ -117,7 +117,7 @@ const strings = {
       idioms: "K3 · 成語 · 廣東話",
       "math-logic": "K1-K3 · 數一數、加減和找規律 · 地圖上的 20 個關卡",
       "speed-quest": "加減速算，每次都嘗試打破自己的紀錄！",
-      dragon: "用彩虹幣買零食，跟Mochi玩",
+      dragon: "用彩虹幣跟Mochi玩",
     },
     gameNames: { "math-logic": (label) => `${label ?? ""}大挑戰`, "speed-quest": "彩虹速算站" },
 

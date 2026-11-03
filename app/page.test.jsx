@@ -1445,7 +1445,7 @@ describe("welcome card", () => {
     const user = userEvent.setup();
     render(<GameApp />);
     const chinese = await screen.findByRole("dialog", { name: "歡迎來到 Rainbow Academy！" });
-    expect(chinese).toHaveTextContent("學中玩，玩中學，閃耀每一天！");
+    expect(chinese).toHaveTextContent("學中玩，玩中學，每個孩子都能發光發亮！");
     expect(within(chinese).queryByRole("switch")).not.toBeInTheDocument();
 
     await user.click(within(chinese).getByRole("button", { name: /一起玩吧！/ }));

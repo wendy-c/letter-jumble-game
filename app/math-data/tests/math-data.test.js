@@ -314,8 +314,8 @@ describe("Daily Challenge for K3", () => {
     clocks.forEach((question) => {
       const names = question.options.map((option) => option.name);
       expect(names.some((name) => / o’clock$|^half past /.test(name.en))).toBe(true);
-      names.filter((name) => / o’clock$/.test(name.en)).forEach((name) => expect(name.zh).toMatch(/^\d+ 點鐘$/));
-      names.filter((name) => /^half past /.test(name.en)).forEach((name) => expect(name.zh).toMatch(/^\d+ 點半$/));
+      names.filter((name) => / o’clock$/.test(name.en)).forEach((name) => expect(name.zh).toMatch(/^\d+ 時正$/));
+      names.filter((name) => /^half past /.test(name.en)).forEach((name) => expect(name.zh).toMatch(/^\d+ 時半$/));
       const right = question.options.find((option) => option.correct);
       const [hour, minute] = question.answer.split(":").map(Number);
       expect([question.answer, `${hour} o’clock`, `half past ${hour}`]).toContain(right.name.en);
