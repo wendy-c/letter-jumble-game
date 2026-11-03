@@ -390,6 +390,21 @@ describe("Daily Challenge for K3", () => {
     });
   });
 
+  it("keeps the different group's numbers to 30 in Levels 1-5, 50 in Levels 6-15 and 80 in Levels 16-20", () => {
+    const limit = (level) => (level <= 5 ? 30 : level <= 15 ? 50 : 80);
+    const found = k3.flatMap((level, index) => level.words.filter((question) => question.visual?.type === "sets").map((question) => [index + 1, question]));
+    expect(new Set(found.map(([level]) => limit(level)))).toEqual(new Set([30, 50, 80]));
+    found.forEach(([level, question]) => {
+      const numbers = question.visual.sets.flatMap((set) => set.numbers);
+      numbers.forEach((number) => {
+        expect(number).toBeGreaterThanOrEqual(1);
+        expect(number).toBeLessThanOrEqual(limit(level));
+      });
+      // From 50 up, no two groups share a number.
+      if (limit(level) >= 50) expect(new Set(numbers).size).toBe(16);
+    });
+  });
+
   it("makes each shading puzzle's pairs follow one move that only the right choice finishes", () => {
     const shading = k3.flatMap((level) => level.words).filter((question) => question.visual?.type === "shading");
     expect(shading.length).toBeGreaterThan(0);

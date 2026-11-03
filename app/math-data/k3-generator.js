@@ -87,7 +87,7 @@ const wheeled = {
 
 // Things for the "which row has the most …?" puzzle, by kind.
 const kinds = {
-  food: { en: "food", zh: "食物", items: ["food/burger", "food/fries", "food/ice-cream", "food/pie", "food/bread", "math/apple", "math/banana", "food/cake"] },
+  food: { en: "food", zh: "食物", items: ["food/burger", "food/fries", "food/ice-cream", "food/pie", "food/bread", "food/apple", "math/banana", "food/cake"] },
   toys: { en: "toys", zh: "玩具", items: ["starters/ball", "starters/kite", "starters/teddy-bear", "starters/doll", "starters/robot"] },
   animals: { en: "animals", zh: "動物", items: ["animals/cat", "animals/dog", "animals/duck", "animals/pig", "animals/rabbit", "animals/frog"] },
 };
@@ -346,8 +346,9 @@ function makers(random, level) {
       }
     },
     // Four groups of numbers: three of odd numbers and one of even (or the other way round).
+    // Numbers to 30 in Levels 1-5, to 50 in Levels 6-15 and to 80 in Levels 16-20.
     oddOneOut() {
-      return differentGroup(random);
+      return differentGroup(random, { max: level <= 5 ? 30 : level <= 15 ? 50 : 80 });
     },
     // Pairs of grids: the shaded cells move the same way in each pair; finish the last pair.
     shading() {

@@ -2029,7 +2029,6 @@ for name, colour in (("flower-red", "#ff6f86"), ("flower-yellow", "#ffd45e"), ("
                               + '<circle cx="64" cy="56" r="12" fill="#fff6c8"/>')
 for name, angle in (("arrow-up", 0), ("arrow-right", 90), ("arrow-down", 180), ("arrow-left", 270)):
     pictures[MA + name] = svg(f'<path d="M64 14l38 40H78v58H50V54H26Z" fill="#c9b6f5" transform="rotate({angle} 64 64)"/>')
-pictures[MA + "apple"] = svg(at(64, 64, 3.2, apple()))
 pictures[MA + "banana"] = svg(at(64, 64, 3.0, banana()))
 pictures[MA + "grapes"] = svg(at(64, 64, 3.6, grapes()))
 
@@ -2050,7 +2049,6 @@ pictures[MA + "candy-heart"] = svg(
     '<rect x="22" y="34" width="84" height="64" rx="12" fill="#ffe27a"/><path d="M96 38q10 26 0 56" fill="none" stroke="#ff8f6f" stroke-width="8"/>'
     '<path d="M58 84c-16-10-20-20-14-28 5-6 12-4 14 2 2-6 9-8 14-2 6 8 2 18-14 28Z" fill="#ffb3c6" stroke-width="3"/>')
 pictures[MA + "star"] = svg(at(64, 66, 3.6, star5("#ffd45e", 13)))
-pictures[MA + "strawberry"] = svg(at(64, 66, 3.2, strawberry()))
 
 # Leaves for K3's "count the plants" questions.
 def maple_points(cx, cy, r):

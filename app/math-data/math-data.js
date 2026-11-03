@@ -15,7 +15,7 @@ const patternPieces = {
   butterfly: ["/images/game-asset/animals/butterfly.svg", "蝴蝶"],
   bee: ["/images/game-asset/animals/bee.svg", "蜜蜂"],
   dragonfly: ["/images/game-asset/animals/dragonfly.svg", "蜻蜓"],
-  apple: [`${art}/apple.svg`, "蘋果"],
+  apple: ["/images/game-asset/food/apple.svg", "蘋果"],
   banana: [`${art}/banana.svg`, "香蕉"],
   grapes: [`${art}/grapes.svg`, "提子"],
   circle: [`${art}/circle.svg`, "圓形"],

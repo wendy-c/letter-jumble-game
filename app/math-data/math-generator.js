@@ -25,7 +25,7 @@ const things = {
   dragonfly: { picture: `${art}/animals/dragonfly.svg`, en: ["dragonfly", "dragonflies"], zh: "蜻蜓", unit: "隻", gone: ["fly away", "飛走了"] },
   moth: { picture: `${art}/animals/moth.svg`, en: ["moth", "moths"], zh: "飛蛾", unit: "隻", gone: ["fly away", "飛走了"] },
   frog: { picture: `${art}/animals/frog.svg`, en: ["frog", "frogs"], zh: "青蛙", unit: "隻", gone: ["hop away", "跳走了"] },
-  apple: { picture: `${art}/math/apple.svg`, en: ["apple", "apples"], zh: "蘋果", unit: "個", gone: ["are eaten", "被吃掉了"] },
+  apple: { picture: `${art}/food/apple.svg`, en: ["apple", "apples"], zh: "蘋果", unit: "個", gone: ["are eaten", "被吃掉了"] },
   orange: { picture: `${art}/food/orange.svg`, en: ["orange", "oranges"], zh: "橙", unit: "個", gone: ["are eaten", "被吃掉了"] },
   pear: { picture: `${art}/food/pear.svg`, en: ["pear", "pears"], zh: "啤梨", unit: "個", gone: ["are eaten", "被吃掉了"] },
   cake: { picture: `${art}/food/cake.svg`, en: ["cake", "cakes"], zh: "蛋糕", unit: "個", gone: ["are eaten", "被吃掉了"] },
@@ -80,7 +80,7 @@ const swapThing = (id) => things[id] ?? swapThings[id];
 const pieces = {
   butterfly: [`${art}/animals/butterfly.svg`, "蝴蝶"],
   bee: [`${art}/animals/bee.svg`, "蜜蜂"],
-  apple: [`${art}/math/apple.svg`, "蘋果"],
+  apple: [`${art}/food/apple.svg`, "蘋果"],
   banana: [`${art}/math/banana.svg`, "香蕉"],
   grapes: [`${art}/math/grapes.svg`, "提子"],
   circle: [`${art}/math/circle.svg`, "圓形"],
@@ -111,8 +111,8 @@ const gridSets = {
     [`${art}/animals/frog.svg`, "frog", "青蛙"], [`${art}/animals/pig.svg`, "pig", "豬"]],
   shapes: [[`${art}/math/circle.svg`, "circle", "圓形"], [`${art}/math/square.svg`, "square", "正方形"],
     [`${art}/math/triangle.svg`, "triangle", "三角形"], [`${art}/math/star.svg`, "star", "星形"]],
-  fruit: [[`${art}/math/apple.svg`, "apple", "蘋果"], [`${art}/math/banana.svg`, "banana", "香蕉"],
-    [`${art}/math/grapes.svg`, "grapes", "提子"], [`${art}/math/strawberry.svg`, "strawberry", "士多啤梨"]],
+  fruit: [[`${art}/food/apple.svg`, "apple", "蘋果"], [`${art}/math/banana.svg`, "banana", "香蕉"],
+    [`${art}/math/grapes.svg`, "grapes", "提子"], [`${art}/food/strawberry.svg`, "strawberry", "士多啤梨"]],
 };
 
 // A 2 × 2 grid's four things going round it: top left, top right, bottom right, bottom left.

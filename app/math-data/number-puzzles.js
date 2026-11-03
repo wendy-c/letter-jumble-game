@@ -51,24 +51,21 @@ export function numberOrder(random, { max = 99, sameTens = false } = {}) {
   };
 }
 
-// Four lettered groups of four numbers going up in twos: three odd and one even, or the other way
-// round. To 100, each group has its own tens; below 20, the groups can share numbers.
-export function differentGroup(random, { max = 99 } = {}) {
-  const { between, mix } = helpers(random);
+// Four lettered groups of four numbers going up in twos, all from 1 to `max`: three odd and one
+// even, or the other way round. With room for it (`max` of 40 or more), no two groups share a
+// number; below that they can, but are never the same.
+export function differentGroup(random, { max }) {
+  const { mix } = helpers(random);
   const oddOne = random() < 0.5;
+  // Starts that keep a group's last number (start + 6) within `max`.
+  const startsOf = (odd) => Array.from({ length: max }, (_, n) => n + 1).filter((n) => n % 2 === (odd ? 1 : 0) && n + 6 <= max);
+  const apart = (starts) => starts.every((start, index) => starts.slice(index + 1).every((other) => Math.abs(start - other) > 7));
   let groups;
-  if (max >= 99) {
-    const starts = mix([1, 2, 3, 4, 5, 6, 7, 8, 9]).slice(0, 4).map((tens) => tens * 10 + between(0, 1) * 2);
-    groups = starts.map((start, index) => {
-      const odd = index === 0 ? oddOne : !oddOne;
-      return [0, 1, 2, 3].map((n) => start + (odd ? 1 : 0) + n * 2);
-    });
-  } else {
-    // Starts that keep a group's last number (start + 6) within `max`.
-    const startsOf = (odd) => Array.from({ length: max }, (_, n) => n + 1).filter((n) => n % 2 === (odd ? 1 : 0) && n + 6 <= max);
+  for (let tries = 0; ; tries += 1) {
     const [different] = mix(startsOf(oddOne));
     const others = mix(startsOf(!oddOne)).slice(0, 3);
     groups = [different, ...others].map((start) => [0, 1, 2, 3].map((n) => start + n * 2));
+    if (max < 40 || apart([different, ...others]) || tries > 50) break;
   }
   const letters = ["A", "B", "C", "D"];
   const shown = mix(groups);

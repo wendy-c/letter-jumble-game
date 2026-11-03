@@ -5037,6 +5037,8 @@ a:focus-visible {
 }
 
 .math-stage {
+  /* Above the picture panel's polka dots. */
+  position: relative;
   display: flex;
   flex: 1;
   align-items: center;
