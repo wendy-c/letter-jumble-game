@@ -2,9 +2,11 @@ import { badgeShelves } from "../badges";
 import { useText } from "../i18n";
 import BadgeMedal from "./BadgeMedal";
 import GameFooter from "./GameFooter";
+import { formatTime } from "./MathGame";
 
 // The player's badge collection page ("/badges"): a shelf per game, with a badge for every topic
-// they've finished and a placeholder for each one still to do.
+// they've finished and a placeholder for each one still to do. Rainbow Speed Quest's badges show
+// the player's fastest time under them.
 export default function BadgeCollection({ player, breadcrumbs }) {
   const text = useText();
   const shelves = badgeShelves(player);
@@ -27,16 +29,20 @@ export default function BadgeCollection({ player, breadcrumbs }) {
         <section className="badge-shelf" key={game.id} aria-labelledby={`badge-shelf-${game.id}`}>
           <h2 id={`badge-shelf-${game.id}`}>{game.name}</h2>
           <ul className="badge-grid">
-            {badges.map(({ key, topic, image, earned }) => (
-              <li
-                className={`badge-item${earned ? " badge-item-earned" : ""}`}
-                key={key}
-                aria-label={earned ? text.badgeEarned(topic.name) : text.badgeNotYet(topic.name)}
-              >
-                <BadgeMedal image={image} earned={earned} />
-                <span className="badge-name">{topic.name}</span>
-              </li>
-            ))}
+            {badges.map(({ key, topic, image, earned, record }) => {
+              const time = record === undefined ? null : record === null ? text.noRecordYet : text.fastestTime(formatTime(record));
+              return (
+                <li
+                  className={`badge-item${earned ? " badge-item-earned" : ""}`}
+                  key={key}
+                  aria-label={[earned ? text.badgeEarned(topic.name) : text.badgeNotYet(topic.name), time].filter(Boolean).join(" · ")}
+                >
+                  <BadgeMedal image={image} earned={earned} />
+                  <span className="badge-name">{topic.name}</span>
+                  {time && <span className={`badge-record${record === null ? " badge-record-none" : ""}`}>{time}</span>}
+                </li>
+              );
+            })}
           </ul>
         </section>
       ))}

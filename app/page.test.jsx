@@ -1249,6 +1249,21 @@ describe("badges", () => {
     expect(currentPathname()).toBe("/");
   });
 
+  it("shows each Rainbow Speed Quest topic's fastest time under its badge", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({
+      players: [{ name: "Ada", coins: 0, age: "k1", badges: ["speed-quest/within-10"], records: { "speed-quest/within-10": 42500 } }],
+      current: "Ada",
+    }));
+    const user = userEvent.setup();
+    render(<GameApp />);
+    const collection = await openBadges(user);
+    const speed = within(collection).getByRole("region", { name: "Rainbow Speed Quest" });
+    expect(within(speed).getByRole("listitem", { name: "Within 10: earned · Fastest: 0:42" })).toHaveTextContent("Fastest: 0:42");
+    expect(within(speed).getByRole("listitem", { name: "Within 20: not earned yet · No record yet" })).toBeInTheDocument();
+    // Other games' badges have no time.
+    expect(within(collection).getByRole("region", { name: "CVC Sounds" })).not.toHaveTextContent(/Fastest|No record/);
+  });
+
   it("sends the badge page home when nobody is playing", async () => {
     setPathname("/badges");
     render(<GameApp />);

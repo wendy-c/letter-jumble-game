@@ -32,6 +32,7 @@ const badgeKey = (gameId, topicId) => `${gameId}/${topicId}`;
 export const badgeImage = (gameId, topicId) => `/images/badges/${gameId}/${topicId}.svg`;
 
 // The badge shelves a player sees: one per game they can play that has topics, in game order.
+// Timed topics' badges carry the player's fastest time too.
 export function badgeShelves(player) {
   return gamesForPlayer(player)
     .filter((game) => topicsByGame[game.id])
@@ -43,6 +44,8 @@ export function badgeShelves(player) {
         topic,
         image: badgeImage(game.id, topic.id),
         earned: Boolean(player?.badges?.includes(badgeKey(game.id, topic.id))),
+        // A timed topic's fastest time (Rainbow Speed Quest), in milliseconds, or null.
+        ...(topic.timed && { record: player?.records?.[badgeKey(game.id, topic.id)] ?? null }),
       })),
     }));
 }

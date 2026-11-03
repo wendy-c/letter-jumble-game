@@ -45,6 +45,8 @@ const strings = {
     noBadgesYet: "Get every answer in a topic right to earn its badge!",
     badgeEarned: (topic) => `${topic}: earned`,
     badgeNotYet: (topic) => `${topic}: not earned yet`,
+    fastestTime: (time) => `Fastest: ${time}`,
+    noRecordYet: "No record yet",
     collectThemAll: "COLLECT THEM ALL",
 
     forGrownUps: "FOR GROWN-UPS",
@@ -117,6 +119,8 @@ const strings = {
     noBadgesYet: "一個主題全部答對，就可以得到徽章！",
     badgeEarned: (topic) => `${topic}：已得到`,
     badgeNotYet: (topic) => `${topic}：未得到`,
+    fastestTime: (time) => `最快紀錄：${time}`,
+    noRecordYet: "還沒有紀錄",
     collectThemAll: "快來集齊一套",
 
     forGrownUps: "家長專用",
