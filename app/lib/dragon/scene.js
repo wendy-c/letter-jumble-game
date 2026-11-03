@@ -1165,6 +1165,44 @@ function buildScooter(materials, color) {
   return group;
 }
 
+// A pink boombox (for the park's dance party): two big speakers that throb with the beat
+// (`userData.speakers`), a handle, an aerial and a row of buttons.
+function buildStereo(materials) {
+  const group = new THREE.Group();
+  const shell = part(new THREE.BoxGeometry(2.2, 1.1, 0.6), materials.toon(0xff8fb7), materials, 0.5, 0.03);
+  shell.position.y = 0.6;
+  group.add(shell);
+  const speakers = [-0.62, 0.62].map((x) => {
+    const speaker = new THREE.Group();
+    speaker.position.set(x, 0.6, 0.31);
+    const rim = part(new THREE.CylinderGeometry(0.4, 0.4, 0.06, 28), materials.toon(0xfff3d6), materials, 0.4, 0.02);
+    rim.rotation.x = Math.PI / 2;
+    const cone = part(new THREE.CylinderGeometry(0.3, 0.3, 0.08, 28), materials.toon(0x6b5a8e), materials, 0.3, 0.02);
+    cone.rotation.x = Math.PI / 2;
+    cone.position.z = 0.02;
+    const middle = part(sphere(0.1, 0.5), materials.toon(0xb79cf2), materials, 0.1, 0.015);
+    middle.position.z = 0.07;
+    speaker.add(rim, cone, middle);
+    group.add(speaker);
+    return speaker;
+  });
+  [0xffe27a, 0x8fe3a8, 0x8cc8f2].forEach((color, index) => {
+    const button = part(new THREE.BoxGeometry(0.16, 0.1, 0.1), materials.toon(color), materials, 0.08, 0.012);
+    button.position.set(-0.2 + index * 0.2, 1.05, 0.12);
+    group.add(button);
+  });
+  const tape = part(new THREE.BoxGeometry(0.5, 0.3, 0.06), materials.toon(0xfff3d6), materials, 0.2, 0.012);
+  tape.position.set(0, 0.62, 0.31);
+  group.add(tape);
+  const metal = materials.toon(0xd6d0e0);
+  group.add(rod([-0.7, 1.15, 0], [-0.7, 1.45, 0], 0.05, metal, materials));
+  group.add(rod([0.7, 1.15, 0], [0.7, 1.45, 0], 0.05, metal, materials));
+  group.add(rod([-0.7, 1.45, 0], [0.7, 1.45, 0], 0.05, metal, materials));
+  group.add(rod([0.95, 1.15, -0.1], [1.35, 1.9, -0.1], 0.025, metal, materials));
+  group.userData.speakers = speakers;
+  return group;
+}
+
 /* ---------- Animation ---------- */
 
 function restPose() {
@@ -1239,6 +1277,7 @@ const soundCues = {
   scooters: [[0.8, "whee"], [3.0, "giggle"], [3.6, "whee"], [6.0, "sparkle"], [6.2, "coo"]],
   parkHello: [[0.2, "coo"], [0.6, "coo", 1.35]],
   parkHug: [[0.3, "purr"], [0.9, "sparkle"], [1.2, "coo"]],
+  danceParty: [[0.5, "danceTune"], [2.4, "danceTune"], [4.3, "danceTune"], [6.0, "whee"], [6.6, "sparkle"], [7.0, "coo"]],
 };
 
 function playSoundCues(run, sfx) {
@@ -2256,6 +2295,73 @@ const actions = {
     }
   },
 
+  // A dance party: a boombox on the grass behind Tofu plays, and they bounce in turn, wave their
+  // arms, sway together, and take a twirl each, then twirl together. They keep their own spots, so
+  // they never bump into each other.
+  danceParty(run, pose, dt, ctx) {
+    const t = run.t;
+    const tofuPose = ctx.partnerPose;
+    if (!run.stereo) {
+      run.stereo = buildStereo(ctx.materials);
+      run.stereo.position.set(2.9, 0, -1.4);
+      run.stereo.rotation.y = -0.35;
+      ctx.scene.add(run.stereo);
+      run.props.push(run.stereo);
+    }
+    const show = easeInOut(between(t, 0, 0.5)) * (1 - easeInOut(between(t, 7.0, 7.6)));
+    run.stereo.scale.setScalar(Math.max(0.01, 0.8 * show));
+    const playing = between(t, 0.4, 0.6) * (1 - between(t, 6.6, 6.9));
+    const beat = t * 4.6;
+    // The speakers throb with the beat, and music notes float out of them.
+    run.stereo.userData.speakers.forEach((speaker) => speaker.scale.setScalar(1 + 0.12 * playing * Math.max(0, Math.sin(beat))));
+    run.stereo.rotation.z = 0.03 * playing * Math.sin(beat);
+    if (playing > 0.5) {
+      emit(run, "notes", 4, dt, () => ctx.fx.spawn(
+        ctx.fx.text(pick(["♪", "♫", "♬"]), pick(["#8a6ae6", "#f06aa8", "#f2b632", "#5cb87a"]), new THREE.Vector3(rand(2.2, 3.6), rand(1.3, 1.9), -1.2), 0.9),
+        { velocity: new THREE.Vector3(rand(-0.3, 0.3), 0.7, 0.2), life: 1.6 },
+      ));
+    }
+    const dancing = between(t, 0.6, 1.0) * (1 - between(t, 6.4, 6.8));
+    if (dancing > 0) {
+      // Bounce in turn, arms up and waving, swaying from side to side together, a little further
+      // apart than usual so their waving arms don't meet.
+      pose.hop += Math.max(0, Math.sin(beat)) * 0.32 * dancing;
+      tofuPose.hop += Math.max(0, -Math.sin(beat)) * 0.32 * dancing;
+      pose.armL = 1.3 + 0.45 * Math.sin(beat);
+      pose.armR = 1.3 - 0.45 * Math.sin(beat);
+      tofuPose.armL = 1.3 - 0.45 * Math.sin(beat);
+      tofuPose.armR = 1.3 + 0.45 * Math.sin(beat);
+      pose.lean -= 0.12 * Math.sin(beat / 2) * dancing;
+      tofuPose.lean -= 0.12 * Math.sin(beat / 2) * dancing;
+      const sway = 0.12 * Math.sin(beat / 2) * dancing;
+      pose.x += sway - 0.25 * dancing;
+      tofuPose.x += sway + 0.25 * dancing;
+      pose.earFlap += 0.3 * Math.sin(beat) * dancing;
+      tofuPose.earFlap += 0.3 * Math.sin(beat + 1) * dancing;
+      pose.tailSway += Math.sin(beat) * dancing;
+      tofuPose.tailSway += Math.sin(beat + 1) * dancing;
+      pose.happyEyes = tofuPose.happyEyes = true;
+      pose.blush = tofuPose.blush = 0.7 * dancing;
+      // A twirl each, then both together.
+      pose.turn += easeInOut(between(t, 2.4, 3.2)) * Math.PI * 2 + easeInOut(between(t, 5.0, 5.8)) * Math.PI * 2;
+      tofuPose.turn += easeInOut(between(t, 3.6, 4.4)) * Math.PI * 2 + easeInOut(between(t, 5.0, 5.8)) * Math.PI * 2;
+      if (t > 1.0) once(run, "party", () => ctx.fx.spawn(ctx.fx.text("dance party!", "#f06aa8", new THREE.Vector3(0.1, 3.8, 0.8), 1.1), { velocity: new THREE.Vector3(0, 0.3, 0), life: 1.6 }));
+      // Now and then, a burst of party sparkles.
+      emit(run, "disco", 2, dt, () => ctx.fx.sparkles(new THREE.Vector3(rand(-2.2, 2.4), rand(2.2, 3.4), rand(-0.5, 0.5)), 4, 1.0));
+    }
+    // A big finish: arms up, sparkles and hearts.
+    if (t > 6.4) {
+      const finish = pulse(t, 6.4, 7.4);
+      pose.armL = pose.armR = Math.max(pose.armL, 1.7 * finish);
+      tofuPose.armL = tofuPose.armR = Math.max(tofuPose.armL, 1.7 * finish);
+      pose.happyEyes = tofuPose.happyEyes = true;
+      once(run, "finish", () => {
+        ctx.fx.sparkles(new THREE.Vector3(0.1, 2.6, 0.6), 18, 1.8);
+        ctx.fx.hearts(new THREE.Vector3(0.1, 3.0, 0.6), 5);
+      });
+    }
+  },
+
   // A tap in the park: both wave hello.
   parkHello(run, pose, dt, ctx) {
     const t = run.t;
@@ -2270,15 +2376,23 @@ const actions = {
     once(run, "hi", () => ctx.fx.spawn(ctx.fx.text("hi!", "#f2b632", new THREE.Vector3(0.1, 3.7, 0.8), 1.0), { velocity: new THREE.Vector3(0, 0.4, 0), life: 1.3 }));
   },
 
-  // Another tap: a best friends' hug.
+  // Another tap: a best friends' hug. They step in until they're just touching (Mochi's body is 1
+  // across from her middle, Tofu's 0.85; their middles stay about 2.15 apart, so their big heads
+  // and snouts don't push into each other), turn in a little and wrap their arms round each other,
+  // with a little squeeze.
   parkHug(run, pose, dt, ctx) {
     const t = run.t;
     const tofuPose = ctx.partnerPose;
     const hug = pulse(t, 0, 2.4);
-    pose.x += 0.55 * hug;
-    tofuPose.x -= 0.55 * hug;
-    pose.turn += 0.6 * hug;
-    tofuPose.turn -= 0.6 * hug;
+    pose.x += 0.16 * hug;
+    tofuPose.x -= 0.14 * hug;
+    pose.turn += 0.28 * hug;
+    tofuPose.turn -= 0.28 * hug;
+    pose.lean -= 0.04 * hug;
+    tofuPose.lean += 0.04 * hug;
+    const squeeze = 0.03 * Math.sin(t * 9) * hug;
+    pose.squash += squeeze;
+    tofuPose.squash += squeeze;
     pose.armHug = tofuPose.armHug = hug;
     pose.armL = pose.armR = tofuPose.armL = tofuPose.armR = 0.6 * hug;
     pose.happyEyes = tofuPose.happyEyes = hug > 0.3;

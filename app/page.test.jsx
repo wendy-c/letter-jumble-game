@@ -1771,7 +1771,7 @@ describe("Tofu and Rainbow Village", () => {
     // Just the four activities: no Food or Grooming tabs.
     expect(screen.queryByRole("tab")).not.toBeInTheDocument();
     expect(within(screen.getByRole("group", { name: "Things to do with Mochi and Tofu" })).getAllByRole("button").map((button) => button.textContent))
-      .toEqual(["Have a picnic2", "Hide and seek2", "Blow bubbles2", "Ride scooters2"]);
+      .toEqual(["Have a picnic2", "Hide and seek2", "Blow bubbles2", "Ride scooters2", "Dance party2"]);
 
     await user.click(screen.getByRole("button", { name: "Hide and seek, 2 rainbow coins" }));
     expect(storedPlayers().players[0].coins).toBe(28);

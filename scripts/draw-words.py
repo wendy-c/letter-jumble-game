@@ -1300,6 +1300,15 @@ pictures[DR + "bubbles"] = svg(
     '<circle cx="62" cy="46" r="14" fill="none" stroke-width="6"/><circle cx="62" cy="46" r="14" fill="none" stroke="#b79cf2" stroke-width="2.5"/>'
     + "".join(f'<circle cx="{x}" cy="{y}" r="{r}" fill="#e6f6ff" fill-opacity=".85" stroke="#8cc8f2" stroke-width="3"/><path d="M{x - r * .4:.0f} {y - r * .4:.0f}q{r * .3:.0f} -{r * .3:.0f} {r * .6:.0f} -{r * .2:.0f}" fill="none" stroke="#ffffff" stroke-width="3"/>'
               for x, y, r in [(96, 30, 18), (100, 78, 12), (82, 104, 8), (114, 54, 7)]))
+pictures[DR + "dance-party"] = svg(
+    '<path d="M40 40V28h48v12" fill="none" stroke-width="6"/>'
+    '<rect x="10" y="40" width="108" height="62" rx="12" fill="#ff8fb7"/>'
+    + "".join(f'<circle cx="{x}" cy="72" r="20" fill="#fff3d6"/><circle cx="{x}" cy="72" r="13" fill="#6b5a8e"/><circle cx="{x}" cy="72" r="5" fill="#b79cf2" stroke-width="2.5"/>' for x in (36, 92))
+    + '<rect x="54" y="62" width="20" height="16" rx="3" fill="#fff3d6" stroke-width="3"/>'
+    + "".join(f'<rect x="{x}" y="46" width="8" height="6" rx="2" fill="{c}" stroke-width="2"/>' for x, c in ((52, "#ffe27a"), (60, "#8fe3a8"), (68, "#8cc8f2")))
+    + '<path d="M100 22v-12l10-3v12" fill="none" stroke-width="3.5"/><ellipse cx="97" cy="23" rx="4.5" ry="3.5" fill="#8a6ae6" stroke-width="2.5"/><ellipse cx="107" cy="20" rx="4.5" ry="3.5" fill="#f06aa8" stroke-width="2.5"/>'
+    + '<path d="M18 26v-12" stroke-width="3.5"/><ellipse cx="15" cy="27" rx="4.5" ry="3.5" fill="#f2b632" stroke-width="2.5"/>'
+    + sparkle(64, 16, 6, "#ffd45e"))
 pictures[DR + "scooter"] = svg(
     '<path d="M86 16v84" stroke-width="7"/><path d="M86 16v84" stroke="#d6d0e0" stroke-width="3"/><path d="M72 16h28" stroke-width="7"/>'
     '<path d="M70 16h-4M102 16h4" stroke="#ff8fae" stroke-width="7"/>'

@@ -48,6 +48,7 @@ const parkActions = [
   { id: "park-hide", animation: "hideSeek", kind: "activity", label: "Hide and seek", icon: "/images/game-asset/dragon/hide-and-seek.svg", cost: 2, duration: 8.2, reaction: "1, 2, 3… ready or not… found you, Mochi!" },
   { id: "park-bubbles", animation: "parkBubbles", kind: "activity", label: "Blow bubbles", icon: "/images/game-asset/dragon/bubbles.svg", cost: 2, duration: 6.8, reaction: "Pop, pop, pop! Catch the bubbles!" },
   { id: "park-scooters", animation: "scooters", kind: "activity", label: "Ride scooters", icon: "/images/game-asset/dragon/scooter.svg", cost: 2, duration: 7.2, reaction: "Wheee! Race you round the park!" },
+  { id: "park-dance", animation: "danceParty", kind: "activity", label: "Dance party", icon: "/images/game-asset/dragon/dance-party.svg", cost: 2, duration: 7.6, reaction: "Turn up the music, it’s a dance party!" },
 ];
 
 export const dragons = {
