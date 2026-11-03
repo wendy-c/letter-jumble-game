@@ -469,7 +469,7 @@ describe("progress", () => {
 
     // Like reloading the page: the address stays on the game's topic list.
     unmount();
-    expect(currentPathname()).toBe("/letter-jumble");
+    expect(currentPathname()).toBe("/movers");
     render(<GameApp />);
     await user.click(await screen.findByRole("button", { name: /Animals/ }));
     expect(screen.getByLabelText("Word 2 of 13")).toBeInTheDocument();
@@ -520,7 +520,7 @@ describe("progress", () => {
     expect(within(card).getAllByRole("button").map((button) => button.textContent.trim())).toEqual(["Try again", "Back to all topics →"]);
     await user.click(within(card).getByRole("button", { name: "Try again" }));
     expect(screen.queryByRole("dialog", { name: "Good try!" })).not.toBeInTheDocument();
-    expect(currentPathname()).toBe("/letter-jumble/animals");
+    expect(currentPathname()).toBe("/movers/animals");
     expect(screen.getByLabelText("Word 1 of 13")).toBeInTheDocument();
   });
 
@@ -573,7 +573,7 @@ describe("progress", () => {
     expect(storedPlayers().players[0].badges).toEqual(["letter-jumble/animals"]);
 
     await user.click(within(praise).getByRole("button", { name: /Back to all topics/ }));
-    expect(currentPathname()).toBe("/letter-jumble");
+    expect(currentPathname()).toBe("/movers");
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Animals/ })).toHaveTextContent("13 words to learn");
 
@@ -745,7 +745,7 @@ describe("routes", () => {
   it.each([
     ["an unknown game", "/space-race", "/", "k1"],
     ["an unknown topic", "/cvc/backwards", "/cvc", "k1"],
-    ["a game for another age", "/letter-jumble/animals", "/", "k1"],
+    ["a game for another age", "/movers/animals", "/", "k1"],
     ["a topic under Mochi's den", "/dragon/anything", "/dragon", "k1"],
   ])("sends %s back up a level", async (label, from, to, age) => {
     seedPlayer(age);
@@ -2032,7 +2032,7 @@ describe("parent mode", () => {
 
     expect(shownGames()).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "Letter Jumble - Movers", "中文認字 · 入門篇", "K1 Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
     await user.click(screen.getByRole("button", { name: /Letter Jumble - Movers/ }));
-    expect(currentPathname()).toBe("/letter-jumble");
+    expect(currentPathname()).toBe("/movers");
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Letter Jumble");
   });
 
@@ -2088,12 +2088,35 @@ describe("parent mode", () => {
   });
 });
 
+describe("Letter Jumble - Movers's address", () => {
+  it("is /movers, and an old /letter-jumble address goes there, topic and saved progress included", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({
+      players: [{ name: "Elly", coins: 0, age: "k3", progress: { "letter-jumble/animals": 3 }, badges: ["letter-jumble/body-and-face"] }], current: "Elly",
+    }));
+    setPathname("/letter-jumble/animals");
+    const { unmount } = render(<GameApp />);
+    await waitFor(() => expect(currentPathname()).toBe("/movers/animals"));
+    // The same saved place: word 4.
+    expect(await screen.findByLabelText("Word 4 of 13")).toBeInTheDocument();
+    unmount();
+
+    setPathname("/letter-jumble");
+    const user = userEvent.setup();
+    render(<GameApp />);
+    await waitFor(() => expect(currentPathname()).toBe("/movers"));
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Letter Jumble");
+    await user.click(screen.getByRole("button", { name: /Food and Drink/ }));
+    expect(currentPathname()).toBe("/movers/food-and-drink");
+    expect(within(screen.getByRole("navigation", { name: "Breadcrumb" })).getByRole("link", { name: "Letter Jumble - Movers" })).toHaveAttribute("href", "/movers");
+  });
+});
+
 describe("shuffled questions", () => {
   it("deals every topic's words in a random order, kept until the topic is finished", async () => {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "k3" }], current: "Elly" }));
     let calls = 0;
     Math.random.mockImplementation(() => ((calls += 1) * 0.37) % 1);
-    setPathname("/letter-jumble/animals");
+    setPathname("/movers/animals");
     render(<GameApp />);
 
     await screen.findByLabelText("Word 1 of 13");

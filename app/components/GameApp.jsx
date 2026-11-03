@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { badgeImage, topicsByGame } from "../badges";
-import { games, gamesForPlayer, isGameAvailable, perfectScoreBonus } from "../games-data";
+import { gameAtRoute, gamePath, games, gamesForPlayer, isGameAvailable, perfectScoreBonus } from "../games-data";
 import AnswerPanel from "./AnswerPanel";
 import AnswerRevealDialog, { chineseRevealLabels } from "./AnswerRevealDialog";
 import BadgeCollection from "./BadgeCollection";
@@ -100,7 +100,7 @@ export default function GameApp() {
   const welcomedRef = useRef(false);
   const rainbowCoins = currentPlayer?.coins ?? 0;
 
-  const routeGame = games.find((game) => game.id === gameId) ?? null;
+  const { game: routeGame, moved: routeMoved } = gameAtRoute(gameId);
   // "/badges" is the current player's badge collection (with nobody playing, it goes home).
   const onBadgesPage = gameId === "badges" && !topicId && Boolean(currentPlayer);
   // "/parent" is parent mode, for managing each child's games.
@@ -209,13 +209,18 @@ export default function GameApp() {
     stopSpeaking();
   }, []);
 
-  // Keep the address valid: unknown games and topics go back up a level, and a game the
-  // current player can't play goes back to the picker (asking who's playing if nobody is).
+  // Keep the address valid: a game's old address goes to its new one ("/letter-jumble/animals" to
+  // "/movers/animals"), unknown games and topics go back up a level, and a game the current player
+  // can't play goes back to the picker (asking who's playing if nobody is).
   useEffect(() => {
     if (!loaded || !gameId) return;
     if (onBadgesPage || onParentPage) return;
     if (!routeGame) {
       router.replace("/");
+      return;
+    }
+    if (routeMoved) {
+      router.replace(`${gamePath(routeGame)}${topicId ? `/${encodeURIComponent(topicId)}` : ""}`);
       return;
     }
     if (!allowed) {
@@ -227,9 +232,9 @@ export default function GameApp() {
       }
       return;
     }
-    if (topicId && !routeTopic && !(routeGame.id === "dragon" && isDragonPlace(topicId))) router.replace(`/${routeGame.id}`);
+    if (topicId && !routeTopic && !(routeGame.id === "dragon" && isDragonPlace(topicId))) router.replace(gamePath(routeGame));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loaded, gameId, topicId, routeGame, allowed, currentPlayer, routeTopic, router, tofuUnlocked, parkUnlocked, onBadgesPage, onParentPage]);
+  }, [loaded, gameId, topicId, routeGame, routeMoved, allowed, currentPlayer, routeTopic, router, tofuUnlocked, parkUnlocked, onBadgesPage, onParentPage]);
 
   // A topic without a shuffled hand of words yet gets one dealt.
   useEffect(() => {
@@ -285,7 +290,7 @@ export default function GameApp() {
   }
 
   function selectGame(game) {
-    router.push(`/${game.id}`);
+    router.push(gamePath(game));
   }
 
   function showGames() {
@@ -293,11 +298,11 @@ export default function GameApp() {
   }
 
   function showCategories() {
-    router.push(`/${selectedGame.id}`);
+    router.push(gamePath(selectedGame));
   }
 
   function selectCategory(topic) {
-    router.push(`/${selectedGame.id}/${topic.id}`);
+    router.push(`${gamePath(selectedGame)}/${topic.id}`);
   }
 
   function requestGame(game) {
@@ -591,8 +596,8 @@ export default function GameApp() {
     <Breadcrumbs
       items={[
         { label: text.home, href: "/" },
-        { label: gameName(text, selectedGame, currentPlayer?.age), href: `/${selectedGame.id}` },
-        ...(routeTopic ? [{ label: routeTopic.name, href: `/${selectedGame.id}/${routeTopic.id}` }] : []),
+        { label: gameName(text, selectedGame, currentPlayer?.age), href: gamePath(selectedGame) },
+        ...(routeTopic ? [{ label: routeTopic.name, href: `${gamePath(selectedGame)}/${routeTopic.id}` }] : []),
         ...(dragonPlace && topicId && dragons[topicId] ? [{ label: dragons[topicId].house, href: `/dragon/${topicId}` }] : []),
       ]}
     />

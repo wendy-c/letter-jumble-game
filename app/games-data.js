@@ -88,6 +88,8 @@ export const games = [
   },
   {
     id: "letter-jumble",
+    // Played at /movers (the id stays, as children's saved badges and progress use it).
+    route: "movers",
     group: "cambridge",
     name: "Letter Jumble - Movers",
     color: "lilac",
@@ -169,6 +171,16 @@ export const games = [
     badge: "RAINBOW DRAGON",
   },
 ];
+
+// Where a game is played: "/<route>", or "/<id>" for games without their own route.
+export const gamePath = (game) => `/${game.route ?? game.id}`;
+
+// The game at a path's first part ("movers"). A game's old address (its id, before it had a route of
+// its own) finds it too; `moved` says it should go to its new address.
+export function gameAtRoute(part) {
+  const game = games.find((candidate) => (candidate.route ?? candidate.id) === part) ?? games.find((candidate) => candidate.id === part) ?? null;
+  return { game, moved: Boolean(game?.route && part !== game.route) };
+}
 
 export function isGameForAge(game, age) {
   return !game.ages || !age || game.ages.includes(age);

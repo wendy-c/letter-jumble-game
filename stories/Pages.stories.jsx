@@ -30,8 +30,8 @@ export const ConsonantDigraphs = at("/digraphs/ch-sh-th");
 export const RAndLBlends = at("/blends/r-blends");
 export const ChineseColours = at("/chinese/colours");
 
-export const LetterJumbleMovers = at("/letter-jumble", { players: [elly] });
-export const MoversAnimals = at("/letter-jumble/animals", { players: [elly] });
+export const LetterJumbleMovers = at("/movers", { players: [elly] });
+export const MoversAnimals = at("/movers/animals", { players: [elly] });
 export const MeasureWords = at("/measure-words", { players: [elly] });
 export const Idioms = at("/idioms", { players: [elly] });
 

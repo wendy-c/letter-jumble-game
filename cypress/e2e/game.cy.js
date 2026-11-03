@@ -118,7 +118,7 @@ describe("Movers spelling game", () => {
 
     // Reloading stays on the same topic, with the coin still there.
     cy.reload();
-    cy.location("pathname").should("eq", "/letter-jumble/animals");
+    cy.location("pathname").should("eq", "/movers/animals");
     cy.get('[role="dialog"]').should("not.exist");
     cy.contains("h1", "Animals");
     cy.get(".player-chip-coins").should("have.text", "1");
@@ -414,7 +414,7 @@ describe("players", () => {
     cy.get(".player-chip-coins").should("have.text", "0");
 
     cy.reload();
-    cy.location("pathname").should("eq", "/letter-jumble/animals");
+    cy.location("pathname").should("eq", "/movers/animals");
     cy.get('button[aria-label^="Playing as Theo"]').click();
     cy.contains('[role="menuitem"]', "Switch player").click();
     cy.get('[role="dialog"] .player-option').contains("Mia").click();
@@ -542,7 +542,7 @@ describe("routes", () => {
   });
 
   it("sends an address for another age group back to the picker", () => {
-    cy.visit("/letter-jumble", seed("k1"));
+    cy.visit("/movers", seed("k1"));
     cy.location("pathname").should("eq", "/");
     cy.contains("h1", "What shall we play today?");
   });
