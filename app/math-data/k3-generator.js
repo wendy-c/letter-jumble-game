@@ -498,7 +498,7 @@ function makers(random, level) {
       // Some times on the hour or half hour are written in words: "11 o’clock", "half past 11".
       const inWords = (text) => {
         const [h, m] = text.split(":");
-        return m === "00" ? say(`${h} o’clock`, `${h} 　時正`) : say(`half past ${h}`, `${h} 時半`);
+        return m === "00" ? say(`${h} o’clock`, `${h} 時正`) : say(`half past ${h}`, `${h} 時半`);
       };
       const wordy = choices.filter((text) => /:(00|30)$/.test(text));
       const written = new Set(wordy.filter(() => random() < 0.5));
