@@ -1186,7 +1186,7 @@ describe("成語", () => {
 
     await user.click(screen.getByRole("button", { name: /成語/ }));
     expect(currentPathname()).toBe("/idioms");
-    await user.click(screen.getByRole("button", { name: /成語/ }));
+    await user.click(screen.getByRole("button", { name: /第一篇/ }));
 
     expect(dealtBy(storedPlayers().players[0].decks["idioms/idioms"])).toHaveLength(20);
     expect(screen.getByLabelText("Word 1 of 20")).toBeInTheDocument();
@@ -1333,9 +1333,9 @@ describe("badges", () => {
 
     expect(within(collection).getAllByRole("heading", { level: 2 }).map((heading) => heading.textContent))
       .toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 進階篇", "量詞配對", "成語", "K3 Challenge", "Rainbow Speed Quest"]);
-    expect(collection).toHaveTextContent("2 of 64 badges");
+    expect(collection).toHaveTextContent("2 of 65 badges");
     expect(within(collection).getByRole("listitem", { name: "Animals: earned" })).toBeInTheDocument();
-    expect(within(collection).getByRole("listitem", { name: "成語: earned" })).toBeInTheDocument();
+    expect(within(collection).getByRole("listitem", { name: "第一篇: earned" })).toBeInTheDocument();
     const movers = within(collection).getByRole("region", { name: "Letter Jumble - Movers" });
     expect(within(movers).getByRole("listitem", { name: "Body and Face: not earned yet" })).toBeInTheDocument();
 
