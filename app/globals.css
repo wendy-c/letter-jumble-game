@@ -2751,6 +2751,17 @@ h1 span {
   font-weight: 700;
 }
 
+/* The idiom where it comes in the example sentence, its four characters kept together. */
+.idiom-example-idiom {
+  display: inline-block;
+  margin: 0 3px;
+  border: 2px solid var(--pink);
+  border-radius: 8px;
+  padding: 0 5px;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
 .idiom-meaning {
   z-index: 1;
   margin: 0;

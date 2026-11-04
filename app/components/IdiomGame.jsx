@@ -47,8 +47,16 @@ export default function IdiomGame({ topic, round, question, onAnswer }) {
         </p>
         <div className="idiom-meaning" lang="zh-Hant-HK">
           <p><span className="idiom-meaning-label">意思：</span>{question.meaning}</p>
-          {/* The idiom in the example has the same gap until it's been answered. */}
-          <p><span className="idiom-meaning-label">例句：</span>{solved ? question.example : question.example.split(question.idiom).join(gapped)}</p>
+          {/* The idiom in the example is boxed, with the same gap until it's been answered. */}
+          <p>
+            <span className="idiom-meaning-label">例句：</span>
+            {question.example.split(question.idiom).map((part, index) => (
+              <span key={index}>
+                {index > 0 && <span className="idiom-example-idiom">{solved ? question.idiom : gapped}</span>}
+                {part}
+              </span>
+            ))}
+          </p>
         </div>
       </section>
 
