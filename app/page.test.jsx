@@ -942,7 +942,7 @@ describe("breadcrumbs", () => {
 describe("Magic E", () => {
   const seed = () => window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "k1" }], current: "Elly" }));
 
-  it("has a game for each long vowel and a mixed one, for every class", async () => {
+  it("has one game, all four long vowels mixed, for every class", async () => {
     seed();
     const user = userEvent.setup();
     render(<GameApp />);
@@ -950,7 +950,7 @@ describe("Magic E", () => {
     expect(currentPathname()).toBe("/magic-e");
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Magic E");
     expect(screen.getAllByRole("button").filter((button) => button.classList.contains("category-card")).map((card) => card.querySelector(".category-card-name").textContent))
-      .toEqual(["Long A · a_e", "Long I · i_e", "Long O · o_e", "Long U · u_e", "Mixed Magic E"]);
+      .toEqual(["Magic E - Long a, Long i, Long o, Long u"]);
   });
 
   it("shows the word with its vowel and e missing under one arch, and fills both with the right pair", async () => {
@@ -958,7 +958,7 @@ describe("Magic E", () => {
     const user = userEvent.setup();
     render(<GameApp />);
     await user.click(screen.getByRole("button", { name: /Magic E/ }));
-    await user.click(screen.getByRole("button", { name: /Long A/ }));
+    await user.click(screen.getByRole("button", { name: /Long a, Long i/ }));
 
     // With the order pinned, the first word is "bake": b, a gap, k, and a gap for the e.
     expect(screen.getByText("Which vowel and magic e fill the gaps?")).toBeInTheDocument();
@@ -973,7 +973,7 @@ describe("Magic E", () => {
     expect(screen.getByLabelText("Letter 4 of 4, e")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /Check it/ }));
     expect(screen.getByRole("status")).toHaveTextContent("!");
-    expect(storedPlayers().players[0].results).toEqual({ "magic-e/a-e": [true] });
+    expect(storedPlayers().players[0].results).toEqual({ "magic-e/mixed": [true] });
   });
 
   it("marks a wrong pair, and both of its boxes", async () => {
@@ -981,7 +981,7 @@ describe("Magic E", () => {
     const user = userEvent.setup();
     render(<GameApp />);
     await user.click(screen.getByRole("button", { name: /Magic E/ }));
-    await user.click(screen.getByRole("button", { name: /Long A/ }));
+    await user.click(screen.getByRole("button", { name: /Long a, Long i/ }));
     await user.click(screen.getByRole("button", { name: "Letter i, magic e" }));
     await user.click(screen.getByRole("button", { name: /Check it/ }));
     expect(screen.getByLabelText("Letter 2 of 4, i")).toHaveClass("slot-wrong");
@@ -1333,7 +1333,7 @@ describe("badges", () => {
 
     expect(within(collection).getAllByRole("heading", { level: 2 }).map((heading) => heading.textContent))
       .toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 進階篇", "量詞配對", "成語", "K3 Challenge", "Rainbow Speed Quest"]);
-    expect(collection).toHaveTextContent("2 of 65 badges");
+    expect(collection).toHaveTextContent("2 of 61 badges");
     expect(within(collection).getByRole("listitem", { name: "Animals: earned" })).toBeInTheDocument();
     expect(within(collection).getByRole("listitem", { name: "第一篇: earned" })).toBeInTheDocument();
     const movers = within(collection).getByRole("region", { name: "Letter Jumble - Movers" });
@@ -1385,7 +1385,7 @@ describe("badges", () => {
     const user = userEvent.setup();
     render(<GameApp />);
     const collection = await openBadges(user);
-    expect(collection).toHaveTextContent("0 of 43 badges");
+    expect(collection).toHaveTextContent("0 of 39 badges");
     expect(collection).toHaveTextContent("Get every answer in a topic right to earn its badge!");
   });
 
