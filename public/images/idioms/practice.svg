@@ -1,5 +1,76 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 160">
-<g stroke="#4b2e22" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">
-<rect x="6" y="6" width="244" height="148" rx="12" fill="#e9e2ff"/><rect x="60" y="100" width="150" height="10" rx="3" fill="#c98a5a"/><path d="M70 110v36M200 110v36" stroke-width="5"/><path d="M176 100V70" stroke-width="3"/><path d="M166 70h20l-4-12h-12Z" fill="#ffd45e" stroke-width="2.5"/><path d="M150 100q40-60 80 0" fill="#fff6c8" opacity=".6" stroke="none"/><rect x="196" y="96" width="34" height="4" rx="1" fill="#ffffff" stroke-width="1.5"/><rect x="193" y="91" width="34" height="4" rx="1" fill="#ffffff" stroke-width="1.5"/><rect x="190" y="86" width="34" height="4" rx="1" fill="#ffffff" stroke-width="1.5"/><rect x="187" y="81" width="34" height="4" rx="1" fill="#ffffff" stroke-width="1.5"/><rect x="184" y="76" width="34" height="4" rx="1" fill="#ffffff" stroke-width="1.5"/><path d="M94.6 146.0Q94.6 113.0 110.0 113.0Q125.4 113.0 125.4 146.0Z" fill="#8fd6a8"/><circle cx="110" cy="88.8" r="17.6" fill="#ffe2c4"/><path d="M92.4 87.7Q92.4 69.0 110.0 69.0Q127.6 69.0 127.6 87.7Q118.8 78.9 110.0 80.0Q101.2 78.9 92.4 87.7Z" fill="#8b5a3c"/><g stroke="none" fill="#4b2e22"><circle cx="103.4" cy="91.0" r="2.4"/><circle cx="116.6" cy="91.0" r="2.4"/></g><path d="M105.6 97.6q4.4 4.4 8.8 0" fill="none" stroke-width="2"/><g fill="#ff9bb5" opacity=".7" stroke="none"><ellipse cx="97.9" cy="96.5" rx="3.7" ry="2.2"/><ellipse cx="122.1" cy="96.5" rx="3.7" ry="2.2"/></g><path d="M123.2 82.2L143.0 91.0" stroke="#4b2e22" stroke-width="10"/><path d="M123.2 82.2L143.0 91.0" stroke="#ffe2c4" stroke-width="4"/><path d="M140 96l10-14" stroke-width="3"/><path d="M96 70q4 6 0 10" fill="#8cc8f2" stroke-width="2"/><path d="M30 30a14 14 0 1 0 14 22 12 12 0 1 1-14-22Z" fill="#ffe27a"/><path d="M70.0 22.0L71.6 25.8L75.7 26.1L72.6 28.8L73.5 32.9L70.0 30.7L66.5 32.9L67.4 28.8L64.3 26.1L68.4 25.8Z" fill="#ffc94a" stroke-width="2"/>
+<defs><clipPath id="frame"><rect x="6" y="6" width="244" height="148" rx="12"/></clipPath></defs>
+<g stroke="#4b2e22" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<rect x="6" y="6" width="244" height="148" rx="12" fill="#ece6ff"/>
+<g clip-path="url(#frame)">
+<!-- The room at night: the window, the clock (late!), the floor -->
+<path d="M0 136h256v24H0Z" fill="#dcc3a2"/>
+<g fill="none" stroke="#c8ab86" stroke-width="2"><path d="M40 146h40M120 150h50M196 144h36"/></g>
+<rect x="18" y="16" width="56" height="46" rx="4" fill="#3d4a7a"/>
+<path d="M46 16v46M18 39h56" stroke-width="2.5"/>
+<path d="M28 21a9 9 0 1 0 9 14 8 8 0 1 1-9-14Z" fill="#ffe27a" stroke-width="2"/>
+<g fill="#ffe27a" stroke="none"><circle cx="58" cy="24" r="1.6"/><circle cx="66" cy="32" r="1.2"/><circle cx="56" cy="50" r="1.4"/><circle cx="30" cy="52" r="1.2"/></g>
+<path d="M18 14q10 12 4 50h-10V14Z" fill="#ff9bb5"/><path d="M74 14q-10 12-4 50h10V14Z" fill="#ff9bb5"/>
+<path d="M14 64h66" stroke-width="4"/>
+<circle cx="104" cy="30" r="13" fill="#ffffff"/>
+<g fill="#4b2e22" stroke="none"><circle cx="104" cy="20" r="1.2"/><circle cx="114" cy="30" r="1.2"/><circle cx="104" cy="40" r="1.2"/><circle cx="94" cy="30" r="1.2"/></g>
+<path d="M104 30l-6-4M104 30v-8" stroke-width="2.2"/>
+<!-- The writing practice on the wall, getting neater from sheet to sheet -->
+<g fill="none" stroke="#a98cf2" stroke-width="2"><path d="M175 34l3 3-3 3M203 34l3 3-3 3"/></g>
+<g fill="#ffffff" stroke-width="2"><rect x="148" y="18" width="26" height="34" rx="2"/><rect x="178" y="18" width="26" height="34" rx="2"/><rect x="208" y="18" width="26" height="34" rx="2"/></g>
+<g fill="none" stroke="#f2a0a0" stroke-width="1.5"><rect x="152" y="24" width="18" height="18"/><rect x="182" y="24" width="18" height="18"/><rect x="212" y="24" width="18" height="18"/></g>
+<g fill="none" stroke="#f2a0a0" stroke-width="1" stroke-dasharray="2 2"><path d="M161 24v18M152 33h18M191 24v18M182 33h18M221 24v18M212 33h18"/></g>
+<g fill="none" stroke-width="2.2"><path d="M162 26q-3 4-1 7-2 4-6 7M160 31q3 3 2 6 3 3 7 3"/><path d="M191 26q0 7-6 13M191 31q2 6 7 8"/><path d="M221 26q-1 9-7 14M221 31q3 7 8 9"/></g>
+<g fill="none" stroke-width="1.4" stroke="#8a80a6"><path d="M153 47h8M164 47h5M183 47h14M213 47h14"/></g>
+<path d="M192 44l2 2 4-4" fill="none" stroke="#ff6b6b" stroke-width="2"/>
+<path d="M232.0 13.0L233.9 17.2L238.4 17.5L235.0 20.5L236.0 24.9L232.0 22.5L228.0 24.9L229.0 20.5L225.6 17.5L230.1 17.2Z" fill="#ffc94a" stroke-width="2"/>
+<g fill="#ff6b6b" stroke-width="1.5"><circle cx="161" cy="19" r="2"/><circle cx="191" cy="19" r="2"/><circle cx="221" cy="19" r="2"/></g>
+<!-- The chair, and the child sitting at the desk -->
+<rect x="84" y="78" width="48" height="30" rx="8" fill="#c98a5a"/>
+<path d="M90 122v24M126 122v24" stroke-width="4"/>
+<path d="M100 122v18M116 122v18" stroke-width="9"/><path d="M100 122v18M116 122v18" stroke="#ffe2c4" stroke-width="4"/>
+<path d="M92 120h32v6H92Z" fill="#5b6b8c"/>
+<g fill="#ff8fae"><ellipse cx="98" cy="143" rx="6" ry="3.6"/><ellipse cx="118" cy="143" rx="6" ry="3.6"/></g>
+<path d="M90 102q0-14 18-14t18 14Z" fill="#8fd6a8"/>
+<circle cx="108" cy="70" r="17" fill="#ffe2c4"/>
+<path d="M91 69q0-18 17-18t17 18q-8-8-17-7-9-1-17 7Z" fill="#8b5a3c"/>
+<path d="M108 52q-2-6 3-8" fill="none" stroke-width="2.5"/>
+<g fill="none" stroke-width="2.2"><path d="M99 74q2.5 2 5 0M112 74q2.5 2 5 0"/><path d="M98 68l6 1.5M118 68l-6 1.5"/></g>
+<path d="M105 81q3 1.5 6 0" fill="none" stroke-width="2"/><ellipse cx="110" cy="82.4" rx="1.8" ry="1.4" fill="#ff8fae" stroke-width="1.2"/>
+<g fill="#ff9bb5" opacity=".7" stroke="none"><ellipse cx="96" cy="78" rx="3.6" ry="2.2"/><ellipse cx="120" cy="78" rx="3.6" ry="2.2"/></g>
+<path d="M126 58q-3 5 0 7 3-2 0-7Z" fill="#8cc8f2" stroke-width="1.8"/>
+<!-- The desk, with the lamp's light on it -->
+<path d="M30 100h196l12 14H18Z" fill="#e2b07a"/>
+<path d="M180 70l-30 30h76l-18-30Z" fill="#fff6c8" opacity=".7" stroke="none"/>
+<rect x="18" y="114" width="220" height="8" rx="2" fill="#c98a5a"/>
+<path d="M26 122v28M230 122v28" stroke-width="5"/>
+<rect x="160" y="122" width="54" height="12" rx="2" fill="#c98a5a"/><path d="M182 128h10" stroke-width="2.5"/>
+<!-- The sheet being written, with its boxes, and the child's hands -->
+<path d="M82 102h52l3 10H79Z" fill="#ffffff" stroke-width="2"/>
+<g fill="none" stroke="#f2a0a0" stroke-width="1.2"><path d="M95 102l-.8 10M108 102v10M121 102l.8 10"/></g>
+<g fill="none" stroke-width="1.4"><path d="M89 104l-3 6M88 106l3 3M101 104l-3 6M100 106l3 3"/></g>
+<g fill="#ff9bb5" stroke="none"><circle cx="140" cy="110" r="1"/><circle cx="143" cy="108" r="0.8"/><circle cx="76" cy="109" r="0.9"/></g>
+<path d="M94 92l-4 12" stroke-width="10"/><path d="M94 92l-4 12" stroke="#8fd6a8" stroke-width="5"/>
+<ellipse cx="90" cy="105" rx="5" ry="3.4" fill="#ffe2c4" stroke-width="2.2"/>
+<path d="M140 92l-6 12" stroke-width="7"/><path d="M140 92l-6 12" stroke="#ffd45e" stroke-width="3.5"/>
+<path d="M134 104l-1.6 3.4" stroke-width="2"/><path d="M140 92l1.4-2.8" stroke="#ff8fae" stroke-width="3.5"/>
+<path d="M122 92l8 12" stroke-width="10"/><path d="M122 92l8 12" stroke="#8fd6a8" stroke-width="5"/>
+<ellipse cx="132" cy="105" rx="5" ry="3.4" fill="#ffe2c4" stroke-width="2.2"/>
+<!-- What's done: a pile of finished sheets, worn-down pencils, the lamp -->
+<g fill="#ffffff" stroke-width="1.6"><rect x="150" y="96" width="30" height="4" rx="1"/><rect x="148" y="92" width="30" height="4" rx="1"/><rect x="151" y="88" width="30" height="4" rx="1"/><rect x="149" y="84" width="30" height="4" rx="1"/><rect x="150" y="80" width="30" height="4" rx="1"/><rect x="148" y="76" width="30" height="4" rx="1"/></g>
+<path d="M156 72.0L157.2 74.6L160.0 74.9L157.9 76.8L158.5 79.5L156.0 78.1L153.5 79.5L154.1 76.8L152.0 74.9L154.8 74.6Z" fill="#ffc94a" stroke-width="1.6"/>
+<path d="M44 84l-4-14M50 84v-18M54 84l6-10" stroke-width="5.5"/>
+<path d="M44 84l-4-14M50 84v-18M54 84l6-10" stroke="#ffd45e" stroke-width="2.5"/>
+<g fill="#ff8fae" stroke-width="1.6"><circle cx="40" cy="69" r="2"/><circle cx="50" cy="65" r="2"/><circle cx="60.4" cy="73" r="2"/></g>
+<path d="M38 84h20l-2 18H40Z" fill="#8cc8f2"/>
+<path d="M62 109l10-2M64 105l7-1" stroke-width="5"/><path d="M62 109l10-2M64 105l7-1" stroke="#ffd45e" stroke-width="2"/>
+<path d="M210 101h-24q2-4 12-4t12 4Z" fill="#8a80a6"/>
+<path d="M198 98l-6-24 8-8" fill="none" stroke-width="3"/>
+<path d="M188 62l14-6 8 14-24 10Z" fill="#ffd45e"/>
+<!-- Tried again and again: the bin of screwed-up sheets -->
+<path d="M36 128h28l-3 22H39Z" fill="#a8a6b3"/><path d="M42 132l1 14M50 132v14M58 132l-1 14" stroke="#8f8c9a" stroke-width="2"/>
+<g fill="#ffffff" stroke-width="2"><circle cx="44" cy="126" r="6"/><circle cx="55" cy="125" r="6"/><circle cx="50" cy="119" r="5.5"/><circle cx="72" cy="146" r="5.5"/></g>
+<g fill="none" stroke-width="1.2"><path d="M40 124l3 1 1 3 3-1M44 122l1 2M52 123l2 2 3-1 1 3M55 129l2-1M47 117l2 2 3-1M51 121l1-1M68 145l2 2 3-1 1 2M72 142l1 1"/></g>
+</g>
 </g>
 </svg>
