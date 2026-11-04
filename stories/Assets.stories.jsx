@@ -1,5 +1,7 @@
 // Every picture in public/images, found automatically, grouped by folder. Click a picture to copy
 // its path (as used in the code, e.g. "/images/icons/animals.svg").
+import { idiomTopics } from "../app/chinese-data/idioms-data";
+
 const files = Object.keys(import.meta.glob("../public/**/*.{svg,png,jpg,jpeg,webp,gif,ico}", { query: "?url" }))
   .map((file) => file.replace("../public", ""))
   .sort();
@@ -8,7 +10,11 @@ function folderOf(path) {
   return path.slice(0, path.lastIndexOf("/")) || "/";
 }
 
-function Gallery({ prefix, wide = false }) {
+// Each idiom picture's idiom, by its path.
+const idiomOf = Object.fromEntries(idiomTopics.flatMap((topic) => topic.words).map((word) => [word.picture, word.idiom]));
+
+// `captions` (optional): what each picture shows, by path, written above its file name.
+function Gallery({ prefix, wide = false, captions = {} }) {
   const matching = files.filter((path) => path.startsWith(prefix));
   const folders = [...new Set(matching.map(folderOf))];
   return (
@@ -27,6 +33,7 @@ function Gallery({ prefix, wide = false }) {
                   style={{ display: "flex", width: "100%", flexDirection: "column", alignItems: "center", gap: 6, border: "2px solid #e8ddfa", borderRadius: 16, background: "#fff", padding: 10, cursor: "copy", font: "inherit" }}
                 >
                   <img src={path} alt="" style={{ width: "100%", height: wide ? 120 : 84, objectFit: "contain" }} loading="lazy" />
+                  {captions[path] && <strong lang="zh-Hant" style={{ fontSize: 18 }}>{captions[path]}</strong>}
                   <span style={{ maxWidth: "100%", overflow: "hidden", fontSize: 11, textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{path.slice(folder.length + 1)}</span>
                 </button>
               </li>
@@ -50,7 +57,7 @@ export const Mochi = { args: { prefix: "/images/mochi" } };
 export const RainbowCoin = { args: { prefix: "/images/rainbow-coin" } };
 export const Badges = { args: { prefix: "/images/badges" } };
 export const GameAssets = { args: { prefix: "/images/game-asset" } };
-export const IdiomPictures = { args: { prefix: "/images/idioms", wide: true } };
+export const IdiomPictures = { args: { prefix: "/images/idioms", wide: true, captions: idiomOf } };
 export const DragonRooms = { args: { prefix: "/images/dragon", wide: true } };
 export const RainbowVillage = { args: { prefix: "/images/village", wide: true } };
 export const Everything = { args: { prefix: "/" } };
