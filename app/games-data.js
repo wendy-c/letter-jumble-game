@@ -145,7 +145,7 @@ export const games = [
   {
     id: "math-logic",
     group: "challenge",
-    // Named for the child's class ("K1 Challenge", K1大挑戰): see gameName in i18n.js.
+    // Named for the child's class ("K1 Challenge", K1大冒險): see gameName in i18n.js.
     name: "Challenge",
     color: "blue",
     picture: "/images/icons/math-logic.svg",

@@ -153,7 +153,7 @@ const strings = {
       "speed-quest": "加減速算，每次都嘗試打破自己的紀錄！",
       dragon: "用彩虹幣跟Mochi玩",
     },
-    gameNames: { "math-logic": (label) => `${label ?? ""}大挑戰`, "speed-quest": "彩虹速算站" },
+    gameNames: { "math-logic": (label) => `${label ?? ""}大冒險`, "speed-quest": "彩虹速算站" },
 
     badgesTitle: (name) => `${name} 的徽章`,
     badgeCount: (earned, total) => `${earned} / ${total} 個徽章`,
@@ -251,7 +251,7 @@ export function useLanguage() {
 }
 
 // A game's name in the site's words (`text`), for a child in class `age` ("k1"): the Challenge is
-// named for the class ("K1 Challenge", K1大挑戰), or just "Challenge" before anyone is playing.
+// named for the class ("K1 Challenge", K1大冒險), or just "Challenge" before anyone is playing.
 export function gameName(text, game, age = null) {
   const name = text.gameNames[game.id] ?? game.name;
   return typeof name === "function" ? name(ageGroups.find((group) => group.id === age)?.label ?? null) : name;

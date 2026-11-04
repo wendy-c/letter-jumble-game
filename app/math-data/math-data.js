@@ -1,4 +1,4 @@
-// Daily Challenge (每日大挑戰): twenty levels of ten questions for each of K1, K2 and K3, in English
+// Daily Challenge (每日大冒險): twenty levels of ten questions for each of K1, K2 and K3, in English
 // or Chinese (the site's language): numbers under 10 for K1, to 20 for K2 and to 100 for K3. K1's
 // and K2's first three levels are made by hand here, and the rest come from math-generator.js; all
 // of K3's come from k3-generator.js. A child starts at Level 1 of their set, and a level opens as

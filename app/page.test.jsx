@@ -2291,8 +2291,8 @@ describe("Challenge", () => {
     inChinese();
     const user = userEvent.setup();
     render(<GameApp />);
-    await user.click(screen.getByRole("button", { name: /K1大挑戰/ }));
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("K1大挑戰");
+    await user.click(screen.getByRole("button", { name: /K1大冒險/ }));
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("K1大冒險");
     await user.click(screen.getByRole("button", { name: /^第 1 關 · / }));
     expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent("豬媽媽到水果店買蘋果，狐狸店長的籃子裏差多少個蘋果？");
     expect(document.querySelector(".math-picture")).toHaveAttribute("src", "/images/game-asset/math/fruit-stand.svg");
@@ -2390,12 +2390,12 @@ describe("Challenge", () => {
     expect(tile(3)).toBeDisabled();
   });
 
-  it("is called K1大挑戰 (for a K1 child) under 數學 in Chinese", () => {
+  it("is called K1大冒險 (for a K1 child) under 數學 in Chinese", () => {
     seedPlayer();
     inChinese();
     render(<GameApp />);
     const heading = screen.getByRole("heading", { level: 2, name: /數學/ });
-    expect(heading.closest("section")).toHaveTextContent("K1大挑戰");
+    expect(heading.closest("section")).toHaveTextContent("K1大冒險");
     expect(heading.closest("section")).toHaveTextContent("彩虹速算站");
   });
 });
