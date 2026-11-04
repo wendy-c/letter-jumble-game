@@ -10,6 +10,7 @@ import { idiomTopics } from "./chinese-data/idioms-data";
 import { mathLevels } from "./math-data/math-data";
 import { speedTopics } from "./math-data/speed-quest-data";
 import { gamesForPlayer } from "./games-data";
+import { hasBadge, topicValue } from "./lib/player-data";
 
 // Every game's topics. Finishing a topic earns its badge, saved per player by
 // "<game>/<topic>" (the same key as the topic's progress).
@@ -45,9 +46,9 @@ export function badgeShelves(player) {
         key: badgeKey(game.id, topic.id),
         topic,
         image: badgeImage(game.id, topic.id),
-        earned: Boolean(player?.badges?.includes(badgeKey(game.id, topic.id))),
+        earned: hasBadge(player, badgeKey(game.id, topic.id)),
         // A timed topic's fastest time (Rainbow Speed Quest), in milliseconds, or null.
-        ...(topic.timed && { record: player?.records?.[badgeKey(game.id, topic.id)] ?? null }),
+        ...(topic.timed && { record: topicValue(player, "records", badgeKey(game.id, topic.id)) ?? null }),
       })),
     }));
 }

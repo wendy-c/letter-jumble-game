@@ -1,6 +1,5 @@
 // Shared bits for stories: sample players and a way to set the browser storage a page reads.
-import { playersStorageKey } from "../app/lib/use-players";
-import { siteStorageKey } from "../app/lib/use-site-settings";
+import { playersStorageKey, siteStorageKey } from "../app/lib/use-players";
 
 export const ada = { name: "Ada", coins: 37, age: "k1" };
 export const elly = { name: "Elly", coins: 120, age: "k3" };

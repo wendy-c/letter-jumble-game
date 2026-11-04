@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { badgeImage, badgeShelves, topicsByGame } from "./badges";
+import { migrateSaved } from "./lib/player-data";
 
 const publicDir = path.join(__dirname, "..", "public");
 
@@ -12,7 +13,8 @@ describe("badges", () => {
   });
 
   it("lists each of a player's badges with its picture and whether it's earned", () => {
-    const shelves = badgeShelves({ name: "Ada", coins: 0, age: "k1", badges: ["cvc/middle-sound"] });
+    const ada = migrateSaved({ players: [{ name: "Ada", coins: 0, age: "k1", badges: ["cvc/middle-sound"] }] }).players[0];
+    const shelves = badgeShelves(ada);
     const cvc = shelves.find((shelf) => shelf.game.id === "cvc");
     expect(cvc.badges.map(({ key, image, earned }) => [key, image, earned])).toEqual([
       ["cvc/beginning-sound", "/images/badges/cvc/beginning-sound.svg", false],

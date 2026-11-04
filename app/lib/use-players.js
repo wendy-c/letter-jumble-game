@@ -1,109 +1,39 @@
 import { useEffect, useState } from "react";
-import { ageGroups, defaultQuestionCount, games, questionCountChoices } from "../games-data";
+import { ageGroups, defaultQuestionCount } from "../games-data";
+import {
+  howToSeen, migrateSaved, newPlayerId, savedVersion, splitKey, topicValue,
+  withGame, withGameSetting, withListItem, withTopicValue,
+} from "./player-data";
 
+// Everything about the players is saved here (in the layout described in player-data.js).
 export const playersStorageKey = "letter-jumble:players";
+// Version 1 kept the site's settings (language, how-to cards seen, the tour) for the whole browser
+// here; they're moved into each player's settings, then this is removed.
+export const siteStorageKey = "letter-jumble:site";
 // Coins saved before players existed; they're given to the first player created.
 const legacyCoinsStorageKey = "letter-jumble:rainbow-coins";
 export const maxNameLength = 20;
 
-const emptyState = { players: [], current: null };
-const spellingGuideGames = games.filter((game) => game.spellingGuide).map((game) => game.id);
-
+const emptyState = { version: savedVersion, players: [], current: null, language: "en" };
 const isCount = (value) => Number.isInteger(value) && value >= 0;
 const isAge = (age) => ageGroups.some((group) => group.id === age);
 
-function isValidPlayer(player) {
-  return typeof player?.name === "string" && player.name.length > 0 && isCount(player.coins);
-}
-
-// Players saved before K1-K3 have an age of "3-4" (now K1) or "5-6" (now K3), and their Daily
-// Challenge levels were named after those ages ("math-logic/3-4-level-2" is now K1's Level 2,
-// "math-logic/5-6-level-2" K2's), in their progress, dealt questions, answers, badges and unlocks.
-const oldAges = { "3-4": "k1", "5-6": "k3" };
-const renameLevel = (key) => key.replace("math-logic/3-4-level-", "math-logic/k1-level-").replace("math-logic/5-6-level-", "math-logic/k2-level-");
-const renameKeys = (saved) => (saved && typeof saved === "object" && !Array.isArray(saved)
-  ? Object.fromEntries(Object.entries(saved).map(([key, value]) => [renameLevel(key), value]))
-  : saved);
-function upgrade(player) {
-  return {
-    ...player,
-    age: oldAges[player.age] ?? player.age,
-    progress: renameKeys(player.progress),
-    decks: renameKeys(player.decks),
-    results: renameKeys(player.results),
-    badges: Array.isArray(player.badges) ? player.badges.map((badge) => (typeof badge === "string" ? renameLevel(badge) : badge)) : player.badges,
-    unlocks: Array.isArray(player.unlocks) ? player.unlocks.map((unlock) => (typeof unlock === "string" ? renameLevel(unlock) : unlock)) : player.unlocks,
-  };
-}
-
-// Keeps only the fields we understand. Players saved before ages existed have no `age` yet.
-function cleanPlayer(saved) {
-  const player = upgrade(saved);
-  const cleaned = { name: player.name, coins: player.coins };
-  if (isAge(player.age)) cleaned.age = player.age;
-  if (player.progress && typeof player.progress === "object") {
-    const progress = Object.fromEntries(Object.entries(player.progress).filter(([, index]) => isCount(index)));
-    if (Object.keys(progress).length > 0) cleaned.progress = progress;
-  }
-  // The games a parent turned the spelling guide on for. It used to be one switch for all of
-  // them (`true`), which now means every game that has the guide.
-  const guideGames = player.spellingGuide === true ? spellingGuideGames
-    : Array.isArray(player.spellingGuide) ? [...new Set(player.spellingGuide.filter((id) => spellingGuideGames.includes(id)))] : [];
-  if (guideGames.length > 0) cleaned.spellingGuide = guideGames;
-  // How many questions a parent chose for a game's rounds (only those that aren't the default).
-  if (player.questionCounts && typeof player.questionCounts === "object") {
-    const countGames = games.filter((game) => game.questionCount).map((game) => game.id);
-    const questionCounts = Object.fromEntries(Object.entries(player.questionCounts)
-      .filter(([id, count]) => countGames.includes(id) && questionCountChoices.includes(count) && count !== defaultQuestionCount));
-    if (Object.keys(questionCounts).length > 0) cleaned.questionCounts = questionCounts;
-  }
-  if (player.gameSettings && typeof player.gameSettings === "object") {
-    const gameSettings = Object.fromEntries(Object.entries(player.gameSettings).filter(([, on]) => typeof on === "boolean"));
-    if (Object.keys(gameSettings).length > 0) cleaned.gameSettings = gameSettings;
-  }
-  if (player.decks && typeof player.decks === "object") {
-    const decks = Object.fromEntries(Object.entries(player.decks).filter(([, deck]) => Array.isArray(deck) && deck.length > 0 && deck.every(isCount)));
-    if (Object.keys(decks).length > 0) cleaned.decks = decks;
-  }
-  if (player.results && typeof player.results === "object") {
-    const isResult = (result) => result === true || result === false || result === null;
-    const results = Object.fromEntries(Object.entries(player.results).filter(([, answers]) => Array.isArray(answers) && answers.every(isResult)));
-    if (Object.keys(results).length > 0) cleaned.results = results;
-  }
-  if (Array.isArray(player.unlocks)) {
-    const unlocks = [...new Set(player.unlocks.filter((unlock) => typeof unlock === "string" && unlock.length > 0))];
-    if (unlocks.length > 0) cleaned.unlocks = unlocks;
-  }
-  // Best times (in milliseconds) for timed topics, e.g. { "speed-quest/within-10": 41250 }.
-  if (player.records && typeof player.records === "object") {
-    const records = Object.fromEntries(Object.entries(player.records).filter(([, time]) => Number.isFinite(time) && time > 0));
-    if (Object.keys(records).length > 0) cleaned.records = records;
-  }
-  // Best scores, as [right, out of], e.g. { "math-logic/k1-level-3": [8, 10] }.
-  if (player.scores && typeof player.scores === "object") {
-    const isScore = (score) => Array.isArray(score) && score.length === 2 && score.every(Number.isInteger) && score[0] >= 0 && score[0] <= score[1] && score[1] > 0;
-    const scores = Object.fromEntries(Object.entries(player.scores).filter(([, score]) => isScore(score)));
-    if (Object.keys(scores).length > 0) cleaned.scores = scores;
-  }
-  if (Array.isArray(player.badges)) {
-    const badges = [...new Set(player.badges.filter((badge) => typeof badge === "string" && badge.length > 0))];
-    if (badges.length > 0) cleaned.badges = badges;
-  }
-  return cleaned;
-}
-
-// The players saved as `text` (what's stored under playersStorageKey), tidied up, and who's playing.
+// The players saved as `text` (what's stored under playersStorageKey, in any version), as version
+// 2: { version, players, current (an id), language }. `site` is version 1's site settings, if any.
 // Throws if it isn't JSON.
-export function readPlayersText(text) {
-  const stored = JSON.parse(text ?? "null");
-  const players = Array.isArray(stored?.players) ? stored.players.filter(isValidPlayer).map(cleanPlayer) : [];
-  const current = players.some((player) => player.name === stored?.current) ? stored.current : null;
-  return { players, current };
+export function readPlayersText(text, site = null) {
+  return migrateSaved(JSON.parse(text ?? "null"), site);
 }
 
 function readStoredState() {
   try {
-    return readPlayersText(window.localStorage.getItem(playersStorageKey));
+    let site = null;
+    try {
+      site = JSON.parse(window.localStorage.getItem(siteStorageKey) ?? "null");
+    } catch {
+      // Unreadable old settings are left behind.
+    }
+    return readPlayersText(window.localStorage.getItem(playersStorageKey), site);
   } catch {
     return emptyState;
   }
@@ -112,6 +42,8 @@ function readStoredState() {
 function storeState(state) {
   try {
     window.localStorage.setItem(playersStorageKey, JSON.stringify(state));
+    // The old browser-wide settings now live with each player.
+    window.localStorage.removeItem(siteStorageKey);
   } catch {
     // Storage can be unavailable (private browsing, blocked site data); players still work for this visit.
   }
@@ -137,6 +69,8 @@ function sameName(first, second) {
 
 // Players and their rainbow coins persist in localStorage. Saved state is read after the
 // first render so the server-rendered page matches, and nothing is saved until it has loaded.
+// Players are matched by their id. The site's settings (`site`) are the current player's own, or
+// the browser's language when nobody is playing.
 export function usePlayers() {
   const [state, setState] = useState(emptyState);
   const [loaded, setLoaded] = useState(false);
@@ -150,7 +84,7 @@ export function usePlayers() {
     if (loaded) storeState(state);
   }, [state, loaded]);
 
-  const currentPlayer = state.players.find((player) => player.name === state.current) ?? null;
+  const currentPlayer = state.players.find((player) => player.id === state.current) ?? null;
 
   // Returns an error message for the form, or null once the player is created and selected.
   function createPlayer(rawName, age) {
@@ -162,61 +96,49 @@ export function usePlayers() {
     if (!isAge(age)) return "Please choose which class you’re in.";
 
     const coins = state.players.length === 0 ? takeLegacyCoins() : 0;
-    setState((current) => ({ players: [...current.players, { name, coins, age }], current: name }));
+    const player = { id: newPlayerId(), name, coins, age, settings: { language: state.language, tutorialSeen: false }, games: {} };
+    setState((current) => ({ ...current, players: [...current.players, player], current: player.id }));
     return null;
   }
 
-  function updatePlayer(name, change) {
+  function updatePlayer(id, change) {
     setState((current) => ({
       ...current,
-      players: current.players.map((player) => (player.name === name ? change(player) : player)),
+      players: current.players.map((player) => (player.id === id ? change(player) : player)),
     }));
   }
+  const updateCurrent = (change) => {
+    if (state.current) updatePlayer(state.current, change);
+  };
 
-  function setPlayerAge(name, age) {
-    if (isAge(age)) updatePlayer(name, (player) => ({ ...player, age }));
+  function setPlayerAge(id, age) {
+    if (isAge(age)) updatePlayer(id, (player) => ({ ...player, age }));
   }
 
   // Remembers which word the current player is on in a topic (e.g. "cvc/middle-sound").
   function saveProgress(key, wordIndex) {
-    if (!state.current || !isCount(wordIndex)) return;
-    updatePlayer(state.current, (player) => ({ ...player, progress: { ...player.progress, [key]: wordIndex } }));
+    if (isCount(wordIndex)) updateCurrent((player) => withTopicValue(player, "progress", key, wordIndex));
   }
 
   // Parent settings: turn any game on or off for one child. `byDefault` is whether the game is
   // on for their age anyway; a setting matching it is dropped, so age changes still apply.
-  function setGameEnabled(name, gameId, enabled, byDefault) {
-    updatePlayer(name, (player) => {
-      const { gameSettings: old = {}, ...rest } = player;
-      const gameSettings = { ...old };
-      if (enabled === byDefault) delete gameSettings[gameId];
-      else gameSettings[gameId] = enabled;
-      return Object.keys(gameSettings).length > 0 ? { ...rest, gameSettings } : rest;
-    });
+  function setGameEnabled(id, gameId, enabled, byDefault) {
+    updatePlayer(id, (player) => withGameSetting(player, gameId, "enabled", enabled === byDefault ? undefined : enabled));
   }
 
   // Parent settings: show the spelling guide (vowel and consonant teams) in one of a child's
   // Letter Jumble games.
-  function setSpellingGuide(name, gameId, on) {
-    updatePlayer(name, (player) => {
-      const { spellingGuide: old = [], ...rest } = player;
-      const spellingGuide = old.filter((id) => id !== gameId).concat(on ? [gameId] : []);
-      return spellingGuide.length > 0 ? { ...rest, spellingGuide } : rest;
-    });
+  function setSpellingGuide(id, gameId, on) {
+    updatePlayer(id, (player) => withGameSetting(player, gameId, "spellingGuide", on ? true : undefined));
   }
 
   // Parent settings: how many questions a round of one of a child's games deals.
-  function setQuestionCount(name, gameId, count) {
-    updatePlayer(name, (player) => {
-      const { questionCounts: old = {}, ...rest } = player;
-      const questionCounts = { ...old, [gameId]: count };
-      if (count === defaultQuestionCount) delete questionCounts[gameId];
-      return Object.keys(questionCounts).length > 0 ? { ...rest, questionCounts } : rest;
-    });
+  function setQuestionCount(id, gameId, count) {
+    updatePlayer(id, (player) => withGameSetting(player, gameId, "questionCount", count === defaultQuestionCount ? undefined : count));
   }
 
-  function selectPlayer(name) {
-    setState((current) => ({ ...current, current: name }));
+  function selectPlayer(id) {
+    setState((current) => ({ ...current, current: id }));
   }
 
   function logOut() {
@@ -227,91 +149,82 @@ export function usePlayers() {
   function addCoin(amount = 1) {
     setState((current) => ({
       ...current,
-      players: current.players.map((player) => (
-        player.name === current.current ? { ...player, coins: player.coins + amount } : player
-      )),
+      players: current.players.map((player) => (player.id === current.current ? { ...player, coins: player.coins + amount } : player)),
     }));
   }
 
   // Saves the current player's best time for a timed topic ("<game>/<topic>").
   function saveRecord(key, time) {
-    if (!state.current) return;
-    updatePlayer(state.current, (player) => ({ ...player, records: { ...player.records, [key]: time } }));
+    updateCurrent((player) => withTopicValue(player, "records", key, time));
   }
 
   // Saves the current player's score for finishing a topic ("<game>/<topic>"), if it's their best.
   function saveScore(key, correct, count) {
-    if (!state.current) return;
-    updatePlayer(state.current, (player) => {
-      const best = player.scores?.[key];
-      if (best && best[0] >= correct) return player;
-      return { ...player, scores: { ...player.scores, [key]: [correct, count] } };
+    updateCurrent((player) => {
+      const best = topicValue(player, "scores", key);
+      return best && best[0] >= correct ? player : withTopicValue(player, "scores", key, [correct, count]);
     });
   }
 
   // Takes coins from the current player. Returns false (and spends nothing) if they can't afford it.
   function spendCoins(amount) {
-    const player = state.players.find((candidate) => candidate.name === state.current);
-    if (!player || player.coins < amount) return false;
-
+    if (!currentPlayer || currentPlayer.coins < amount) return false;
     setState((current) => ({
       ...current,
-      players: current.players.map((candidate) => (
-        candidate.name === current.current ? { ...candidate, coins: candidate.coins - amount } : candidate
-      )),
+      players: current.players.map((player) => (player.id === current.current ? { ...player, coins: player.coins - amount } : player)),
     }));
     return true;
   }
 
-  // Remembers the shuffled words dealt for a topic (e.g. 20 of the CVC words), or forgets them.
-  // A new hand starts a new score, so the topic's answers are forgotten too.
+  // Remembers how a topic's words are dealt (a seed, e.g. 20 of the CVC words in a shuffled
+  // order), or forgets them. A new hand starts a new score, so the topic's answers go too.
   function saveDeck(key, deck) {
-    if (!state.current) return;
-    updatePlayer(state.current, (player) => {
-      const decks = { ...player.decks };
-      if (deck) decks[key] = deck;
-      else delete decks[key];
-      const results = { ...player.results };
-      delete results[key];
-      const { decks: _oldDecks, results: _oldResults, ...rest } = player;
-      return {
-        ...rest,
-        ...(Object.keys(decks).length > 0 && { decks }),
-        ...(Object.keys(results).length > 0 && { results }),
-      };
-    });
+    updateCurrent((player) => withTopicValue(withTopicValue(player, "decks", key, deck ?? undefined), "results", key, undefined));
   }
 
   // Records whether the current player got a question right (by its place in the dealt hand).
   // Only the first answer counts, so going back to a question can't change the score.
   function saveResult(key, index, correct) {
-    if (!state.current || !isCount(index)) return;
-    updatePlayer(state.current, (player) => {
-      const answers = player.results?.[key] ?? [];
+    if (!isCount(index)) return;
+    updateCurrent((player) => {
+      const answers = topicValue(player, "results", key) ?? [];
       if (typeof answers[index] === "boolean") return player;
       const next = Array.from({ length: Math.max(answers.length, index + 1) }, (_, at) => (at === index ? correct : answers[at] ?? null));
-      return { ...player, results: { ...player.results, [key]: next } };
+      return withTopicValue(player, "results", key, next);
     });
   }
 
   // Gives the current player a topic's badge (e.g. "letter-jumble/animals"), once.
   function awardBadge(key) {
-    if (!state.current) return;
-    updatePlayer(state.current, (player) => (
-      player.badges?.includes(key) ? player : { ...player, badges: [...(player.badges ?? []), key] }
-    ));
+    const [gameId, topicId] = splitKey(key);
+    updateCurrent((player) => withListItem(player, gameId, "badges", topicId));
   }
 
-  // Unlocks something for the current player for good (e.g. "tofu", once her house is bought).
+  // Unlocks something for the current player for good: Tofu's house and the park ("tofu", "park",
+  // in Mochi's game), or a Challenge level ("math-logic/k1-level-2@2026-11-01").
   function unlock(key) {
-    if (!state.current) return;
-    updatePlayer(state.current, (player) => (
-      player.unlocks?.includes(key) ? player : { ...player, unlocks: [...(player.unlocks ?? []), key] }
-    ));
+    const [gameId, item] = key.includes("/") ? splitKey(key) : ["dragon", key];
+    updateCurrent((player) => withListItem(player, gameId, "unlocks", item));
   }
+
+  // The site's settings: the current player's own, or (nobody playing) the browser's language.
+  const site = {
+    loaded,
+    language: currentPlayer?.settings.language ?? state.language,
+    tutorialSeen: Boolean(currentPlayer?.settings.tutorialSeen),
+    howToSeen: currentPlayer ? Object.keys(currentPlayer.games).filter((gameId) => howToSeen(currentPlayer, gameId)) : [],
+    setLanguage: (language) => setState((current) => ({
+      ...current,
+      language,
+      players: current.players.map((player) => (player.id === current.current ? { ...player, settings: { ...player.settings, language } } : player)),
+    })),
+    markTutorialSeen: () => updateCurrent((player) => ({ ...player, settings: { ...player.settings, tutorialSeen: true } })),
+    markHowToSeen: (gameId) => updateCurrent((player) => (howToSeen(player, gameId) ? player : withGame(player, gameId, (game) => ({ ...game, tutorial: { seen: true } })))),
+  };
 
   return {
     loaded,
+    site,
     unlock,
     awardBadge,
     saveResult,

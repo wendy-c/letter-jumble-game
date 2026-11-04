@@ -7,11 +7,35 @@ import userEvent from "@testing-library/user-event";
 import GameApp from "./components/GameApp";
 import { games } from "./games-data";
 import { currentPathname, setPathname } from "../test/mock-navigation";
+import { asVersion1 } from "../test/saved-players";
 import { sounds } from "./lib/sounds";
 import { makeTransferCode, readTransferCode, reloadHome } from "./lib/record-transfer";
+import { dealtBy, forgetDeals } from "./lib/player-data";
 
 jest.mock("./lib/sounds", () => ({ sounds: { correct: jest.fn(), oops: jest.fn(), coin: jest.fn(), sparkle: jest.fn() } }));
 jest.mock("./lib/speech", () => ({ speakWord: jest.fn(), speakCantonese: jest.fn(), stopSpeaking: jest.fn() }));
+// A topic's words are dealt from a seed. Here a seed's deal uses Math.random instead, which these
+// tests pin (so the words come in their original order) or vary, and each seed (a new one for each
+// deal) keeps its deal. Dealing from a seed itself is tested in app/lib/player-data.test.js.
+jest.mock("./lib/player-data", () => {
+  const actual = jest.requireActual("./lib/player-data");
+  const { shuffledDeck } = jest.requireActual("./lib/spelling");
+  const deals = new Map();
+  let nextSeed = 0;
+  return {
+    ...actual,
+    newDeckSeed: () => (nextSeed += 1),
+    deckOrder: (deck, size, count) => {
+      if (!Number.isInteger(deck)) return actual.deckOrder(deck, size, count);
+      const key = `${deck}:${size}:${count}`;
+      if (!deals.has(key)) deals.set(key, shuffledDeck(size, count, Math.random));
+      return deals.get(key);
+    },
+    // For the tests: the words a saved seed dealt, and forgetting the deals before each test.
+    dealtBy: (seed) => [...deals].find(([key]) => key.startsWith(`${seed}:`))?.[1] ?? null,
+    forgetDeals: () => deals.clear(),
+  };
+});
 // Loading game records from another browser reloads the page; here it's only noted.
 jest.mock("./lib/record-transfer", () => ({ ...jest.requireActual("./lib/record-transfer"), reloadHome: jest.fn() }));
 // After a right answer, the next question comes straight away (no 1-second wait in tests), and the
@@ -42,6 +66,7 @@ beforeEach(() => {
   window.sessionStorage.clear();
   seenEverything();
   jest.clearAllMocks();
+  forgetDeals();
   // A shuffle with random() just below 1 keeps the original order, so CVC games deal the
   // first 12 words in order (cat, hat, bat, ...). Tests about shuffling override this.
   jest.spyOn(Math, "random").mockReturnValue(0.9999999);
@@ -54,11 +79,21 @@ afterEach(() => {
 // With Math.random pinned, a topic's words are dealt in their original order.
 const inOrder = (count) => [...Array(count).keys()];
 const animalsDeck = { "letter-jumble/animals": inOrder(13) };
+// Saved now: Animals dealt from a seed.
+const animalsDealt = { "letter-jumble/animals": expect.any(Number) };
 
 const ageFor = (gameName) => (/Letter Jumble/.test(gameName) ? "k3" : "k1");
 
+// The current player's own site settings (language, whether they've had the tour), as saved.
+function savedSettings() {
+  const saved = JSON.parse(window.localStorage.getItem(playersKey));
+  return saved?.players.find((player) => player.id === saved.current)?.settings ?? null;
+}
+
+// What's saved about the players, keyed "<game>/<topic>" as the tests describe it (see
+// test/saved-players.js; the saved layout itself is tested in app/lib/player-data.test.js).
 function storedPlayers() {
-  return JSON.parse(window.localStorage.getItem(playersKey));
+  return asVersion1(JSON.parse(window.localStorage.getItem(playersKey)));
 }
 
 async function addPlayer(user, name, age = "k3") {
@@ -69,10 +104,13 @@ async function addPlayer(user, name, age = "k3") {
 }
 
 // Opens a game, creating a player called Ada (of a suitable age) if the "Who's playing?" pop-up appears.
+// A new player hasn't seen the game's how-to-play card yet: it's closed.
 async function openGame(user, gameName, topicName) {
   await user.click(screen.getByRole("button", { name: new RegExp(gameName) }));
   if (screen.queryByRole("dialog", { name: whoIsPlaying })) await addPlayer(user, "Ada", ageFor(gameName));
   await user.click(screen.getByRole("button", { name: new RegExp(topicName) }));
+  const howTo = screen.queryByRole("dialog", { name: /^How to play/ });
+  if (howTo) await user.click(within(howTo).getByRole("button", { name: /Got it/ }));
 }
 
 // A link in the "Home › Game › Topic" breadcrumb trail.
@@ -161,7 +199,7 @@ describe("Home", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(screen.getByLabelText(coinsLabel(1))).toBeInTheDocument();
     expect(storedPlayers()).toEqual({
-      players: [{ name: "Ada", coins: 1, age: "k3", decks: animalsDeck, results: { "letter-jumble/animals": [true] } }],
+      players: [{ name: "Ada", coins: 1, age: "k3", decks: animalsDealt, results: { "letter-jumble/animals": [true] } }],
       current: "Ada",
     });
     expect(sounds.correct).toHaveBeenCalledTimes(1);
@@ -346,8 +384,8 @@ describe("players", () => {
 
     expect(storedPlayers()).toEqual({
       players: [
-        { name: "Ada", coins: 1, age: "k3", progress: { "letter-jumble/animals": 1 }, decks: animalsDeck, results: { "letter-jumble/animals": [true] } },
-        { name: "Elly", coins: 1, age: "k3", progress: { "letter-jumble/animals": 1 }, decks: animalsDeck, results: { "letter-jumble/animals": [true] } },
+        { name: "Ada", coins: 1, age: "k3", progress: { "letter-jumble/animals": 1 }, decks: animalsDealt, results: { "letter-jumble/animals": [true] } },
+        { name: "Elly", coins: 1, age: "k3", progress: { "letter-jumble/animals": 1 }, decks: animalsDealt, results: { "letter-jumble/animals": [true] } },
       ],
       current: "Elly",
     });
@@ -363,7 +401,7 @@ describe("players", () => {
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("What shall we play today?");
     expect(screen.queryByRole("button", { name: /Player options/ })).not.toBeInTheDocument();
-    expect(storedPlayers()).toEqual({ players: [{ name: "Ada", coins: 0, age: "k3", decks: animalsDeck }], current: null });
+    expect(storedPlayers()).toEqual({ players: [{ name: "Ada", coins: 0, age: "k3", decks: animalsDealt }], current: null });
 
     await user.click(screen.getByRole("button", { name: /CVC Sounds/ }));
     expect(screen.getByRole("dialog", { name: whoIsPlaying })).toBeInTheDocument();
@@ -787,7 +825,9 @@ describe("CVC shuffling", () => {
     expect(screen.getByRole("button", { name: /Beginning Sound/ })).toHaveTextContent("10 words to learn");
     await user.click(screen.getByRole("button", { name: /Beginning Sound/ }));
 
-    const deck = storedPlayers().players[0].decks["cvc/beginning-sound"];
+    const dealtSeed = storedPlayers().players[0].decks["cvc/beginning-sound"];
+    expect(dealtSeed).toEqual(expect.any(Number));
+    const deck = dealtBy(dealtSeed);
     expect(deck).toHaveLength(10);
     expect(new Set(deck).size).toBe(10);
     expect(deck).not.toEqual([...Array(10).keys()]);
@@ -795,7 +835,7 @@ describe("CVC shuffling", () => {
 
     await user.click(crumb("CVC Sounds"));
     await user.click(screen.getByRole("button", { name: /Beginning Sound/ }));
-    expect(storedPlayers().players[0].decks["cvc/beginning-sound"]).toEqual(deck);
+    expect(storedPlayers().players[0].decks["cvc/beginning-sound"]).toBe(dealtSeed);
   });
 
   it("deals a fresh hand of words after finishing all 10", async () => {
@@ -1006,7 +1046,7 @@ describe("Consonant Digraphs", () => {
 
     // With the order pinned, the first word is "chair": one wide gap, then "air".
     expect(screen.getByLabelText("Word 1 of 10")).toBeInTheDocument();
-    expect(storedPlayers().players[0].decks["digraphs/ch-sh-th"]).toHaveLength(10);
+    expect(dealtBy(storedPlayers().players[0].decks["digraphs/ch-sh-th"])).toHaveLength(10);
     const gap = screen.getByLabelText("Letter 1 of 5, empty");
     expect(gap).toHaveClass("letter-slot-wide");
     expect(screen.getByLabelText("Letter 3 of 5, a")).toHaveClass("letter-given");
@@ -1069,8 +1109,12 @@ describe("Letter Jumble - Starters", () => {
   });
 
   it("shows the hyphen in T-shirt and only asks for its letters", async () => {
-    const deck = { "starters/clothing-and-accessories": [7, ...[...Array(18).keys()].filter((index) => index !== 7)] };
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Elly", coins: 0, age: "k3", decks: deck }], current: "Elly" }));
+    // T-shirt (word 7) dealt second, with the first word done: a round in progress keeps its order.
+    const key = "starters/clothing-and-accessories";
+    const deck = { [key]: [0, 7, ...[...Array(18).keys()].filter((index) => index !== 0 && index !== 7)] };
+    window.localStorage.setItem(playersKey, JSON.stringify({
+      players: [{ name: "Elly", coins: 0, age: "k3", decks: deck, progress: { [key]: 1 }, results: { [key]: [true] } }], current: "Elly",
+    }));
     setPathname("/starters/clothing-and-accessories");
     const user = userEvent.setup();
     render(<GameApp />);
@@ -1116,7 +1160,7 @@ describe("measure words", () => {
     expect(screen.getByRole("button", { name: /量詞/ })).toHaveTextContent("每次 20 題");
     await user.click(screen.getByRole("button", { name: /量詞/ }));
 
-    const deck = storedPlayers().players[0].decks["measure-words/measure-words"];
+    const deck = dealtBy(storedPlayers().players[0].decks["measure-words/measure-words"]);
     expect(deck).toHaveLength(20);
     expect(screen.getByLabelText("Word 1 of 20")).toBeInTheDocument();
 
@@ -1144,7 +1188,7 @@ describe("成語", () => {
     expect(currentPathname()).toBe("/idioms");
     await user.click(screen.getByRole("button", { name: /成語/ }));
 
-    expect(storedPlayers().players[0].decks["idioms/idioms"]).toHaveLength(20);
+    expect(dealtBy(storedPlayers().players[0].decks["idioms/idioms"])).toHaveLength(20);
     expect(screen.getByLabelText("Word 1 of 20")).toBeInTheDocument();
 
     // With the order pinned, the first question is 打草驚蛇.
@@ -1163,7 +1207,7 @@ describe("成語", () => {
 });
 
 describe("answers move around", () => {
-  // Where 紅's picture sits, when it's the first question of a dealt hand.
+  // Where 紅's picture sits, when it's the first question of a dealt hand (`deck`, a seed).
   function redSpot(deck) {
     window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1", decks: { "chinese/colours": deck } }], current: "Ada" }));
     setPathname("/chinese/colours");
@@ -1174,15 +1218,8 @@ describe("answers move around", () => {
   }
 
   it("puts the right answer in a different place with each new deal, but not on a reload", () => {
-    const deal = (rest) => [0, ...rest];
-    const deals = [
-      deal([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
-      deal([12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]),
-      deal([5, 1, 9, 3, 11, 7, 2, 12, 4, 8, 6, 10]),
-      deal([2, 4, 6, 8, 10, 12, 1, 3, 5, 7, 9, 11]),
-      deal([7, 3, 11, 1, 9, 5, 12, 8, 2, 10, 4, 6]),
-      deal([9, 12, 3, 6, 1, 4, 7, 10, 2, 5, 8, 11]),
-    ];
+    // Each deal is saved as its own seed (with the order pinned, 紅 is always dealt first).
+    const deals = [11, 22, 33, 44, 55, 66];
     const spots = deals.map(redSpot);
     spots.forEach((spot) => expect(spot).toBeGreaterThanOrEqual(0));
     expect(new Set(spots).size).toBeGreaterThan(1);
@@ -1393,7 +1430,7 @@ describe("tour for a new family", () => {
     await user.click(within(language).getByRole("button", { name: "繁體中文" }));
 
     // The site and the rest of the tour are in Chinese now.
-    expect(JSON.parse(window.localStorage.getItem(siteKey))).toMatchObject({ language: "zh" });
+    expect(savedSettings()).toMatchObject({ language: "zh" });
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("今天玩甚麼？");
     expect(screen.getByRole("dialog", { name: "選一本魔法書！" })).toHaveTextContent("1 / 4");
     await user.click(screen.getByRole("button", { name: /下一步/ }));
@@ -1408,7 +1445,7 @@ describe("tour for a new family", () => {
     await user.click(screen.getByRole("button", { name: /開始玩吧/ }));
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(JSON.parse(window.localStorage.getItem(siteKey))).toMatchObject({ tutorialSeen: true });
+    expect(savedSettings()).toMatchObject({ tutorialSeen: true });
   });
 
   it("can be skipped, in English, and isn't shown again", async () => {
@@ -1419,7 +1456,7 @@ describe("tour for a new family", () => {
     expect(screen.getByRole("dialog", { name: "Pick a magic book!" })).toHaveTextContent("1 of 4");
     await user.click(screen.getByRole("button", { name: "Skip" }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(JSON.parse(window.localStorage.getItem(siteKey))).toMatchObject({ language: "en", tutorialSeen: true });
+    expect(savedSettings()).toMatchObject({ language: "en", tutorialSeen: true });
     unmount();
 
     // A new visit: no welcome card or tour, now there's a player and the tour was seen.
@@ -1450,9 +1487,11 @@ describe("welcome card", () => {
     await user.click(within(welcome).getByRole("radio", { name: "K1" }));
     await user.click(within(welcome).getByRole("button", { name: /Let’s Start/ }));
 
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    // The welcome card closes and the new player's tour starts.
+    expect(screen.queryByRole("dialog", { name: /Welcome/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "Hello, what language do you prefer?" })).toBeInTheDocument();
     expect(storedPlayers()).toEqual({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" });
-    expect(JSON.parse(window.localStorage.getItem(siteKey))).toMatchObject({ language: "en" });
+    expect(savedSettings()).toMatchObject({ language: "en" });
   });
 
   it("greets in 繁體 once the site's language has been changed in the player menu", async () => {
@@ -1468,8 +1507,11 @@ describe("welcome card", () => {
     await user.type(within(chinese).getByRole("textbox"), "Ada");
     await user.click(within(chinese).getByRole("radio", { name: "K1（幼兒班）" }));
     await user.click(within(chinese).getByRole("button", { name: /一起玩吧！/ }));
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    // The new player keeps the language, and their tour starts.
+    expect(screen.queryByRole("dialog", { name: /歡迎/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "Hello, what language do you prefer?" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("今天玩甚麼？");
+    expect(savedSettings()).toEqual({ language: "zh", tutorialSeen: false });
   });
 
   it("isn't shown to a family that already has players", async () => {
@@ -1519,7 +1561,7 @@ describe("site language", () => {
     expect(screen.getByRole("menuitem", { name: /我的徽章/ })).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("今天玩甚麼？");
     expect(screen.getByRole("heading", { level: 2, name: /劍橋英語考試預備/ })).toBeInTheDocument();
-    expect(JSON.parse(window.localStorage.getItem(siteKey))).toMatchObject({ language: "zh" });
+    expect(savedSettings()).toMatchObject({ language: "zh" });
 
     // Inside an English game, the game's words stay English; the breadcrumb is the site's.
     await user.click(screen.getByRole("button", { name: /Letter Jumble - Movers/ }));
@@ -1652,9 +1694,10 @@ describe("shuffle questions", () => {
     await user.click(screen.getByRole("button", { name: /Shuffle questions/ }));
 
     const player = storedPlayers().players[0];
-    expect(player.decks["cvc/beginning-sound"]).toHaveLength(10);
-    expect(player.decks["cvc/beginning-sound"]).not.toEqual(inOrder(10));
-    expect(player.decks["cvc/beginning-sound"].some((index) => index >= 10)).toBe(true);
+    const dealt = dealtBy(player.decks["cvc/beginning-sound"]);
+    expect(dealt).toHaveLength(10);
+    expect(dealt).not.toEqual(inOrder(10));
+    expect(dealt.some((index) => index >= 10)).toBe(true);
     expect(player.progress["cvc/beginning-sound"]).toBe(0);
     expect(player.results).toBeUndefined();
     expect(screen.getByLabelText("Word 1 of 10")).toBeInTheDocument();
@@ -1670,7 +1713,7 @@ describe("shuffle questions", () => {
     render(<GameApp />);
     await user.click(await screen.findByRole("button", { name: /Browse/ }));
     await user.click(screen.getByRole("button", { name: /打亂題目次序/ }));
-    const deck = storedPlayers().players[0].decks["chinese/clothes"];
+    const deck = dealtBy(storedPlayers().players[0].decks["chinese/clothes"]);
     expect([...deck].sort()).toEqual(inOrder(7));
     expect(deck).not.toEqual(inOrder(7));
   });
@@ -1848,7 +1891,7 @@ describe("parent mode", () => {
       const code = within(transfer()).getByLabelText("Your code").value;
       expect(code).toMatch(/^RAINBOW1-/);
       const { players } = readTransferCode(code);
-      expect(players.map((player) => [player.name, player.coins, player.badges])).toEqual([["Ada", 37, ["cvc/beginning-sound"]], ["Elly", 0, undefined]]);
+      expect(players.map((player) => [player.name, player.coins, player.games.cvc?.badges])).toEqual([["Ada", 37, ["beginning-sound"]], ["Elly", 0, undefined]]);
 
       await user.click(within(transfer()).getByRole("button", { name: "Copy" }));
       expect(within(transfer()).getByRole("button", { name: "Copied!" })).toBeInTheDocument();
@@ -2006,7 +2049,7 @@ describe("parent mode", () => {
     expect(screen.getByRole("button", { name: /Beginning Sound/ })).toHaveTextContent("15 words to learn");
     await user.click(screen.getByRole("button", { name: /Beginning Sound/ }));
     expect(screen.getByLabelText("Word 1 of 15")).toBeInTheDocument();
-    expect(storedPlayers().players[0].decks["cvc/beginning-sound"]).toHaveLength(15);
+    expect(dealtBy(storedPlayers().players[0].decks["cvc/beginning-sound"])).toHaveLength(15);
   });
 
   it("turning a game off hides it from that child only", async () => {
@@ -2128,7 +2171,7 @@ describe("shuffled questions", () => {
     render(<GameApp />);
 
     await screen.findByLabelText("Word 1 of 13");
-    const deck = storedPlayers().players[0].decks["letter-jumble/animals"];
+    const deck = dealtBy(storedPlayers().players[0].decks["letter-jumble/animals"]);
     expect([...deck].sort((first, second) => first - second)).toEqual(inOrder(13));
     expect(deck).not.toEqual(inOrder(13));
   });

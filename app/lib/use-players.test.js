@@ -1,13 +1,20 @@
 import { act, renderHook } from "@testing-library/react";
+import { asVersion1, playerAsVersion1 } from "../../test/saved-players";
 import { normalizeName, playersStorageKey, usePlayers } from "./use-players";
 
+// What's saved, keyed "<game>/<topic>" (see test/saved-players.js).
 function stored() {
-  return JSON.parse(window.localStorage.getItem(playersStorageKey));
+  return asVersion1(JSON.parse(window.localStorage.getItem(playersStorageKey)));
 }
 
 function seed(state) {
   window.localStorage.setItem(playersStorageKey, JSON.stringify(state));
 }
+
+// The id of a player, found by name (players are matched by id).
+const idOf = (result, name) => result.current.players.find((player) => player.name === name)?.id;
+// The current player, keyed "<game>/<topic>" (see test/saved-players.js).
+const current = (result) => playerAsVersion1(result.current.currentPlayer);
 
 afterEach(() => {
   window.localStorage.clear();
@@ -24,7 +31,7 @@ describe("usePlayers", () => {
   it("starts with no players and nobody playing", () => {
     const { result } = renderHook(() => usePlayers());
     expect(result.current.players).toEqual([]);
-    expect(result.current.currentPlayer).toBeNull();
+    expect(current(result)).toBeNull();
   });
 
   it("creates a player, selects them and saves them", () => {
@@ -36,8 +43,46 @@ describe("usePlayers", () => {
     });
 
     expect(problem).toBeNull();
-    expect(result.current.currentPlayer).toEqual({ name: "Ada", coins: 0, age: "k3" });
+    expect(current(result)).toEqual({ name: "Ada", coins: 0, age: "k3" });
     expect(stored()).toEqual({ players: [{ name: "Ada", coins: 0, age: "k3" }], current: "Ada" });
+  });
+
+  it("gives each new player their own id, kept when saved and read again", () => {
+    const { result, unmount } = renderHook(() => usePlayers());
+    act(() => {
+      result.current.createPlayer("Ada", "k1");
+    });
+    act(() => {
+      result.current.createPlayer("Elly", "k3");
+    });
+    const [ada, elly] = result.current.players;
+    expect(ada.id).toMatch(/^[0-9a-f-]{36}$/);
+    expect(elly.id).not.toBe(ada.id);
+    expect(result.current.currentPlayer.id).toBe(elly.id);
+    unmount();
+    const { result: again } = renderHook(() => usePlayers());
+    expect(again.current.players.map((player) => player.id)).toEqual([ada.id, elly.id]);
+    expect(again.current.currentPlayer.id).toBe(elly.id);
+  });
+
+  it("keeps each player's own site settings, and the browser's language for when nobody is playing", () => {
+    window.localStorage.setItem("letter-jumble:site", JSON.stringify({ language: "zh", howToSeen: ["cvc"], tutorialSeen: true }));
+    seed({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" });
+    const { result } = renderHook(() => usePlayers());
+    // Moved from the browser's settings into Ada's own.
+    expect(result.current.site).toMatchObject({ language: "zh", tutorialSeen: true, howToSeen: ["cvc"] });
+    expect(window.localStorage.getItem("letter-jumble:site")).toBeNull();
+    act(() => result.current.site.setLanguage("en"));
+    act(() => result.current.site.markHowToSeen("dragon"));
+    expect(result.current.site).toMatchObject({ language: "en", howToSeen: ["cvc", "dragon"] });
+    act(() => result.current.logOut());
+    expect(result.current.site).toMatchObject({ language: "en", tutorialSeen: false, howToSeen: [] });
+    act(() => {
+      result.current.createPlayer("Elly", "k3");
+    });
+    // A new player starts in the site's language, with nothing seen yet.
+    expect(result.current.site).toMatchObject({ language: "en", tutorialSeen: false, howToSeen: [] });
+    expect(stored().players.map((player) => player.name)).toEqual(["Ada", "Elly"]);
   });
 
   it.each([
@@ -71,8 +116,8 @@ describe("usePlayers", () => {
   it("sets the age of a player saved before ages existed", () => {
     seed({ players: [{ name: "Ada", coins: 2 }], current: null });
     const { result } = renderHook(() => usePlayers());
-    act(() => result.current.setPlayerAge("Ada", "k1"));
-    act(() => result.current.setPlayerAge("Ada", "teen"));
+    act(() => result.current.setPlayerAge(idOf(result, "Ada"), "k1"));
+    act(() => result.current.setPlayerAge(idOf(result, "Ada"), "teen"));
     expect(stored().players).toEqual([{ name: "Ada", coins: 2, age: "k1" }]);
   });
 
@@ -100,7 +145,7 @@ describe("usePlayers", () => {
     act(() => result.current.saveProgress("letter-jumble/animals", 5));
     act(() => result.current.saveProgress("letter-jumble/animals", -1));
 
-    expect(result.current.currentPlayer.progress).toEqual({ "letter-jumble/animals": 5, "letter-jumble/food-and-drink": 2 });
+    expect(current(result).progress).toEqual({ "letter-jumble/animals": 5, "letter-jumble/food-and-drink": 2 });
     expect(stored().players[1]).toEqual({ name: "Elly", coins: 0, age: "k1" });
   });
 
@@ -110,7 +155,7 @@ describe("usePlayers", () => {
       current: "Ada",
     });
     const { result } = renderHook(() => usePlayers());
-    expect(result.current.currentPlayer).toEqual({ name: "Ada", coins: 1, progress: { "cvc/beginning-sound": 3 } });
+    expect(current(result)).toEqual({ name: "Ada", coins: 1, progress: { "cvc/beginning-sound": 3 } });
   });
 
   it("does not allow the same name twice, ignoring case", () => {
@@ -131,11 +176,11 @@ describe("usePlayers", () => {
     const { result } = renderHook(() => usePlayers());
 
     act(() => result.current.addCoin());
-    act(() => result.current.selectPlayer("Ada"));
+    act(() => result.current.selectPlayer(idOf(result, "Ada")));
     act(() => result.current.addCoin());
 
     expect(stored().players).toEqual([{ name: "Ada", coins: 3 }, { name: "Elly", coins: 6 }]);
-    expect(result.current.currentPlayer).toEqual({ name: "Ada", coins: 3 });
+    expect(current(result)).toEqual({ name: "Ada", coins: 3 });
   });
 
   it("spends coins from the current player only when they can afford it", () => {
@@ -147,7 +192,7 @@ describe("usePlayers", () => {
       spent = result.current.spendCoins(2);
     });
     expect(spent).toBe(true);
-    expect(result.current.currentPlayer.coins).toBe(1);
+    expect(current(result).coins).toBe(1);
 
     act(() => {
       spent = result.current.spendCoins(2);
@@ -172,7 +217,7 @@ describe("usePlayers", () => {
 
     act(() => result.current.logOut());
 
-    expect(result.current.currentPlayer).toBeNull();
+    expect(current(result)).toBeNull();
     expect(stored()).toEqual({ players: [{ name: "Ada", coins: 4 }], current: null });
   });
 
@@ -198,7 +243,7 @@ describe("usePlayers", () => {
 
     seed({ players: [{ name: "Ada", coins: -1 }, { name: "Elly", coins: 3 }, { coins: 2 }], current: "Nobody" });
     const { result: second } = renderHook(() => usePlayers());
-    expect(second.current.players).toEqual([{ name: "Elly", coins: 3 }]);
+    expect(second.current.players.map(playerAsVersion1)).toEqual([{ name: "Elly", coins: 3 }]);
     expect(second.current.currentPlayer).toBeNull();
   });
 
@@ -215,7 +260,7 @@ describe("usePlayers", () => {
       result.current.createPlayer("Ada", "k1");
     });
     act(() => result.current.addCoin());
-    expect(result.current.currentPlayer).toEqual({ name: "Ada", coins: 1, age: "k1" });
+    expect(current(result)).toEqual({ name: "Ada", coins: 1, age: "k1" });
   });
 
   it("turns games on and off for one child, keeping only changes from the age default", () => {
@@ -223,13 +268,13 @@ describe("usePlayers", () => {
     const { result } = renderHook(() => usePlayers());
 
     // cvc is on for 3-4 by default; letter-jumble is off by default.
-    act(() => result.current.setGameEnabled("Ada", "cvc", false, true));
-    act(() => result.current.setGameEnabled("Ada", "letter-jumble", true, false));
+    act(() => result.current.setGameEnabled(idOf(result, "Ada"), "cvc", false, true));
+    act(() => result.current.setGameEnabled(idOf(result, "Ada"), "letter-jumble", true, false));
     expect(stored().players[0].gameSettings).toEqual({ cvc: false, "letter-jumble": true });
     expect(stored().players[1].gameSettings).toBeUndefined();
 
-    act(() => result.current.setGameEnabled("Ada", "cvc", true, true));
-    act(() => result.current.setGameEnabled("Ada", "letter-jumble", false, false));
+    act(() => result.current.setGameEnabled(idOf(result, "Ada"), "cvc", true, true));
+    act(() => result.current.setGameEnabled(idOf(result, "Ada"), "letter-jumble", false, false));
     expect(stored().players[0].gameSettings).toBeUndefined();
   });
 
@@ -246,7 +291,7 @@ describe("usePlayers", () => {
   it("keeps saved badges and drops anything that isn't one", () => {
     seed({ players: [{ name: "Ada", coins: 0, age: "k3", badges: ["cvc/middle-sound", 3, "", "cvc/middle-sound"] }], current: "Ada" });
     const { result } = renderHook(() => usePlayers());
-    expect(result.current.currentPlayer.badges).toEqual(["cvc/middle-sound"]);
+    expect(current(result).badges).toEqual(["cvc/middle-sound"]);
   });
 
   it("keeps only the first answer to each question, and forgets a topic's answers with its hand", () => {
@@ -265,7 +310,7 @@ describe("usePlayers", () => {
   it("drops saved answers that aren't right/wrong", () => {
     seed({ players: [{ name: "Ada", coins: 0, age: "k3", results: { "cvc/middle-sound": [true, null, false], bad: [1], worse: "yes" } }], current: "Ada" });
     const { result } = renderHook(() => usePlayers());
-    expect(result.current.currentPlayer.results).toEqual({ "cvc/middle-sound": [true, null, false] });
+    expect(current(result).results).toEqual({ "cvc/middle-sound": [true, null, false] });
   });
 
   it("unlocks things for the current player for good, once", () => {
@@ -280,7 +325,7 @@ describe("usePlayers", () => {
   it("drops game settings that aren't on/off", () => {
     seed({ players: [{ name: "Ada", coins: 0, age: "k1", gameSettings: { cvc: false, dragon: "yes" } }], current: "Ada" });
     const { result } = renderHook(() => usePlayers());
-    expect(result.current.currentPlayer.gameSettings).toEqual({ cvc: false });
+    expect(current(result).gameSettings).toEqual({ cvc: false });
   });
 });
 

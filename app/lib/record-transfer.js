@@ -2,7 +2,7 @@
 // (the localStorage entries starting "letter-jumble:": every child with their coins, badges and
 // progress, and the site's settings) becomes one code to copy; pasting that code in the other
 // browser replaces what's saved there.
-import { playersStorageKey, readPlayersText } from "./use-players";
+import { playersStorageKey, readPlayersText, siteStorageKey } from "./use-players";
 
 const keyPrefix = "letter-jumble:";
 // Codes start with this, so a mistyped or unrelated paste is easy to tell apart.
@@ -32,7 +32,13 @@ export function readTransferCode(pasted) {
     const { data } = JSON.parse(fromBase64(code.slice(codeStart.length)));
     const entries = Object.entries(data ?? {});
     if (entries.length === 0 || entries.some(([key, value]) => !key.startsWith(keyPrefix) || typeof value !== "string")) return { error: "invalid" };
-    const { players } = readPlayersText(data[playersStorageKey]);
+    let site = null;
+    try {
+      site = JSON.parse(data[siteStorageKey] ?? "null");
+    } catch {
+      // A code from before site settings moved to players, with unreadable ones: left out.
+    }
+    const { players } = readPlayersText(data[playersStorageKey], site);
     if (players.length === 0) return { error: "noPlayers" };
     return { data, players };
   } catch {

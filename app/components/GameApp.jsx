@@ -32,12 +32,12 @@ import AnswerToast from "./AnswerToast";
 import SiteHeader from "./SiteHeader";
 import TopicMenu from "./TopicMenu";
 import WordMenu from "./WordMenu";
-import { getSpellingGuides, scramble, seededRandom, shuffled, shuffledDeck, slotCount } from "../lib/spelling";
+import { getSpellingGuides, scramble, seededRandom, shuffled, slotCount } from "../lib/spelling";
+import { deckOrder, gameSetting, hasBadge, newDeckSeed, topicValue, unlocksOf } from "../lib/player-data";
 import { speakWord, stopSpeaking } from "../lib/speech";
 import { answerToastTime, nextQuestionPause } from "../lib/timing";
 import { sounds } from "../lib/sounds";
 import { usePlayers } from "../lib/use-players";
-import { useSiteSettings } from "../lib/use-site-settings";
 import HowToPlayDialog, { AboutButton, AboutDialog, HowToPlayButton, hasAbout, hasHowToPlay, howToLanguage } from "./HowToPlayDialog";
 import { LanguageContext, gameName, textFor } from "../i18n";
 import Tutorial from "./Tutorial";
@@ -85,10 +85,9 @@ export default function GameApp() {
   const { gameId, topicId } = parsePath(pathname);
 
   const {
-    loaded, players, currentPlayer, createPlayer, setPlayerAge, selectPlayer, logOut, addCoin, saveRecord, saveScore, spendCoins, saveProgress, saveDeck,
+    loaded, site, players, currentPlayer, createPlayer, setPlayerAge, selectPlayer, logOut, addCoin, saveRecord, saveScore, spendCoins, saveProgress, saveDeck,
     setGameEnabled, setSpellingGuide, setQuestionCount, awardBadge, saveResult, unlock,
   } = usePlayers();
-  const site = useSiteSettings();
   const text = textFor(site.language);
   const [howToOpen, setHowToOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -125,9 +124,9 @@ export default function GameApp() {
   // The dragon game: "/dragon" is Rainbow Village once Tofu has moved in (Mochi's den before),
   // "/dragon/village" is always the village, and "/dragon/mochi" or "/dragon/tofu" is a dragon's
   // den. Tofu's house needs unlocking first, from the village.
-  const tofuUnlocked = Boolean(currentPlayer?.unlocks?.includes("tofu"));
+  const tofuUnlocked = unlocksOf(currentPlayer, "dragon").includes("tofu");
   // The park (where Mochi and Tofu play together) can be unlocked once Tofu has moved in.
-  const parkUnlocked = tofuUnlocked && Boolean(currentPlayer?.unlocks?.includes("park"));
+  const parkUnlocked = tofuUnlocked && unlocksOf(currentPlayer, "dragon").includes("park");
   const dragonPlace = selectedGame?.id === "dragon" ? topicId ?? (tofuUnlocked ? "village" : "mochi") : null;
   const isDragonPlace = (place) => place === "village" || place === "mochi" || (place === "tofu" && tofuUnlocked) || (place === "park" && parkUnlocked);
   const categoryKey = routeTopic ? `${selectedGame.id}/${routeTopic.id}` : null;
@@ -135,17 +134,19 @@ export default function GameApp() {
   // back continues the same order. Topics with `wordsPerGame` (CVC, 量詞) deal only that many; in
   // CVC Sounds, Digraphs and Blends a parent can choose how many (Parent mode).
   const roundSize = (topic) => Math.min(
-    (selectedGame?.questionCount && currentPlayer?.questionCounts?.[selectedGame.id]) || topic.wordsPerGame || Infinity,
+    (selectedGame?.questionCount && gameSetting(currentPlayer, selectedGame.id, "questionCount")) || topic.wordsPerGame || Infinity,
     topic.words.length,
   );
   const handSize = routeTopic ? roundSize(routeTopic) : 0;
-  const deck = routeTopic ? currentPlayer?.decks?.[categoryKey] : null;
+  // The dealt words: from the saved seed (or an order saved before seeds, until its round is done).
+  const savedDeck = routeTopic ? topicValue(currentPlayer, "decks", categoryKey) : null;
+  const deck = routeTopic ? deckOrder(savedDeck, routeTopic.words.length, handSize) : null;
   const validDeck = Boolean(deck) && deck.length === handSize && new Set(deck).size === handSize &&
     deck.every((index) => index < routeTopic.words.length);
   // The answers move around with every deal too: picture, noun and character choices, and CVC
   // letters (except the middle sound's a-e-i-o-u, which are always all there). They're mixed from
   // the dealt hand, so a reload mid-question doesn't move them.
-  const dealSeed = validDeck ? `${categoryKey}:${deck.join(",")}` : "";
+  const dealSeed = validDeck ? `${categoryKey}:${Array.isArray(savedDeck) ? savedDeck.join(",") : savedDeck}` : "";
   const selectedCategory = routeTopic && validDeck
     ? { ...routeTopic, words: deck.map((index, position) => mixAnswers(routeTopic.words[index], seededRandom(`${dealSeed}:${position}`))) }
     : null;
@@ -202,7 +203,7 @@ export default function GameApp() {
     placed.every((tile, slotIndex) => tile !== null && tiles[tile] === gapAnswer(blanks[slotIndex]));
   const allPlaced = placed.every((tile) => tile !== null);
   // The spelling guide is a parent setting for each child and Letter Jumble game (in Parent mode).
-  const showSpellingGuide = Boolean(selectedGame?.spellingGuide && currentPlayer?.spellingGuide?.includes(selectedGame.id));
+  const showSpellingGuide = Boolean(selectedGame?.spellingGuide && gameSetting(currentPlayer, selectedGame.id, "spellingGuide"));
   const guides = showSpellingGuide ? getSpellingGuides(answer) : null;
 
   useEffect(() => () => {
@@ -241,14 +242,14 @@ export default function GameApp() {
     if (!routeTopic || !currentPlayer || validDeck) return;
     // Keeps the child's saved place: dealing only happens the first time, or after a topic is
     // finished (when the place is already back at the start).
-    saveDeck(categoryKey, shuffledDeck(routeTopic.words.length, handSize));
+    saveDeck(categoryKey, newDeckSeed());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categoryKey, currentPlayer?.name, validDeck]);
+  }, [categoryKey, currentPlayer?.id, validDeck]);
 
   // Opening a topic (or switching player inside one) starts at the word that player got up to.
   useEffect(() => {
     if (!selectedCategory) return;
-    const saved = currentPlayer?.progress?.[categoryKey] ?? 0;
+    const saved = topicValue(currentPlayer, "progress", categoryKey) ?? 0;
     const start = saved < selectedCategory.words.length ? saved : 0;
     setPosition({ key: categoryKey, round: start });
     setPlaced(Array(slotCount(selectedCategory.words[start], start)).fill(null));
@@ -260,7 +261,7 @@ export default function GameApp() {
     setTimer({ key: categoryKey, startedAt: selectedCategory.timed && start === 0 ? Date.now() : null });
     // Only when the topic, player or dealt words change, not on every progress save.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categoryKey, currentPlayer?.name, validDeck]);
+  }, [categoryKey, currentPlayer?.id, validDeck]);
 
   // After a right answer, on to the next question by itself. Leaving the topic (or picking another
   // word) first cancels it.
@@ -327,8 +328,11 @@ export default function GameApp() {
     closePlayerDialog();
   }
 
+  // The player dialog picks players by name (names are unique); the store works with their ids.
+  const idOf = (name) => players.find((player) => player.name === name)?.id ?? null;
+
   function choosePlayer(name, age) {
-    selectPlayer(name);
+    selectPlayer(idOf(name));
     finishChoosingPlayer({ ...players.find((player) => player.name === name), age });
   }
 
@@ -483,12 +487,12 @@ export default function GameApp() {
   function finishTopic() {
     saveProgress(categoryKey, 0);
     setAnswered(null);
-    const results = currentPlayer?.results?.[categoryKey] ?? [];
+    const results = topicValue(currentPlayer, "results", categoryKey) ?? [];
     const count = selectedCategory.words.length;
     const correct = selectedCategory.words.filter((_, index) => results[index] === true).length;
-    const hasBadge = Boolean(currentPlayer?.badges?.includes(categoryKey));
+    const badgeBefore = hasBadge(currentPlayer, categoryKey);
     const perfect = correct === count;
-    const newBadge = perfect && !hasBadge;
+    const newBadge = perfect && !badgeBefore;
     if (newBadge) awardBadge(categoryKey);
     // Every answer right earns bonus coins too, each time.
     if (perfect) addCoin(perfectScoreBonus);
@@ -506,7 +510,7 @@ export default function GameApp() {
     let speed = null;
     if (routeTopic.timed) {
       const time = timer.key === categoryKey && timer.startedAt ? Date.now() - timer.startedAt : null;
-      const best = currentPlayer?.records?.[categoryKey] ?? null;
+      const best = topicValue(currentPlayer, "records", categoryKey) ?? null;
       const newRecord = correct === count && time !== null && (best === null || time < best);
       if (newRecord) saveRecord(categoryKey, time);
       const bonus = newRecord && best !== null ? speedRecordBonus : 0;
@@ -514,7 +518,7 @@ export default function GameApp() {
       speed = { time, best, newRecord, bonus };
     }
     setCompletedTopic({
-      name: selectedCategory.name, count, correct, hasBadge, bonus: perfect ? perfectScoreBonus : 0,
+      name: selectedCategory.name, count, correct, hasBadge: badgeBefore, bonus: perfect ? perfectScoreBonus : 0,
       badge: newBadge ? { name: routeTopic.name, image: badgeImage(selectedGame.id, routeTopic.id) } : null,
       nextLevel: opensLevel ? nextLevel.name : null,
       speed,
@@ -549,8 +553,9 @@ export default function GameApp() {
   // only some of their words (wordsPerGame) pick them again from the whole list. A new hand starts
   // a new score, so earlier answers in this round are forgotten.
   function shuffleQuestions() {
-    const newDeck = shuffledDeck(routeTopic.words.length, handSize);
-    saveDeck(categoryKey, newDeck);
+    const seed = newDeckSeed();
+    const newDeck = deckOrder(seed, routeTopic.words.length, handSize);
+    saveDeck(categoryKey, seed);
     saveProgress(categoryKey, 0);
     setPosition({ key: categoryKey, round: 0 });
     setTimer({ key: categoryKey, startedAt: routeTopic.timed ? Date.now() : null });
@@ -680,9 +685,9 @@ export default function GameApp() {
             title={gameName(text, selectedGame, currentPlayer?.age)}
             levels={gameTopics}
             lockFor={(level) => levelState(level, currentPlayer)}
-            scoreFor={(level) => currentPlayer?.scores?.[`${selectedGame.id}/${level.id}`] ?? null}
-            progressFor={(level) => currentPlayer?.progress?.[`${selectedGame.id}/${level.id}`] ?? 0}
-            mapKey={`letter-jumble:level-map:${currentPlayer?.name ?? ""}:${currentPlayer?.age ?? ""}`}
+            scoreFor={(level) => topicValue(currentPlayer, "scores", `${selectedGame.id}/${level.id}`) ?? null}
+            progressFor={(level) => topicValue(currentPlayer, "progress", `${selectedGame.id}/${level.id}`) ?? 0}
+            mapKey={`letter-jumble:level-map:${currentPlayer?.id ?? ""}:${currentPlayer?.age ?? ""}`}
             breadcrumbs={breadcrumbs}
             onSelectLevel={selectCategory}
           />
@@ -697,10 +702,10 @@ export default function GameApp() {
             isMeasure={isMeasure}
             isIdiom={isIdiom}
             isSpeed={isSpeed}
-            badgeFor={(topic) => (currentPlayer?.badges?.includes(`${selectedGame.id}/${topic.id}`) ? badgeImage(selectedGame.id, topic.id) : null)}
-            recordFor={(topic) => currentPlayer?.records?.[`${selectedGame.id}/${topic.id}`] ?? null}
+            badgeFor={(topic) => (hasBadge(currentPlayer, `${selectedGame.id}/${topic.id}`) ? badgeImage(selectedGame.id, topic.id) : null)}
+            recordFor={(topic) => topicValue(currentPlayer, "records", `${selectedGame.id}/${topic.id}`) ?? null}
             topics={gameTopics}
-            progressFor={(topic) => currentPlayer?.progress?.[`${selectedGame.id}/${topic.id}`] ?? 0}
+            progressFor={(topic) => topicValue(currentPlayer, "progress", `${selectedGame.id}/${topic.id}`) ?? 0}
             roundSizeFor={roundSize}
             breadcrumbs={breadcrumbs}
             onSelectTopic={selectCategory}
@@ -883,7 +888,7 @@ export default function GameApp() {
           askAgeFor={askAgeFor}
           onSelect={choosePlayer}
           onCreate={addPlayer}
-          onSetAge={setPlayerAge}
+          onSetAge={(name, age) => setPlayerAge(idOf(name), age)}
           onClose={closePlayerDialog}
         />
       )}

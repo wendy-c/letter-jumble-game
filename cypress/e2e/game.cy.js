@@ -1,3 +1,5 @@
+import { asVersion1 } from "../../test/saved-players";
+
 const playersKey = "letter-jumble:players";
 
 // Every visit skips the welcome and how-to-play cards, as if they'd been seen before.
@@ -6,12 +8,14 @@ const seenEverything = JSON.stringify({
   howToSeen: ["cvc", "digraphs", "starters", "letter-jumble", "chinese", "chinese-advanced", "measure-words", "idioms", "dragon"],
 });
 
-// Every topic's words are dealt in a random order. Once a page has loaded, random() just below 1
-// keeps the original order (bat, dolphin, ...), so tests know which word comes first. (It can't
-// be stubbed earlier: Next.js needs a real Math.random while starting up.)
+// Every topic's words are dealt in a random order (from a seed). `__dealInOrder` keeps the original
+// order (bat, dolphin, ...), so tests know which word comes first; and once a page has loaded,
+// random() just below 1 keeps the answers' order too. (It can't be stubbed earlier: Next.js needs a
+// real Math.random while starting up.)
 Cypress.Commands.overwrite("visit", (originalVisit, url, options = {}) => originalVisit(url, {
   ...options,
   onBeforeLoad(win) {
+    win.__dealInOrder = true;
     win.localStorage.setItem("letter-jumble:site", seenEverything);
     win.sessionStorage.setItem("letter-jumble:welcome-closed", "true");
     options.onBeforeLoad?.(win);
@@ -45,6 +49,19 @@ function visitWithSpellingGuide() {
   }, null);
 }
 
+// A new player hasn't seen a game's how-to-play card yet: it's closed if it's showing.
+function closeHowTo() {
+  cy.wait(50);
+  cy.get("body").then((body) => {
+    if (body.find('[aria-labelledby="how-to-title"]').length) cy.contains("button", "Got it").click();
+  });
+}
+
+function openTopic(name) {
+  cy.contains("button", name).click();
+  closeHowTo();
+}
+
 function visitLetterJumble(options, newPlayer = "Ada") {
   cy.visit("/", options);
   cy.contains("button", "Letter Jumble - Movers").click();
@@ -65,11 +82,21 @@ function visitCvcMode(mode) {
   cy.contains("button", "CVC Sounds").click();
   addPlayer("Ada", "k1");
   keepWordOrder();
-  cy.contains("button", mode).click();
+  openTopic(mode);
 }
 
+// What's saved about the players, keyed "<game>/<topic>" (see test/saved-players.js).
+// Decks are dealt from a seed, a random number: they're shown as "seed".
 function storedPlayers() {
-  return cy.window().its("localStorage").invoke("getItem", playersKey).then((value) => JSON.parse(value));
+  return cy.window().its("localStorage").invoke("getItem", playersKey).then((value) => {
+    const saved = asVersion1(JSON.parse(value));
+    saved.players.forEach((player) => {
+      Object.entries(player.decks ?? {}).forEach(([key, deck]) => {
+        if (typeof deck === "number") player.decks[key] = "seed";
+      });
+    });
+    return saved;
+  });
 }
 
 describe("Movers spelling game", () => {
@@ -77,7 +104,7 @@ describe("Movers spelling game", () => {
     visitLetterJumble();
     cy.contains("h1", "Letter Jumble");
     cy.get(".category-card").should("have.length", 8);
-    cy.contains("button", "Animals").click();
+    openTopic("Animals");
     cy.contains("h1", "Animals");
     cy.get(".letter-bank .letter-tile").should("have.length", 3);
     cy.get(".player-chip-coins").should("have.text", "0");
@@ -105,14 +132,14 @@ describe("Movers spelling game", () => {
 
   it("keeps collected rainbow coins after reloading the page", () => {
     visitLetterJumble();
-    cy.contains("button", "Animals").click();
+    openTopic("Animals");
     ["b", "a", "t"].forEach((letter) => {
       cy.get(`.letter-tile[data-letter="${letter}"]`).not(".tile-used").click();
     });
     cy.contains("button", "Check it").click();
     cy.get(".player-chip-coins").should("have.text", "1");
     storedPlayers().should("deep.equal", {
-      players: [{ name: "Ada", coins: 1, age: "k3", decks: { "letter-jumble/animals": [...Array(13).keys()] }, results: { "letter-jumble/animals": [true] } }],
+      players: [{ name: "Ada", coins: 1, age: "k3", decks: { "letter-jumble/animals": "seed" }, results: { "letter-jumble/animals": [true] } }],
       current: "Ada",
     });
 
@@ -130,13 +157,13 @@ describe("Movers spelling game", () => {
         win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 7, age: "k3" }], current: "Ada" }));
       },
     }, null);
-    cy.contains("button", "Animals").click();
+    openTopic("Animals");
     cy.get(".player-chip-coins").should("have.text", "7");
   });
 
   it("does not reward an incorrect answer", () => {
     visitLetterJumble();
-    cy.contains("button", "Animals").click();
+    openTopic("Animals");
 
     ["b", "t", "a"].forEach((letter) => {
       cy.get(`.letter-tile[data-letter="${letter}"]`).not(".tile-used").click();
@@ -149,7 +176,7 @@ describe("Movers spelling game", () => {
 
   it("opens the word menu and starts a selected word with an empty answer", () => {
     visitLetterJumble();
-    cy.contains("button", "Animals").click();
+    openTopic("Animals");
     cy.get('.letter-tile[data-letter="b"]').click();
     cy.get(".letter-slot").eq(0).should("contain.text", "b");
 
@@ -186,7 +213,7 @@ describe("Movers spelling game", () => {
 
   it("hides the spelling guide by default, with no switch for it in the word menu", () => {
     visitLetterJumble();
-    cy.contains("button", "Animals").click();
+    openTopic("Animals");
     cy.get('.letter-slot[class*="letter-slot-guide-"]').should("not.exist");
     cy.get(".spelling-guide").should("not.exist");
     cy.get('button[aria-label="Browse Animals words"]').click();
@@ -196,7 +223,7 @@ describe("Movers spelling game", () => {
 
   it("marks ph as a consonant team in dolphin", () => {
     visitWithSpellingGuide();
-    cy.contains("button", "Animals").click();
+    openTopic("Animals");
     cy.get('button[aria-label="Browse Animals words"]').click();
     cy.get(".word-menu-item").contains("Dolphin").click();
 
@@ -211,7 +238,7 @@ describe("Movers spelling game", () => {
 
   it("marks sh and th as consonant teams", () => {
     visitWithSpellingGuide();
-    cy.contains("button", "Animals").click();
+    openTopic("Animals");
     cy.get('button[aria-label="Browse Animals words"]').click();
     cy.get(".word-menu-item").contains("Shark").click();
     cy.get(".letter-slot").eq(0).should("have.class", "letter-slot-guide-consonant");
@@ -227,7 +254,7 @@ describe("Movers spelling game", () => {
 
   it("closes the word menu with Escape", () => {
     visitLetterJumble();
-    cy.contains("button", "Animals").click();
+    openTopic("Animals");
     cy.get('button[aria-label="Browse Animals words"]').click();
     cy.get('[role="dialog"]').should("be.visible");
     cy.get("body").type("{esc}");
@@ -236,7 +263,7 @@ describe("Movers spelling game", () => {
 
   it("places tapped letters in the first available box", () => {
     visitLetterJumble();
-    cy.contains("button", "Animals").click();
+    openTopic("Animals");
 
     cy.get('.letter-tile[data-letter="t"]').click();
     cy.get('.letter-tile[data-letter="a"]').click();
@@ -251,7 +278,7 @@ describe("Movers spelling game", () => {
 
   it("speaks the current word with an available British female voice", () => {
     visitLetterJumble();
-    cy.contains("button", "Animals").click();
+    openTopic("Animals");
     cy.window().then((window) => {
       cy.stub(window.speechSynthesis, "cancel");
       cy.stub(window.speechSynthesis, "getVoices").returns([
@@ -276,7 +303,7 @@ describe("Movers spelling game", () => {
 
   it("explains when no female voice is available", () => {
     visitLetterJumble();
-    cy.contains("button", "Animals").click();
+    openTopic("Animals");
     cy.window().then((window) => {
       cy.stub(window.speechSynthesis, "getVoices").returns([
         { name: "Daniel", lang: "en-GB" },
@@ -291,14 +318,14 @@ describe("Movers spelling game", () => {
 
   it("gives feedback when the answer is not yet complete", () => {
     visitLetterJumble();
-    cy.contains("button", "Animals").click();
+    openTopic("Animals");
     cy.contains("button", "Check it").click();
     cy.contains("Fill every box before you check.");
   });
 
   it("opens another category and can return to the game selection", () => {
     visitLetterJumble();
-    cy.contains("button", "Body and Face").click();
+    openTopic("Body and Face");
     cy.contains("01 / 13");
     cy.get(".letter-bank .letter-tile").should("have.length", 5);
     crumb("Letter Jumble - Movers");
@@ -400,7 +427,7 @@ describe("players", () => {
   it("keeps each player's coins separate, and logs out", () => {
     visitLetterJumble(undefined, "Mia");
     cy.get('button[aria-label^="Playing as Mia"]').should("contain.text", "Mia");
-    cy.contains("button", "Animals").click();
+    openTopic("Animals");
     ["b", "a", "t"].forEach((letter) => {
       cy.get(`.letter-tile[data-letter="${letter}"]`).not(".tile-used").click();
     });
@@ -411,6 +438,7 @@ describe("players", () => {
     cy.contains('[role="menuitem"]', "Switch player").click();
     cy.get('[role="dialog"] .player-option').should("have.length", 1).and("contain.text", "Mia");
     addPlayer("Theo");
+    closeHowTo();
     cy.get(".player-chip-coins").should("have.text", "0");
 
     cy.reload();
@@ -428,8 +456,8 @@ describe("players", () => {
     cy.contains("h1", "What shall we play today?");
     storedPlayers().should("deep.equal", {
       players: [
-        { name: "Mia", coins: 1, age: "k3", progress: { "letter-jumble/animals": 1 }, decks: { "letter-jumble/animals": [...Array(13).keys()] }, results: { "letter-jumble/animals": [true] } },
-        { name: "Theo", coins: 0, age: "k3", decks: { "letter-jumble/animals": [...Array(13).keys()] } },
+        { name: "Mia", coins: 1, age: "k3", progress: { "letter-jumble/animals": 1 }, decks: { "letter-jumble/animals": "seed" }, results: { "letter-jumble/animals": [true] } },
+        { name: "Theo", coins: 0, age: "k3", decks: { "letter-jumble/animals": "seed" } },
       ],
       current: null,
     });
@@ -549,17 +577,17 @@ describe("routes", () => {
 });
 
 describe("CVC shuffling", () => {
-  it("deals 10 words in a random order", () => {
+  it("deals 10 words in a random order, saved as a seed", () => {
     cy.visit("/cvc/ending-sound", {
       onBeforeLoad(win) {
+        // The real shuffle, not the original order.
+        win.__dealInOrder = false;
         win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
       },
     });
     cy.contains("01 / 10");
     storedPlayers().then((stored) => {
-      const deck = stored.players[0].decks["cvc/ending-sound"];
-      expect(deck).to.have.length(10);
-      expect(new Set(deck).size).to.eq(10);
+      expect(stored.players[0].decks["cvc/ending-sound"]).to.eq("seed");
     });
   });
 });
@@ -612,9 +640,9 @@ describe("measure words", () => {
     cy.get('nav[aria-label="Breadcrumb"] li').should("have.length", 3);
     cy.contains("01 / 20");
     cy.get(".measure-option").should("have.length", 4);
+    // Dealt from a seed (20 of the measure words, as "01 / 20" says).
     storedPlayers().then((stored) => {
-      const deck = stored.players[0].decks["measure-words/measure-words"];
-      expect(deck).to.have.length(20);
+      expect(stored.players[0].decks["measure-words/measure-words"]).to.eq("seed");
     });
     // One try: a right noun earns a coin, a wrong one shows the right answer.
     cy.get(".measure-option").first().click();

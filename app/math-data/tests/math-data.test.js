@@ -1,3 +1,4 @@
+import { migrateSaved } from "../../lib/player-data";
 import fs from "node:fs";
 import path from "node:path";
 import { isLevelOpen, levelState, levelUnlockKey, mathLevels, today } from "../math-data";
@@ -232,15 +233,17 @@ describe("Daily Challenge", () => {
 
   it("opens each class's Level 1, and each later level as soon as the one before is finished", () => {
     const [one, two, three] = levelsFor("k2");
-    const finishedLevel1 = { unlocks: [levelUnlockKey(two, today())] };
+    // A saved player with these unlocks (written as they're unlocked: "math-logic/<level>@<day>").
+    const withUnlocks = (unlocks) => migrateSaved({ players: [{ name: "Ada", coins: 0, unlocks }] }).players[0];
+    const finishedLevel1 = withUnlocks([levelUnlockKey(two, today())]);
     expect(levelState(one, null)).toBe("open");
-    expect(levelState(two, { unlocks: [] })).toBe("locked");
+    expect(levelState(two, withUnlocks([]))).toBe("locked");
     // The same day: no waiting until tomorrow.
     expect(levelState(two, finishedLevel1)).toBe("open");
     expect(levelState(three, finishedLevel1)).toBe("locked");
     expect(isLevelOpen(two, finishedLevel1)).toBe(true);
     // An unlock saved before the days were added still counts.
-    expect(isLevelOpen(two, { unlocks: [`math-logic/${two.id}`] })).toBe(true);
+    expect(isLevelOpen(two, withUnlocks([`math-logic/${two.id}`]))).toBe(true);
   });
 
   it("writes today's date in the player's own time zone", () => {

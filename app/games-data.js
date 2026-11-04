@@ -193,7 +193,7 @@ export function gamesForAge(age) {
 // A game a player can open. Parents can turn any game on or off for a child (`gameSettings`);
 // games they haven't changed are on when they suit the child's age.
 export function isGameAvailable(game, player) {
-  return player?.gameSettings?.[game.id] ?? isGameForAge(game, player?.age);
+  return player?.games?.[game.id]?.settings?.enabled ?? isGameForAge(game, player?.age);
 }
 
 // The games shown in the picker. Before anyone is playing, every game shows.

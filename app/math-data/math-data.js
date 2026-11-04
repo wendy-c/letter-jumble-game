@@ -267,8 +267,7 @@ export const levelUnlockKey = (level, day = today()) => `math-logic/${level.id}@
 // The day the level before this one was finished ("" for an unlock saved without one), or null if
 // it hasn't been yet.
 function earnedOn(level, player) {
-  const key = `math-logic/${level.id}`;
-  const unlock = player?.unlocks?.find((entry) => entry === key || entry.startsWith(`${key}@`));
+  const unlock = player?.games?.["math-logic"]?.unlocks?.find((entry) => entry === level.id || entry.startsWith(`${level.id}@`));
   return unlock ? unlock.split("@")[1] ?? "" : null;
 }
 

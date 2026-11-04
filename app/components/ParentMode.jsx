@@ -2,6 +2,7 @@ import { useId, useState } from "react";
 import { ageGroups, defaultQuestionCount, games, isGameAvailable, isGameForAge, questionCountChoices } from "../games-data";
 import { isRightAnswer, makeGrownUpQuestion } from "../lib/grown-up-question";
 import { gameName, useText } from "../i18n";
+import { gameSetting } from "../lib/player-data";
 import RecordTransfer from "./RecordTransfer";
 import GameFooter from "./GameFooter";
 
@@ -158,11 +159,11 @@ function ChildSettings({ player, onSetGameEnabled, onSetSpellingGuide, onSetQues
               age={player.age}
               enabled={enabled}
               suitsAge={suitsAge}
-              onToggle={() => onSetGameEnabled(player.name, game.id, !enabled, suitsAge)}
-              spellingGuide={Boolean(player.spellingGuide?.includes(game.id))}
-              onToggleSpellingGuide={() => onSetSpellingGuide(player.name, game.id, !player.spellingGuide?.includes(game.id))}
-              questionCount={player.questionCounts?.[game.id] ?? defaultQuestionCount}
-              onSetQuestionCount={(count) => onSetQuestionCount(player.name, game.id, count)}
+              onToggle={() => onSetGameEnabled(player.id, game.id, !enabled, suitsAge)}
+              spellingGuide={gameSetting(player, game.id, "spellingGuide") === true}
+              onToggleSpellingGuide={() => onSetSpellingGuide(player.id, game.id, gameSetting(player, game.id, "spellingGuide") !== true)}
+              questionCount={gameSetting(player, game.id, "questionCount") ?? defaultQuestionCount}
+              onSetQuestionCount={(count) => onSetQuestionCount(player.id, game.id, count)}
             />
           );
         })}
@@ -202,7 +203,7 @@ export default function ParentMode({ players, breadcrumbs, onSetGameEnabled, onS
             <p className="parent-intro">{text.parentIntro}</p>
             <div className="parent-children">
               {players.map((player) => (
-                <ChildSettings key={player.name} player={player} onSetGameEnabled={onSetGameEnabled} onSetSpellingGuide={onSetSpellingGuide} onSetQuestionCount={onSetQuestionCount} />
+                <ChildSettings key={player.id} player={player} onSetGameEnabled={onSetGameEnabled} onSetSpellingGuide={onSetSpellingGuide} onSetQuestionCount={onSetQuestionCount} />
               ))}
             </div>
             <RecordTransfer />
