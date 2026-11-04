@@ -215,6 +215,7 @@ describe("Daily Challenge", () => {
   it("has every picture it uses", () => {
     const files = allQuestions.flatMap((question) => [
       ...(typeof question.picture === "object" && question.picture ? Object.values(question.picture) : [question.picture]),
+      question.promptPicture,
       ...question.options.flatMap((option) => [option.picture, ...(option.cells ?? [])]),
       ...(question.visual?.type === "grids" ? [...question.visual.grids.flat(), ...question.visual.last] : []),
       ...(question.visual?.type === "pattern" ? question.visual.items.map((item) => item?.picture) : []),
@@ -274,6 +275,37 @@ describe("Daily Challenge for K3", () => {
       /^Count the (legs|wheels)$/, /^The different group$/, /^How the shading moves$/, /^The row with the most /, /^Turning grid/,
       /^Who spent the (most|least)$/, /^Enough for the /, /days? (before|after) /, /^What time is it\?$/,
     ].forEach((title) => expect(titles.some((text) => title.test(text))).toBe(true));
+  });
+
+  it("scatters 22 to 29 leaves, none touching, with 11 to 14 to count, and shows the leaf to count with the question", () => {
+    const counts = k3.flatMap((level) => level.words).filter((question) => question.scene?.type === "scatter");
+    expect(counts.length).toBeGreaterThan(0);
+    counts.forEach(({ scene, answer, promptPicture }) => {
+      const { items } = scene;
+      expect(items.length).toBeGreaterThanOrEqual(22);
+      expect(items.length).toBeLessThanOrEqual(29);
+      expect(items.filter((item) => item.picture === promptPicture)).toHaveLength(Number(answer));
+      expect(Number(answer)).toBeGreaterThanOrEqual(11);
+      expect(Number(answer)).toBeLessThanOrEqual(14);
+      // In the 160 × 100 picture, a leaf (11% of its width) fits in a circle under 17 across.
+      items.forEach((item, index) => items.slice(index + 1).forEach((other) => {
+        expect(Math.hypot((item.x - other.x) * 1.6, item.y - other.y)).toBeGreaterThanOrEqual(16.5);
+      }));
+    });
+  });
+
+  it("scatters the shapes to count in clusters turned every which way, with 8 to 20 to count", () => {
+    const counts = k3.flatMap((level) => level.words).filter((question) => question.scene?.type === "shapes");
+    expect(counts.length).toBeGreaterThan(0);
+    counts.forEach(({ scene, answer, answers }) => {
+      const kind = { circles: "circle", squares: "square", triangles: "triangle" }[answers[0].replace("Count the ", "")];
+      expect(scene.shapes.filter((shape) => shape.kind === kind)).toHaveLength(Number(answer));
+      expect(Number(answer)).toBeGreaterThanOrEqual(8);
+      expect(Number(answer)).toBeLessThanOrEqual(20);
+      // Not lined up in rows: the shapes sit at many different heights.
+      expect(new Set(scene.shapes.map((shape) => Math.round(shape.y / 10))).size).toBeGreaterThan(8);
+      expect(new Set(scene.shapes.map((shape) => shape.rotate)).size).toBeGreaterThan(5);
+    });
   });
 
   it("has its sums and number bonds typed on a number pad, with the right answer worked out", () => {

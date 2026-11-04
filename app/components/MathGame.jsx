@@ -220,7 +220,10 @@ export default function MathGame({ topic, round, question, onAnswer, language = 
       <section className="answer-panel math-answer-panel" aria-label={chinese ? "答案" : "Answer"}>
         <div className="answer-intro">
           <div>
-            <h2 className="math-prompt" lang={lang}>{prompt}</h2>
+            <h2 className="math-prompt" lang={lang}>
+              {prompt}
+              {question.promptPicture && <img className="math-prompt-picture" src={question.promptPicture} alt="" width="44" height="44" />}
+            </h2>
           </div>
           <button
             className="voice-button"

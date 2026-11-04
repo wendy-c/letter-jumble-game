@@ -20,10 +20,23 @@ function numberOptions(answer, step = 1) {
   return [answer, ...near].map((n) => ({ label: String(n), correct: n === answer }));
 }
 
-const question = ({ prompt, answer, title, scene = null, visual = null, options = null, input = null }) => ({
+// `promptPicture` (optional) is shown with the question: the thing to look for.
+const question = ({ prompt, answer, title, scene = null, visual = null, options = null, input = null, promptPicture = null }) => ({
   prompt, picture: null, scene, visual, answer: String(answer), answers: [title],
-  options: options ?? numberOptions(Number(answer)), ...(input && { input }),
+  options: options ?? numberOptions(Number(answer)), ...(input && { input }), ...(promptPicture && { promptPicture }),
 });
+
+// Spots for `count` things in a `width` × `height` field, at random but at least `apart` from each
+// other and `margin` from the edges; null if they don't all fit.
+function scatterSpots(random, count, { width, height, apart, margin }) {
+  const spots = [];
+  for (let tries = 0; spots.length < count && tries < 5000; tries += 1) {
+    const x = margin + random() * (width - 2 * margin);
+    const y = margin + random() * (height - 2 * margin);
+    if (spots.every((spot) => Math.hypot(spot.x - x, spot.y - y) >= apart)) spots.push({ x, y });
+  }
+  return spots.length === count ? spots : null;
+}
 
 // Text choices (days, times, rows, groups): `label` is the answer key, `name` what's shown.
 const textOptions = (choices, answer) => choices.map(([label, name, reveal]) => ({
@@ -136,37 +149,45 @@ function makers(random, level) {
   };
 
   return {
-    // Overlapping and nested shapes in clusters; count one kind.
+    // Shapes in clusters (some nested, some overlapping) all over the picture, turned every which
+    // way; count one kind: 8 to 20 of them. The clusters don't touch each other.
     countShapes() {
       // Circles, squares and triangles take turns.
       const target = Object.keys(shapeNames)[Math.floor(level / 2) % 3];
+      const others = Object.keys(shapeNames).filter((kind) => kind !== target);
       const colors = ["#ffb3c6", "#8cc8f2", "#ffd45e", "#8fe3a8", "#c9b3f2", "#ffc89a"];
+      const kind = () => (random() < 0.45 ? target : pick(others));
+      const styles = later ? ["single", "nested", "nested", "overlap", "overlap", "three"] : ["single", "single", "nested", "overlap"];
       for (;;) {
-        const shapes = [];
-        const clusters = later ? 9 : 8;
-        const columns = later ? 3 : 4;
-        for (let index = 0; index < clusters; index += 1) {
-          const width = 480 / columns;
-          const rows = Math.ceil(clusters / columns);
-          const x = width * (index % columns) + width / 2;
-          const y = (300 / rows) * Math.floor(index / columns) + 150 / rows;
-          const size = Math.min(width, 300 / rows) / 2 - 8;
-          const color = () => pick(colors);
-          const kind = () => pick(["circle", "square", "triangle"]);
-          const style = pick(later ? ["single", "nested", "nested", "overlap", "overlap", "three"] : ["single", "nested", "overlap"]);
-          if (style === "single") shapes.push({ kind: kind(), x, y, r: size * 0.8, color: color() });
-          if (style === "nested" || style === "three") {
-            shapes.push({ kind: kind(), x, y, r: size, color: color() });
-            shapes.push({ kind: kind(), x, y, r: size * 0.42, color: color() });
-            if (style === "three") shapes.push({ kind: kind(), x, y, r: size * 0.16, color: color() });
-          }
-          if (style === "overlap") {
-            shapes.push({ kind: kind(), x: x - size * 0.32, y: y - size * 0.1, r: size * 0.62, color: color() });
-            shapes.push({ kind: kind(), x: x + size * 0.32, y: y + size * 0.15, r: size * 0.62, color: color() });
-          }
+        const clusters = [];
+        for (let tries = 0; clusters.length < 16 && tries < 800; tries += 1) {
+          const r = between(28, 46);
+          const x = r + random() * (480 - 2 * r);
+          const y = r + random() * (300 - 2 * r);
+          if (clusters.every((cluster) => Math.hypot(cluster.x - x, cluster.y - y) >= cluster.r + r + 6)) clusters.push({ x, y, r });
         }
+        const shapes = [];
+        clusters.forEach(({ x, y, r }) => {
+          // A turned square reaches further than its r: kept inside the cluster.
+          const size = r * 0.88;
+          const add = (sx, sy, sr) => shapes.push({ kind: kind(), x: sx, y: sy, r: sr, color: pick(colors), rotate: between(0, 359) });
+          const style = pick(styles);
+          if (style === "single") add(x, y, size * 0.85);
+          else if (style === "overlap") {
+            const angle = random() * Math.PI;
+            const dx = Math.cos(angle) * size * 0.32;
+            const dy = Math.sin(angle) * size * 0.32;
+            add(x - dx, y - dy, size * 0.62);
+            add(x + dx, y + dy, size * 0.62);
+          } else {
+            add(x, y, size);
+            add(x, y, size * 0.42);
+            // A third, smallest one only in a big enough cluster.
+            if (style === "three" && r >= 38) add(x, y, size * 0.16);
+          }
+        });
         const answer = shapes.filter((shape) => shape.kind === target).length;
-        if (answer < 4 || answer > (later ? 10 : 8)) continue;
+        if (answer < 8 || answer > 20) continue;
         const name = shapeNames[target];
         return question({
           prompt: say(`How many ${name.en} can you find?`, `你能找到多少個${name.zh}？`),
@@ -176,17 +197,25 @@ function makers(random, level) {
         });
       }
     },
-    // A pile of mixed leaves; count one kind.
+    // A pile of 22 to 29 mixed leaves, none on top of another; count one kind (11 to 14). The
+    // question shows the leaf to count.
     countLeaves() {
       const [target, ...others] = mix(Object.keys(leaves));
-      const answer = between(later ? 6 : 4, later ? 9 : 7);
-      const total = between(answer + 6, 18);
+      const answer = between(11, 14);
+      // The picture is 160 × 100 and a leaf's picture 17.6 across (11% of the width, see
+      // .math-scatter). Each drawing fits in a circle 95% of that, whichever way it's turned: 17
+      // apart, they never touch.
+      let spots = null;
+      let total = 0;
+      while (!spots) {
+        total = answer + between(11, 15);
+        spots = scatterSpots(random, total, { width: 160, height: 100, apart: 17, margin: 9 });
+      }
       const ids = mix([...Array(answer).fill(target), ...Array.from({ length: total - answer }, (_, index) => others[index % others.length])]);
-      const cells = mix(Array.from({ length: 18 }, (_, index) => index)).slice(0, total);
       const items = ids.map((id, index) => ({
         picture: leaves[id].picture,
-        x: Math.round(((cells[index] % 6) + 0.2 + random() * 0.6) * (100 / 6)),
-        y: Math.round((Math.floor(cells[index] / 6) + 0.2 + random() * 0.6) * (100 / 3)),
+        x: Math.round((spots[index].x / 160) * 1000) / 10,
+        y: Math.round(spots[index].y * 10) / 10,
         rotate: between(-40, 40),
       }));
       const leaf = leaves[target];
@@ -195,6 +224,7 @@ function makers(random, level) {
         answer,
         title: `Count the ${leaf.en}`,
         scene: { type: "scatter", items },
+        promptPicture: leaf.picture,
       });
     },
     // Some leave, then more leave or arrive. The picture shows only how many there are to begin

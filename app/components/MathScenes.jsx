@@ -7,12 +7,14 @@ import { useEffect } from "react";
 
 const say = (language, en, zh) => (language === "zh" ? zh : en);
 
-function Shape({ kind, x, y, r, color }) {
+// `rotate` (degrees, optional) turns it about its middle.
+function Shape({ kind, x, y, r, color, rotate = 0 }) {
   const style = { fill: color, fillOpacity: 0.6 };
+  const turned = rotate ? `rotate(${rotate} ${x} ${y})` : undefined;
   if (kind === "circle") return <circle cx={x} cy={y} r={r} style={style} />;
-  if (kind === "square") return <rect x={x - r * 0.8} y={y - r * 0.8} width={r * 1.6} height={r * 1.6} rx="3" style={style} />;
+  if (kind === "square") return <rect x={x - r * 0.8} y={y - r * 0.8} width={r * 1.6} height={r * 1.6} rx="3" style={style} transform={turned} />;
   const points = [[x, y - r], [x + r * 0.866, y + r / 2], [x - r * 0.866, y + r / 2]].map((point) => point.join(" ")).join(" ");
-  return <polygon points={points} style={style} />;
+  return <polygon points={points} style={style} transform={turned} />;
 }
 
 // One grid of a shading puzzle: `size` cells across, the `shaded` ones coloured in.

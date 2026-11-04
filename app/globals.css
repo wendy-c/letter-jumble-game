@@ -5068,6 +5068,19 @@ a:focus-visible {
   line-height: 1.35;
 }
 
+/* The thing a question asks to look for, shown with it. */
+.math-prompt-picture {
+  display: inline-block;
+  width: 1.9em;
+  height: 1.9em;
+  margin-left: 8px;
+  padding: 3px;
+  border: 2px solid var(--outline);
+  border-radius: 10px;
+  background: #f4fbe9;
+  vertical-align: middle;
+}
+
 .math-equation {
   display: flex;
   flex-wrap: wrap;
@@ -5277,9 +5290,10 @@ a:focus-visible {
   background: #f4fbe9;
 }
 
+/* A leaf is 11% of the width: the leaves are placed far enough apart for that never to overlap. */
 .math-scatter img {
   position: absolute;
-  width: clamp(34px, 12%, 64px);
+  width: 11%;
   height: auto;
 }
 
