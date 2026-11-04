@@ -305,11 +305,41 @@ button {
   line-height: 1;
 }
 
-/* On a module finished with every answer right: its badge. */
-.category-card-badge {
-  width: 52px;
-  height: 52px;
-  filter: drop-shadow(0 2px 2px rgb(75 46 34 / 18%));
+/* On a module finished with every answer right: the "DONE!" stamp, stamped on at a slant over
+   the card's top right corner. The card lets it hang over its edge (and sits above the cards
+   next to it), so its spine is drawn across the whole card to keep to the rounded corners. */
+.category-card-stamped {
+  z-index: 1;
+  overflow: visible;
+}
+
+.category-card-stamped::before {
+  right: 0;
+  width: auto;
+  border-radius: 22px;
+  background: linear-gradient(to right, var(--card-shadow, var(--line)) 9px, transparent 9px);
+  pointer-events: none;
+}
+
+.category-card-stamp {
+  position: absolute;
+  top: -24px;
+  right: -20px;
+  width: 108px;
+  height: 108px;
+  transform: rotate(-14deg);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+/* On a phone the card is as wide as the screen allows: the stamp stays on it. */
+@media (max-width: 640px) {
+  .category-card-stamp {
+    top: -20px;
+    right: -8px;
+    width: 92px;
+    height: 92px;
+  }
 }
 
 .letter-pattern {

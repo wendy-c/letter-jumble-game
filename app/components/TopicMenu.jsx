@@ -18,7 +18,7 @@ function speedNote(record, chinese) {
 }
 
 // `badgeFor(topic)` is the picture of a topic's badge once the child has finished it with every
-// answer right (shown on its card), or null.
+// answer right, or null: the card then gets the "DONE!" stamp.
 export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false, isBlend = false, isMagicE = false, isChinese = false, isMeasure = false, isIdiom = false, isSpeed = false, badgeFor = () => null, recordFor = () => null, topics, progressFor = () => 0, roundSizeFor = (topic) => topic.wordsPerGame ?? topic.words.length, breadcrumbs, onSelectTopic }) {
   // Rainbow Speed Quest's heading follows the site's language. (The Challenge has its own map:
   // LevelMap.)
@@ -118,7 +118,7 @@ export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false
               icon={topic.pattern
                 ? <LetterPattern letters={topic.pattern} />
                 : <img src={topic.icon} alt="" width="40" height="40" />}
-              badge={badgeFor(topic) && { image: badgeFor(topic), label: inChinese || isChinese || isMeasure || isIdiom ? "全對徽章" : "Full score badge" }}
+              badge={badgeFor(topic) && { label: inChinese || isChinese || isMeasure || isIdiom ? "全對徽章" : "Full score badge" }}
               name={isSpeed ? `${topic.name} · ${topic.english}` : topic.name}
               note={isSpeed ? speedNote(recordFor(topic), inChinese)
                 : cardNote(isIdiom ? "idiom" : isChinese, isMeasure, progressFor(topic), roundSizeFor(topic))}
