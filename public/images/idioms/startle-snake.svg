@@ -1,5 +1,53 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 160">
-<g stroke="#4b2e22" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">
-<rect x="6" y="6" width="119" height="148" rx="12" fill="#eef8fd"/><g transform="translate(6 6)"><path d="M16 128l-3 -16l7 10l3 -14l3 14l7 -10l-3 16Z" fill="#6cc28a" stroke-width="2.5"/><path d="M25 128l-3 -16l7 10l3 -14l3 14l7 -10l-3 16Z" fill="#6cc28a" stroke-width="2.5"/><path d="M34 128l-3 -16l7 10l3 -14l3 14l7 -10l-3 16Z" fill="#6cc28a" stroke-width="2.5"/><path d="M43 128l-3 -16l7 10l3 -14l3 14l7 -10l-3 16Z" fill="#6cc28a" stroke-width="2.5"/><path d="M52 128l-3 -16l7 10l3 -14l3 14l7 -10l-3 16Z" fill="#6cc28a" stroke-width="2.5"/><path d="M61 128l-3 -16l7 10l3 -14l3 14l7 -10l-3 16Z" fill="#6cc28a" stroke-width="2.5"/><path d="M70 128l-3 -16l7 10l3 -14l3 14l7 -10l-3 16Z" fill="#6cc28a" stroke-width="2.5"/><path d="M79 128l-3 -16l7 10l3 -14l3 14l7 -10l-3 16Z" fill="#6cc28a" stroke-width="2.5"/><path d="M88 128l-3 -16l7 10l3 -14l3 14l7 -10l-3 16Z" fill="#6cc28a" stroke-width="2.5"/><path d="M66.7 128.0Q66.7 99.5 80.0 99.5Q93.3 99.5 93.3 128.0Z" fill="#8cc8f2"/><circle cx="80" cy="78.6" r="15.2" fill="#ffe2c4"/><path d="M64.8 77.7Q64.8 61.5 80.0 61.5Q95.2 61.5 95.2 77.7Q87.6 70.1 80.0 71.0Q72.4 70.1 64.8 77.7Z" fill="#8b5a3c"/><g stroke="none" fill="#4b2e22"><circle cx="74.3" cy="80.5" r="2.1"/><circle cx="85.7" cy="80.5" r="2.1"/></g><path d="M76.2 86.2q3.8 3.8 7.6 0" fill="none" stroke-width="2"/><g fill="#ff9bb5" opacity=".7" stroke="none"><ellipse cx="69.5" cy="85.2" rx="3.2" ry="1.9"/><ellipse cx="90.5" cy="85.2" rx="3.2" ry="1.9"/></g><path d="M72.4 107.1L51.5 86.2" stroke="#4b2e22" stroke-width="9"/><path d="M72.4 107.1L51.5 86.2" stroke="#ffe2c4" stroke-width="3"/><path d="M50 82L26 120" stroke="#4b2e22" stroke-width="9"/><path d="M50 82L26 120" stroke="#c98a5a" stroke-width="3"/></g><circle cx="20" cy="20" r="9" fill="#ffffff" stroke-width="2.5"/><text x="20" y="24.5" font-family="'Arial Rounded MT Bold','Fredoka',Arial,sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#4b2e22" stroke="none">1</text><rect x="131" y="6" width="119" height="148" rx="12" fill="#fff6e0"/><g transform="translate(131 6)"><path d="M10 128l-3 -16l7 10l3 -14l3 14l7 -10l-3 16Z" fill="#6cc28a" stroke-width="2.5"/><path d="M19 128l-3 -16l7 10l3 -14l3 14l7 -10l-3 16Z" fill="#6cc28a" stroke-width="2.5"/><path d="M28 128l-3 -16l7 10l3 -14l3 14l7 -10l-3 16Z" fill="#6cc28a" stroke-width="2.5"/><path d="M30 110q12 -14 24 0t24 0 22 -6" fill="none" stroke="#4b2e22" stroke-width="11.0"/><path d="M30 110q12 -14 24 0t24 0 22 -6" fill="none" stroke="#8fd6a8" stroke-width="6.0"/><circle cx="102.0" cy="102.0" r="7.0" fill="#8fd6a8"/><circle cx="104.0" cy="100.0" r="1.6" fill="#4b2e22" stroke="none"/><path d="M109.0 104.0l6.0 0" stroke="#ff6b6b" stroke-width="2"/><text x="96" y="72" font-family="'Arial Rounded MT Bold','Fredoka',Arial,sans-serif" font-size="30" font-weight="700" text-anchor="middle" fill="#ff6b6b" stroke="none">!</text><g fill="none" stroke="#a59cbd" stroke-width="2.5"><path d="M14 100h14M10 110h12"/></g></g><circle cx="145" cy="20" r="9" fill="#ffffff" stroke-width="2.5"/><text x="145" y="24.5" font-family="'Arial Rounded MT Bold','Fredoka',Arial,sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#4b2e22" stroke="none">2</text>
+<defs><clipPath id="frame"><rect x="6" y="6" width="244" height="148" rx="12"/></clipPath></defs>
+<g stroke="#4b2e22" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<rect x="6" y="6" width="244" height="148" rx="12" fill="#eef8fd"/>
+<g clip-path="url(#frame)">
+<!-- The meadow and the path through it -->
+<path d="M0 96q50-22 110-8 60-20 146 4v68H0Z" fill="#d6efd0" stroke="none"/>
+<path d="M0 116q70-8 140-2t116-2v48H0Z" fill="#bfe8c8"/>
+<path d="M0 146q50-16 110-20" fill="none" stroke="#e8d3a6" stroke-width="12"/>
+<circle cx="226" cy="28" r="10" fill="#ffd45e" stroke-width="2.5"/>
+<g fill="none" stroke="#6fbf85" stroke-width="2"><path d="M20 128l2-6 2 6M98 144l2-6 2 6M226 136l2-6 2 6"/></g>
+<!-- The child, beating the grass with a long stick -->
+<path d="M58 118l-6 22M72 118l4 22" stroke-width="9"/><path d="M58 118l-6 22M72 118l4 22" stroke="#ffe2c4" stroke-width="4"/>
+<g fill="#ff8fae"><ellipse cx="50" cy="141" rx="6" ry="3.4"/><ellipse cx="80" cy="141" rx="6" ry="3.4"/></g>
+<path d="M52 108h26l2 12H50Z" fill="#5b6b8c"/>
+<path d="M50 110q-2-30 15-30t17 30Z" fill="#ffd45e"/>
+<path d="M60 84l-4 12" fill="none" stroke="#f0b93a" stroke-width="2"/>
+<path d="M92 72l60 30" stroke-width="7"/><path d="M92 72l60 30" stroke="#c98a5a" stroke-width="3.5"/>
+<path d="M74 90l16-14M80 96l14-16" stroke-width="10"/><path d="M74 90l16-14M80 96l14-16" stroke="#ffd45e" stroke-width="5"/>
+<g fill="#ffe2c4" stroke-width="2.4"><circle cx="92" cy="75" r="4.6"/><circle cx="96" cy="80" r="4.6"/></g>
+<circle cx="66" cy="62" r="15" fill="#ffe2c4"/>
+<path d="M51 61q0-16 15-16t15 16q-7-7-15-6-8-1-15 6Z" fill="#8b5a3c"/>
+<g fill="#4b2e22" stroke="none"><circle cx="66" cy="64" r="2"/><circle cx="76" cy="64" r="2"/></g>
+<path d="M68 71q4 3 8 0" fill="none" stroke-width="2"/>
+<ellipse cx="62" cy="70" rx="3.4" ry="2" fill="#ff9bb5" opacity=".7" stroke="none"/>
+<g fill="none" stroke="#a59cbd" stroke-width="2"><path d="M114 66q14 2 22 12M110 74q12 2 18 10"/></g>
+<!-- The tall grass, with bits flying where the stick hit it -->
+<g fill="#7cc98e"><path d="M126 126l-6-40 14 30 2-44 10 42 8-48 6 46 10-40 2 42 12-34-2 40 10-26-4 32Z"/></g>
+<g fill="none" stroke="#5aa86e" stroke-width="2"><path d="M134 116l-4-14M150 118l2-20M170 118l2-16M186 118l4-12"/></g>
+<g fill="#7cc98e" stroke-width="1.8"><path d="M140 70l6-6 1 4ZM122 82l-6-4 4-2ZM160 60l4-8 2 4Z"/></g>
+<!-- The snake, rearing up out of the grass in a fright -->
+<path d="M176 120q-14-20 0-36 14-14 4-32" fill="none" stroke-width="13"/>
+<path d="M176 120q-14-20 0-36 14-14 4-32" fill="none" stroke="#8fd6a8" stroke-width="8"/>
+<g fill="none" stroke="#5aa86e" stroke-width="2"><path d="M170 106l5 1M170 92l6-2M182 78l5 2M184 64l5 1"/></g>
+<path d="M186 54q-4 6 4 6l5 1q-1 4 3 6M199 66l3 2M199 66l1 3" fill="none" stroke="#ff6b6b" stroke-width="2"/>
+<ellipse cx="182" cy="48" rx="13" ry="10" fill="#8fd6a8"/>
+<g fill="#ffffff" stroke-width="2"><circle cx="178" cy="44" r="5"/><circle cx="189" cy="44" r="5"/></g>
+<g fill="#4b2e22" stroke="none"><circle cx="179" cy="44" r="2"/><circle cx="190" cy="44" r="2"/></g>
+<ellipse cx="186" cy="54" rx="3" ry="2.6" fill="#4b2e22" stroke="none"/>
+<path d="M197 34q3 4 0 7-3-3 0-7Z" fill="#8cc8f2" stroke-width="1.6"/>
+<g fill="none" stroke="#ff6b6b" stroke-width="2.4"><path d="M164 32l-5-5M172 26l-1-7M200 26l3-6M206 40l6-2"/></g>
+<path d="M216 12l-3 20" stroke="#ff6b6b" stroke-width="5"/><circle cx="212" cy="40" r="2.6" fill="#ff6b6b" stroke="none"/>
+<!-- Birds flying off -->
+<g fill="none" stroke-width="2.2"><path d="M118 28q4-5 8 0 4-5 8 0M142 16q3-4 6 0 3-4 6 0"/></g>
+<!-- A frog hopping away -->
+<ellipse cx="226" cy="122" rx="10" ry="7" fill="#b9e27a"/>
+<g fill="#ffffff" stroke-width="1.8"><circle cx="222" cy="116" r="3.4"/><circle cx="231" cy="116" r="3.4"/></g>
+<g fill="#4b2e22" stroke="none"><circle cx="223" cy="116" r="1.4"/><circle cx="232" cy="116" r="1.4"/></g>
+<path d="M216 126l-8 6M236 126l8 4" stroke-width="2.5"/>
+<g fill="none" stroke="#a59cbd" stroke-width="2"><path d="M212 112q-4-2-6 0M210 118h-6"/></g>
+</g>
 </g>
 </svg>

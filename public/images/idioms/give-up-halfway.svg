@@ -1,5 +1,41 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 160">
-<g stroke="#4b2e22" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">
-<rect x="6" y="6" width="244" height="148" rx="12" fill="#f3fbea"/><path d="M14 140q60-30 120-30t110-40" fill="none" stroke="#e8b27a" stroke-width="14"/><path d="M228 64v-34" stroke-width="3"/><path d="M228 30l18 7-18 7Z" fill="#ff6b6b" stroke-width="2.5"/><g fill="none" stroke="#a59cbd" stroke-width="3" stroke-dasharray="5 6"><path d="M134 110q60-10 92-46"/></g><path d="M95.3 132.0Q95.3 100.5 110.0 100.5Q124.7 100.5 124.7 132.0Z" fill="#8cc8f2"/><circle cx="110" cy="77.4" r="16.8" fill="#ffe2c4"/><path d="M93.2 76.3Q93.2 58.5 110.0 58.5Q126.8 58.5 126.8 76.3Q118.4 68.0 110.0 69.0Q101.6 68.0 93.2 76.3Z" fill="#8b5a3c"/><g stroke="none" fill="#4b2e22"><circle cx="103.7" cy="79.5" r="2.3"/><circle cx="116.3" cy="79.5" r="2.3"/></g><path d="M105.8 89.0q4.2 -4.2 8.4 0" fill="none" stroke-width="2"/><g fill="#ff9bb5" opacity=".7" stroke="none"><ellipse cx="98.5" cy="84.8" rx="3.6" ry="2.1"/><ellipse cx="121.5" cy="84.8" rx="3.6" ry="2.1"/></g><path d="M150 60l8 8m0-8-8 8" stroke="#ff6b6b" stroke-width="3"/>
+<defs><clipPath id="frame"><rect x="6" y="6" width="244" height="148" rx="12"/></clipPath></defs>
+<g stroke="#4b2e22" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<rect x="6" y="6" width="244" height="148" rx="12" fill="#eef8fd"/>
+<g clip-path="url(#frame)">
+<!-- The hill, with the flag at the top -->
+<g fill="#ffffff" stroke-width="2.2"><path d="M30 36q0-8 8-8 4-6 12-4 6-2 8 6 6 0 6 6Z"/><path d="M120 24q0-6 6-6 4-4 10-2 4 0 6 4 6 0 6 4Z"/></g>
+<path d="M0 160V132q60-6 110-40t90-60q24-12 56 4v124Z" fill="#bfe8c8"/>
+<path d="M0 160V132q60-6 110-40t90-60q24-12 56 4" fill="none" stroke="#8fcf9f" stroke-width="2.5"/>
+<g fill="#7cc98e" stroke-width="2"><circle cx="40" cy="146" r="8"/><circle cx="160" cy="80" r="7"/><circle cx="236" cy="56" r="8"/><circle cx="186" cy="100" r="7"/></g>
+<!-- The path: walked as far as the rock, and not one step more -->
+<path d="M20 154q40-6 60-20t30-26" fill="none" stroke="#e8d3a6" stroke-width="12"/>
+<path d="M110 108q16-14 30-30t40-34 28-18" fill="none" stroke="#e8d3a6" stroke-width="12" opacity=".5"/>
+<path d="M110 108q16-14 30-30t40-34 28-18" fill="none" stroke="#a59cbd" stroke-width="2.4" stroke-dasharray="5 6"/>
+<g fill="#c8ab86" stroke="none"><ellipse cx="34" cy="150" rx="2.4" ry="1.4"/><ellipse cx="46" cy="148" rx="2.4" ry="1.4"/><ellipse cx="58" cy="143" rx="2.4" ry="1.4"/><ellipse cx="70" cy="139" rx="2.4" ry="1.4"/><ellipse cx="80" cy="132" rx="2.4" ry="1.4"/><ellipse cx="90" cy="126" rx="2.4" ry="1.4"/></g>
+<path d="M210 26V4" stroke-width="3"/><path d="M210 6l18 6-18 6Z" fill="#ff6b6b" stroke-width="2.4"/>
+<g fill="none" stroke="#ffc94a" stroke-width="2"><path d="M222 24l4 2M196 14l-4-2"/></g>
+<!-- The sign: halfway -->
+<path d="M150 104v-22" stroke-width="3.5"/><path d="M138 70h26l6 6-6 6h-26Z" fill="#c98a5a" stroke-width="2.4"/>
+<text x="152" y="80" font-family="'Arial Rounded MT Bold','Fredoka',Arial,sans-serif" font-size="10" font-weight="700" text-anchor="middle" fill="#ffffff" stroke="none">1/2</text>
+<!-- The child, sitting on the rock in a sulk, bag dumped -->
+<path d="M90 120q2-12 16-12h12q12 0 14 12l-2 8H92Z" fill="#a8a6b3"/>
+<path d="M98 112l6-2" stroke="#c9c6d8" stroke-width="2"/>
+<path d="M104 112l-6 16M114 112l2 16" stroke-width="9"/><path d="M104 112l-6 16M114 112l2 16" stroke="#ffe2c4" stroke-width="4"/>
+<g fill="#5b6b8c"><ellipse cx="96" cy="130" rx="6" ry="3.2"/><ellipse cx="118" cy="130" rx="6" ry="3.2"/></g>
+<path d="M100 108h20l1 6H99Z" fill="#5b6b8c"/>
+<path d="M98 110q-2-28 13-28t13 28Z" fill="#ff8f6a"/>
+<path d="M102 96h18" stroke-width="9"/><path d="M102 96h18" stroke="#ff8f6a" stroke-width="4"/>
+<g fill="#ffe2c4" stroke-width="2.2"><circle cx="102" cy="96" r="3.6"/><circle cx="120" cy="96" r="3.6"/></g>
+<circle cx="111" cy="70" r="14" fill="#ffe2c4"/>
+<path d="M97 69q0-15 14-15t14 15q-7-6-14-5-7-1-14 5Z" fill="#8b5a3c"/>
+<path d="M97 64h28" stroke="#ffd45e" stroke-width="3"/>
+<g fill="none" stroke-width="2.2"><path d="M104 72h4M114 72h4M103 67l5 2M119 67l-5 2"/></g>
+<path d="M107 80q4-3 8 0" fill="none" stroke-width="2"/>
+<g fill="none" stroke="#a59cbd" stroke-width="2"><path d="M128 54q4-6 2-12M134 60q6-4 6-10"/></g>
+<path d="M60 128q-2-16 12-16t12 16Z" fill="#ffd45e"/>
+<path d="M64 120h16M72 112q0-6 6-6" fill="none" stroke-width="2"/>
+<g stroke-width="2"><path d="M54 130l8 2-6 4Z" fill="#ffffff"/><path d="M84 132l8-2v6Z" fill="#8cc8f2"/></g>
+</g>
 </g>
 </svg>

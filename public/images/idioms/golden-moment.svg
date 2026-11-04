@@ -1,8 +1,52 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 160">
-<g stroke="#4b2e22" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">
-<rect x="6" y="6" width="244" height="148" rx="12" fill="#fff6e0"/><circle cx="128" cy="80" r="46" fill="#ffffff"/><circle cx="128" cy="80" r="46" fill="none" stroke="#ff8fae" stroke-width="5"/><circle cx="128" cy="80" r="46" fill="none"/><path d="M128 80V50M128 80l21 12" stroke-width="4"/><circle cx="46" cy="44" r="11" fill="#ffd45e"/><text x="46" y="49" font-family="'Arial Rounded MT Bold','Fredoka',Arial,sans-serif" font-size="13" font-weight="700" text-anchor="middle" fill="#b97d0c" stroke="none">$</text><circle cx="52" cy="112" r="11" fill="#ffd45e"/><text x="52" y="117" font-family="'Arial Rounded MT Bold','Fredoka',Arial,sans-serif" font-size="13" font-weight="700" text-anchor="middle" fill="#b97d0c" stroke="none">$</text><circle cx="210" cy="44" r="11" fill="#ffd45e"/><text x="210" y="49" font-family="'Arial Rounded MT Bold','Fredoka',Arial,sans-serif" font-size="13" font-weight="700" text-anchor="middle" fill="#b97d0c" stroke="none">$</text><circle cx="204" cy="112" r="11" fill="#ffd45e"/><text x="204" y="117" font-family="'Arial Rounded MT Bold','Fredoka',Arial,sans-serif" font-size="13" font-weight="700" text-anchor="middle" fill="#b97d0c" stroke="none">$</text><circle cx="30" cy="80" r="11" fill="#ffd45e"/><text x="30" y="85" font-family="'Arial Rounded MT Bold','Fredoka',Arial,sans-serif" font-size="13" font-weight="700" text-anchor="middle" fill="#b97d0c" stroke="none">$</text><circle cx="226" cy="80" r="11" fill="#ffd45e"/><text x="226" y="85" font-family="'Arial Rounded MT Bold','Fredoka',Arial,sans-serif" font-size="13" font-weight="700" text-anchor="middle" fill="#b97d0c" stroke="none">$</text><g stroke="none"><ellipse cx="118" cy="98" rx="2.6" ry="3.0" fill="#4b2e22"/><ellipse cx="138" cy="98" rx="2.6" ry="3.0" fill="#4b2e22"/>
-<circle cx="118.9" cy="97.0" r="0.9" fill="#fff"/><circle cx="138.9" cy="97.0" r="0.9" fill="#fff"/>
-<g fill="#ff9bb5" opacity=".7"><ellipse cx="113" cy="106" rx="3" ry="2"/><ellipse cx="143" cy="106" rx="3" ry="2"/></g></g>
-<path d="M125.5 107q2.5 2.8 5 0" fill="none" stroke-width="3"/>
+<defs><clipPath id="frame"><rect x="6" y="6" width="244" height="148" rx="12"/></clipPath></defs>
+<g stroke="#4b2e22" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<rect x="6" y="6" width="244" height="148" rx="12" fill="#fff4d6"/>
+<g clip-path="url(#frame)">
+<!-- Rays of light from the treasure -->
+<g fill="#ffe7a0" stroke="none"><path d="M128 90L60 0h30ZM128 90L120 0h20ZM128 90L170 0h30ZM128 90L0 40v24ZM128 90L256 40v24Z"/></g>
+<path d="M0 128h256v32H0Z" fill="#e8c890"/><path d="M0 128h256" stroke="#d4ac6a" stroke-width="2.5"/>
+<!-- The treasure chest, and the treasure in it: a clock -->
+<path d="M88 72l4-22q36-16 72 0l4 22Z" fill="#c98a5a"/>
+<path d="M96 66l2-12q30-12 60 0l2 12" fill="none" stroke="#ffc94a" stroke-width="3"/>
+<circle cx="128" cy="62" r="24" fill="#ffd45e"/>
+<circle cx="128" cy="62" r="18" fill="#ffffff"/>
+<g fill="#4b2e22" stroke="none"><circle cx="128" cy="47" r="1.4"/><circle cx="143" cy="62" r="1.4"/><circle cx="128" cy="77" r="1.4"/><circle cx="113" cy="62" r="1.4"/></g>
+<path d="M128 62v-12M128 62l8 5" stroke-width="2.6"/>
+<circle cx="128" cy="62" r="2" fill="#4b2e22" stroke="none"/>
+<path d="M120 38h16v-6h-16Z" fill="#ffd45e" stroke-width="2.4"/><circle cx="128" cy="28" r="3.4" fill="#ffd45e" stroke-width="2.2"/>
+<path d="M104 46l-5-5M152 46l5-5" stroke-width="4"/><path d="M104 46l-5-5M152 46l5-5" stroke="#ffd45e" stroke-width="1.4"/>
+<path d="M84 76h88v50H84Z" fill="#c98a5a"/>
+<path d="M84 76h88v8H84Z" fill="#a8754e"/>
+<path d="M98 76v50M158 76v50" stroke="#ffc94a" stroke-width="5"/><path d="M98 76v50M158 76v50" stroke-width="1.4"/>
+<path d="M122 90h12v14h-12Z" fill="#ffc94a" stroke-width="2.4"/><circle cx="128" cy="96" r="2" fill="#4b2e22" stroke="none"/>
+<g fill="none" stroke="#a8754e" stroke-width="2"><path d="M110 96h-8M110 108h-8M154 96h-8M154 108h-8"/></g>
+<!-- Gold coins spilling out -->
+<g fill="#ffd45e" stroke-width="2.2"><ellipse cx="72" cy="130" rx="8" ry="3.4"/><ellipse cx="74" cy="126" rx="8" ry="3.4"/><ellipse cx="72" cy="122" rx="8" ry="3.4"/><ellipse cx="186" cy="130" rx="8" ry="3.4"/><ellipse cx="184" cy="126" rx="8" ry="3.4"/><ellipse cx="200" cy="138" rx="8" ry="3.4"/><ellipse cx="60" cy="140" rx="8" ry="3.4"/></g>
+<g fill="#ffd45e" stroke-width="2.2"><circle cx="90" cy="68" r="6"/><circle cx="168" cy="66" r="6"/><circle cx="178" cy="78" r="5"/></g>
+<g fill="none" stroke="#f0a63a" stroke-width="1.6"><path d="M90 65v6M168 63v6M178 75.5v5"/></g>
+<!-- Sparkles -->
+<g fill="none" stroke="#ffffff" stroke-width="2.4"><path d="M110 22v8M106 26h8M152 30v6M149 33h6"/></g>
+<g fill="none" stroke="#ffc94a" stroke-width="2.4"><path d="M196 30v10M191 35h10M56 46v8M52 50h8"/></g>
+<!-- The child, amazed by it -->
+<path d="M36 128l2-18M50 128l-2-18" stroke-width="9"/><path d="M36 128l2-18M50 128l-2-18" stroke="#ffe2c4" stroke-width="4"/>
+<g fill="#ff8fae"><ellipse cx="34" cy="130" rx="6" ry="3.4"/><ellipse cx="52" cy="130" rx="6" ry="3.4"/></g>
+<path d="M28 114q-2-30 15-30t15 30Z" fill="#8fd6a8"/>
+<path d="M54 94l10-12M32 94l-8-12" stroke-width="9"/><path d="M54 94l10-12M32 94l-8-12" stroke="#8fd6a8" stroke-width="4"/>
+<g fill="#ffe2c4" stroke-width="2.2"><circle cx="65" cy="80" r="4.2"/><circle cx="23" cy="80" r="4.2"/></g>
+<circle cx="43" cy="68" r="15" fill="#ffe2c4"/>
+<path d="M28 67q0-16 15-16t15 16q-7-7-15-6-8-1-15 6Z" fill="#8b5a3c"/>
+<g fill="#ffffff" stroke-width="1.8"><circle cx="44" cy="68" r="3.4"/><circle cx="53" cy="68" r="3.4"/></g>
+<g fill="#4b2e22" stroke="none"><circle cx="45" cy="68" r="1.6"/><circle cx="54" cy="68" r="1.6"/></g>
+<ellipse cx="49" cy="76" rx="2.6" ry="3" fill="#c9455f" stroke-width="1.8"/>
+<ellipse cx="38" cy="74" rx="3.2" ry="2" fill="#ff9bb5" opacity=".75" stroke="none"/>
+<!-- The hourglass, its sand falling as gold -->
+<path d="M212 76h28M212 126h28" stroke-width="5"/><path d="M212 76h28M212 126h28" stroke="#c98a5a" stroke-width="2"/>
+<path d="M216 78q0 18 10 23-10 5-10 23h20q0-18-10-23 10-5 10-23Z" fill="#eaf6ff" stroke-width="2.5"/>
+<path d="M220 86q6 6 12 0-2 8-6 13-4-5-6-13Z" fill="#ffd45e" stroke="none"/>
+<path d="M226 101v12" stroke="#ffc94a" stroke-width="1.6"/>
+<path d="M218 122q8-8 16 0Z" fill="#ffd45e" stroke="none"/>
+<path d="M214 76v50M238 76v50" stroke-width="2"/>
+</g>
 </g>
 </svg>

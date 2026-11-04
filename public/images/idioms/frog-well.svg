@@ -1,5 +1,44 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 160">
-<g stroke="#4b2e22" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">
-<rect x="6" y="6" width="244" height="148" rx="12" fill="#eef8fd"/><rect x="70" y="34" width="116" height="116" fill="#a8a6b3"/><path d="M70 52h116" stroke="#8f8c9a" stroke-width="2.5"/><path d="M70 70h116" stroke="#8f8c9a" stroke-width="2.5"/><path d="M70 88h116" stroke="#8f8c9a" stroke-width="2.5"/><path d="M70 106h116" stroke="#8f8c9a" stroke-width="2.5"/><path d="M70 124h116" stroke="#8f8c9a" stroke-width="2.5"/><path d="M70 142h116" stroke="#8f8c9a" stroke-width="2.5"/><ellipse cx="128" cy="34" rx="58" ry="12" fill="#bfe3f7"/><path d="M118.0 28.0L119.1 30.5L121.8 30.8L119.7 32.6L120.4 35.2L118.0 33.8L115.6 35.2L116.3 32.6L114.2 30.8L116.9 30.5Z" fill="#ffc94a" stroke-width="2"/><circle cx="144" cy="34" r="5" fill="#ffd45e" stroke-width="2"/><ellipse cx="128" cy="134" rx="30" ry="18" fill="#8fd6a8"/><circle cx="114" cy="116" r="9" fill="#8fd6a8"/><circle cx="142" cy="116" r="9" fill="#8fd6a8"/><g fill="#4b2e22" stroke="none"><circle cx="114" cy="114" r="3"/><circle cx="142" cy="114" r="3"/></g><path d="M120 134q8 6 16 0" fill="none" stroke-width="2.5"/><text x="220" y="80" font-family="'Arial Rounded MT Bold','Fredoka',Arial,sans-serif" font-size="26" font-weight="700" text-anchor="middle" fill="#a98cf2" stroke="none">?</text>
+<defs><clipPath id="frame"><rect x="6" y="6" width="244" height="148" rx="12"/></clipPath></defs>
+<g stroke="#4b2e22" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<rect x="6" y="6" width="244" height="148" rx="12" fill="#eaf6ff"/>
+<g clip-path="url(#frame)">
+<!-- Up above: the whole wide world -->
+<circle cx="222" cy="22" r="9" fill="#ffd45e" stroke-width="2.5"/>
+<g fill="#ffffff" stroke-width="2.2"><path d="M28 30q0-8 8-8 4-6 12-4 6-2 8 6 6 0 6 6Z"/><path d="M168 22q0-6 6-6 4-4 10-2 4 0 6 4 6 0 6 4Z"/></g>
+<path d="M0 54l26-22 20 14 28-24 30 32H0Z" fill="#c7dcef" stroke="none"/>
+<path d="M150 54l30-26 18 12 22-20 36 34Z" fill="#c7dcef" stroke="none"/>
+<g fill="none" stroke-width="2"><path d="M80 22q3-4 6 0 3-4 6 0M136 30q3-4 6 0 3-4 6 0"/></g>
+<path d="M0 54h256v6H0Z" fill="#8fd6a8"/>
+<g fill="#7cc98e" stroke-width="2"><path d="M20 54l3-10 3 10ZM200 54l3-10 3 10ZM236 54l3-12 3 12Z"/></g>
+<!-- Down below: the earth, cut away to show the well -->
+<path d="M0 60h256v100H0Z" fill="#c9a77a"/>
+<g fill="#b8935f" stroke="none"><circle cx="30" cy="80" r="3"/><circle cx="60" cy="110" r="4"/><circle cx="22" cy="134" r="3"/><circle cx="200" cy="90" r="4"/><circle cx="228" cy="124" r="3"/><circle cx="190" cy="140" r="3"/></g>
+<path d="M98 60h60v94H98Z" fill="#3d4a7a" stroke="none"/>
+<path d="M112 60h32l10 94h-52Z" fill="#6f84b8" opacity=".55" stroke="none"/>
+<g stroke-width="2.4"><path d="M86 48h12v106H86ZM158 48h12v106h-12Z" fill="#a8a6b3"/></g>
+<g fill="none" stroke="#8f8c9a" stroke-width="2"><path d="M86 60h12M86 72h12M86 84h12M86 96h12M86 108h12M86 120h12M86 132h12M86 144h12M158 60h12M158 72h12M158 84h12M158 96h12M158 108h12M158 120h12M158 132h12M158 144h12"/></g>
+<path d="M98 140h60v20H98Z" fill="#5b9bf0" stroke-width="2.4"/>
+<g fill="none" stroke="#8cc8f2" stroke-width="2"><path d="M104 146h10M140 150h10"/></g>
+<!-- A bird on the rim, telling the frog how big the sky really is -->
+<path d="M186 48q-12 0-12-10 0-8 10-8t12 10Z" fill="#8cc8f2"/>
+<circle cx="180" cy="32" r="6" fill="#8cc8f2"/>
+<path d="M174 32l-6 2 6 2Z" fill="#ffc94a" stroke-width="1.8"/>
+<circle cx="179" cy="31" r="1.2" fill="#4b2e22" stroke="none"/>
+<path d="M196 40l8-2-4 6" fill="#8cc8f2" stroke-width="2"/>
+<path d="M182 48v4M188 48v4" stroke-width="2"/>
+<g fill="none" stroke="#a59cbd" stroke-width="2"><path d="M164 26l-4-4M164 34h-6"/></g>
+<!-- The frog at the bottom, sure the sky is just that little circle -->
+<path d="M110 140q-4-8 6-10h24q10 2 6 10Z" fill="#a8a6b3" stroke-width="2.4"/>
+<ellipse cx="128" cy="124" rx="13" ry="9" fill="#8fd6a8"/>
+<g fill="#ffffff" stroke-width="2"><circle cx="122" cy="114" r="4.4"/><circle cx="134" cy="114" r="4.4"/></g>
+<g fill="#4b2e22" stroke="none"><circle cx="122" cy="112.6" r="1.8"/><circle cx="134" cy="112.6" r="1.8"/></g>
+<path d="M122 127q6 4 12 0" fill="none" stroke-width="2"/>
+<path d="M116 130l-6 4M140 130l6 4" stroke-width="2.4"/>
+<g fill="#ffffff" stroke-width="2.2"><circle cx="122" cy="102" r="2.4"/><circle cx="116" cy="94" r="3.4"/></g>
+<path d="M104 86q-6-12 8-14 6-8 16-4 10-4 16 4 10 2 8 14 0 8-12 8h-28q-10 0-8-8Z" fill="#ffffff" stroke-width="2.4"/>
+<circle cx="128" cy="80" r="6" fill="#bfe3f7" stroke-width="2"/>
+<path d="M114 80h6M136 80h6" stroke="#a59cbd" stroke-width="2"/>
+</g>
 </g>
 </svg>

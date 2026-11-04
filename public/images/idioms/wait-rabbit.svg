@@ -1,5 +1,47 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 160">
-<g stroke="#4b2e22" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">
-<rect x="6" y="6" width="119" height="148" rx="12" fill="#eef8fd"/><g transform="translate(6 6)"><path d="M0 132h119" stroke="#6cc28a" stroke-width="5"/><path d="M44 132v-24h32v24Z" fill="#c98a5a"/><ellipse cx="60" cy="108" rx="16" ry="5" fill="#e8b27a"/><ellipse cx="22.0" cy="102.0" rx="4.0" ry="11.0" fill="#ffffff"/><ellipse cx="34.0" cy="102.0" rx="4.0" ry="11.0" fill="#ffffff"/><ellipse cx="28" cy="124.0" rx="16.0" ry="12.0" fill="#ffffff"/><circle cx="28" cy="114.0" r="10.0" fill="#ffffff"/><g fill="#4b2e22" stroke="none"><circle cx="24.0" cy="113.0" r="1.6"/><circle cx="32.0" cy="113.0" r="1.6"/></g><text x="46" y="80" font-family="'Arial Rounded MT Bold','Fredoka',Arial,sans-serif" font-size="20" font-weight="700" text-anchor="middle" fill="#4b2e22" stroke="none">💥</text></g><circle cx="20" cy="20" r="9" fill="#ffffff" stroke-width="2.5"/><text x="20" y="24.5" font-family="'Arial Rounded MT Bold','Fredoka',Arial,sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#4b2e22" stroke="none">1</text><rect x="131" y="6" width="119" height="148" rx="12" fill="#fff6e0"/><g transform="translate(131 6)"><path d="M0 132h119" stroke="#6cc28a" stroke-width="5"/><path d="M4 132l-3 -16l7 10l3 -14l3 14l7 -10l-3 16Z" fill="#6cc28a" stroke-width="2.5"/><path d="M13 132l-3 -16l7 10l3 -14l3 14l7 -10l-3 16Z" fill="#6cc28a" stroke-width="2.5"/><path d="M22 132l-3 -16l7 10l3 -14l3 14l7 -10l-3 16Z" fill="#6cc28a" stroke-width="2.5"/><path d="M80 132l-3 -16l7 10l3 -14l3 14l7 -10l-3 16Z" fill="#6cc28a" stroke-width="2.5"/><path d="M89 132l-3 -16l7 10l3 -14l3 14l7 -10l-3 16Z" fill="#6cc28a" stroke-width="2.5"/><path d="M98 132l-3 -16l7 10l3 -14l3 14l7 -10l-3 16Z" fill="#6cc28a" stroke-width="2.5"/><path d="M32 132v-24h32v24Z" fill="#c98a5a"/><ellipse cx="48" cy="108" rx="16" ry="5" fill="#e8b27a"/><path d="M70.8 132.0Q70.8 108.0 82.0 108.0Q93.2 108.0 93.2 132.0Z" fill="#e8b27a"/><circle cx="82" cy="90.4" r="12.8" fill="#ffe2c4"/><path d="M69.2 89.6Q69.2 76.0 82.0 76.0Q94.8 76.0 94.8 89.6Q88.4 83.2 82.0 84.0Q75.6 83.2 69.2 89.6Z" fill="#8b5a3c"/><path d="M76.4 92.0q2.4 1.6 4.8 0M82.8 92.0q2.4 1.6 4.8 0" fill="none" stroke-width="2"/><g fill="#ff9bb5" opacity=".7" stroke="none"><ellipse cx="73.2" cy="96.0" rx="2.7" ry="1.6"/><ellipse cx="90.8" cy="96.0" rx="2.7" ry="1.6"/></g><text x="98" y="60" font-family="'Arial Rounded MT Bold','Fredoka',Arial,sans-serif" font-size="13" font-weight="700" text-anchor="middle" fill="#a59cbd" stroke="none">z z</text></g><circle cx="145" cy="20" r="9" fill="#ffffff" stroke-width="2.5"/><text x="145" y="24.5" font-family="'Arial Rounded MT Bold','Fredoka',Arial,sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#4b2e22" stroke="none">2</text>
+<defs><clipPath id="frame"><rect x="6" y="6" width="244" height="148" rx="12"/></clipPath></defs>
+<g stroke="#4b2e22" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<rect x="6" y="6" width="244" height="148" rx="12" fill="#eef8fd"/>
+<g clip-path="url(#frame)">
+<!-- The farm: hills, a field gone to weeds, the forgotten hoe -->
+<circle cx="30" cy="28" r="10" fill="#ffd45e" stroke-width="2.5"/>
+<path d="M0 92q60-26 128-10t128-6v84H0Z" fill="#d6efd0" stroke="none"/>
+<path d="M0 108h256v52H0Z" fill="#e6cfa4"/>
+<g fill="none" stroke="#cfb184" stroke-width="2"><path d="M0 118h256M0 132h256M0 146h256"/></g>
+<g fill="#7cc98e" stroke-width="2"><path d="M14 118l-2-14 5 8 2-12 3 12 4-8-2 14Z"/><path d="M44 132l-2-16 5 9 2-14 4 14 4-9-3 16Z"/><path d="M22 150l-2-14 5 8 2-12 3 12 4-8-2 14Z"/><path d="M62 112l-2-12 4 6 2-10 3 10 3-6-1 12Z"/><path d="M228 150l-2-16 5 9 2-14 4 14 4-9-3 16Z"/></g>
+<g fill="#ffd45e" stroke-width="1.6"><circle cx="18" cy="104" r="2.6"/><circle cx="48" cy="116" r="2.6"/><circle cx="234" cy="134" r="2.6"/></g>
+<path d="M80 146l50-12" stroke-width="5"/><path d="M80 146l50-12" stroke="#c98a5a" stroke-width="2"/>
+<path d="M128 130l6 10-8 2Z" fill="#a8a6b3" stroke-width="2.4"/>
+<!-- The stump, and the farmer sitting by it, waiting -->
+<path d="M148 128v-28h40v28Z" fill="#c98a5a"/>
+<ellipse cx="168" cy="100" rx="20" ry="6" fill="#e9c08f"/>
+<g fill="none" stroke="#a8754e" stroke-width="1.8"><ellipse cx="168" cy="100" rx="12" ry="3.4"/><ellipse cx="168" cy="100" rx="5" ry="1.4"/><path d="M156 108v16M178 110v14"/></g>
+<path d="M146 128q-6 4-10 2M190 128q6 4 10 2" fill="none" stroke-width="3"/>
+<path d="M118 132l26-4M110 124l30 4" stroke-width="9"/><path d="M118 132l26-4M110 124l30 4" stroke="#5b6b8c" stroke-width="4"/>
+<g fill="#3a3340"><ellipse cx="114" cy="132" rx="6" ry="3.4"/><ellipse cx="106" cy="124" rx="6" ry="3.4"/></g>
+<path d="M134 128q-6-30 6-36 10-4 12 6l-2 30Z" fill="#8cc8f2"/>
+<path d="M142 92l-12-10-2-8" stroke-width="9"/><path d="M142 92l-12-10-2-8" stroke="#8cc8f2" stroke-width="4"/>
+<circle cx="128" cy="72" r="4.2" fill="#ffe2c4" stroke-width="2.2"/>
+<circle cx="146" cy="70" r="14" fill="#ffe2c4"/>
+<path d="M126 66q20-14 40 0-20-4-40 0Z" fill="#f0c86a"/>
+<path d="M134 62q12-14 24 0Z" fill="#f0c86a"/>
+<path d="M136 64h20" stroke="#c9455f" stroke-width="2.5"/>
+<g fill="#4b2e22" stroke="none"><circle cx="142" cy="72" r="2"/><circle cx="152" cy="72" r="2"/></g>
+<path d="M144 80q4 2 7 0" fill="none" stroke-width="2"/>
+<ellipse cx="138" cy="78" rx="3" ry="2" fill="#ff9bb5" opacity=".7" stroke="none"/>
+<!-- What he's hoping for: another rabbit bumping into the stump -->
+<g fill="#ffffff" stroke-width="2.4"><circle cx="160" cy="54" r="2.6"/><circle cx="168" cy="44" r="3.6"/></g>
+<path d="M176 36q-4-14 10-16 6-10 20-6 10-6 22 2 14 0 14 14 6 12-6 18-4 10-18 8-10 8-22 2-14 4-18-6-6-4-2-16Z" fill="#ffffff" stroke-width="2.5"/>
+<path d="M216 44v-10h12v10Z" fill="#c98a5a" stroke-width="2"/>
+<g fill="#ffffff" stroke-width="2"><ellipse cx="200" cy="38" rx="8" ry="6"/><ellipse cx="196" cy="28" rx="2.2" ry="6" transform="rotate(-20 196 28)"/><ellipse cx="202" cy="27" rx="2.2" ry="6"/><circle cx="208" cy="36" r="5"/></g>
+<path d="M207 36l2 2M210 34l-2 2" stroke-width="1.4"/>
+<g fill="none" stroke="#ffc94a" stroke-width="2"><path d="M214 28l2-4M216 34h4M213 22l-1-4"/></g>
+<!-- Meanwhile, a rabbit hopping off the other way -->
+<g fill="#ffffff"><ellipse cx="222" cy="98" rx="3" ry="9" transform="rotate(20 222 98)"/><ellipse cx="229" cy="99" rx="3" ry="9" transform="rotate(30 229 99)"/></g>
+<ellipse cx="228" cy="114" rx="11" ry="8" fill="#ffffff"/><circle cx="220" cy="108" r="7" fill="#ffffff"/>
+<circle cx="240" cy="114" r="3" fill="#ffffff" stroke-width="2"/>
+<circle cx="218" cy="107" r="1.4" fill="#4b2e22" stroke="none"/>
+<g fill="none" stroke="#a59cbd" stroke-width="2"><path d="M244 104q4 4 2 10M236 126h10"/></g>
+</g>
 </g>
 </svg>

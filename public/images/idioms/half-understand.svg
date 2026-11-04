@@ -1,48 +1,47 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 160">
-<g stroke="#4b2e22" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">
-<rect x="6" y="6" width="244" height="148" rx="12" fill="#f3efff"/>
-<g fill="#fff6c8" stroke="none"><circle cx="40" cy="36" r="3"/><circle cx="214" cy="120" r="3"/><circle cx="56" cy="122" r="2.5"/></g>
-<path d="M30 60l3 7 7 3-7 3-3 7-3-7-7-3 7-3Z" fill="#ffd84a" stroke-width="2"/>
-<path d="M218 40l2.5 6 6 2.5-6 2.5-2.5 6-2.5-6-6-2.5 6-2.5Z" fill="#ffd84a" stroke-width="2"/>
-<!-- dress -->
-<path d="M100 154q2-34 28-36 26 2 28 36Z" fill="#f7a8c8"/>
-<path d="M116 124q12 8 24 0" fill="none" stroke-width="2.5"/>
-<!-- left arm resting -->
-<path d="M106 128q-12 10-10 24" fill="none" stroke-width="10"/>
-<path d="M106 128q-12 10-10 24" fill="none" stroke="#ffe2c4" stroke-width="4"/>
-<!-- hair behind, wavy bob -->
-<path d="M84 88q-6-44 44-46 50 2 44 46q6 8 0 16q2 10-8 14q-4 6-12 2H104q-8 4-12-2q-10-4-8-14q-6-8 0-16Z" fill="#b8692f"/>
-<!-- face -->
-<ellipse cx="128" cy="90" rx="32" ry="28" fill="#ffe2c4"/>
-<!-- ears -->
-<ellipse cx="96" cy="94" rx="5" ry="7" fill="#ffd2ae"/>
-<ellipse cx="160" cy="94" rx="5" ry="7" fill="#ffd2ae"/>
-<!-- fringe -->
-<path d="M94 86q-2-38 34-40 36 2 34 40q-4-10-10-12q-2 8-9 9q-3-10-9-12q-4 10-12 11q-2-9-6-12q-5 9-12 10q-2-4-4-6q-4 4-6 12Z" fill="#b8692f"/>
-<g fill="#e09a52" stroke="none"><circle cx="112" cy="54" r="2.5"/><circle cx="120" cy="51" r="2"/></g>
-<!-- bow -->
-<path d="M150 50l-12-8v18Zm0 0l12-8v18Z" fill="#ffd84a" stroke-width="2.5"/>
-<circle cx="150" cy="51" r="4" fill="#ffd84a" stroke-width="2.5"/>
-<!-- glasses -->
-<g fill="none" stroke="#f08a3c" stroke-width="3"><circle cx="115" cy="93" r="10"/><circle cx="141" cy="93" r="10"/><path d="M125 92q3-2 6 0M105 92l-8-2M151 92l8-2"/></g>
-<!-- eyes looking up, puzzled brows -->
-<g fill="#4b2e22" stroke="none"><circle cx="116" cy="91" r="3.2"/><circle cx="142" cy="91" r="3.2"/></g>
-<g fill="#fff" stroke="none"><circle cx="117" cy="90" r="1"/><circle cx="143" cy="90" r="1"/></g>
-<path d="M108 77q6-3 11 0" fill="none" stroke-width="2.2"/>
-<path d="M137 75q6-1 11 3" fill="none" stroke-width="2.2"/>
-<!-- cheeks -->
-<ellipse cx="106" cy="106" rx="5" ry="3" fill="#ffb3c6" stroke="none"/><ellipse cx="150" cy="106" rx="5" ry="3" fill="#ffb3c6" stroke="none"/>
-<!-- unsure wavy mouth -->
-<path d="M121 109q3-3 5 0t5 0t5 0" fill="none" stroke-width="2.2"/>
-<!-- right arm up, scratching the head -->
-<path d="M150 128q22-8 24-30q0-14-6-22" fill="none" stroke-width="10"/>
-<path d="M150 128q22-8 24-30q0-14-6-22" fill="none" stroke="#ffe2c4" stroke-width="4"/>
-<circle cx="166" cy="72" r="7" fill="#ffe2c4"/>
-<path d="M161 67l-2-4M165 65l-1-4M169 66l1-4" fill="none" stroke-width="2"/>
-<!-- scratch lines -->
-<path d="M178 60l6-4M180 68l7-1" fill="none" stroke="#a98cf2" stroke-width="2.5"/>
-<!-- question mark above -->
-<path d="M84 22q0-11 11-11t11 10q0 7-7 9-4 2-4 8" fill="none" stroke="#a98cf2" stroke-width="6"/>
+<defs><clipPath id="frame"><rect x="6" y="6" width="244" height="148" rx="12"/></clipPath></defs>
+<g stroke="#4b2e22" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<rect x="6" y="6" width="244" height="148" rx="12" fill="#f1ecff"/>
+<g clip-path="url(#frame)">
+<!-- A bookshelf behind -->
+<path d="M14 40h50v86H14Z" fill="#c98a5a"/><path d="M14 68h50M14 96h50" stroke-width="2.5"/>
+<g stroke-width="1.8"><rect x="18" y="46" width="7" height="22" fill="#ff8fb8"/><rect x="25" y="50" width="7" height="18" fill="#8cc8f2"/><rect x="32" y="44" width="7" height="24" fill="#ffd45e"/><rect x="44" y="52" width="16" height="6" fill="#8fd6a8"/><rect x="18" y="76" width="8" height="20" fill="#a98cf2"/><rect x="26" y="74" width="7" height="22" fill="#ff9f4a"/><rect x="36" y="78" width="7" height="18" fill="#8fd6a8" transform="rotate(12 40 87)"/><rect x="18" y="104" width="24" height="6" fill="#8cc8f2"/><rect x="18" y="110" width="22" height="6" fill="#ff8fb8"/><rect x="18" y="116" width="26" height="6" fill="#ffd45e"/></g>
+<path d="M0 132h256v28H0Z" fill="#d9c3a5"/><path d="M0 132h256" stroke="#c8ab86" stroke-width="2.5"/>
+<!-- What she thinks she knows: only half an elephant -->
+<g fill="#ffffff" stroke-width="2.4"><circle cx="112" cy="58" r="3"/><circle cx="122" cy="48" r="4.4"/></g>
+<path d="M134 46q-8-18 10-22 6-14 24-10 12-8 28 0 18-4 22 10 18 4 14 22 10 14-6 22-4 14-22 12-12 10-28 4-14 8-28 0-18 4-20-12-10-6-2-18Z" fill="#ffffff" stroke-width="2.5"/>
+<path d="M176 34q-12-2-18 6-6 8-4 18v14h8v-10h4v10h8V48Z" fill="#c9c6d8" stroke-width="2.4"/>
+<path d="M156 46q-8 6-6 16 2 6 6 4" fill="none" stroke-width="5"/><path d="M156 46q-8 6-6 16 2 6 6 4" fill="none" stroke="#c9c6d8" stroke-width="2"/>
+<path d="M166 38q-10 2-8 12 6 4 10-2Z" fill="#b3aec6" stroke-width="2"/>
+<circle cx="164" cy="44" r="1.6" fill="#4b2e22" stroke="none"/>
+<path d="M176 34q16-2 28 6 8 8 6 22v10h-8v-10h-4v10h-8v-10h-14" fill="none" stroke="#a59cbd" stroke-width="2.2" stroke-dasharray="4 4"/>
+<path d="M210 50q6 2 6 8" fill="none" stroke="#a59cbd" stroke-width="2" stroke-dasharray="3 3"/>
+<path d="M190 38q0-8 7-8t7 6q0 4-5 6v3" fill="none" stroke="#a98cf2" stroke-width="3.2"/>
+<circle cx="199" cy="51" r="2" fill="#a98cf2" stroke="none"/>
+<!-- The desk, the book open at the elephant page, and the reader, puzzled -->
+<path d="M70 108h120v8H70Z" fill="#c98a5a"/><path d="M78 116v18M182 116v18" stroke-width="4"/>
+<path d="M98 108q14-6 30 0 16-6 30 0l-2-18q-14-4-28 2-14-6-28-2Z" fill="#ffffff" stroke-width="2.4"/>
+<path d="M128 92v16" stroke-width="2"/>
+<path d="M106 104q2-8 10-8 6 0 6 6" fill="#c9c6d8" stroke-width="1.8"/>
+<g fill="none" stroke="#a59cbd" stroke-width="1.6"><path d="M134 96h18M134 100h18M134 104h12"/></g>
+<path d="M96 108q-4-30 18-30 20 0 18 30" fill="#ff8fb8"/>
+<path d="M98 100l10 8M130 100l-10 8" stroke-width="9"/><path d="M98 100l10 8M130 100l-10 8" stroke="#ff8fb8" stroke-width="4"/>
+<path d="M126 86l12-12 2-10" stroke-width="9"/><path d="M126 86l12-12 2-10" stroke="#ff8fb8" stroke-width="4"/>
+<circle cx="139" cy="62" r="4.4" fill="#ffe2c4" stroke-width="2.2"/>
+<circle cx="114" cy="62" r="16" fill="#ffe2c4"/>
+<path d="M98 60q0-17 16-17t16 17q-8-7-16-6-8-1-16 6Z" fill="#8b5a3c"/>
+<path d="M98 56q-8 10-2 22M130 56q6 8 2 18" fill="none" stroke="#8b5a3c" stroke-width="5"/>
+<path d="M122 44l6-4 2 6-6 2Z" fill="#ffd45e" stroke-width="2"/>
+<g fill="#ffffff" fill-opacity=".5" stroke="#ff9f4a" stroke-width="2"><circle cx="108" cy="64" r="5"/><circle cx="120" cy="64" r="5"/></g>
+<path d="M113 64h2" stroke="#ff9f4a" stroke-width="2"/>
+<g fill="#4b2e22" stroke="none"><circle cx="108" cy="65" r="1.6"/><circle cx="120" cy="65" r="1.6"/></g>
+<path d="M104 57l5-1M118 56l5 2" stroke-width="2"/>
+<path d="M110 74q4-2 8 1" fill="none" stroke-width="2"/>
+<g fill="#ff9bb5" opacity=".75" stroke="none"><ellipse cx="102" cy="72" rx="3.4" ry="2"/><ellipse cx="126" cy="72" rx="3.4" ry="2"/></g>
+<g fill="none" stroke="#a59cbd" stroke-width="2"><path d="M146 58l4-2M146 66h5"/></g>
+<!-- A lamp on the desk -->
+<path d="M176 108h18" stroke-width="3"/><path d="M185 108V98l-6-4" fill="none" stroke-width="3"/>
+<path d="M168 90l12-6 6 10-14 6Z" fill="#ffd45e" stroke-width="2.4"/>
 </g>
-<circle cx="95" cy="47" r="3.8" fill="#a98cf2"/>
+</g>
 </svg>

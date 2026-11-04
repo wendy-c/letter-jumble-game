@@ -1,5 +1,51 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 160">
-<g stroke="#4b2e22" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">
-<rect x="6" y="6" width="244" height="148" rx="12" fill="#eef8fd"/><path d="M230.0 36.0L236.0 36.0" stroke="#ffb84a" stroke-width="3"/><path d="M225.3 47.3L229.6 51.6" stroke="#ffb84a" stroke-width="3"/><path d="M214.0 52.0L214.0 58.0" stroke="#ffb84a" stroke-width="3"/><path d="M202.7 47.3L198.4 51.6" stroke="#ffb84a" stroke-width="3"/><path d="M198.0 36.0L192.0 36.0" stroke="#ffb84a" stroke-width="3"/><path d="M202.7 24.7L198.4 20.4" stroke="#ffb84a" stroke-width="3"/><path d="M214.0 20.0L214.0 14.0" stroke="#ffb84a" stroke-width="3"/><path d="M225.3 24.7L229.6 20.4" stroke="#ffb84a" stroke-width="3"/><circle cx="214" cy="36" r="12" fill="#ffd45e"/><path d="M176 150V70" stroke="#4fa871" stroke-width="7"/><path d="M176 150V70" stroke="#8fd6a8" stroke-width="3"/><path d="M190 150V82" stroke="#4fa871" stroke-width="7"/><path d="M190 150V82" stroke="#8fd6a8" stroke-width="3"/><path d="M204 150V94" stroke="#4fa871" stroke-width="7"/><path d="M204 150V94" stroke="#8fd6a8" stroke-width="3"/><rect x="20" y="104" width="128" height="22" rx="6" fill="#ffffff"/><path d="M24 126v16M144 126v16" stroke-width="5"/><ellipse cx="46" cy="100" rx="18" ry="9" fill="#ffffff"/><path d="M38.8 104.0Q38.8 80.0 50.0 80.0Q61.2 80.0 61.2 104.0Z" fill="#f7a8c8"/><circle cx="50" cy="62.4" r="12.8" fill="#ffe2c4"/><path d="M37.2 61.6Q37.2 48.0 50.0 48.0Q62.8 48.0 62.8 61.6Q56.4 55.2 50.0 56.0Q43.6 55.2 37.2 61.6Z" fill="#8b5a3c"/><path d="M44.4 64.0q2.4 1.6 4.8 0M50.8 64.0q2.4 1.6 4.8 0" fill="none" stroke-width="2"/><g fill="#ff9bb5" opacity=".7" stroke="none"><ellipse cx="41.2" cy="68.0" rx="2.7" ry="1.6"/><ellipse cx="58.8" cy="68.0" rx="2.7" ry="1.6"/></g><path d="M62 98q40-12 86 2v14H62Z" fill="#a98cf2"/><text x="96" y="60" font-family="'Arial Rounded MT Bold','Fredoka',Arial,sans-serif" font-size="16" font-weight="700" text-anchor="middle" fill="#a98cf2" stroke="none">z z z</text>
+<defs><clipPath id="frame"><rect x="6" y="6" width="244" height="148" rx="12"/></clipPath></defs>
+<g stroke="#4b2e22" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<rect x="6" y="6" width="244" height="148" rx="12" fill="#e9e2ff"/>
+<g clip-path="url(#frame)">
+<!-- The window: outside, the sun is already high above three bamboo poles -->
+<rect x="150" y="14" width="88" height="80" rx="4" fill="#bfe3f7"/>
+<path d="M150 74q44-10 88 0v20h-88Z" fill="#bfe8c8" stroke="none"/>
+<g stroke-width="6"><path d="M172 94V50M194 94V50M216 94V50"/></g>
+<g stroke="#8fd6a8" stroke-width="2.6"><path d="M172 94V50M194 94V50M216 94V50"/></g>
+<g stroke-width="1.8"><path d="M169 64h6M169 80h6M191 64h6M191 80h6M213 64h6M213 80h6"/></g>
+<circle cx="194" cy="30" r="9" fill="#ffd45e" stroke-width="2.5"/>
+<g fill="none" stroke="#ffc94a" stroke-width="2"><path d="M194 16v-4M194 44v4M180 30h-4M208 30h4M184 20l-3-3M204 20l3-3M184 40l-3 3M204 40l3 3"/></g>
+<rect x="150" y="14" width="88" height="80" rx="4" fill="none" stroke-width="3.5"/>
+<path d="M144 94h100" stroke-width="5"/>
+<!-- The rooster on the sill, crowing and crowing -->
+<path d="M222 92q-14 0-14-14 0-10 10-10 12 0 14 12Z" fill="#ffffff"/>
+<path d="M230 82q8-8 4-16-6 2-6 10" fill="#ff8f4a" stroke-width="2"/>
+<circle cx="214" cy="66" r="6" fill="#ffffff"/>
+<path d="M210 60q2-6 6-2 2-4 4 2" fill="#ff6b6b" stroke-width="2"/>
+<path d="M208 66l-6 2 6 2Z" fill="#ffc94a" stroke-width="1.8"/>
+<path d="M212 72q2 4 0 6" fill="#ff6b6b" stroke-width="1.6"/>
+<circle cx="214" cy="65" r="1.2" fill="#4b2e22" stroke="none"/>
+<g fill="none" stroke="#ff6b6b" stroke-width="2"><path d="M198 60l-6-4M196 68h-8M198 76l-6 4"/></g>
+<!-- The floor, the bedside table and its alarm clock, ringing -->
+<path d="M0 132h256v28H0Z" fill="#d9c3a5"/><path d="M0 132h256" stroke="#c8ab86" stroke-width="2.5"/>
+<path d="M112 100h26v32h-26Z" fill="#c98a5a"/><path d="M112 114h26" stroke-width="2"/><circle cx="125" cy="122" r="1.6" fill="#ffd45e" stroke-width="1.4"/>
+<circle cx="125" cy="88" r="10" fill="#ff8fb8"/><circle cx="125" cy="88" r="7" fill="#ffffff" stroke-width="2"/>
+<path d="M125 88v-5M125 88l-4 2" stroke-width="1.8"/>
+<g fill="#ffc94a" stroke-width="2"><circle cx="117" cy="78" r="3"/><circle cx="133" cy="78" r="3"/></g>
+<path d="M118 98l-2 3M132 98l2 3" stroke-width="2"/>
+<g fill="none" stroke="#ff6b6b" stroke-width="2"><path d="M110 82q-4 6 0 12M140 82q4 6 0 12M106 78q-6 10 0 20"/></g>
+<!-- The bed, and the child, still fast asleep -->
+<path d="M14 72v62M104 96v38" stroke-width="5"/>
+<path d="M14 74q0-6 6-6h4v40H14Z" fill="#c98a5a"/>
+<path d="M14 108h92v14H14Z" fill="#c98a5a"/>
+<path d="M22 100q-4-12 8-14l20-2q8 2 6 14Z" fill="#ffffff"/>
+<circle cx="40" cy="92" r="12" fill="#ffe2c4"/>
+<path d="M28 90q0-14 14-12 10 2 10 8-6-4-12-2-8 0-12 6Z" fill="#8b5a3c"/>
+<g fill="none" stroke-width="2"><path d="M34 94q2 2 4 0M42 94q2 2 4 0"/></g>
+<ellipse cx="41" cy="100" rx="2" ry="1.6" fill="#c9455f" stroke-width="1.4"/>
+<path d="M44 100q1 4-1 5" fill="none" stroke="#8cc8f2" stroke-width="1.6"/>
+<path d="M44 108q-2-14 12-14h40q8 0 8 14Z" fill="#a98cf2"/>
+<g fill="none" stroke="#c9b2f7" stroke-width="2"><path d="M60 98v10M76 96v12M92 96v12"/></g>
+<path d="M98 110q8-2 8 6" fill="none" stroke-width="2"/>
+<g fill="none" stroke="#a59cbd" stroke-width="2.4"><path d="M54 70h8l-8 8h8M68 58h7l-7 7h7M82 46h6l-6 6h6"/></g>
+<!-- Slippers waiting by the bed -->
+<g fill="#ff8fae" stroke-width="2"><ellipse cx="64" cy="140" rx="9" ry="3.6"/><ellipse cx="84" cy="142" rx="9" ry="3.6"/></g>
+</g>
 </g>
 </svg>
