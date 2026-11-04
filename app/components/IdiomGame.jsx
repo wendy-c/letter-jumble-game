@@ -15,6 +15,8 @@ export default function IdiomGame({ topic, round, question, onAnswer }) {
 
   const characters = [...question.idiom];
   const blankLabel = characters.map((character, index) => (index === question.blank ? "空格" : character)).join("");
+  // The idiom as it's shown before it's answered, gap and all.
+  const gapped = characters.map((character, index) => (index === question.blank ? "？" : character)).join("");
 
   function pick(option) {
     if (picked) return;
@@ -43,7 +45,11 @@ export default function IdiomGame({ topic, round, question, onAnswer }) {
             )
           ))}
         </p>
-        <p className="idiom-meaning" lang="zh-Hant-HK">{question.meaning}</p>
+        <div className="idiom-meaning" lang="zh-Hant-HK">
+          <p><span className="idiom-meaning-label">意思：</span>{question.meaning}</p>
+          {/* The idiom in the example has the same gap until it's been answered. */}
+          <p><span className="idiom-meaning-label">例句：</span>{solved ? question.example : question.example.split(question.idiom).join(gapped)}</p>
+        </div>
       </section>
 
       <section className="answer-panel chinese-answer-panel" aria-label="揀字">

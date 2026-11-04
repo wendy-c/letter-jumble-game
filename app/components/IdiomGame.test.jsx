@@ -22,7 +22,10 @@ describe("IdiomGame", () => {
     const { container } = renderQuestion();
     expect(container.querySelector(".idiom-picture")).toHaveAttribute("src", "/images/idioms/frog-well.svg");
     expect(screen.getByLabelText("井底之空格")).toHaveTextContent("井底之？");
-    expect(screen.getByText("比喻見識狹窄的人。")).toBeInTheDocument();
+    const meaning = container.querySelector(".idiom-meaning");
+    expect(meaning).toHaveTextContent("意思：比喻見識狹窄的人。");
+    // The example has the same gap, so it doesn't give the answer away.
+    expect(meaning).toHaveTextContent("例句：多看圖書，才不會做井底之？。");
     const options = screen.getAllByRole("button").filter((button) => button.classList.contains("idiom-option"));
     expect(options.map((option) => option.textContent).sort()).toEqual(["蛙", "魚", "貓", "鳥"].sort());
     expect(speakCantonese).not.toHaveBeenCalled();
@@ -45,6 +48,7 @@ describe("IdiomGame", () => {
     await userEvent.click(right);
     await userEvent.click(right);
     expect(screen.getByLabelText("井底之蛙")).toHaveTextContent("井底之蛙");
+    expect(document.querySelector(".idiom-meaning")).toHaveTextContent("例句：多看圖書，才不會做井底之蛙。");
     expect(onAnswer).toHaveBeenCalledTimes(1);
     expect(onAnswer).toHaveBeenCalledWith(true);
   });

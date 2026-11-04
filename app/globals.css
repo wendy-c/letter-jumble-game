@@ -2738,6 +2738,19 @@ h1 span {
   }
 }
 
+.idiom-meaning p {
+  margin: 0;
+}
+
+.idiom-meaning p + p {
+  margin-top: 6px;
+}
+
+.idiom-meaning-label {
+  color: var(--pink);
+  font-weight: 700;
+}
+
 .idiom-meaning {
   z-index: 1;
   margin: 0;

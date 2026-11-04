@@ -14,6 +14,7 @@ describe("成語", () => {
       expect([...question.idiom]).toHaveLength(4);
       expect(question.answers).toEqual([question.idiom]);
       expect(question.meaning).toBeTruthy();
+      expect(question.example).toContain(question.idiom);
     });
   });
 
