@@ -482,19 +482,19 @@ describe("rainbow dragon", () => {
   it("shows Mochi in 3D and spends coins on treats", () => {
     cy.visit("/", {
       onBeforeLoad(win) {
-        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 3, age: "k1" }], current: "Ada" }));
+        win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 10, age: "k1" }], current: "Ada" }));
       },
     });
     cy.get('button[aria-label="Mochi the Rainbow Dragon"]').click();
     cy.contains("h1", "Mochi the Rainbow Dragon");
     cy.get(".dragon-canvas", { timeout: 20000 }).should("be.visible");
 
-    cy.get('button[aria-label="Ice cream, 2 rainbow coins"]').click();
-    cy.get(".player-chip-coins").should("have.text", "1");
+    cy.get('button[aria-label="Ice cream, 5 rainbow coins"]').click();
+    cy.get(".player-chip-coins").should("have.text", "5");
     cy.get(".dragon-bubble").should("contain.text", "brrr");
-    cy.get('button[aria-label="Apple, 1 rainbow coin"]').should("be.disabled");
+    cy.get('button[aria-label="Apple, 5 rainbow coins"]').should("be.disabled");
 
-    cy.get('button[aria-label="Apple, 1 rainbow coin"]', { timeout: 8000 }).should("be.enabled").click();
+    cy.get('button[aria-label="Apple, 5 rainbow coins"]', { timeout: 8000 }).should("be.enabled").click();
     cy.get(".player-chip-coins").should("have.text", "0");
     cy.contains("out of rainbow coins");
     storedPlayers().should("deep.equal", { players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" });

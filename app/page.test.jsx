@@ -410,7 +410,7 @@ describe("players", () => {
 
 describe("rainbow dragon", () => {
   it("asks who is playing, then spends their coins on Mochi", async () => {
-    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 4, age: "k1" }], current: null }));
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 6, age: "k1" }], current: null }));
     const user = userEvent.setup();
     render(<GameApp />);
 
@@ -421,7 +421,7 @@ describe("rainbow dragon", () => {
     expect(screen.getByTestId("dragon-scene")).toBeInTheDocument();
 
     await user.click(screen.getByRole("tab", { name: /Grooming/ }));
-    await user.click(screen.getByRole("button", { name: /Bath, 3 rainbow coins/ }));
+    await user.click(screen.getByRole("button", { name: /Bath, 5 rainbow coins/ }));
     expect(screen.getByLabelText(coinsLabel(1))).toBeInTheDocument();
     expect(storedPlayers().players).toEqual([{ name: "Ada", coins: 1, age: "k1" }]);
   });
@@ -1814,10 +1814,10 @@ describe("Tofu and Rainbow Village", () => {
     // Just the four activities: no Food or Grooming tabs.
     expect(screen.queryByRole("tab")).not.toBeInTheDocument();
     expect(within(screen.getByRole("group", { name: "Things to do with Mochi and Tofu" })).getAllByRole("button").map((button) => button.textContent))
-      .toEqual(["Have a picnic2", "Hide and seek2", "Blow bubbles2", "Ride scooters2", "Dance party2"]);
+      .toEqual(["Have a picnic5", "Hide and seek5", "Blow bubbles5", "Ride scooters5", "Dance party5"]);
 
-    await user.click(screen.getByRole("button", { name: "Hide and seek, 2 rainbow coins" }));
-    expect(storedPlayers().players[0].coins).toBe(28);
+    await user.click(screen.getByRole("button", { name: "Hide and seek, 5 rainbow coins" }));
+    expect(storedPlayers().players[0].coins).toBe(25);
     expect(screen.getByText(/ready or not/)).toBeInTheDocument();
 
     // Back in the village, the park is open to visit.
