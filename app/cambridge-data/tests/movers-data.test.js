@@ -44,12 +44,12 @@ describe("games by age", () => {
   const names = (list) => list.map((game) => game.name);
 
   it("gives K1, K2 and K3 their own games", () => {
-    expect(names(gamesForAge("k1"))).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "中文認字 · 入門篇", "Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
+    expect(names(gamesForAge("k1"))).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "R-Controlled Vowels", "中文認字 · 入門篇", "Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
     expect(names(gamesForAge("k2"))).toEqual([
-      "CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 入門篇", "中文認字 · 進階篇",
+      "CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "R-Controlled Vowels", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 入門篇", "中文認字 · 進階篇",
       "Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon",
     ]);
-    expect(names(gamesForAge("k3"))).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 進階篇", "量詞配對", "成語", "Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
+    expect(names(gamesForAge("k3"))).toEqual(["CVC Sounds", "Consonant Digraphs", "R & L Blends", "Magic E", "R-Controlled Vowels", "Letter Jumble - Starters", "Letter Jumble - Movers", "中文認字 · 進階篇", "量詞配對", "成語", "Challenge", "Rainbow Speed Quest", "Mochi the Rainbow Dragon"]);
   });
 
   it("shows every game when the age isn't known", () => {

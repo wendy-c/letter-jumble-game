@@ -143,6 +143,7 @@ const strings = {
       digraphs: "K1-K3 · ch、sh、th、ph、wh、ck 和 ng",
       blends: "K1-K3 · br、cr、str、bl、cl、fl 等混合音",
       "magic-e": "K1-K3 · a_e、i_e、o_e 和 u_e：cake、kite、bone、cube",
+      "r-controlled": "K1-K3 · ar、er、ir、or 和 ur：car、her、bird、corn、fur",
       starters: "K2-K3 · 劍橋 Starters · 12 個主題",
       "letter-jumble": "K2-K3 · 劍橋 Movers · 8 個主題",
       chinese: "K1-K2 · 認識中文字 · 廣東話",

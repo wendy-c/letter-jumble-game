@@ -19,7 +19,7 @@ function speedNote(record, chinese) {
 
 // `badgeFor(topic)` is the picture of a topic's badge once the child has finished it with every
 // answer right, or null: the card then gets the "DONE!" stamp.
-export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false, isBlend = false, isMagicE = false, isChinese = false, isMeasure = false, isIdiom = false, isSpeed = false, badgeFor = () => null, recordFor = () => null, topics, progressFor = () => 0, roundSizeFor = (topic) => topic.wordsPerGame ?? topic.words.length, breadcrumbs, onSelectTopic }) {
+export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false, isBlend = false, isMagicE = false, isRVowel = false, isChinese = false, isMeasure = false, isIdiom = false, isSpeed = false, badgeFor = () => null, recordFor = () => null, topics, progressFor = () => 0, roundSizeFor = (topic) => topic.wordsPerGame ?? topic.words.length, breadcrumbs, onSelectTopic }) {
   // Rainbow Speed Quest's heading follows the site's language. (The Challenge has its own map:
   // LevelMap.)
   const inChinese = useContext(LanguageContext) === "zh";
@@ -76,6 +76,14 @@ export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false
             </div>
             <p className="heading-note">Add a magic e and the vowel says its name. Find the pair that’s missing!</p>
           </>
+        ) : isRVowel ? (
+          <>
+            <div className="title-row">
+              <h1 id="game-title">R-Controlled <span>Vowels</span></h1>
+              {titleAction}
+            </div>
+            <p className="heading-note">When r comes after a vowel, it changes the vowel’s sound. Find the pair that’s missing!</p>
+          </>
         ) : isBlend ? (
           <>
             <div className="title-row">
@@ -110,7 +118,7 @@ export default function TopicMenu({ titleAction = null, isCvc, isDigraph = false
           </>
         )}
       </div>
-      <div className={`category-grid${isCvc && !isDigraph && !isBlend && !isMagicE ? " mode-grid" : ""}`}>
+      <div className={`category-grid${isCvc && !isDigraph && !isBlend && !isMagicE && !isRVowel ? " mode-grid" : ""}`}>
         {topics.map((topic) => (
             <ChoiceCard
               key={topic.id}

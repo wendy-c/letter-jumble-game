@@ -4,6 +4,7 @@ import { cvcModes } from "./phonics-data/cvc-data";
 import { digraphTopics } from "./phonics-data/digraphs-data";
 import { blendTopics } from "./phonics-data/blends-data";
 import { magicETopics } from "./phonics-data/magic-e-data";
+import { rControlledTopics } from "./phonics-data/r-controlled-data";
 import { chineseAdvancedTopics, chineseTopics } from "./chinese-data/chinese-data";
 import { measureWordTopics } from "./chinese-data/measure-words-data";
 import { idiomTopics } from "./chinese-data/idioms-data";
@@ -19,6 +20,7 @@ export const topicsByGame = {
   digraphs: digraphTopics,
   blends: blendTopics,
   "magic-e": magicETopics,
+  "r-controlled": rControlledTopics,
   chinese: chineseTopics,
   "chinese-advanced": chineseAdvancedTopics,
   "measure-words": measureWordTopics,

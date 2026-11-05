@@ -2,12 +2,14 @@ import { fn } from "storybook/test";
 import { cvcModes } from "../phonics-data/cvc-data";
 import { digraphTopics } from "../phonics-data/digraphs-data";
 import { magicETopics } from "../phonics-data/magic-e-data";
+import { rControlledTopics } from "../phonics-data/r-controlled-data";
 import { getSpellingGuides } from "../lib/spelling";
 import AnswerPanel from "./AnswerPanel";
 
 const cvc = cvcModes[0].words[0];
 const digraph = digraphTopics[0].words[0];
-const flute = magicETopics[4].words.find((question) => question.word === "flute");
+const flute = magicETopics[0].words.find((question) => question.word === "flute");
+const bird = rControlledTopics[0].words.find((question) => question.word === "bird");
 
 export default {
   title: "Components/Spelling/AnswerPanel",
@@ -35,3 +37,7 @@ export const MagicE = {
   args: { isCvc: true, isMagicE: true, answer: flute.answers[0], blanks: [flute.missing], tiles: flute.choices },
 };
 export const MagicEFilled = { args: { ...MagicE.args, placed: [3] } };
+// R-Controlled Vowels: the vowel and its r missing (bird: b _ _ d), and the five pairs to tap.
+export const RControlled = {
+  args: { isCvc: true, isRVowel: true, answer: bird.answers[0], blanks: [bird.missing], gapLength: bird.gapLength, tiles: bird.choices },
+};

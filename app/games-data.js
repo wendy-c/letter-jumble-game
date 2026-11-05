@@ -76,6 +76,17 @@ export const games = [
     questionCount: true,
   },
   {
+    id: "r-controlled",
+    group: "phonics",
+    name: "R-Controlled Vowels",
+    color: "peach",
+    picture: "/images/icons/r-controlled.svg",
+    note: "For K1-K3 - ar, er, ir, or and ur: car, her, bird, corn, fur",
+    badge: "BOSSY R",
+    ages: ["k1", "k2", "k3"],
+    questionCount: true,
+  },
+  {
     id: "starters",
     group: "cambridge",
     name: "Letter Jumble - Starters",

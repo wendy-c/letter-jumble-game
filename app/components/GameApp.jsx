@@ -178,9 +178,11 @@ export default function GameApp() {
   const isDigraph = selectedGame?.id === "digraphs";
   const isBlend = selectedGame?.id === "blends";
   const isMagicE = selectedGame?.id === "magic-e";
+  const isRVowel = selectedGame?.id === "r-controlled";
   // Phonics games fill a gap in a shown word (one letter for CVC, two for a digraph, two or three
-  // for a blend, and a vowel with the e at the end for Magic E).
-  const isCvc = selectedGame?.id === "cvc" || isDigraph || isBlend || isMagicE;
+  // for a blend, a vowel with the e at the end for Magic E, and a vowel with its r for
+  // R-Controlled Vowels).
+  const isCvc = selectedGame?.id === "cvc" || isDigraph || isBlend || isMagicE || isRVowel;
   const isChinese = Boolean(selectedGame?.id.startsWith("chinese"));
   const isMeasure = selectedGame?.id === "measure-words";
   const isIdiom = selectedGame?.id === "idioms";
@@ -698,6 +700,7 @@ export default function GameApp() {
             isDigraph={isDigraph}
             isBlend={isBlend}
             isMagicE={isMagicE}
+            isRVowel={isRVowel}
             isChinese={isChinese}
             isMeasure={isMeasure}
             isIdiom={isIdiom}
@@ -831,6 +834,7 @@ export default function GameApp() {
               isDigraph={isDigraph}
               isBlend={isBlend}
               isMagicE={isMagicE}
+              isRVowel={isRVowel}
               answer={answer}
               round={round}
               blanks={blanks}
