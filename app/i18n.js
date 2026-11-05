@@ -37,6 +37,7 @@ const strings = {
     pickAGame: "PICK A GAME",
     noGames: (name) => `No games are turned on for ${name} yet. Ask a grown-up to choose some in Parent mode.`,
     groups: { phonics: "Phonics", cambridge: "Cambridge YLE training", chinese: "中文", challenge: "Math", mochi: "Visit Mochi" },
+    keepPlaying: "Keep playing",
     gameNotes: {},
     // Game names that change with the site's language, or (as functions) with the child's class.
     gameNames: { "math-logic": (label) => (label ? `${label} Challenge` : "Challenge") },
@@ -138,6 +139,7 @@ const strings = {
     pickAGame: "選一個遊戲",
     noGames: (name) => `${name} 還沒有可以玩的遊戲。請家長在「家長模式」選擇遊戲。`,
     groups: { phonics: "自然拼讀", cambridge: "劍橋英語考試預備", chinese: "中文", challenge: "數學", mochi: "到彩虹鎮探望Mochi" },
+    keepPlaying: "繼續玩",
     gameNotes: {
       cvc: "K1-K3 · 開頭、中間和結尾的音",
       digraphs: "K1-K3 · ch、sh、th、ph、wh、ck 和 ng",

@@ -115,6 +115,12 @@ export function usePlayers() {
     if (isAge(age)) updatePlayer(id, (player) => ({ ...player, age }));
   }
 
+  // Remembers the game (and its topic, if it has one) the current player is playing, for the front
+  // page's "Keep playing".
+  function setLastPlayed(game, topic = null) {
+    updateCurrent((player) => (player.lastPlayed?.game === game && player.lastPlayed?.topic === topic ? player : { ...player, lastPlayed: { game, topic } }));
+  }
+
   // Remembers which word the current player is on in a topic (e.g. "cvc/middle-sound").
   function saveProgress(key, wordIndex) {
     if (isCount(wordIndex)) updateCurrent((player) => withTopicValue(player, "progress", key, wordIndex));
@@ -240,6 +246,7 @@ export function usePlayers() {
     saveScore,
     spendCoins,
     saveProgress,
+    setLastPlayed,
     setGameEnabled,
     setSpellingGuide,
     setQuestionCount,

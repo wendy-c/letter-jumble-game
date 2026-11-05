@@ -64,7 +64,7 @@ describe("Mochi's den on phones", () => {
       cy.contains('[role="tab"]', "Food").click({ scrollBehavior: "center" });
       cy.get('[role="tabpanel"] button').last().then(($button) => scrollLikeAFinger($button[0]));
       cy.get('[role="tabpanel"] button').last().click({ scrollBehavior: false });
-      cy.get(".player-chip-coins").should("have.text", "48");
+      cy.get(".player-chip-coins").should("have.text", "45");
     });
   });
 });

@@ -337,7 +337,7 @@ describe("CVC sounds game", () => {
   it("offers the games and the four CVC modes", () => {
     cy.visit("/");
     cy.contains("h1", "What shall we play today?");
-    cy.get("[data-game-name]").should("have.length", 13);
+    cy.get("[data-game-name]").should("have.length", 14);
     cy.contains("button", "CVC Sounds").click();
     addPlayer("Ada", "k1");
     cy.contains("h1", "CVC Sounds");
@@ -470,7 +470,7 @@ describe("ages", () => {
     cy.contains("button", "CVC Sounds").click();
     addPlayer("Mia", "k1");
     crumb("Home");
-    cy.get("[data-game-name]").should("have.length", 8);
+    cy.get("[data-game-name]").should("have.length", 9);
     cy.get('[data-game-name*="CVC Sounds"]');
     cy.get('[data-game-name*="中文認字 · 入門篇"]');
     cy.get('[data-game-name*="Rainbow Dragon"]');
@@ -678,7 +678,7 @@ describe("parent mode", () => {
         win.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
       },
     });
-    cy.get("[data-game-name]").should("have.length", 8);
+    cy.get("[data-game-name]").should("have.length", 9);
     cy.get('button[aria-label$="Player options"]').click();
     cy.contains('[role="menuitem"]', "Parent mode").click();
 
@@ -691,7 +691,7 @@ describe("parent mode", () => {
     cy.contains(".parent-mode-title", "Letter Jumble").closest(".parent-mode-setting").find('[role="switch"]').click();
     cy.contains("button", "Done").click();
 
-    cy.get("[data-game-name]").should("have.length", 8);
+    cy.get("[data-game-name]").should("have.length", 9);
     cy.get('[data-game-name*="Letter Jumble"]');
     cy.get('[data-game-name*="Mochi"]').should("not.exist");
   });

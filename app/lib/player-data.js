@@ -1,8 +1,10 @@
 // How each player's data is saved (version 2), and moving older saved data into it.
 //
-// A player is { id, name, coins, age, settings, games }: `id` is made when the player is (a GUID,
-// for matching players up), `settings` are their own site settings ({ language, tutorialSeen }),
-// and `games` holds everything about each game, by game id:
+// A player is { id, name, coins, age, settings, lastPlayed, games }: `id` is made when the player
+// is (a GUID, for matching players up), `settings` are their own site settings ({ language,
+// tutorialSeen }), `lastPlayed` is the game they played last ({ game, topic }, the topic null for a
+// game without one; there's none until they've played) and `games` holds everything about each
+// game, by game id:
 //
 //   games["letter-jumble"] = {
 //     settings: { enabled, spellingGuide, questionCount },  // what a parent chose (only if changed)
@@ -140,7 +142,7 @@ const renameList = (list) => (Array.isArray(list) ? list.map((item) => (typeof i
 // to check what was saved, by topic.)
 export function flattenPlayer(player) {
   if (!isObject(player?.games)) return player;
-  const flat = { id: player.id, name: player.name, coins: player.coins, age: player.age, settings: player.settings };
+  const flat = { id: player.id, name: player.name, coins: player.coins, age: player.age, settings: player.settings, lastPlayed: player.lastPlayed };
   const keyed = (kind) => Object.fromEntries(Object.entries(player.games).flatMap(([gameId, game]) => (
     isObject(game?.[kind]) ? Object.entries(game[kind]).map(([topicId, value]) => [`${gameId}/${topicId}`, value]) : [])));
   ["progress", "decks", "results", "records", "scores"].forEach((kind) => { flat[kind] = keyed(kind); });
@@ -174,6 +176,10 @@ function cleanFlat(saved, site) {
   if (isAge(player.age)) cleaned.age = player.age;
   // Their own site settings, or (moving from version 1) the browser's.
   const settings = isObject(player.settings) ? player.settings : site;
+  const last = player.lastPlayed;
+  if (isObject(last) && games.some((game) => game.id === last.game) && (last.topic == null || (typeof last.topic === "string" && last.topic.length > 0))) {
+    cleaned.lastPlayed = { game: last.game, topic: last.topic ?? null };
+  }
   cleaned.settings = {
     language: languages.includes(settings?.language) ? settings.language : "en",
     tutorialSeen: settings?.tutorialSeen === true,
@@ -220,7 +226,7 @@ function cleanFlat(saved, site) {
 
 // Clean flat fields as a version 2 player.
 function nest(flat) {
-  let player = { id: flat.id, name: flat.name, coins: flat.coins, ...(flat.age && { age: flat.age }), settings: flat.settings, games: {} };
+  let player = { id: flat.id, name: flat.name, coins: flat.coins, ...(flat.age && { age: flat.age }), settings: flat.settings, ...(flat.lastPlayed && { lastPlayed: flat.lastPlayed }), games: {} };
   ["progress", "decks", "results", "records", "scores"].forEach((kind) => {
     Object.entries(flat[kind] ?? {}).forEach(([key, value]) => { player = withTopicValue(player, kind, key, value); });
   });

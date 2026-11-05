@@ -139,6 +139,16 @@ describe("version numbers", () => {
   });
 });
 
+describe("the game played last", () => {
+  it("keeps the game and topic played last, and drops one it doesn't know", () => {
+    const saved = migrateSaved({ players: [{ ...oldAda, lastPlayed: { game: "letter-jumble", topic: "animals" } }, { name: "Elly", coins: 0, lastPlayed: { game: "tetris", topic: "x" } }], current: "Ada" });
+    expect(saved.players[0].lastPlayed).toEqual({ game: "letter-jumble", topic: "animals" });
+    expect(saved.players[1].lastPlayed).toBeUndefined();
+    expect(migrateSaved(JSON.parse(JSON.stringify(saved))).players[0].lastPlayed).toEqual({ game: "letter-jumble", topic: "animals" });
+    expect(migrateSaved({ players: [{ name: "Mia", coins: 0, lastPlayed: { game: "dragon" } }] }).players[0].lastPlayed).toEqual({ game: "dragon", topic: null });
+  });
+});
+
 describe("changing a player's data", () => {
   it("drops kinds and games that end up empty", () => {
     const ada = { id: "a", name: "Ada", coins: 0, settings: { language: "en", tutorialSeen: false }, games: {} };

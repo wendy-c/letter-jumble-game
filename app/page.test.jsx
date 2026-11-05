@@ -149,6 +149,44 @@ describe("Home", () => {
     expect(screen.queryByRole("button", { name: /Mochi say hello/ })).not.toBeInTheDocument();
   });
 
+  it("has a Keep playing card above Phonics, back to the topic played last", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k3", lastPlayed: { game: "letter-jumble", topic: "animals" } }], current: "Ada" }));
+    const user = userEvent.setup();
+    render(<GameApp />);
+    const groups = await screen.findAllByRole("heading", { level: 2 });
+    expect(groups.slice(0, 2).map((heading) => heading.textContent)).toEqual(["Keep playing", "Phonics"]);
+    const recent = groups[0].closest("section");
+    expect(within(recent).getAllByRole("button")).toHaveLength(1);
+    expect(within(recent).getByRole("button")).toHaveTextContent("Letter Jumble - MoversAnimals");
+    // It isn't counted among the games: Movers is still just once in its own group.
+    expect(shownGames().filter((name) => name === "Letter Jumble - Movers")).toHaveLength(1);
+    await user.click(within(recent).getByRole("button"));
+    expect(currentPathname()).toBe("/movers/animals");
+  });
+
+  it("puts the game just played under Keep playing, and leaves out one that's been turned off", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k3" }], current: "Ada" }));
+    const user = userEvent.setup();
+    const { unmount } = render(<GameApp />);
+    await screen.findByRole("heading", { level: 2, name: /Phonics/ });
+    expect(screen.queryByRole("heading", { level: 2, name: "Keep playing" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /R-Controlled Vowels/ }));
+    await user.click(screen.getByRole("button", { name: /ar, er, ir, or, ur/ }));
+    await user.click(screen.getByRole("link", { name: /Home/ }));
+    const recent = (await screen.findByRole("heading", { level: 2, name: "Keep playing" })).closest("section");
+    expect(within(recent).getByRole("button")).toHaveTextContent("R-Controlled VowelsR-Controlled Vowels - ar, er, ir, or, ur");
+    unmount();
+
+    // A parent turns R-Controlled Vowels off for Ada: no Keep playing card for it.
+    const saved = JSON.parse(window.localStorage.getItem(playersKey));
+    saved.players[0].games["r-controlled"].settings = { enabled: false };
+    window.localStorage.setItem(playersKey, JSON.stringify(saved));
+    setPathname("/");
+    render(<GameApp />);
+    await screen.findByRole("heading", { level: 2, name: /Phonics/ });
+    expect(screen.queryByRole("heading", { level: 2, name: "Keep playing" })).not.toBeInTheDocument();
+  });
+
   it("shows each game as a big picture, with no speaker buttons", async () => {
     render(<GameApp />);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Hi there! What shall we play today?");
@@ -174,10 +212,11 @@ describe("Home", () => {
     expect(currentPathname()).toBe("/dragon");
     unmount2();
 
-    // The road and the flowers too, not just the car and the sign.
+    // The road and the flowers too, not just the car and the sign. (Mochi's game is under "Keep
+    // playing" now too: this is the card in its own group.)
     setPathname("/");
     render(<GameApp />);
-    await user.click(await screen.findByText("Spend coins on treats and cuddles"));
+    await user.click((await screen.findAllByText("Spend coins on treats and cuddles")).find((note) => note.classList.contains("mochi-drive-note")));
     expect(currentPathname()).toBe("/dragon");
   });
 

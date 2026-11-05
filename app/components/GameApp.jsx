@@ -85,7 +85,7 @@ export default function GameApp() {
   const { gameId, topicId } = parsePath(pathname);
 
   const {
-    loaded, site, players, currentPlayer, createPlayer, setPlayerAge, selectPlayer, logOut, addCoin, saveRecord, saveScore, spendCoins, saveProgress, saveDeck,
+    loaded, site, players, currentPlayer, createPlayer, setPlayerAge, selectPlayer, logOut, addCoin, saveRecord, saveScore, spendCoins, saveProgress, saveDeck, setLastPlayed,
     setGameEnabled, setSpellingGuide, setQuestionCount, awardBadge, saveResult, unlock,
   } = usePlayers();
   const text = textFor(site.language);
@@ -238,6 +238,28 @@ export default function GameApp() {
     if (topicId && !routeTopic && !(routeGame.id === "dragon" && isDragonPlace(topicId))) router.replace(gamePath(routeGame));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loaded, gameId, topicId, routeGame, routeMoved, allowed, currentPlayer, routeTopic, router, tofuUnlocked, parkUnlocked, onBadgesPage, onParentPage]);
+
+  // What's being played (a game's topic, or Mochi's game anywhere), remembered for the front page.
+  const nowPlaying = selectedGame && (routeTopic || selectedGame.id === "dragon") ? `${selectedGame.id}/${routeTopic?.id ?? ""}` : null;
+  useEffect(() => {
+    if (nowPlaying) setLastPlayed(selectedGame.id, routeTopic?.id ?? null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nowPlaying, currentPlayer?.id]);
+
+  // The front page's "Keep playing": the game the player played last, if they can still play it,
+  // straight back to its topic if it's still there (and, for a Challenge level, still open).
+  const recent = (() => {
+    const last = currentPlayer?.lastPlayed;
+    const game = last && gamesForPlayer(currentPlayer).find((candidate) => candidate.id === last.game);
+    if (!game) return null;
+    const topic = last.topic && (topicsByGame[game.id] ?? []).find((candidate) => candidate.id === last.topic
+      && (game.id !== "math-logic" || levelState(candidate, currentPlayer) === "open"));
+    return {
+      game,
+      note: topic ? topic.names?.[site.language] ?? topic.name : null,
+      onSelect: () => router.push(`${gamePath(game)}${topic ? `/${topic.id}` : ""}`),
+    };
+  })();
 
   // A topic without a shuffled hand of words yet gets one dealt.
   useEffect(() => {
@@ -650,6 +672,7 @@ export default function GameApp() {
         loaded && (
           <GamePicker
             games={gamesForPlayer(currentPlayer)}
+            recent={recent}
             playerName={currentPlayer?.name ?? null}
             playerAge={currentPlayer?.age ?? null}
             onSelectGame={requestGame}
