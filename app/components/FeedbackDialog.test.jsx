@@ -37,6 +37,18 @@ describe("Send feedback", () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
+  it("comes after the language switch in the menu, and closes with its close button", async () => {
+    const user = userEvent.setup();
+    renderMenu();
+    await user.click(screen.getByRole("button", { name: /Player options/ }));
+    const items = [...screen.getByRole("menu").querySelectorAll('[role^="menuitem"]')].map((item) => item.textContent);
+    expect(items.slice(-3)).toEqual(["LanguageEn繁", "Send feedback", "Log out"]);
+
+    await user.click(screen.getByRole("menuitem", { name: /Send feedback/ }));
+    await user.click(screen.getByRole("button", { name: "Close" }));
+    expect(screen.queryByRole("dialog", { name: "Send us feedback" })).not.toBeInTheDocument();
+  });
+
   it("sends the message and a picture, then says thank you", async () => {
     const user = userEvent.setup();
     renderMenu();
@@ -51,7 +63,7 @@ describe("Send feedback", () => {
     expect(options.body.get("message")).toBe("We love Mochi!");
     expect(options.body.get("image").name).toBe("mochi.png");
     expect(options.body.get("language")).toBe("en");
-    await user.click(screen.getByRole("button", { name: "Close" }));
+    await user.click(screen.getAllByRole("button", { name: "Close" }).at(-1));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 

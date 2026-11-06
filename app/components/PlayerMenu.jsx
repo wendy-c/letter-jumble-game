@@ -8,7 +8,7 @@ function MenuIcon({ name }) {
 }
 
 // The player chip, with their rainbow coins, and its menu: switch player, badges, Parent mode,
-// send feedback (its own form), the site's language, log out.
+// the site's language, send feedback (its own form), log out.
 export default function PlayerMenu({ player, coins = player.coins ?? 0, onSwitch, onBadges, onParentMode, onLanguage, onLogOut }) {
   const text = useText();
   const language = useLanguage();
@@ -84,16 +84,6 @@ export default function PlayerMenu({ player, coins = player.coins ?? 0, onSwitch
           >
             <MenuIcon name="parent" />{text.parentMode}
           </button>
-          <button
-            type="button"
-            role="menuitem"
-            onClick={() => {
-              setOpen(false);
-              setFeedbackOpen(true);
-            }}
-          >
-            <MenuIcon name="feedback" />{text.sendFeedback}
-          </button>
           {/* Switches the site's language; the menu stays open to show the change. */}
           <button
             className="player-menu-language"
@@ -108,6 +98,16 @@ export default function PlayerMenu({ player, coins = player.coins ?? 0, onSwitch
               <span className={language === "en" ? "language-on" : ""}>En</span>
               <span className={language === "zh" ? "language-on" : ""}>繁</span>
             </span>
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              setOpen(false);
+              setFeedbackOpen(true);
+            }}
+          >
+            <MenuIcon name="feedback" />{text.sendFeedback}
           </button>
           <button
             type="button"

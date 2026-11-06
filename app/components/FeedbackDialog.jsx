@@ -70,6 +70,9 @@ export default function FeedbackDialog({ onClose }) {
   return (
     <div className="player-overlay">
       <div className="player-dialog feedback-dialog" role="dialog" aria-modal="true" aria-labelledby="feedback-title" lang={language === "zh" ? "zh-Hant-HK" : "en"}>
+        <button className="word-menu-close player-dialog-close" type="button" aria-label={text.close} onClick={onClose}>
+          ×
+        </button>
         <h2 id="feedback-title">{text.feedbackTitle}</h2>
         {status === "sent" ? (
           <>
