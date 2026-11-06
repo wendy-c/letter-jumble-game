@@ -35,9 +35,12 @@ export function numberOrder(random, { max = 99, sameTens = false } = {}) {
   // A likely mistake: going by the ones digit instead of the tens.
   const byOnes = [...numbers].sort((a, b) => (down ? -1 : 1) * ((a % 10) - (b % 10) || a - b));
   const candidates = [sorted, swap(sorted, 0, 1), swap(sorted, 2, 3), byOnes, swap(sorted, 1, 2), [...sorted].reverse()];
+  // Each row reads as a comparison ("12 < 25 < 37 < 48", or with > going down): only the right one
+  // is true.
+  const row = (list) => list.join(down ? " > " : " < ");
   const seen = new Set();
-  const choices = candidates.map((list) => list.join(", ")).filter((text) => !seen.has(text) && seen.add(text)).slice(0, 4);
-  const answer = sorted.join(", ");
+  const choices = candidates.map(row).filter((text) => !seen.has(text) && seen.add(text)).slice(0, 4);
+  const answer = row(sorted);
   return {
     prompt: down
       ? say("Which row puts the numbers in order from biggest to smallest?", "哪一行把數字由大至小排列？")

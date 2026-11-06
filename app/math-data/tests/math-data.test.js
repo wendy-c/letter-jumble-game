@@ -140,6 +140,20 @@ describe("Daily Challenge", () => {
     k2.slice(3, 17).forEach((level) => takeAways(level).forEach((question) => expect(question.scene).toBeTruthy()));
   });
 
+  it("writes each row of numbers to put in order with < (smallest to biggest) or > (biggest to smallest)", () => {
+    const ordering = allQuestions.filter((question) => question.visual?.type === "cards");
+    expect(ordering.length).toBeGreaterThan(0);
+    ordering.forEach((question) => {
+      const up = question.answers[0] === "Smallest to biggest";
+      const sign = up ? " < " : " > ";
+      question.options.forEach((option) => expect(option.label.split(sign)).toHaveLength(4));
+      const numbers = question.answer.split(sign).map(Number);
+      expect(numbers).toEqual([...question.visual.numbers].sort((a, b) => (up ? a - b : b - a)));
+    });
+    expect(ordering.some((question) => question.answer.includes(" < "))).toBe(true);
+    expect(ordering.some((question) => question.answer.includes(" > "))).toBe(true);
+  });
+
   it("puts numbers under 50 in order in some K2 levels, and asks for the different group (under 20) after Level 10", () => {
     const k2 = levelsFor("k2");
     const ordering = k2.flatMap((level) => level.words).filter((question) => question.visual?.type === "cards");
