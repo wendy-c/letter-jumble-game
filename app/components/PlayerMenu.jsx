@@ -1,17 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import { useLanguage, useText } from "../i18n";
+import FeedbackDialog from "./FeedbackDialog";
 
 // A menu item's little picture (drawn by scripts/draw-pictures.py).
 function MenuIcon({ name }) {
   return <img className="player-menu-icon" src={`/images/icons/menu-${name}.svg`} alt="" width="22" height="22" />;
 }
 
-// The player chip, with their rainbow coins, and its menu: switch player, badges, Parent mode, the
-// site's language, log out.
+// The player chip, with their rainbow coins, and its menu: switch player, badges, Parent mode,
+// send feedback (its own form), the site's language, log out.
 export default function PlayerMenu({ player, coins = player.coins ?? 0, onSwitch, onBadges, onParentMode, onLanguage, onLogOut }) {
   const text = useText();
   const language = useLanguage();
   const [open, setOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -82,6 +84,16 @@ export default function PlayerMenu({ player, coins = player.coins ?? 0, onSwitch
           >
             <MenuIcon name="parent" />{text.parentMode}
           </button>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              setOpen(false);
+              setFeedbackOpen(true);
+            }}
+          >
+            <MenuIcon name="feedback" />{text.sendFeedback}
+          </button>
           {/* Switches the site's language; the menu stays open to show the change. */}
           <button
             className="player-menu-language"
@@ -109,6 +121,7 @@ export default function PlayerMenu({ player, coins = player.coins ?? 0, onSwitch
           </button>
         </div>
       )}
+      {feedbackOpen && <FeedbackDialog onClose={() => setFeedbackOpen(false)} />}
     </div>
   );
 }

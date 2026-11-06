@@ -6303,3 +6303,117 @@ a:focus-visible {
   width: 22px;
   height: auto;
 }
+
+/* ---------- Send feedback (from the player menu) ---------- */
+
+.feedback-dialog {
+  width: min(100%, 480px);
+}
+
+.feedback-dialog h2 {
+  margin: 0 0 8px;
+  color: var(--magic-dark);
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.feedback-intro,
+.feedback-sent {
+  margin: 0 0 14px;
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.feedback-label {
+  display: block;
+  margin: 12px 0 6px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.feedback-message {
+  box-sizing: border-box;
+  width: 100%;
+  border: 2px solid var(--line-strong);
+  border-radius: 12px;
+  background: #fff;
+  padding: 10px 12px;
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;
+  resize: vertical;
+}
+
+.feedback-message:focus {
+  outline: 3px solid var(--magic-soft);
+  border-color: var(--magic);
+}
+
+.feedback-image-input {
+  max-width: 100%;
+  font: inherit;
+  font-size: 14px;
+}
+
+.feedback-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.feedback-preview img {
+  width: 96px;
+  height: 72px;
+  border: 2px solid var(--line-strong);
+  border-radius: 10px;
+  background: #fff;
+  object-fit: cover;
+}
+
+.feedback-remove {
+  border: none;
+  background: none;
+  color: var(--pink);
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+/* Only for spam robots: off the screen, never seen or reached by people. */
+.feedback-trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.feedback-problem {
+  margin: 12px 0 0;
+  color: #d9436a;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.feedback-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.feedback-button {
+  width: fit-content;
+  margin: 0;
+}
+
+.feedback-sent + .feedback-button {
+  display: block;
+  margin: 4px auto 0;
+}

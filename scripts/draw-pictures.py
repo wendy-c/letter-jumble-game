@@ -495,8 +495,8 @@ pictures["icons/group-mochi"] = svg(
     + sparkle(104, 28, 8, "#b79cf2"))
 
 
-# The player menu's items (Switch player, My badges, Parent mode, Language, Log out): small, so the
-# outlines are thicker.
+# The player menu's items (Switch player, My badges, Parent mode, Send feedback, Language, Log out):
+# small, so the outlines are thicker.
 def menu_icon(body):
     return svg(f'<g stroke-width="7">{body}</g>')
 
@@ -521,6 +521,11 @@ pictures["icons/menu-language"] = menu_icon(
     f'<text x="43" y="57" text-anchor="middle" font-family="Fredoka,Arial Rounded MT Bold,Arial,sans-serif" font-size="38" font-weight="700" fill="{INK}" stroke="none">A</text>'
     '<path d="M54 56h62v44h-12v14L88 100H54Z" fill="#ffb3d1"/>'
     f'<text x="85" y="91" text-anchor="middle" font-family="PingFang TC,Heiti TC,Noto Sans TC,Microsoft JhengHei,sans-serif" font-size="32" font-weight="700" fill="{INK}" stroke="none">文</text>')
+
+pictures["icons/menu-feedback"] = menu_icon(
+    '<rect x="14" y="30" width="100" height="72" rx="10" fill="#fff6e0"/>'
+    '<path d="M16 34l48 38 48-38" fill="none"/>'
+    '<path d="M94 50c-6-4-9-7-9-11 0-5 6-6 9-2 3-4 9-3 9 2 0 4-3 7-9 11Z" fill="#ff8fae" stroke-width="4" transform="translate(-30 -30) scale(1.4)"/>')
 
 pictures["icons/menu-logout"] = menu_icon(
     '<path d="M70 14H24v100h46" fill="none"/><path d="M24 14l30 12v100L24 114Z" fill="#ffd3a0"/>'
