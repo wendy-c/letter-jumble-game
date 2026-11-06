@@ -1,22 +1,28 @@
-// How each player's data is saved (version 2), and moving older saved data into it.
+// How each player's data is saved (version 3), and moving older saved data into it.
 //
 // A player is { id, name, coins, age, settings, lastPlayed, games }: `id` is made when the player
 // is (a GUID, for matching players up), `settings` are their own site settings ({ language,
 // tutorialSeen }), `lastPlayed` is the game they played last ({ game, topic }, the topic null for a
 // game without one; there's none until they've played) and `games` holds everything about each
-// game, by game id:
+// game, by game id. A game has its own settings, tutorial and unlocks, and then each module (topic
+// or level) it's been played in, by the module's id, with that module's own data:
 //
-//   games["letter-jumble"] = {
+//   games["blends"] = {
 //     settings: { enabled, spellingGuide, questionCount },  // what a parent chose (only if changed)
 //     tutorial: { seen: true },                            // its how-to-play card has been shown
-//     progress: { animals: 3 },                             // the word they're on, by topic
-//     decks: { animals: 1234567 },                          // each topic's dealt words, as a seed
-//     results: { animals: [true, false, null] },            // answers in this round
-//     badges: ["animals"],                                  // topics finished with all answers right
-//     records: { "within-10": 41250 },                      // best times, in milliseconds
-//     scores: { "k1-level-3": [8, 10] },                    // best scores, [right, out of]
-//     unlocks: ["k1-level-2@2026-11-01"],                   // what's been opened (levels, places)
+//     unlocks: ["k1-level-2@2026-11-01"],                  // what's been opened (levels, places)
+//     "r-blends": {
+//       progress: 3,                                       // the word they're on
+//       decks: 1234567,                                    // the dealt words, as a seed
+//       results: [true, false, null],                      // answers in this round
+//       badge: true,                                       // finished with all answers right
+//       records: 41250,                                    // best time, in milliseconds
+//       scores: [8, 10],                                   // best score, [right, out of]
+//     },
 //   }
+//
+// so a module's deck is at players[n].games.blends["r-blends"].decks. (No module is called
+// "settings", "tutorial" or "unlocks": those names are the game's own.)
 //
 // The save is { version, players, current, language }. `migrateSaved` brings an older one up to
 // date one version at a time, through `migrations`; a new version adds its step there.
@@ -26,10 +32,17 @@
 // whole browser; its step moves them into the layout above without losing anything. A deck used to
 // be the dealt order itself (an array): one with no progress becomes a seed straight away, and one
 // with progress is kept until its round is finished (when the next deal is a seed).
+//
+// Version 2 kept each kind of data at the game, by module ({ decks: { "r-blends": 1234567 },
+// badges: ["r-blends"] }); its step moves each module's data into the module.
 import { ageGroups, defaultQuestionCount, games, questionCountChoices } from "../games-data";
 import { seededRandom, shuffledDeck } from "./spelling";
 
-export const savedVersion = 2;
+export const savedVersion = 3;
+// A game's own data, beside its modules.
+export const gameWideKeys = ["settings", "tutorial", "unlocks"];
+// What each module keeps (and `badge`).
+const moduleKinds = ["progress", "decks", "results", "records", "scores"];
 const languages = ["en", "zh"];
 const spellingGuideGames = games.filter((game) => game.spellingGuide).map((game) => game.id);
 const countGames = games.filter((game) => game.questionCount).map((game) => game.id);
@@ -74,17 +87,19 @@ export function splitKey(key) {
 
 export const gameData = (player, gameId) => player?.games?.[gameId] ?? {};
 
-// A topic's saved value of one kind ("progress", "decks", "results", "records", "scores"), by its
-// "<game>/<topic>" key.
-export function topicValue(player, kind, key) {
+// A module's saved data, by its "<game>/<topic>" key.
+function moduleData(player, key) {
   const [gameId, topicId] = splitKey(key);
-  return gameData(player, gameId)[kind]?.[topicId];
+  if (gameWideKeys.includes(topicId)) return {};
+  const module = gameData(player, gameId)[topicId];
+  return isObject(module) ? module : {};
 }
 
-export const hasBadge = (player, key) => {
-  const [gameId, topicId] = splitKey(key);
-  return Boolean(gameData(player, gameId).badges?.includes(topicId));
-};
+// A module's saved value of one kind ("progress", "decks", "results", "records", "scores"), by its
+// "<game>/<topic>" key.
+export const topicValue = (player, kind, key) => moduleData(player, key)[kind];
+
+export const hasBadge = (player, key) => moduleData(player, key).badge === true;
 
 export const unlocksOf = (player, gameId) => gameData(player, gameId).unlocks ?? [];
 export const gameSetting = (player, gameId, name) => gameData(player, gameId).settings?.[name];
@@ -102,18 +117,23 @@ export function withGame(player, gameId, change) {
   return { ...player, games: allGames };
 }
 
-// A player with a topic's value of one kind set (or, with `undefined`, removed).
-export function withTopicValue(player, kind, key, value) {
+// A player with one module's data changed by `change(module)`; a module left empty is dropped.
+function withModule(player, key, change) {
   const [gameId, topicId] = splitKey(key);
+  if (!topicId || gameWideKeys.includes(topicId)) return player;
   return withGame(player, gameId, (game) => {
-    const values = { ...game[kind] };
-    if (value === undefined) delete values[topicId];
-    else values[topicId] = value;
-    return { ...game, [kind]: values };
+    const module = change(isObject(game[topicId]) ? { ...game[topicId] } : {});
+    return { ...game, [topicId]: Object.fromEntries(Object.entries(module).filter(([, value]) => value !== undefined)) };
   });
 }
 
-// A player with something added to a game's list ("badges", "unlocks"), once.
+// A player with a module's value of one kind set (or, with `undefined`, removed).
+export const withTopicValue = (player, kind, key, value) => withModule(player, key, (module) => ({ ...module, [kind]: value }));
+
+// A player with a module's badge.
+export const withBadge = (player, key) => withModule(player, key, (module) => ({ ...module, badge: true }));
+
+// A player with something added to a game's list ("unlocks"), once.
 export function withListItem(player, gameId, kind, item) {
   return withGame(player, gameId, (game) => (game[kind]?.includes(item) ? game : { ...game, [kind]: [...(game[kind] ?? []), item] }));
 }
@@ -137,16 +157,20 @@ const renameLevel = (key) => key.replace("math-logic/3-4-level-", "math-logic/k1
 const renameKeys = (saved) => (isObject(saved) ? Object.fromEntries(Object.entries(saved).map(([key, value]) => [renameLevel(key), value])) : saved);
 const renameList = (list) => (Array.isArray(list) ? list.map((item) => (typeof item === "string" ? renameLevel(item) : item)) : list);
 
-// A version 2 player as version 1's flat fields (keyed "<game>/<topic>"), plus its id, settings
-// and the games whose how-to cards it has seen, so both can be checked the same way. (Tests use it
-// to check what was saved, by topic.)
+// A game's modules: [id, data] for each.
+const modulesOf = (game) => (isObject(game) ? Object.entries(game).filter(([id, module]) => !gameWideKeys.includes(id) && isObject(module)) : []);
+
+// A current (version 3) player as version 1's flat fields (keyed "<game>/<topic>"), plus its id,
+// settings and the games whose how-to cards it has seen, so both can be checked the same way.
+// (Tests use it to check what was saved, by topic.)
 export function flattenPlayer(player) {
   if (!isObject(player?.games)) return player;
   const flat = { id: player.id, name: player.name, coins: player.coins, age: player.age, settings: player.settings, lastPlayed: player.lastPlayed };
-  const keyed = (kind) => Object.fromEntries(Object.entries(player.games).flatMap(([gameId, game]) => (
-    isObject(game?.[kind]) ? Object.entries(game[kind]).map(([topicId, value]) => [`${gameId}/${topicId}`, value]) : [])));
-  ["progress", "decks", "results", "records", "scores"].forEach((kind) => { flat[kind] = keyed(kind); });
-  flat.badges = Object.entries(player.games).flatMap(([gameId, game]) => (Array.isArray(game?.badges) ? game.badges.map((topicId) => `${gameId}/${topicId}`) : []));
+  const modules = Object.entries(player.games).flatMap(([gameId, game]) => modulesOf(game).map(([topicId, module]) => [`${gameId}/${topicId}`, module]));
+  moduleKinds.forEach((kind) => {
+    flat[kind] = Object.fromEntries(modules.filter(([, module]) => module[kind] !== undefined).map(([key, module]) => [key, module[kind]]));
+  });
+  flat.badges = modules.filter(([, module]) => module.badge === true).map(([key]) => key);
   flat.unlocks = Object.entries(player.games).flatMap(([gameId, game]) => (Array.isArray(game?.unlocks)
     ? game.unlocks.map((item) => (gameId === "dragon" ? item : `${gameId}/${item}`)) : []));
   const setting = (name) => Object.fromEntries(Object.entries(player.games).filter(([, game]) => game?.settings?.[name] !== undefined).map(([gameId, game]) => [gameId, game.settings[name]]));
@@ -224,16 +248,13 @@ function cleanFlat(saved, site) {
   return cleaned;
 }
 
-// Clean flat fields as a version 2 player.
+// Clean flat fields as a current (version 3) player.
 function nest(flat) {
   let player = { id: flat.id, name: flat.name, coins: flat.coins, ...(flat.age && { age: flat.age }), settings: flat.settings, ...(flat.lastPlayed && { lastPlayed: flat.lastPlayed }), games: {} };
-  ["progress", "decks", "results", "records", "scores"].forEach((kind) => {
+  moduleKinds.forEach((kind) => {
     Object.entries(flat[kind] ?? {}).forEach(([key, value]) => { player = withTopicValue(player, kind, key, value); });
   });
-  (flat.badges ?? []).forEach((key) => {
-    const [gameId, topicId] = splitKey(key);
-    if (topicId) player = withListItem(player, gameId, "badges", topicId);
-  });
+  (flat.badges ?? []).forEach((key) => { player = withBadge(player, key); });
   // Unlocks keyed "<game>/<item>" (Challenge levels) are that game's; the others ("tofu", "park")
   // are Mochi's game's.
   (flat.unlocks ?? []).forEach((unlock) => {
@@ -251,6 +272,38 @@ const isValidPlayer = (player) => typeof player?.name === "string" && player.nam
 const playersIn = (stored) => (Array.isArray(stored?.players) ? stored.players : []).filter(isValidPlayer);
 const languageOr = (language, fallback) => (languages.includes(language) ? language : fallback);
 
+// Each player's games changed by `change(game)`.
+const reshapeGames = (players, change) => players.map((player) => (isObject(player.games)
+  ? { ...player, games: Object.fromEntries(Object.entries(player.games).map(([gameId, game]) => [gameId, isObject(game) ? change(game) : game])) }
+  : player));
+const gameWideOf = (game) => Object.fromEntries(gameWideKeys.filter((key) => game[key] !== undefined).map((key) => [key, game[key]]));
+
+// A version 2 game (each kind of data by module) as version 3 (each module's data together).
+export function moduleFirst(game) {
+  const moved = gameWideOf(game);
+  const put = (topicId, kind, value) => {
+    if (typeof topicId !== "string" || !topicId || gameWideKeys.includes(topicId)) return;
+    moved[topicId] = { ...moved[topicId], [kind]: value };
+  };
+  moduleKinds.forEach((kind) => {
+    if (isObject(game[kind])) Object.entries(game[kind]).forEach(([topicId, value]) => put(topicId, kind, value));
+  });
+  if (Array.isArray(game.badges)) game.badges.forEach((topicId) => put(topicId, "badge", true));
+  return moved;
+}
+
+// A version 3 game as version 2: the other way round.
+export function kindFirst(game) {
+  const moved = gameWideOf(game);
+  modulesOf(game).forEach(([topicId, module]) => {
+    moduleKinds.forEach((kind) => {
+      if (module[kind] !== undefined) moved[kind] = { ...moved[kind], [topicId]: module[kind] };
+    });
+    if (module.badge === true) moved.badges = [...(moved.badges ?? []), topicId];
+  });
+  return moved;
+}
+
 // `migrations[n]` takes a version n save to version n + 1 (`site` is version 1's site settings,
 // kept apart from the players).
 export const migrations = {
@@ -259,8 +312,11 @@ export const migrations = {
   1: (stored, site) => {
     const players = playersIn(stored).map((player) => nest(cleanFlat(flattenPlayer(player), site)));
     const current = players.find((player) => player.name === stored?.current);
-    return { version: 2, players, current: current?.id ?? null, language: languageOr(site?.language, "en") };
+    return { version: 2, players: reshapeGames(players, kindFirst), current: current?.id ?? null, language: languageOr(site?.language, "en") };
   },
+  // Each module's data together, under the module: games.blends["r-blends"].decks, not
+  // games.blends.decks["r-blends"].
+  2: (stored) => ({ ...stored, version: 3, players: reshapeGames(playersIn(stored), moduleFirst) }),
 };
 
 // A save of the current version, tidied: anything it doesn't understand is dropped.

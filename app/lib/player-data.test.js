@@ -1,4 +1,4 @@
-import { deckOrder, gameSetting, hasBadge, howToSeen, migrateSaved, migrations, newDeckSeed, newPlayerId, savedVersion, topicValue, unlocksOf, withTopicValue } from "./player-data";
+import { deckOrder, gameSetting, hasBadge, howToSeen, kindFirst, migrateSaved, migrations, moduleFirst, newDeckSeed, newPlayerId, savedVersion, topicValue, unlocksOf, withBadge, withTopicValue } from "./player-data";
 
 // A version 1 save: everything at the top of the player, keyed "<game>/<topic>".
 const oldAda = {
@@ -55,16 +55,16 @@ describe("seeded decks", () => {
   });
 });
 
-describe("moving version 1 saves to version 2", () => {
+describe("moving version 1 saves up to date", () => {
   const saved = migrateSaved({ players: [oldAda], current: "Ada" }, oldSite);
   const [ada] = saved.players;
 
-  it("puts each game's data under the game, nothing lost", () => {
-    expect(saved.version).toBe(2);
-    expect(ada.games["letter-jumble"]).toEqual({ progress: { animals: 3 }, decks: { animals: [2, 0, 1] }, results: { animals: [true, false, null] } });
+  it("puts each module's data under its game and module, nothing lost", () => {
+    expect(saved.version).toBe(3);
+    expect(ada.games["letter-jumble"]).toEqual({ animals: { progress: 3, decks: [2, 0, 1], results: [true, false, null] } });
     expect(topicValue(ada, "progress", "cvc/middle-sound")).toBe(0);
     expect(hasBadge(ada, "cvc/beginning-sound")).toBe(true);
-    expect(ada.games["math-logic"]).toEqual({ badges: ["k1-level-1"], unlocks: ["k1-level-2@2026-11-01"], scores: { "k1-level-1": [8, 10] } });
+    expect(ada.games["math-logic"]).toEqual({ unlocks: ["k1-level-2@2026-11-01"], "k1-level-1": { badge: true, scores: [8, 10] } });
     expect(unlocksOf(ada, "dragon")).toEqual(["tofu", "park"]);
     expect(topicValue(ada, "records", "speed-quest/within-10")).toBe(41250);
     expect(gameSetting(ada, "starters", "spellingGuide")).toBe(true);
@@ -90,7 +90,7 @@ describe("moving version 1 saves to version 2", () => {
     expect(Number.isInteger(topicValue(ada, "decks", "cvc/middle-sound"))).toBe(true);
   });
 
-  it("comes out the same when read again, and when version 2 is read", () => {
+  it("comes out the same when read again", () => {
     const again = migrateSaved(JSON.parse(JSON.stringify(saved)));
     expect(again).toEqual(saved);
   });
@@ -104,9 +104,56 @@ describe("moving version 1 saves to version 2", () => {
     const [elly] = messy.players;
     // An old 5-6 child is K3 now, with their old level renamed.
     expect(elly.age).toBe("k3");
-    expect(elly.games).toEqual({ "math-logic": { progress: { "k2-level-2": 4 } } });
+    expect(elly.games).toEqual({ "math-logic": { "k2-level-2": { progress: 4 } } });
     expect(messy.current).toBeNull();
     expect(elly.settings).toEqual({ language: "en", tutorialSeen: false });
+  });
+});
+
+describe("moving version 2 saves to version 3", () => {
+  const version2 = {
+    version: 2,
+    players: [{
+      id: "ada-id", name: "Ada", coins: 12, age: "k2", settings: { language: "en", tutorialSeen: true },
+      games: {
+        blends: {
+          settings: { questionCount: 15 }, tutorial: { seen: true },
+          progress: { "r-blends": 2 }, decks: { "r-blends": 1234, "l-blends": 99 }, results: { "r-blends": [true, false] }, badges: ["l-blends"],
+        },
+        "math-logic": { unlocks: ["k1-level-2@2026-11-01"], scores: { "k1-level-1": [8, 10] }, progress: { "k1-level-1": 10 } },
+        "speed-quest": { records: { "within-10": 41250 } },
+        dragon: { unlocks: ["tofu"] },
+      },
+    }],
+    current: "ada-id",
+    language: "en",
+  };
+  const saved = migrateSaved(version2);
+  const [ada] = saved.players;
+
+  it("puts each module first: games.blends[\"r-blends\"].decks", () => {
+    expect(saved.version).toBe(3);
+    expect(ada.games.blends).toEqual({
+      settings: { questionCount: 15 }, tutorial: { seen: true },
+      "r-blends": { progress: 2, decks: 1234, results: [true, false] },
+      "l-blends": { decks: 99, badge: true },
+    });
+    expect(ada.games.blends["r-blends"].decks).toBe(1234);
+    expect(ada.games["math-logic"]).toEqual({ unlocks: ["k1-level-2@2026-11-01"], "k1-level-1": { scores: [8, 10], progress: 10 } });
+    expect(ada.games["speed-quest"]).toEqual({ "within-10": { records: 41250 } });
+    expect(ada.games.dragon).toEqual({ unlocks: ["tofu"] });
+  });
+
+  it("keeps the player and who's playing as they were", () => {
+    expect({ id: ada.id, name: ada.name, coins: ada.coins, age: ada.age, settings: ada.settings }).toEqual({ id: "ada-id", name: "Ada", coins: 12, age: "k2", settings: { language: "en", tutorialSeen: true } });
+    expect(saved.current).toBe("ada-id");
+    expect(hasBadge(ada, "blends/l-blends")).toBe(true);
+    expect(topicValue(ada, "results", "blends/r-blends")).toEqual([true, false]);
+    expect(unlocksOf(ada, "dragon")).toEqual(["tofu"]);
+  });
+
+  it("can be turned back into version 2's layout, unchanged", () => {
+    Object.values(version2.players[0].games).forEach((game) => expect(kindFirst(moduleFirst(game))).toEqual(game));
   });
 });
 
@@ -121,7 +168,7 @@ describe("version numbers", () => {
   it("reads a save with no version number as version 1", () => {
     const saved = migrateSaved({ players: [oldAda], current: "Ada" });
     expect(saved.version).toBe(savedVersion);
-    expect(saved.players[0].games["letter-jumble"].progress).toEqual({ animals: 3 });
+    expect(saved.players[0].games["letter-jumble"].animals.progress).toBe(3);
     expect(saved.current).toBe(saved.players[0].id);
   });
 
@@ -153,7 +200,21 @@ describe("changing a player's data", () => {
   it("drops kinds and games that end up empty", () => {
     const ada = { id: "a", name: "Ada", coins: 0, settings: { language: "en", tutorialSeen: false }, games: {} };
     const playing = withTopicValue(ada, "progress", "cvc/middle-sound", 2);
-    expect(playing.games).toEqual({ cvc: { progress: { "middle-sound": 2 } } });
+    expect(playing.games).toEqual({ cvc: { "middle-sound": { progress: 2 } } });
     expect(withTopicValue(playing, "progress", "cvc/middle-sound", undefined).games).toEqual({});
+  });
+
+  it("keeps a module's badge with the rest of its data", () => {
+    const ada = { id: "a", name: "Ada", coins: 0, settings: { language: "en", tutorialSeen: false }, games: {} };
+    const done = withBadge(withTopicValue(ada, "decks", "blends/r-blends", 1234), "blends/r-blends");
+    expect(done.games).toEqual({ blends: { "r-blends": { decks: 1234, badge: true } } });
+    expect(hasBadge(done, "blends/r-blends")).toBe(true);
+    expect(hasBadge(done, "blends/l-blends")).toBe(false);
+  });
+
+  it("never treats a game's own settings, tutorial or unlocks as a module", () => {
+    const ada = { id: "a", name: "Ada", coins: 0, settings: { language: "en", tutorialSeen: false }, games: { cvc: { settings: { enabled: false } } } };
+    expect(topicValue(ada, "decks", "cvc/settings")).toBeUndefined();
+    expect(withTopicValue(ada, "decks", "cvc/settings", 5)).toBe(ada);
   });
 });

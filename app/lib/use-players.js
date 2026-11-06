@@ -3,7 +3,7 @@ import { track } from "./analytics";
 import { ageGroups, defaultQuestionCount } from "../games-data";
 import {
   howToSeen, migrateSaved, newPlayerId, savedVersion, splitKey, topicValue,
-  withGame, withGameSetting, withListItem, withTopicValue,
+  withBadge, withGame, withGameSetting, withListItem, withTopicValue,
 } from "./player-data";
 
 // Everything about the players is saved here (in the layout described in player-data.js).
@@ -204,8 +204,7 @@ export function usePlayers() {
 
   // Gives the current player a topic's badge (e.g. "letter-jumble/animals"), once.
   function awardBadge(key) {
-    const [gameId, topicId] = splitKey(key);
-    updateCurrent((player) => withListItem(player, gameId, "badges", topicId));
+    updateCurrent((player) => withBadge(player, key));
   }
 
   // Unlocks something for the current player for good: Tofu's house and the park ("tofu", "park",

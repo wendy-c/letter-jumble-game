@@ -10,10 +10,10 @@ export default {
 };
 
 export const SomeEarned = {
-  args: { player: { name: "Ada", age: "k1", badges: ["cvc/beginning-sound", "cvc/middle-sound", "chinese/colours"] } },
+  args: { player: { name: "Ada", age: "k1", games: { cvc: { "beginning-sound": { badge: true }, "middle-sound": { badge: true } }, chinese: { colours: { badge: true } } } } },
 };
 // Rainbow Speed Quest's badges show the fastest time (Within 10 done in 42 seconds).
 export const WithSpeedRecord = {
-  args: { player: { name: "Ada", age: "k1", badges: ["speed-quest/within-10"], records: { "speed-quest/within-10": 42500 } } },
+  args: { player: { name: "Ada", age: "k1", games: { "speed-quest": { "within-10": { badge: true, records: 42500 } } } } },
 };
 export const NoneYet = { args: { player: { name: "Elly", age: "k3" } } };

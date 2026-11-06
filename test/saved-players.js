@@ -1,4 +1,4 @@
-// For tests that check what was saved: the saved players (version 2, see app/lib/player-data.js)
+// For tests that check what was saved: the saved players (see app/lib/player-data.js)
 // in version 1's shape, each player's data keyed "<game>/<topic>" as the tests describe it, without
 // ids, settings or the game they played last, and who's playing by name.
 import { flattenPlayer } from "../app/lib/player-data";

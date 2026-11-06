@@ -2006,7 +2006,7 @@ describe("parent mode", () => {
       const code = within(transfer()).getByLabelText("Your code").value;
       expect(code).toMatch(/^RAINBOW1-/);
       const { players } = readTransferCode(code);
-      expect(players.map((player) => [player.name, player.coins, player.games.cvc?.badges])).toEqual([["Ada", 37, ["beginning-sound"]], ["Elly", 0, undefined]]);
+      expect(players.map((player) => [player.name, player.coins, player.games.cvc?.["beginning-sound"]?.badge])).toEqual([["Ada", 37, true], ["Elly", 0, undefined]]);
 
       await user.click(within(transfer()).getByRole("button", { name: "Copy" }));
       expect(within(transfer()).getByRole("button", { name: "Copied!" })).toBeInTheDocument();
