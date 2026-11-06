@@ -1,7 +1,7 @@
 import { act, render, screen, waitFor, within } from "@testing-library/react";
-import { track } from "@vercel/analytics";
+import { track } from "./lib/analytics";
 
-jest.mock("@vercel/analytics", () => ({ track: jest.fn() }));
+jest.mock("./lib/analytics", () => ({ track: jest.fn(), identify: jest.fn() }));
 import { today } from "./math-data/math-data";
 import userEvent from "@testing-library/user-event";
 import GameApp from "./components/GameApp";
@@ -162,6 +162,9 @@ describe("Home", () => {
     expect(shownGames().filter((name) => name === "Letter Jumble - Movers")).toHaveLength(1);
     await user.click(within(recent).getByRole("button"));
     expect(currentPathname()).toBe("/movers/animals");
+    const playerId = JSON.parse(window.localStorage.getItem(playersKey)).players[0].id;
+    expect(track).toHaveBeenCalledWith("keep_playing_clicked", { player_id: playerId, game: "letter-jumble", topic: "animals" });
+    expect(track).toHaveBeenCalledWith("page_view", expect.objectContaining({ player_id: playerId, page_path: "/movers/animals" }));
   });
 
   it("puts the game just played under Keep playing, and leaves out one that's been turned off", async () => {
@@ -1402,6 +1405,24 @@ describe("one try per question", () => {
   });
 });
 
+describe("analytics", () => {
+  it("tracks question progress, the submitted answer, and time for a player", async () => {
+    window.localStorage.setItem(playersKey, JSON.stringify({ players: [{ name: "Ada", coins: 0, age: "k1" }], current: "Ada" }));
+    setPathname("/chinese/colours");
+    const user = userEvent.setup();
+    render(<GameApp />);
+
+    await user.click(await screen.findByRole("button", { name: "orange" }));
+
+    const playerId = JSON.parse(window.localStorage.getItem(playersKey)).players[0].id;
+    const question = { player_id: playerId, game: "chinese", topic: "colours", question_index: 1 };
+    expect(track).toHaveBeenCalledWith("page_view", expect.objectContaining({ player_id: playerId, page_path: "/chinese/colours" }));
+    expect(track).toHaveBeenCalledWith("deck_progress", { ...question, deck_size: 13 });
+    expect(track).toHaveBeenCalledWith("answer", { ...question, answer: "橙", correct: false });
+    expect(track).toHaveBeenCalledWith("question_time", { ...question, duration_ms: expect.any(Number) });
+  });
+});
+
 describe("badges", () => {
   // "My badges" in the player menu opens the badge page.
   const openBadges = async (user) => {
@@ -1842,6 +1863,8 @@ describe("Tofu and Rainbow Village", () => {
     await user.click(await screen.findByRole("button", { name: "Unlock Tofu for 100 rainbow coins" }));
 
     expect(currentPathname()).toBe("/dragon/tofu");
+    const playerId = JSON.parse(window.localStorage.getItem(playersKey)).players[0].id;
+    expect(track).toHaveBeenCalledWith("tofu_unlocked", { player_id: playerId });
     expect(storedPlayers().players[0]).toMatchObject({ coins: 20, unlocks: ["tofu"] });
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Tofu the Fairy Dragon");
     expect(within(screen.getByRole("navigation", { name: "Breadcrumb" })).getAllByRole("listitem").map((item) => item.textContent))
@@ -1897,6 +1920,8 @@ describe("Tofu and Rainbow Village", () => {
     await user.click(await screen.findByRole("button", { name: "Unlock the park for 100 rainbow coins" }));
 
     expect(currentPathname()).toBe("/dragon/park");
+    const playerId = JSON.parse(window.localStorage.getItem(playersKey)).players[0].id;
+    expect(track).toHaveBeenCalledWith("park_unlocked", { player_id: playerId });
     expect(storedPlayers().players[0]).toMatchObject({ coins: 30, unlocks: ["tofu", "park"] });
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("The Rainbow Park");
     expect(within(screen.getByRole("navigation", { name: "Breadcrumb" })).getAllByRole("listitem").map((item) => item.textContent))
@@ -2464,11 +2489,12 @@ describe("Challenge", () => {
       view.unmount();
     };
 
+    // (Among everything else tracked: pages, answers and so on.)
+    const challengeEvents = () => track.mock.calls.filter(([name]) => name.endsWith("_challenge"));
     await finishLevel(12);
-    expect(track).not.toHaveBeenCalled();
+    expect(challengeEvents()).toEqual([]);
     await finishLevel(14);
-    expect(track).toHaveBeenCalledTimes(1);
-    expect(track).toHaveBeenCalledWith("k1-challenge", { level: "15" });
+    expect(challengeEvents()).toEqual([["k1_challenge", { level: "15", player_id: expect.any(String) }]]);
   });
 
   it("has a level opened today ready to play, with no waiting for tomorrow", async () => {

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { track } from "./analytics";
 import { ageGroups, defaultQuestionCount } from "../games-data";
 import {
   howToSeen, migrateSaved, newPlayerId, savedVersion, splitKey, topicValue,
@@ -98,6 +99,7 @@ export function usePlayers() {
     const coins = state.players.length === 0 ? takeLegacyCoins() : 0;
     const player = { id: newPlayerId(), name, coins, age, settings: { language: state.language, tutorialSeen: false }, games: {} };
     setState((current) => ({ ...current, players: [...current.players, player], current: player.id }));
+    track("player_created", { player_id: player.id, age });
     return null;
   }
 

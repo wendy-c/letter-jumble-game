@@ -33,7 +33,7 @@ describe("MeasureWordGame", () => {
     await userEvent.click(screen.getByRole("button", { name: new RegExp(wrong.noun) }));
     await userEvent.click(screen.getByRole("button", { name: /鉛筆/ }));
     expect(onAnswer).toHaveBeenCalledTimes(1);
-    expect(onAnswer).toHaveBeenCalledWith(false);
+    expect(onAnswer).toHaveBeenCalledWith(false, wrong.noun);
     expect(screen.getByRole("button", { name: new RegExp(wrong.noun) })).toHaveClass("chinese-option-wrong");
     expect(screen.getByLabelText("一枝鉛筆")).toBeInTheDocument();
     screen.getAllByRole("button").filter((button) => button.classList.contains("measure-option"))
@@ -47,7 +47,7 @@ describe("MeasureWordGame", () => {
     await userEvent.click(right);
     expect(screen.getByLabelText("一枝鉛筆")).toBeInTheDocument();
     expect(onAnswer).toHaveBeenCalledTimes(1);
-    expect(onAnswer).toHaveBeenCalledWith(true);
+    expect(onAnswer).toHaveBeenCalledWith(true, "鉛筆");
   });
 
   it("reads 一 + the measure word as a hint from the speaker button", async () => {

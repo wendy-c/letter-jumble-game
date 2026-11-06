@@ -1,6 +1,9 @@
 import { act, renderHook } from "@testing-library/react";
+import { track } from "./analytics";
 import { asVersion1, playerAsVersion1 } from "../../test/saved-players";
 import { normalizeName, playersStorageKey, usePlayers } from "./use-players";
+
+jest.mock("./analytics", () => ({ track: jest.fn() }));
 
 // What's saved, keyed "<game>/<topic>" (see test/saved-players.js).
 function stored() {
@@ -45,6 +48,19 @@ describe("usePlayers", () => {
     expect(problem).toBeNull();
     expect(current(result)).toEqual({ name: "Ada", coins: 0, age: "k3" });
     expect(stored()).toEqual({ players: [{ name: "Ada", coins: 0, age: "k3" }], current: "Ada" });
+  });
+
+  it("tracks a newly created player by id without sending their name", () => {
+    track.mockClear();
+    const { result } = renderHook(() => usePlayers());
+
+    act(() => {
+      result.current.createPlayer("Ada", "k3");
+    });
+
+    const playerId = result.current.currentPlayer.id;
+    expect(track).toHaveBeenCalledWith("player_created", { player_id: playerId, age: "k3" });
+    expect(track).not.toHaveBeenCalledWith("player_created", expect.objectContaining({ name: "Ada" }));
   });
 
   it("gives each new player their own id, kept when saved and read again", () => {
@@ -328,4 +344,3 @@ describe("usePlayers", () => {
     expect(current(result).gameSettings).toEqual({ cvc: false });
   });
 });
-

@@ -37,7 +37,7 @@ describe("IdiomGame", () => {
     await userEvent.click(screen.getByRole("button", { name: "魚" }));
     await userEvent.click(screen.getByRole("button", { name: "蛙" }));
     expect(onAnswer).toHaveBeenCalledTimes(1);
-    expect(onAnswer).toHaveBeenCalledWith(false);
+    expect(onAnswer).toHaveBeenCalledWith(false, "魚");
     expect(screen.getByRole("button", { name: "魚" })).toHaveClass("chinese-option-wrong");
     expect(screen.getByRole("button", { name: "蛙" })).toHaveClass("chinese-option-right");
     expect(screen.getByLabelText("井底之蛙")).toBeInTheDocument();
@@ -52,7 +52,7 @@ describe("IdiomGame", () => {
     expect(document.querySelector(".idiom-meaning")).toHaveTextContent("例句：多看圖書，才不會做井底之蛙。");
     expect(document.querySelector(".idiom-example-idiom")).toHaveTextContent("井底之蛙");
     expect(onAnswer).toHaveBeenCalledTimes(1);
-    expect(onAnswer).toHaveBeenCalledWith(true);
+    expect(onAnswer).toHaveBeenCalledWith(true, "蛙");
   });
 
   it("reads the idiom and its meaning from the speaker button", async () => {

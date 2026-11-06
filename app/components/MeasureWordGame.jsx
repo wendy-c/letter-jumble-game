@@ -22,7 +22,7 @@ export default function MeasureWordGame({ topic, round, question, onAnswer }) {
   function pick(option) {
     if (picked) return;
     setPicked(option.noun);
-    onAnswer(option.correct);
+    onAnswer(option.correct, option.noun);
   }
 
   return (

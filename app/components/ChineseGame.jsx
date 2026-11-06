@@ -24,7 +24,7 @@ export default function ChineseGame({ topic, round, word, onAnswer }) {
   function pick(option) {
     if (picked) return;
     setPicked(option.character);
-    onAnswer(option.character === word.character);
+    onAnswer(option.character === word.character, option.character);
   }
 
   return (

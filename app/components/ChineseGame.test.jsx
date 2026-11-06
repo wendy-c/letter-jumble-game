@@ -50,7 +50,7 @@ describe("ChineseGame", () => {
     await userEvent.click(screen.getByRole("button", { name: "red" }));
 
     expect(onAnswer).toHaveBeenCalledTimes(1);
-    expect(onAnswer).toHaveBeenCalledWith(false);
+    expect(onAnswer).toHaveBeenCalledWith(false, wrong.character);
     expect(screen.getByRole("button", { name: wrong.english })).toHaveClass("chinese-option-wrong");
     expect(screen.getByRole("button", { name: "red" })).toHaveClass("chinese-option-right");
     screen.getAllByRole("button").filter((button) => button.classList.contains("chinese-option"))
@@ -66,7 +66,7 @@ describe("ChineseGame", () => {
 
     expect(right).toHaveClass("chinese-option-right");
     expect(onAnswer).toHaveBeenCalledTimes(1);
-    expect(onAnswer).toHaveBeenCalledWith(true);
+    expect(onAnswer).toHaveBeenCalledWith(true, "紅");
   });
 
   it("shows two-character words like 彩色 on a wider card", () => {

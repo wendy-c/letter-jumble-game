@@ -21,7 +21,7 @@ export default function IdiomGame({ topic, round, question, onAnswer }) {
   function pick(option) {
     if (picked) return;
     setPicked(option.character);
-    onAnswer(option.correct);
+    onAnswer(option.correct, option.character);
   }
 
   return (

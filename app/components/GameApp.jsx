@@ -21,7 +21,7 @@ import LevelMap from "./LevelMap";
 import SentenceGame from "./SentenceGame";
 import MeasureWordGame from "./MeasureWordGame";
 import MathGame from "./MathGame";
-import { track } from "@vercel/analytics";
+import { identify, track } from "../lib/analytics";
 import { isLevelEarned, levelState, levelUnlockKey } from "../math-data/math-data";
 import { speedRecordBonus } from "../math-data/speed-quest-data";
 import PictureClue from "./PictureClue";
@@ -174,6 +174,9 @@ export default function GameApp() {
   // When a timed round (Rainbow Speed Quest) started: { key, startedAt }. Only a round played from
   // its first question is timed.
   const [timer, setTimer] = useState({ key: null, startedAt: null });
+  // For analytics: when the question on screen was shown, and the last question reported.
+  const questionStartedAtRef = useRef(null);
+  const lastDeckProgressRef = useRef(null);
 
   const isDigraph = selectedGame?.id === "digraphs";
   const isBlend = selectedGame?.id === "blends";
@@ -211,6 +214,40 @@ export default function GameApp() {
   useEffect(() => () => {
     stopSpeaking();
   }, []);
+
+  // Analytics: every page, with the id of whoever's playing (and who that is, for what follows).
+  useEffect(() => {
+    if (!loaded) return;
+    identify(currentPlayer?.id ?? null);
+    track("page_view", {
+      page_path: pathname || "/",
+      page_location: window.location.href,
+      page_title: document.title,
+      ...(currentPlayer && { player_id: currentPlayer.id }),
+    });
+  }, [loaded, currentPlayer?.id, pathname]);
+
+  // Analytics: each question's start (for the time spent on it), and each question reached in a
+  // deck, once.
+  useEffect(() => {
+    questionStartedAtRef.current = categoryKey && currentPlayer && selectedCategory && round !== null
+      ? Date.now()
+      : null;
+  }, [categoryKey, currentPlayer?.id, dealSeed, round]);
+
+  useEffect(() => {
+    if (!currentPlayer || !categoryKey || !selectedCategory || round === null) return;
+    const progressKey = `${currentPlayer.id}:${dealSeed}:${categoryKey}:${round}`;
+    if (lastDeckProgressRef.current === progressKey) return;
+    lastDeckProgressRef.current = progressKey;
+    track("deck_progress", {
+      player_id: currentPlayer.id,
+      game: selectedGame.id,
+      topic: routeTopic.id,
+      question_index: round + 1,
+      deck_size: selectedCategory.words.length,
+    });
+  }, [categoryKey, currentPlayer?.id, dealSeed, round, routeTopic?.id, selectedCategory?.words.length, selectedGame?.id]);
 
   // Keep the address valid: a game's old address goes to its new one ("/letter-jumble/animals" to
   // "/movers/animals"), unknown games and topics go back up a level, and a game the current player
@@ -257,7 +294,14 @@ export default function GameApp() {
     return {
       game,
       note: topic ? topic.names?.[site.language] ?? topic.name : null,
-      onSelect: () => router.push(`${gamePath(game)}${topic ? `/${topic.id}` : ""}`),
+      onSelect: () => {
+        track("keep_playing_clicked", {
+          player_id: currentPlayer.id,
+          game: game.id,
+          ...(topic && { topic: topic.id }),
+        });
+        router.push(`${gamePath(game)}${topic ? `/${topic.id}` : ""}`);
+      },
     };
   })();
 
@@ -406,6 +450,7 @@ export default function GameApp() {
   function unlockTofu() {
     if (!spendCoins(dragons.tofu.unlockCost)) return;
     unlock("tofu");
+    track("tofu_unlocked", { player_id: currentPlayer.id });
     sounds.sparkle?.();
     router.push("/dragon/tofu");
   }
@@ -414,6 +459,7 @@ export default function GameApp() {
   function unlockPark() {
     if (!tofuUnlocked || !spendCoins(dragons.park.unlockCost)) return;
     unlock("park");
+    track("park_unlocked", { player_id: currentPlayer.id });
     sounds.sparkle?.();
     router.push("/dragon/park");
   }
@@ -458,16 +504,25 @@ export default function GameApp() {
   // to fill them.)
   function checkAnswer() {
     setChecked(true);
-    if (allPlaced) answerQuestion(complete);
+    if (allPlaced) answerQuestion(complete, placed.map((tile) => tiles[tile]).join(""));
   }
 
   // A right answer earns a coin, cheers with a toast and moves on by itself (after
   // nextQuestionPause); a wrong one shows the right answer, to move on from. Only the first answer
-  // counts towards the topic's score.
-  function answerQuestion(correct) {
+  // counts towards the topic's score. `submittedAnswer` is what was picked or spelt, for analytics
+  // (with how long the question took).
+  function answerQuestion(correct, submittedAnswer = null) {
     if (answered) return;
     setAnswered(correct ? "right" : "wrong");
     saveResult(categoryKey, round, correct);
+    if (currentPlayer) {
+      const question = { player_id: currentPlayer.id, game: selectedGame.id, topic: routeTopic.id, question_index: round + 1 };
+      track("answer", { ...question, answer: submittedAnswer, correct });
+      if (questionStartedAtRef.current !== null) {
+        track("question_time", { ...question, duration_ms: Math.max(0, Date.now() - questionStartedAtRef.current) });
+        questionStartedAtRef.current = null;
+      }
+    }
     if (correct) {
       sounds.correct();
       const messages = inChinese || mathInChinese ? chineseRewardMessages : rewardMessages;
@@ -527,8 +582,8 @@ export default function GameApp() {
     const opensLevel = Boolean(nextLevel) && !isLevelEarned(nextLevel, currentPlayer);
     if (opensLevel) unlock(levelUnlockKey(nextLevel));
     // Analytics: a child reaching Challenge Level 15 (finishing Level 14 earns it), once each,
-    // named for the class: "k1-challenge", "k2-challenge" or "k3-challenge".
-    if (opensLevel && nextLevel.id.endsWith("-level-15")) track(`${nextLevel.id.split("-")[0]}-challenge`, { level: "15" });
+    // named for the class: "k1_challenge", "k2_challenge" or "k3_challenge".
+    if (opensLevel && nextLevel.id.endsWith("-level-15")) track(`${nextLevel.id.split("-")[0]}_challenge`, { level: "15", player_id: currentPlayer.id });
     // A timed round with every answer right sets a record if it's the first or the fastest yet;
     // beating an earlier record earns a bonus.
     let speed = null;

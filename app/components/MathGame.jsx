@@ -185,14 +185,14 @@ export default function MathGame({ topic, round, question, onAnswer, language = 
   function pick(option) {
     if (solved) return;
     setPicked(option.label);
-    onAnswer(option.correct);
+    onAnswer(option.correct, option.label);
   }
 
   // The number pad: the typed number is checked against the answer.
   function submitTyped() {
     if (solved || !typed) return;
     setPicked(typed);
-    onAnswer(typed === question.answer);
+    onAnswer(typed === question.answer, typed);
   }
 
   function speak() {

@@ -20,7 +20,7 @@ export default function SentenceGame({ topic, round, question, onAnswer }) {
   function pick(option) {
     if (picked) return;
     setPicked(option.character);
-    onAnswer(option.character === question.character);
+    onAnswer(option.character === question.character, option.character);
   }
 
   return (
