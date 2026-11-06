@@ -463,9 +463,9 @@ describe("rainbow dragon", () => {
     expect(screen.getByTestId("dragon-scene")).toBeInTheDocument();
 
     await user.click(screen.getByRole("tab", { name: /Grooming/ }));
-    await user.click(screen.getByRole("button", { name: /Bath, 5 rainbow coins/ }));
-    expect(screen.getByLabelText(coinsLabel(1))).toBeInTheDocument();
-    expect(storedPlayers().players).toEqual([{ name: "Ada", coins: 1, age: "k1" }]);
+    await user.click(screen.getByRole("button", { name: /Bath, 3 rainbow coins/ }));
+    expect(screen.getByLabelText(coinsLabel(3))).toBeInTheDocument();
+    expect(storedPlayers().players).toEqual([{ name: "Ada", coins: 3, age: "k1" }]);
   });
 });
 

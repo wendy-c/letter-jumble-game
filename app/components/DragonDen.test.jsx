@@ -57,10 +57,10 @@ describe("DragonDen", () => {
     expect(tabs[0]).toHaveAttribute("aria-selected", "true");
 
     const sections = {
-      Food: ["Apple, 5 rainbow coins", "Carrot, 5 rainbow coins", "Cupcake, 5 rainbow coins",
-        "Chilli pepper, 5 rainbow coins", "Ice cream, 5 rainbow coins", "Milkshake, 5 rainbow coins",
-        "Lemon, 5 rainbow coins", "Salad, 5 rainbow coins", "Noodles, 5 rainbow coins"],
-      Grooming: ["Comb, 5 rainbow coins", "Bath, 5 rainbow coins", "Brush teeth, 5 rainbow coins"],
+      Food: ["Apple, 1 rainbow coin", "Carrot, 1 rainbow coin", "Lemon, 2 rainbow coins",
+        "Cupcake, 2 rainbow coins", "Ice cream, 2 rainbow coins", "Chilli pepper, 3 rainbow coins",
+        "Milkshake, 3 rainbow coins", "Salad, 3 rainbow coins", "Noodles, 3 rainbow coins"],
+      Grooming: ["Comb, 2 rainbow coins", "Bath, 3 rainbow coins", "Brush teeth, 3 rainbow coins"],
       Activities: ["Painting, 5 rainbow coins", "Ballet dancing, 5 rainbow coins", "Meditation, 5 rainbow coins", "Invite a friend, 5 rainbow coins", "Sandcastle, 5 rainbow coins"],
     };
     expect(screen.getByRole("tabpanel", { name: /Food/ })).toHaveClass("dragon-actions-treat");
@@ -91,7 +91,7 @@ describe("DragonDen", () => {
 
     await user.click(screen.getByRole("button", { name: /Chilli pepper/ }));
 
-    expect(onSpendCoins).toHaveBeenCalledWith(5);
+    expect(onSpendCoins).toHaveBeenCalledWith(3);
     expect(sounds.coin).toHaveBeenCalledTimes(1);
     expect(commands).toEqual(["chilli"]);
     expect(screen.getByText(dragonActionsById.chilli.reaction)).toBeInTheDocument();
@@ -113,13 +113,18 @@ describe("DragonDen", () => {
   });
 
   it("disables items the player can't afford and explains how to earn more", () => {
-    // Everything costs 5.
-    const { rerenderWith } = renderDen(5);
-    expect(screen.getByRole("button", { name: /Ice cream/ })).toBeEnabled();
+    // Treats and grooming cost 1 to 3 coins (activities, on their own tab, cost 5).
+    const { rerenderWith } = renderDen(3);
     expect(screen.getByRole("button", { name: /Chilli pepper/ })).toBeEnabled();
+    expect(screen.getByRole("button", { name: /Noodles/ })).toBeEnabled();
     expect(screen.queryByText(/out of rainbow coins/)).not.toBeInTheDocument();
 
-    rerenderWith(4);
+    rerenderWith(1);
+    expect(screen.getByRole("button", { name: /Apple/ })).toBeEnabled();
+    expect(screen.getByRole("button", { name: /Lemon/ })).toBeDisabled();
+    expect(screen.queryByText(/out of rainbow coins/)).not.toBeInTheDocument();
+
+    rerenderWith(0);
     expect(screen.getByRole("button", { name: /Apple/ })).toBeDisabled();
     expect(screen.getByText(/out of rainbow coins/)).toBeInTheDocument();
   });
@@ -166,7 +171,7 @@ describe("Tofu's den", () => {
     const items = () => within(screen.getByRole("tabpanel")).getAllByRole("button").map((button) => button.textContent.replace(/\d+$/, "").replace(/^\W+/u, ""));
 
     expect(room()).toBe("tofu-home");
-    expect(items()).toEqual(["Apple", "Cupcake", "Chilli pepper", "Ice cream", "Lemon", "Milkshake"]);
+    expect(items()).toEqual(["Apple", "Cupcake", "Chilli pepper", "Lemon", "Ice cream", "Milkshake"]);
     await user.click(screen.getByRole("tab", { name: /Grooming/ }));
     expect(room()).toBe("tofu-bathroom");
     await user.click(screen.getByRole("tab", { name: /Activities/ }));
@@ -177,7 +182,7 @@ describe("Tofu's den", () => {
   it("reacts to treats in her own shy way", async () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     renderDen(10, dragons.tofu);
-    await user.click(screen.getByRole("button", { name: "Chilli pepper, 5 rainbow coins" }));
+    await user.click(screen.getByRole("button", { name: "Chilli pepper, 2 rainbow coins" }));
     expect(commands).toEqual(["tofu-chilli"]);
     expect(dragonActionsById["tofu-chilli"].animation).toBe("shyChilli");
     expect(screen.getByText(dragonActionsById["tofu-chilli"].reaction)).toBeInTheDocument();
